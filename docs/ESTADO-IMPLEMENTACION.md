@@ -4,6 +4,8 @@
 
 Actualización comercial: Leads, Productos (incluidas imágenes privadas) y Actividad ya tienen implementación. Véase [COMERCIAL.md](COMERCIAL.md) para comportamiento, evidencia y pendientes. El propietario confirmó que el acceso remoto funciona; ya existen empresas creadas en el SaaS.
 
+Estimados ya tiene código de edición, cálculo, revisiones e impresión; su despliegue remoto está pendiente. Véase [ESTIMADOS.md](ESTIMADOS.md).
+
 - Next.js, TypeScript, Tailwind CSS y componentes base siguiendo shadcn/ui (Radix y CVA).
 - Registro con confirmación de correo, inicio y cierre de sesión mediante Supabase Auth.
 - Creación y selección de empresas. Acceso validado en servidor y PostgreSQL.

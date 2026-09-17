@@ -24,6 +24,7 @@ El destino de despliegue y la separación de entornos de pruebas/producción sig
 
 - [Estado, evidencia y próximos pasos](docs/ESTADO-IMPLEMENTACION.md)
 - [Leads, Productos y Actividad](docs/COMERCIAL.md)
+- [Estimados: funciones, validación y despliegue pendiente](docs/ESTIMADOS.md)
 - [Ejecución local y base de datos](docs/DESARROLLO.md)
 - [Alcance y matriz inicial de paridad](docs/ALCANCE-Y-PARIDAD.md)
 - [Arquitectura propuesta](docs/ARQUITECTURA.md)

@@ -112,3 +112,31 @@ tr:last-child td {
 ::selection {
   background: #c8e3d4;
 }
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  body {
+    background: white;
+    color: black;
+  }
+  #main-content {
+    max-width: none;
+    padding: 0;
+  }
+  .estimate-print {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+  .estimate-print tr {
+    break-inside: avoid;
+  }
+  .estimate-print thead {
+    display: table-header-group;
+  }
+  .estimate-print .overflow-x-auto {
+    overflow: visible;
+  }
+}

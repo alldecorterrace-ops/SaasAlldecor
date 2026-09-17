@@ -33,11 +33,11 @@ export function AppShell({
   const current = visible.find(
     (m) =>
       pathname === moduleHref(company.id, m.id) ||
-      (m.id === "clientes" &&
+      (m.id !== "dashboard" &&
         pathname.startsWith(moduleHref(company.id, m.id) + "/")),
   );
   return (
-    <div className="min-h-screen lg:pl-64">
+    <div className="min-h-screen lg:pl-64 print:pl-0">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-white focus:p-3"
@@ -52,7 +52,7 @@ export function AppShell({
         />
       )}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-border bg-[#fbfcfa] transition-transform ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-border bg-[#fbfcfa] transition-transform ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 print:hidden`}
       >
         <div className="flex items-center justify-between px-6 pt-7 pb-6">
           <Link href="/empresas" className="text-2xl font-bold tracking-tight">
@@ -146,7 +146,7 @@ export function AppShell({
           </form>
         </div>
       </aside>
-      <header className="flex min-h-18 items-center justify-between gap-4 border-b border-border bg-white/80 px-5 sm:px-9">
+      <header className="flex min-h-18 items-center justify-between gap-4 border-b border-border bg-white/80 px-5 sm:px-9 print:hidden">
         <div className="flex items-center gap-3">
           <button
             className="lg:hidden"

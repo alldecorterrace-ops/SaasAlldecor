@@ -22,7 +22,7 @@ export const modules = [
     ready: false,
   },
   { id: "adm-precios", label: "Precios", group: "Comercial", ready: false },
-  { id: "fin-estimados", label: "Estimados", group: "Comercial", ready: false },
+  { id: "fin-estimados", label: "Estimados", group: "Comercial", ready: true },
   { id: "fin-invoices", label: "Invoices", group: "Finanzas", ready: false },
   {
     id: "fin-proyectos",
@@ -99,6 +99,7 @@ export function moduleHref(company: string, module: string) {
   if (module === "crm") return `${base}/leads`;
   if (module === "productos") return `${base}/productos`;
   if (module === "activity") return `${base}/actividad`;
+  if (module === "fin-estimados") return `${base}/estimados`;
   return module === "dashboard"
     ? base
     : module === "clientes"

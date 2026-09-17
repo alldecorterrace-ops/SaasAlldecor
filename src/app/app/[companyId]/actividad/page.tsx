@@ -20,6 +20,7 @@ export default async function Activity({
     customers: "Clientes",
     leads: "Leads",
     products: "Productos",
+    estimates: "Estimados",
     companies: "Empresa",
     memberships: "Usuarios y permisos",
   };
