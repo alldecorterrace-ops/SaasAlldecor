@@ -1,6 +1,6 @@
 # Arquitectura propuesta
 
-Estado: diseño inicial; no implementado. Alcance confirmado: varias empresas y todos los módulos de ADT Admin.
+Estado: arquitectura objetivo con primera base implementada. Autenticación, empresas, permisos y clientes tienen implementación inicial; archivos, colas, integraciones y dominios restantes siguen pendientes. Alcance confirmado: varias empresas y todos los módulos de ADT Admin.
 
 ## Estructura
 
@@ -51,7 +51,7 @@ Cliente, estimado, proyecto, factura y pago deben mantener consistencia. Los cor
 
 ## Decisiones operativas pendientes
 
-- El propietario identificó el proyecto Supabase `SaasAlldecor` y se verificó acceso al panel. Falta definir la separación de pruebas/producción y la conexión de la aplicación.
+- El proyecto Supabase `SaasAlldecor` tiene la estructura inicial aplicada y la aplicación local configurada. Falta definir la separación de pruebas/producción y validar el primer recorrido de usuario confirmado.
 - Proveedor/plan de alojamiento compatible con uso comercial. [Vercel Hobby limita ese uso](https://vercel.com/docs/limits/fair-use-guidelines).
 - Proveedores e identidades de envío de cada integración y método de incorporación de usuarios.
 - Dominio, ventanas de mantenimiento y objetivos de disponibilidad/recuperación.

@@ -1,0 +1,114 @@
+@import "tailwindcss";
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: #fff;
+  --color-muted-foreground: #677773;
+  --color-accent: #edf3ef;
+  --color-border: #dfe7e2;
+  --color-input: #d4dfd8;
+  --color-ring: #177457;
+  --color-destructive: #b42330;
+  --font-sans: Arial, Helvetica, sans-serif;
+}
+:root {
+  --background: #f5f7f4;
+  --foreground: #19352c;
+  --primary: #16664e;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: wait;
+}
+input[type="checkbox"] {
+  accent-color: #16664e;
+  width: 1rem;
+  height: 1rem;
+}
+.card {
+  border: 1px solid #dfe7e2;
+  background: #fff;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 3px 16px #153b2303;
+}
+.field {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.field small {
+  font-weight: 400;
+  color: #677773;
+}
+select,
+textarea {
+  border: 1px solid #d4dfd8;
+  border-radius: 0.75rem;
+  background: white;
+  padding: 0.7rem;
+  font: inherit;
+  width: 100%;
+}
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #177457;
+  outline-offset: 2px;
+}
+.eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #6b8277;
+}
+.page-title {
+  font-size: clamp(1.6rem, 3vw, 2.15rem);
+  letter-spacing: -0.055em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.875rem;
+}
+th {
+  text-align: left;
+  color: #677773;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+th,
+td {
+  padding: 1rem;
+  border-bottom: 1px solid #edf1ee;
+}
+tr:last-child td {
+  border-bottom: 0;
+}
+::selection {
+  background: #c8e3d4;
+}

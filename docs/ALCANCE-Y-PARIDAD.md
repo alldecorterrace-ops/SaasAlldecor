@@ -18,31 +18,31 @@ Las pruebas siguientes son criterios iniciales por completar contra la interfaz 
 
 ## Matriz inicial
 
-| ID de origen | Módulo | Criterio inicial de paridad |
-|---|---|---|
-| `dashboard` | Dashboard | Comparar indicadores, filtros y enlaces con ADT para la misma empresa y periodo. |
-| `crm` | Leads | Crear y editar leads; conservar estados, datos, historial y relaciones vigentes. |
-| `clientes` | Clientes | Abrir el expediente completo; editar sus campos y conservar documentos y relaciones. |
-| `nuevo3d` | Nuevo estimado 3D | Crear, guardar, reabrir y modificar un estimado 3D conservando geometría, medidas y cálculo. |
-| `productos` | Productos | Consultar y modificar el catálogo según permisos; mantener referencias históricas. |
-| `pergolamotor` | Pérgola sin 3D | Reproducir configuración, equipos de cocina, precios y guardado del estimado. |
-| `estimadosweb` | Estimados web | Conservar entradas web, consulta, estados y acciones disponibles en ADT. |
-| `adm-precios` | Precios | Reproducir catálogo de precios y reglas de cálculo sin cambiar importes históricos. |
-| `fin-estimados` | Estimados | Conservar revisiones, documentos y transiciones vigentes del estimado. |
-| `fin-invoices` | Invoices | Conservar numeración, emisión, pagos, anulaciones, importes y saldos. |
-| `fin-proyectos` | Proyectos | Conservar expediente, relaciones, estados y operaciones vigentes por proyecto. |
-| `horasfix` | Horas y solicitudes | Reproducir marcaciones, solicitudes, correcciones, aprobaciones y periodos bloqueados. |
-| `manualfab` | Manual de fabricación | Conservar versiones, medidas, pasos, fotos y revisión asociados a cada obra. |
-| `permisos` | Permisos | Conservar permisos de obra, estados, documentos y acciones actuales. |
-| `inventario` | Inventario | Conservar existencias y reproducir las operaciones realmente disponibles; detallar el flujo antes de portar. |
-| `gastos` | Gastos | Conservar recibos, fechas, fotos, correcciones, aprobaciones, rechazo e historial. |
-| `trabajadores` | Trabajadores | Conservar identidad operativa, asignaciones y relaciones; separar trabajador de cuenta de acceso. |
-| `mapazonas` | Mapa de zonas | Reproducir las capas, filtros, permisos y operaciones presentes en ADT. |
-| `instalaciones` | Instalaciones | Reproducir las vistas y operaciones actuales y sus vínculos con proyectos y trabajadores. |
-| `portal` | Portal del cliente | Un cliente autorizado ve y realiza solo las operaciones de su expediente y empresa. |
-| `ia` | IA Assistant | Inventariar tareas y proveedores actuales; probar autorización, errores y coste por empresa. |
-| `activity` | Actividad | Conservar eventos anteriores y registrar acciones nuevas sin reescribir el historial. |
-| `config` | Configuración | Cada administrador gestiona ajustes y permisos de su empresa; los 23 módulos siguen seleccionables. |
+| ID de origen    | Módulo                | Criterio inicial de paridad                                                                                  |
+| --------------- | --------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `dashboard`     | Dashboard             | Comparar indicadores, filtros y enlaces con ADT para la misma empresa y periodo.                             |
+| `crm`           | Leads                 | Crear y editar leads; conservar estados, datos, historial y relaciones vigentes.                             |
+| `clientes`      | Clientes              | Abrir el expediente completo; editar sus campos y conservar documentos y relaciones.                         |
+| `nuevo3d`       | Nuevo estimado 3D     | Crear, guardar, reabrir y modificar un estimado 3D conservando geometría, medidas y cálculo.                 |
+| `productos`     | Productos             | Consultar y modificar el catálogo según permisos; mantener referencias históricas.                           |
+| `pergolamotor`  | Pérgola sin 3D        | Reproducir configuración, equipos de cocina, precios y guardado del estimado.                                |
+| `estimadosweb`  | Estimados web         | Conservar entradas web, consulta, estados y acciones disponibles en ADT.                                     |
+| `adm-precios`   | Precios               | Reproducir catálogo de precios y reglas de cálculo sin cambiar importes históricos.                          |
+| `fin-estimados` | Estimados             | Conservar revisiones, documentos y transiciones vigentes del estimado.                                       |
+| `fin-invoices`  | Invoices              | Conservar numeración, emisión, pagos, anulaciones, importes y saldos.                                        |
+| `fin-proyectos` | Proyectos             | Conservar expediente, relaciones, estados y operaciones vigentes por proyecto.                               |
+| `horasfix`      | Horas y solicitudes   | Reproducir marcaciones, solicitudes, correcciones, aprobaciones y periodos bloqueados.                       |
+| `manualfab`     | Manual de fabricación | Conservar versiones, medidas, pasos, fotos y revisión asociados a cada obra.                                 |
+| `permisos`      | Permisos              | Conservar permisos de obra, estados, documentos y acciones actuales.                                         |
+| `inventario`    | Inventario            | Conservar existencias y reproducir las operaciones realmente disponibles; detallar el flujo antes de portar. |
+| `gastos`        | Gastos                | Conservar recibos, fechas, fotos, correcciones, aprobaciones, rechazo e historial.                           |
+| `trabajadores`  | Trabajadores          | Conservar identidad operativa, asignaciones y relaciones; separar trabajador de cuenta de acceso.            |
+| `mapazonas`     | Mapa de zonas         | Reproducir las capas, filtros, permisos y operaciones presentes en ADT.                                      |
+| `instalaciones` | Instalaciones         | Reproducir las vistas y operaciones actuales y sus vínculos con proyectos y trabajadores.                    |
+| `portal`        | Portal del cliente    | Un cliente autorizado ve y realiza solo las operaciones de su expediente y empresa.                          |
+| `ia`            | IA Assistant          | Inventariar tareas y proveedores actuales; probar autorización, errores y coste por empresa.                 |
+| `activity`      | Actividad             | Conservar eventos anteriores y registrar acciones nuevas sin reescribir el historial.                        |
+| `config`        | Configuración         | Cada administrador gestiona ajustes y permisos de su empresa; los 23 módulos siguen seleccionables.          |
 
 ## Dependencias complementarias incluidas en el análisis
 
