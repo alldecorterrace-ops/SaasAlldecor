@@ -53,6 +53,7 @@ export type RecordField = {
   type?:
     | "text"
     | "date"
+    | "datetime-local"
     | "email"
     | "textarea"
     | "number"

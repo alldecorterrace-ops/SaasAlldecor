@@ -34,16 +34,16 @@ export const modules = [
     id: "horasfix",
     label: "Horas y solicitudes",
     group: "Operaciones",
-    ready: false,
+    ready: true,
   },
   {
     id: "manualfab",
     label: "Manual de fabricación",
     group: "Operaciones",
-    ready: false,
+    ready: true,
   },
-  { id: "permisos", label: "Permisos", group: "Operaciones", ready: false },
-  { id: "inventario", label: "Inventario", group: "Operaciones", ready: false },
+  { id: "permisos", label: "Permisos", group: "Operaciones", ready: true },
+  { id: "inventario", label: "Inventario", group: "Operaciones", ready: true },
   { id: "gastos", label: "Gastos", group: "Finanzas", ready: true },
   {
     id: "trabajadores",
@@ -55,13 +55,13 @@ export const modules = [
     id: "mapazonas",
     label: "Mapa de zonas",
     group: "Operaciones",
-    ready: false,
+    ready: true,
   },
   {
     id: "instalaciones",
     label: "Instalaciones",
     group: "Operaciones",
-    ready: false,
+    ready: true,
   },
   { id: "portal", label: "Portal del cliente", group: "General", ready: false },
   { id: "ia", label: "IA Assistant", group: "General", ready: false },
@@ -96,6 +96,16 @@ export function canAccess(
 }
 export function moduleHref(company: string, module: string) {
   const base = `/app/${company}`;
+  if (module === "horasfix") return `${base}/horas`;
+  const workspaceRoutes: Record<string, string> = {
+    permisos: "permits",
+    inventario: "inventory",
+    instalaciones: "installations",
+    manualfab: "manuals",
+    mapazonas: "zones",
+  };
+  if (workspaceRoutes[module])
+    return `${base}/operaciones/${workspaceRoutes[module]}`;
   if (module === "gastos" || module === "trabajadores")
     return `${base}/${module}`;
   if (module === "crm") return `${base}/leads`;

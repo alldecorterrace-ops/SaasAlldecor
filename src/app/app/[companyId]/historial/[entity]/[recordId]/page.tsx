@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireModule } from "@/lib/auth";
+import { requireModule, companyContext } from "@/lib/auth";
+import { workspaceKind, workspaces } from "@/lib/workspaces";
 import { uuid } from "@/lib/validation";
 const entities: Record<string, { module: string; label: string }> = {
+  time_entries: { module: "horasfix", label: "Marcación" },
+  time_requests: { module: "horasfix", label: "Solicitud de horas" },
+  time_periods: { module: "horasfix", label: "Cierre de semana" },
   workers: { module: "trabajadores", label: "Trabajador" },
   expenses: { module: "gastos", label: "Gasto" },
   customers: { module: "clientes", label: "Cliente" },
@@ -56,8 +60,21 @@ export default async function History({
   params: Promise<{ companyId: string; entity: string; recordId: string }>;
   searchParams: Promise<{ before?: string }>;
 }) {
-  const { companyId, entity, recordId } = await params,
-    info = entities[entity];
+  const { companyId, entity, recordId } = await params;
+  let info = entities[entity];
+  if (entity === "work_records" && uuid.safeParse(recordId).success) {
+    const { db } = await companyContext(companyId);
+    const { data, error } = await db
+      .from("work_records")
+      .select("kind")
+      .eq("company_id", companyId)
+      .eq("id", recordId)
+      .maybeSingle();
+    if (error) throw new Error("No se pudo cargar el historial.");
+    const kind = data && workspaceKind(data.kind);
+    if (!kind) notFound();
+    info = { module: workspaces[kind].module, label: workspaces[kind].title };
+  }
   if (!info || !uuid.safeParse(recordId).success) notFound();
   const { db, company } = await requireModule(companyId, info.module),
     { before } = await searchParams;

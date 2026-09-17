@@ -9,6 +9,8 @@ import { workerFields, expenseFields } from "@/lib/operations";
 import { OperationForm } from "./operation-form";
 import { EntitySelect } from "./entity-select";
 import { ExpenseReceipt } from "./expense-receipt";
+import { TimeForm } from "./time-form";
+import { Input } from "./ui/input";
 export async function OperationDetail({
   companyId,
   kind,
@@ -183,6 +185,33 @@ export async function OperationDetail({
           url={url}
           readOnly={readOnly}
         />
+      )}
+      {workers && !isNew && manager && (
+        <section className="card mt-6">
+          <h2 className="font-semibold text-xl mb-3">
+            Cuenta para marcar horas
+          </h2>
+          <p className="mb-4 text-sm">
+            Vincula el correo de un usuario activo de esta empresa. Debe tener
+            permiso de escritura en Horas. Dejarlo vacío retira la vinculación.
+          </p>
+          <p className="text-sm mb-4">
+            Estado: {record.user_id ? "Cuenta vinculada" : "Sin vincular"}
+          </p>
+          <TimeForm
+            key={`login:${version}`}
+            companyId={companyId}
+            operation="link"
+            label="Guardar vinculación"
+          >
+            <input type="hidden" name="id" value={id} />
+            <input type="hidden" name="version" value={version} />
+            <label className="field">
+              Correo de acceso
+              <Input name="email" type="email" maxLength={254} />
+            </label>
+          </TimeForm>
+        </section>
       )}
     </>
   );
