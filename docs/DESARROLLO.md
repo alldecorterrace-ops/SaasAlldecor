@@ -34,3 +34,9 @@ npm run check
 Ejecuta lint, tipos, pruebas PostgreSQL y compilación. Para servir la compilación: `npm start`. El servidor local escucha solo en 127.0.0.1. Sin variables de conexión, la aplicación dirige las rutas protegidas a la pantalla de configuración inicial.
 
 GitHub Actions ejecuta las mismas comprobaciones sin claves ni datos reales. Un resultado verde no sustituye las pruebas autenticadas de navegador ni la conciliación de una migración.
+
+## Acceso remoto temporal
+
+Para una revisión remota se puede exponer exclusivamente el servidor de la aplicación mediante un túnel HTTPS temporal de Cloudflare. El servidor debe seguir escuchando en 127.0.0.1. Configurar `NEXT_PUBLIC_SITE_URL` con el origen HTTPS del túnel y recompilar; añadir en Supabase Auth la URL exacta de ese origen terminada en `/auth/callback`, sin comodines. La confirmación debe abrirse en el mismo navegador utilizado para el registro.
+
+El callback usa el origen configurado para no redirigir a localhost detrás del proxy. El enlace temporal depende de que la computadora, el servidor y el túnel continúen activos; no constituye alojamiento permanente. Al retirar el túnel, quitar su URL de la lista de redirecciones de Supabase y ajustar la variable del entorno al destino vigente. Las herramientas, logs y direcciones temporales locales se guardan bajo `.local/`, fuera de Git.
