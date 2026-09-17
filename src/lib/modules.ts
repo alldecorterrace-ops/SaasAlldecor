@@ -6,22 +6,22 @@ export const modules = [
     id: "nuevo3d",
     label: "Nuevo estimado 3D",
     group: "Comercial",
-    ready: false,
+    ready: true,
   },
   { id: "productos", label: "Productos", group: "Comercial", ready: true },
   {
     id: "pergolamotor",
     label: "Pérgola sin 3D",
     group: "Comercial",
-    ready: false,
+    ready: true,
   },
   {
     id: "estimadosweb",
     label: "Estimados web",
     group: "Comercial",
-    ready: false,
+    ready: true,
   },
-  { id: "adm-precios", label: "Precios", group: "Comercial", ready: false },
+  { id: "adm-precios", label: "Precios", group: "Comercial", ready: true },
   { id: "fin-estimados", label: "Estimados", group: "Comercial", ready: true },
   { id: "fin-invoices", label: "Facturas", group: "Finanzas", ready: true },
   {
@@ -63,8 +63,8 @@ export const modules = [
     group: "Operaciones",
     ready: true,
   },
-  { id: "portal", label: "Portal del cliente", group: "General", ready: false },
-  { id: "ia", label: "IA Assistant", group: "General", ready: false },
+  { id: "portal", label: "Portal del cliente", group: "General", ready: true },
+  { id: "ia", label: "IA Assistant", group: "General", ready: true },
   { id: "activity", label: "Actividad", group: "Administración", ready: true },
   {
     id: "config",
@@ -96,6 +96,12 @@ export function canAccess(
 }
 export function moduleHref(company: string, module: string) {
   const base = `/app/${company}`;
+  if (module === "nuevo3d" || module === "pergolamotor")
+    return `${base}/disenos/${module}`;
+  if (module === "adm-precios") return `${base}/precios`;
+  if (module === "estimadosweb") return `${base}/solicitudes-web`;
+  if (module === "portal") return `${base}/compartir/portal`;
+  if (module === "ia") return `${base}/ia`;
   if (module === "horasfix") return `${base}/horas`;
   const workspaceRoutes: Record<string, string> = {
     permisos: "permits",

@@ -4,6 +4,10 @@ import { requireModule, companyContext } from "@/lib/auth";
 import { workspaceKind, workspaces } from "@/lib/workspaces";
 import { uuid } from "@/lib/validation";
 const entities: Record<string, { module: string; label: string }> = {
+  web_forms: { module: "estimadosweb", label: "Formulario web" },
+  web_requests: { module: "estimadosweb", label: "Solicitud web" },
+  price_books: { module: "adm-precios", label: "Precios" },
+  assistant_settings: { module: "ia", label: "Configuración de IA" },
   time_entries: { module: "horasfix", label: "Marcación" },
   time_requests: { module: "horasfix", label: "Solicitud de horas" },
   time_periods: { module: "horasfix", label: "Cierre de semana" },
@@ -62,6 +66,29 @@ export default async function History({
 }) {
   const { companyId, entity, recordId } = await params;
   let info = entities[entity];
+  if (
+    (entity === "designs" || entity === "client_shares") &&
+    uuid.safeParse(recordId).success
+  ) {
+    const { db } = await companyContext(companyId);
+    const { data, error } = await db
+      .from(entity)
+      .select("kind")
+      .eq("company_id", companyId)
+      .eq("id", recordId)
+      .maybeSingle();
+    if (error) throw new Error("No se pudo cargar el historial.");
+    if (!data) notFound();
+    info = {
+      module:
+        entity === "designs"
+          ? data.kind
+          : data.kind === "estimate"
+            ? "estimadosweb"
+            : "portal",
+      label: entity === "designs" ? "Diseño" : "Enlace del cliente",
+    };
+  }
   if (entity === "work_records" && uuid.safeParse(recordId).success) {
     const { db } = await companyContext(companyId);
     const { data, error } = await db

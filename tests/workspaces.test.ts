@@ -31,6 +31,10 @@ test("Operational workspaces enforce tenant isolation, ledger integrity, schedul
     "007_void_expense_receipts",
     "008_operations_workspaces",
     "009_time_tracking",
+    "010_design_pricing",
+    "011_client_sharing",
+    "012_assistant",
+    "013_audit_completion",
   ])
     await db.exec(
       await readFile(
@@ -575,7 +579,7 @@ test("Operational workspaces enforce tenant isolation, ledger integrity, schedul
           /unreviewed_period/,
         );
         await db.query(
-          "select public.decide_time_request($1,$2,1,true,'Corrección comprobada')",
+          "select public.decide_time_request($1,$2,1,true,repeat('Corrección comprobada ',90))",
           [company, request],
         );
         assert.equal((await timeRow()).minutes, 510);
