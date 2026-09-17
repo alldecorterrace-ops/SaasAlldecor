@@ -21,6 +21,11 @@ export default async function Activity({
     leads: "Leads",
     products: "Productos",
     estimates: "Estimados",
+    invoices: "Facturas",
+    workers: "Trabajadores",
+    expenses: "Gastos",
+    payments: "Pagos",
+    projects: "Proyectos",
     companies: "Empresa",
     memberships: "Usuarios y permisos",
   };

@@ -7,6 +7,8 @@ import { estimateRecord } from "@/lib/estimate-record";
 import type { EstimateInput } from "@/lib/estimates";
 import { EstimateForm } from "@/components/estimate-form";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { FinanceForm } from "@/components/finance-form";
 export default async function EstimatePage({
   params,
   searchParams,
@@ -57,7 +59,24 @@ export default async function EstimatePage({
   const readOnly =
     !canAccess(context.member, "fin-estimados", "write") ||
     !!search.revision ||
-    initial.status === "ANULADA";
+    initial.status === "ANULADA" ||
+    initial.status === "APROBADO";
+  const canApprove =
+    !isNew &&
+    !search.revision &&
+    ["BORRADOR", "PENDIENTE"].includes(initial.status) &&
+    ["fin-estimados", "fin-invoices", "fin-proyectos"].every((m) =>
+      canAccess(context.member, m, "write"),
+    );
+  const { data: invoice } =
+    !isNew && canAccess(context.member, "fin-invoices")
+      ? await context.db
+          .from("invoices")
+          .select("id,number")
+          .eq("company_id", companyId)
+          .eq("estimate_id", id)
+          .maybeSingle()
+      : { data: null };
   return (
     <>
       <div className="flex flex-wrap justify-between gap-4 mb-7">
@@ -95,6 +114,17 @@ export default async function EstimatePage({
           </div>
         )}
       </div>
+      {invoice && (
+        <p className="card mb-6">
+          Factura vinculada:{" "}
+          <Link
+            className="text-primary underline"
+            href={`/app/${companyId}/facturas/${invoice.id}`}
+          >
+            {invoice.number}
+          </Link>
+        </p>
+      )}
       {isNew && !canAccess(context.member, "clientes") ? (
         <div className="card">
           Necesitas permiso de lectura en Clientes para crear estimados.
@@ -112,6 +142,54 @@ export default async function EstimatePage({
           canSelectCustomer={canAccess(context.member, "clientes")}
           canSelectProduct={canAccess(context.member, "productos")}
         />
+      )}
+      {canApprove && (
+        <section className="card mt-6">
+          <h2 className="font-semibold mb-3">Registrar aprobación</h2>
+          <p className="text-sm text-muted-foreground mb-5">
+            Registra la autorización recibida del cliente. Se utilizará la
+            última revisión guardada para crear una factura y un proyecto. El
+            estimado quedará cerrado para edición. No se registra ningún pago.
+          </p>
+          <FinanceForm
+            companyId={companyId}
+            id={id}
+            version={version}
+            operation="approve"
+            label="Registrar aprobación y crear factura"
+          >
+            <label className="field">
+              Nombre del proyecto
+              <Input
+                name="name"
+                defaultValue={customerName}
+                minLength={2}
+                maxLength={255}
+                required
+              />
+            </label>
+            <label className="field">
+              Fecha de factura
+              <Input
+                name="date"
+                type="date"
+                defaultValue={todayInTimezone(context.company.timezone)}
+                required
+              />
+            </label>
+            <label className="field">
+              Constancia de aprobación
+              <textarea
+                name="note"
+                rows={3}
+                minLength={3}
+                maxLength={2000}
+                placeholder="Quién aprobó, cuándo y por qué medio"
+                required
+              />
+            </label>
+          </FinanceForm>
+        </section>
       )}
     </>
   );

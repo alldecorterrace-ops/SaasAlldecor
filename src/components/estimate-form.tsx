@@ -161,11 +161,13 @@ export function EstimateForm({
               set({ ...v, status: e.target.value as EstimateInput["status"] })
             }
           >
-            {Object.entries(estimateStatuses).map(([key, label]) => (
-              <option key={key} value={key}>
-                {label}
-              </option>
-            ))}
+            {Object.entries(estimateStatuses)
+              .filter(([key]) => key !== "APROBADO" || readOnly)
+              .map(([key, label]) => (
+                <option key={key} value={key}>
+                  {label}
+                </option>
+              ))}
           </select>
           <small>
             Anular conserva el documento y bloquea nuevas ediciones.

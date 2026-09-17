@@ -23,12 +23,12 @@ export const modules = [
   },
   { id: "adm-precios", label: "Precios", group: "Comercial", ready: false },
   { id: "fin-estimados", label: "Estimados", group: "Comercial", ready: true },
-  { id: "fin-invoices", label: "Invoices", group: "Finanzas", ready: false },
+  { id: "fin-invoices", label: "Facturas", group: "Finanzas", ready: true },
   {
     id: "fin-proyectos",
     label: "Proyectos",
     group: "Operaciones",
-    ready: false,
+    ready: true,
   },
   {
     id: "horasfix",
@@ -44,12 +44,12 @@ export const modules = [
   },
   { id: "permisos", label: "Permisos", group: "Operaciones", ready: false },
   { id: "inventario", label: "Inventario", group: "Operaciones", ready: false },
-  { id: "gastos", label: "Gastos", group: "Finanzas", ready: false },
+  { id: "gastos", label: "Gastos", group: "Finanzas", ready: true },
   {
     id: "trabajadores",
     label: "Trabajadores",
     group: "Operaciones",
-    ready: false,
+    ready: true,
   },
   {
     id: "mapazonas",
@@ -96,10 +96,14 @@ export function canAccess(
 }
 export function moduleHref(company: string, module: string) {
   const base = `/app/${company}`;
+  if (module === "gastos" || module === "trabajadores")
+    return `${base}/${module}`;
   if (module === "crm") return `${base}/leads`;
   if (module === "productos") return `${base}/productos`;
   if (module === "activity") return `${base}/actividad`;
   if (module === "fin-estimados") return `${base}/estimados`;
+  if (module === "fin-invoices") return `${base}/facturas`;
+  if (module === "fin-proyectos") return `${base}/proyectos`;
   return module === "dashboard"
     ? base
     : module === "clientes"

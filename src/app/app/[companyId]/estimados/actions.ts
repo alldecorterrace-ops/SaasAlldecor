@@ -24,6 +24,10 @@ export async function saveEstimate(
     version = Number(form.get("version"));
   if (!parsed.success)
     return { error: parsed.error.issues[0]?.message ?? "Revisa el estimado." };
+  if (parsed.data.status === "APROBADO")
+    return {
+      error: "Usa Registrar aprobación para generar la factura y el proyecto.",
+    };
   if (!id.success || !Number.isSafeInteger(version) || version < 0)
     return { error: "Vuelve a abrir el estimado." };
   try {

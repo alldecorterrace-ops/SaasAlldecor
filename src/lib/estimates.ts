@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { decimal, priceBases } from "./commercial";
 export const estimateStatuses = {
+  APROBADO: "Aprobado",
   BORRADOR: "Borrador",
   PENDIENTE: "Pendiente",
   RECHAZADO: "Rechazado",
@@ -55,7 +56,13 @@ export const estimateSchema = z
     customer_id: z.uuid(),
     estimate_date: z.iso.date(),
     valid_until: z.iso.date().nullable(),
-    status: z.enum(["BORRADOR", "PENDIENTE", "RECHAZADO", "ANULADA"]),
+    status: z.enum([
+      "BORRADOR",
+      "PENDIENTE",
+      "RECHAZADO",
+      "ANULADA",
+      "APROBADO",
+    ]),
     notes: z.string().max(10000),
     discount: decimal,
     taxes: decimal,
