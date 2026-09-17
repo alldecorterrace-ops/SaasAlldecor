@@ -9,7 +9,7 @@
 - Numeración por empresa y año, con contador transaccional y restricción única. Un intento fallido no consume un número.
 - Guardado de cada revisión completa, incluidas líneas y datos del cliente. Los cambios posteriores en Clientes o Productos no reescriben estimados anteriores.
 - Listado con filtros de número, estado y fechas; historial paginado, consulta de revisiones y vista de impresión que permite guardar un PDF mediante el navegador.
-- Estados habilitados: Borrador, Pendiente, Rechazado y Anulado. La anulación conserva el documento y bloquea futuras ediciones.
+- Estados: Borrador, Pendiente, Rechazado, Anulado y Aprobado. Aprobar es una acción separada que genera factura y proyecto; no puede simularse cambiando el selector. Los documentos aprobados y anulados conservan sus datos y bloquean futuras ediciones.
 
 ## Permisos
 
@@ -19,7 +19,7 @@ Las tablas no admiten escrituras directas de usuarios autenticados; las mutacion
 
 ## Estado y validación
 
-La migración `202609170004_estimates.sql` se aplicó el 17 de septiembre de 2026 mediante SQL Editor al proyecto SaaS, conservando las migraciones 001, 002 y 003. La versión de aplicación `5736907` está publicada en la vista previa remota temporal. Todavía no hay despliegue permanente en Vercel.
+La migración `202609170004_estimates.sql` se aplicó el 17 de septiembre de 2026 mediante SQL Editor al proyecto SaaS, conservando las migraciones 001, 002 y 003. La entrega inicial fue `5736907`; la aplicación vigente ya incluye aprobación, facturas y proyectos y está en [el dominio permanente](ALOJAMIENTO.md).
 
 La consulta `supabase/verify-estimates.sql` confirmó RLS en las tablas de documentos y revisiones; sin lectura anónima, actualización directa de estimados, borrado de historial, lectura del contador privado ni ejecución anónima de guardado. Se conservaron las dos empresas y los conteos previos de Clientes, Leads y Productos.
 
@@ -27,13 +27,13 @@ Un ensayo transaccional en Supabase, con rol authenticated y datos sintéticos e
 
 La compilación de publicación pasó. El enlace remoto devuelve HTTP 200 en login y redirige a login las rutas de listado y creación de Estimados sin sesión. La comprobación visual alcanzó la pantalla de login; **queda pendiente recorrer el formulario, historial e impresión con una sesión de la aplicación**. La sesión administrativa de Supabase no inicia sesión en el SaaS.
 
-Ante un fallo de esta entrega, volver a compilar y servir la versión comercial anterior `87376c8` desde un checkout separado, conservando las tablas y documentos nuevos. No eliminar las tablas ni revertir datos para retirar la interfaz. Las cuatro migraciones se aplicaron manualmente: reconciliar el historial de Supabase CLI antes de usar db push.
+Para retirar una versión, conservar tablas y documentos. Revisar compatibilidad antes de volver a código anterior: las versiones comerciales previas no conocen los documentos aprobados ni sus relaciones con facturas. Las siete migraciones actuales se aplicaron manualmente; reconciliar el historial de Supabase CLI antes de usar db push.
 
 55 comprobaciones automatizadas aprobaron en conjunto, incluidas fórmulas, redondeo, totales manipulados, numeración, duplicados, aislamiento, permisos, versiones, fechas y anulación. La primera validación de tipos detectó caché incremental obsoleta tras cambiar el target a ES2020; una comprobación limpia pasó. Las pruebas no acreditan todavía el recorrido autenticado de Estimados en el navegador remoto.
 
 ## Pendientes
 
-- Aprobación del cliente y su efecto en facturas/proyectos. No se expone aún el estado Aprobado para evitar una aprobación incompleta frente al flujo de ADT, que también genera cuentas por cobrar.
+- Aceptación electrónica del cliente. La aprobación administrativa y la creación atómica de factura/proyecto ya están implementadas; véase [Finanzas y operaciones](FINANZAS-Y-OPERACIONES.md).
 - Envío de correo, firma, enlaces públicos, calendario de anticipos y pagos.
 - Configuradores 3D y de pérgola y sus cálculos específicos.
 - Aplicación automática de opciones de catálogo. Por ahora se añade el precio base y los ajustes se expresan como líneas separadas.

@@ -22,6 +22,7 @@ test("Workers and expenses: full editing, review, receipts and isolation", async
     "202609170004_estimates.sql",
     "202609170005_invoices_projects.sql",
     "202609170006_workers_expenses.sql",
+    "202609170007_void_expense_receipts.sql",
   ])
     await db.exec(
       await readFile(
@@ -270,6 +271,11 @@ test("Workers and expenses: full editing, review, receipts and isolation", async
           save(8, { ...input, decision_note: "Duplicado corregido" }),
           /manager_required/,
         );
+        await assert.rejects(
+          db.query("select public.set_expense_receipt($1,$2,8,null)", [a, expense]),
+          /manager_required/,
+        );
+        assert.equal((await row()).version, 8);
         await as(owner);
       },
     );

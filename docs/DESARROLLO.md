@@ -12,7 +12,7 @@ En PowerShell usar `Copy-Item .env.example .env.local`. Completar las variables 
 
 ## Base de datos
 
-En un proyecto Supabase nuevo y vacío, revisar y ejecutar los archivos de `supabase/migrations/` en orden: `001_foundation`, `002_commercial`, `003_product_images` y `004_estimates` (con su prefijo de fecha), desde SQL Editor con un rol administrativo. No ejecutarlos sobre una base existente sin revisar su estado. En el proyecto del propietario los cuatro ya están aplicados manualmente; reconciliar el historial de Supabase CLI antes de usar db push. `supabase/verify-foundation.sql`, `supabase/verify-commercial.sql` y `supabase/verify-estimates.sql` contienen comprobaciones de solo lectura.
+En un proyecto Supabase nuevo y vacío, revisar y ejecutar los archivos de `supabase/migrations/` en orden 001–007, desde SQL Editor con un rol administrativo. Las ampliaciones 005, 006 y 007 agregan facturas/proyectos/pagos, trabajadores/gastos/recibos y la protección de recibos de gastos anulados. No ejecutarlos sobre una base existente sin revisar su estado. En el proyecto del propietario los siete ya están aplicados manualmente; reconciliar el historial de Supabase CLI antes de usar db push. Los archivos `supabase/verify-*.sql` contienen comprobaciones de solo lectura.
 
 Las migraciones no importan datos de ADT. Las pruebas automatizadas usan datos sintéticos en memoria en PGlite, sin conexión al proyecto remoto. Los ensayos adicionales de despliegue ejecutados en Supabase usaron empresas sintéticas dentro de transacciones terminadas en ROLLBACK, sin conservar registros de prueba.
 
@@ -36,6 +36,8 @@ Ejecuta lint, tipos, pruebas PostgreSQL y compilación. Para servir la compilaci
 GitHub Actions ejecuta las mismas comprobaciones sin claves ni datos reales. Un resultado verde no sustituye las pruebas autenticadas de navegador ni la conciliación de una migración.
 
 ## Acceso remoto temporal
+
+El entorno del propietario ya utiliza [alojamiento permanente](ALOJAMIENTO.md). El túnel anterior está retirado; estas instrucciones se conservan solo para revisiones temporales futuras.
 
 Para una revisión remota se puede exponer exclusivamente el servidor de la aplicación mediante un túnel HTTPS temporal de Cloudflare. El servidor debe seguir escuchando en 127.0.0.1. Configurar `NEXT_PUBLIC_SITE_URL` con el origen HTTPS del túnel y recompilar; añadir en Supabase Auth la URL exacta de ese origen terminada en `/auth/callback`, sin comodines. La confirmación debe abrirse en el mismo navegador utilizado para el registro.
 
