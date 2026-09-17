@@ -4,7 +4,7 @@
 
 Actualización comercial: Leads, Productos (incluidas imágenes privadas) y Actividad ya tienen implementación. Véase [COMERCIAL.md](COMERCIAL.md) para comportamiento, evidencia y pendientes. El propietario confirmó que el acceso remoto funciona; ya existen empresas creadas en el SaaS.
 
-Estimados ya tiene código de edición, cálculo, revisiones e impresión; su despliegue remoto está pendiente. Véase [ESTIMADOS.md](ESTIMADOS.md).
+Estimados ya está disponible en la vista previa remota, con edición, cálculo, revisiones e impresión. Su migración y ensayo transaccional pasaron en Supabase; queda pendiente validar el recorrido autenticado en el navegador. Véase [ESTIMADOS.md](ESTIMADOS.md).
 
 - Next.js, TypeScript, Tailwind CSS y componentes base siguiendo shadcn/ui (Radix y CVA).
 - Registro con confirmación de correo, inicio y cierre de sesión mediante Supabase Auth.
@@ -26,7 +26,7 @@ La aplicación utiliza la clave publicable y el JWT del usuario; no necesita una
 ## Pendiente
 
 - Completar la matriz de paridad de cada módulo y sus recorridos reales. Dashboard, Clientes y Configuración tienen una base inicial, no paridad completa.
-- Completar la paridad de CRM/Productos y desarrollar estimados, facturas, proyectos, horas, fabricación, inventario, gastos, trabajadores, mapas, instalaciones, portal, IA y demás módulos de la matriz.
+- Completar la paridad de CRM/Productos/Estimados y desarrollar facturas, proyectos, horas, fabricación, inventario, gastos, trabajadores, mapas, instalaciones, portal, IA y demás módulos de la matriz.
 - Adjuntos privados, documentos, recuperación de contraseña, invitaciones, integración de correo, integraciones por empresa y tareas programadas.
 - Separación de entornos, despliegue comercial, dominio, observabilidad, copias y restauración.
 - Exportación de ADT, mapeo, ensayo de migración, conciliación y corte. No se han importado registros ni archivos ni modificado ADT.

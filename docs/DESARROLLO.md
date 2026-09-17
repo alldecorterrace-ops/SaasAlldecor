@@ -12,9 +12,9 @@ En PowerShell usar `Copy-Item .env.example .env.local`. Completar las variables 
 
 ## Base de datos
 
-En un proyecto Supabase nuevo y vacío, revisar y ejecutar los archivos de `supabase/migrations/` en orden: `001_foundation`, `002_commercial` y `003_product_images` (con su prefijo de fecha), desde SQL Editor con un rol administrativo. No ejecutarlos sobre una base existente sin revisar su estado. En el proyecto del propietario los tres ya están aplicados. `supabase/verify-foundation.sql` y `supabase/verify-commercial.sql` contienen comprobaciones de solo lectura.
+En un proyecto Supabase nuevo y vacío, revisar y ejecutar los archivos de `supabase/migrations/` en orden: `001_foundation`, `002_commercial`, `003_product_images` y `004_estimates` (con su prefijo de fecha), desde SQL Editor con un rol administrativo. No ejecutarlos sobre una base existente sin revisar su estado. En el proyecto del propietario los cuatro ya están aplicados manualmente; reconciliar el historial de Supabase CLI antes de usar db push. `supabase/verify-foundation.sql`, `supabase/verify-commercial.sql` y `supabase/verify-estimates.sql` contienen comprobaciones de solo lectura.
 
-La migración no importa datos de ADT. Los datos sintéticos de las pruebas quedan en memoria en PGlite, sin conexión al proyecto remoto.
+Las migraciones no importan datos de ADT. Las pruebas automatizadas usan datos sintéticos en memoria en PGlite, sin conexión al proyecto remoto. Los ensayos adicionales de despliegue ejecutados en Supabase usaron empresas sintéticas dentro de transacciones terminadas en ROLLBACK, sin conservar registros de prueba.
 
 ## Primer acceso
 
