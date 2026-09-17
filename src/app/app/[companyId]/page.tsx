@@ -53,8 +53,8 @@ export default async function Dashboard({
           Tu espacio ya tiene una base.
         </h2>
         <p className="relative mt-3 max-w-lg text-sm leading-6 text-white/70">
-          Comienza con tus clientes y configura el acceso del equipo. Los demás
-          módulos se incorporarán conservando las funciones de ADT Admin.
+          Organiza tus leads, conviértelos en clientes y prepara tu catálogo de
+          productos. Configura el acceso de cada integrante del equipo.
         </p>
       </section>
       <div className="mb-8 grid gap-4 sm:grid-cols-3">
@@ -111,9 +111,9 @@ export default async function Dashboard({
           </span>
         </div>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          Esta es la primera entrega. El expediente completo de clientes y la
-          migración de datos siguen pendientes. Los módulos señalados como «En
-          preparación» todavía no realizan operaciones.
+          El expediente completo de clientes y la migración de datos siguen
+          pendientes. Los módulos señalados como «En preparación» todavía no
+          realizan operaciones.
         </p>
         <div className="mt-6 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {modules

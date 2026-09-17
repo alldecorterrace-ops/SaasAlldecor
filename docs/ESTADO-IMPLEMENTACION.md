@@ -2,6 +2,8 @@
 
 ## Primera entrega
 
+Actualización comercial: Leads, Productos (incluidas imágenes privadas) y Actividad ya tienen implementación. Véase [COMERCIAL.md](COMERCIAL.md) para comportamiento, evidencia y pendientes. El propietario confirmó que el acceso remoto funciona; ya existen empresas creadas en el SaaS.
+
 - Next.js, TypeScript, Tailwind CSS y componentes base siguiendo shadcn/ui (Radix y CVA).
 - Registro con confirmación de correo, inicio y cierre de sesión mediante Supabase Auth.
 - Creación y selección de empresas. Acceso validado en servidor y PostgreSQL.
@@ -15,14 +17,14 @@ La migración SQL se ejecutó en una transacción sobre el esquema public vacío
 
 Las pruebas automatizadas ejecutan PostgreSQL mediante PGlite, con usuarios y roles sintéticos: aislamiento de empresas, denegación anónima, permisos, suspensión, protección de propietario, conflictos de edición, archivo/restauración y auditoría. También hay pruebas del catálogo y validación de entrada. No usan datos de ADT.
 
-La compilación, lint y TypeScript se verifican localmente y quedan configurados en GitHub Actions. El navegador local muestra el acceso; las rutas privadas redirigen a login sin sesión. **Falta validar con una cuenta real confirmada el recorrido completo: registro, empresa, cliente y permisos.** El propietario crea su propia contraseña en la pantalla de registro.
+La compilación, lint y TypeScript se verifican localmente y quedan configurados en GitHub Actions. Las rutas privadas redirigen a login sin sesión. El propietario ya confirmó su cuenta y el acceso remoto; creó empresas. **Falta validar con su sesión los recorridos completos de clientes, permisos y módulos comerciales nuevos.**
 
 La aplicación utiliza la clave publicable y el JWT del usuario; no necesita una clave service_role. Las mutaciones pasan por funciones PostgreSQL con validación de membresía/permisos, search_path fijo y privilegios limitados. Los cambios auditados no se borran desde la aplicación.
 
 ## Pendiente
 
 - Completar la matriz de paridad de cada módulo y sus recorridos reales. Dashboard, Clientes y Configuración tienen una base inicial, no paridad completa.
-- CRM, estimados, facturas, proyectos, horas, fabricación, inventario, gastos, trabajadores, mapas, instalaciones, portal, IA y demás módulos de la matriz.
+- Completar la paridad de CRM/Productos y desarrollar estimados, facturas, proyectos, horas, fabricación, inventario, gastos, trabajadores, mapas, instalaciones, portal, IA y demás módulos de la matriz.
 - Adjuntos privados, documentos, recuperación de contraseña, invitaciones, integración de correo, integraciones por empresa y tareas programadas.
 - Separación de entornos, despliegue comercial, dominio, observabilidad, copias y restauración.
 - Exportación de ADT, mapeo, ensayo de migración, conciliación y corte. No se han importado registros ni archivos ni modificado ADT.

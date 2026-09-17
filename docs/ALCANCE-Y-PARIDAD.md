@@ -14,7 +14,7 @@ Se leyó el catálogo vigente `ADT_MODULES` desde el servidor, sin ejecutar la a
 
 Se comprobó la presencia de los archivos del panel, estimador y puente 3D. Los hashes y el inventario técnico se conservan localmente como evidencia, fuera del repositorio público.
 
-Las pruebas siguientes son criterios iniciales por completar contra la interfaz actual. **Ningún módulo se declara implementado o verificado en el SaaS.**
+Las pruebas siguientes son criterios iniciales por completar contra la interfaz actual. La base SaaS ya incluye Dashboard, Clientes, Configuración, Leads, Productos y Actividad. **Ningún módulo se declara todavía con paridad completa**; véase el [estado de implementación](ESTADO-IMPLEMENTACION.md) para distinguir funciones disponibles y pruebas pendientes.
 
 ## Matriz inicial
 

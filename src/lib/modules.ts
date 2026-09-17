@@ -1,6 +1,6 @@
 export const modules = [
   { id: "dashboard", label: "Dashboard", group: "General", ready: true },
-  { id: "crm", label: "Leads", group: "Comercial", ready: false },
+  { id: "crm", label: "Leads", group: "Comercial", ready: true },
   { id: "clientes", label: "Clientes", group: "Comercial", ready: true },
   {
     id: "nuevo3d",
@@ -8,7 +8,7 @@ export const modules = [
     group: "Comercial",
     ready: false,
   },
-  { id: "productos", label: "Productos", group: "Comercial", ready: false },
+  { id: "productos", label: "Productos", group: "Comercial", ready: true },
   {
     id: "pergolamotor",
     label: "Pérgola sin 3D",
@@ -65,7 +65,7 @@ export const modules = [
   },
   { id: "portal", label: "Portal del cliente", group: "General", ready: false },
   { id: "ia", label: "IA Assistant", group: "General", ready: false },
-  { id: "activity", label: "Actividad", group: "Administración", ready: false },
+  { id: "activity", label: "Actividad", group: "Administración", ready: true },
   {
     id: "config",
     label: "Configuración",
@@ -96,6 +96,9 @@ export function canAccess(
 }
 export function moduleHref(company: string, module: string) {
   const base = `/app/${company}`;
+  if (module === "crm") return `${base}/leads`;
+  if (module === "productos") return `${base}/productos`;
+  if (module === "activity") return `${base}/actividad`;
   return module === "dashboard"
     ? base
     : module === "clientes"

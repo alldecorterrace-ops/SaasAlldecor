@@ -12,7 +12,7 @@ En PowerShell usar `Copy-Item .env.example .env.local`. Completar las variables 
 
 ## Base de datos
 
-En un proyecto nuevo y vacío, revisar y ejecutar `supabase/migrations/202609170001_foundation.sql` desde SQL Editor con un rol administrativo. No ejecutarlo sobre una base existente sin revisar su estado. En el proyecto del propietario ya está aplicado. `supabase/verify-foundation.sql` contiene una comprobación de solo lectura.
+En un proyecto Supabase nuevo y vacío, revisar y ejecutar los archivos de `supabase/migrations/` en orden: `001_foundation`, `002_commercial` y `003_product_images` (con su prefijo de fecha), desde SQL Editor con un rol administrativo. No ejecutarlos sobre una base existente sin revisar su estado. En el proyecto del propietario los tres ya están aplicados. `supabase/verify-foundation.sql` y `supabase/verify-commercial.sql` contienen comprobaciones de solo lectura.
 
 La migración no importa datos de ADT. Los datos sintéticos de las pruebas quedan en memoria en PGlite, sin conexión al proyecto remoto.
 
