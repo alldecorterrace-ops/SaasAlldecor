@@ -12,13 +12,13 @@ Nueva aplicación SaaS para varias empresas, con migración de datos y paridad f
 
 ## Estado real
 
-Primera implementación de 11 módulos: Dashboard, Leads, Clientes, Productos, Estimados, Facturas, Proyectos, Gastos, Trabajadores, Actividad y Configuración. Incluye autenticación, empresas, permisos, documentos con revisiones, pagos externos registrados y recibos privados. Los 23 módulos están registrados; **esto no significa que exista todavía paridad completa con ADT Admin**. Los módulos restantes muestran su estado pendiente.
+Los 23 módulos tienen una primera implementación con operaciones y persistencia. Incluye precios versionados, diseños, propuestas y solicitudes web, portal del cliente, IA con permisos y límites, y los módulos financieros y operativos. **No equivale todavía a paridad completa con ADT Admin ni a una migración terminada.** Consulta las funciones y diferencias en el [estado de implementación](docs/ESTADO-IMPLEMENTACION.md).
 
 Se contrastó el catálogo de 23 módulos y la presencia de siete módulos propios de Drupal mediante lectura del servidor el 17 de septiembre de 2026. Esa lectura no demuestra que todas sus acciones funcionen: falta completar la matriz con pruebas de navegador y datos de prueba.
 
 La estructura inicial y las ampliaciones comerciales están versionadas en Supabase SQL. La aplicación usa la clave pública y el usuario autenticado. El propietario confirmó el acceso remoto y creó empresas. Las pruebas PostgreSQL verifican aislamiento, permisos y conversión; los módulos comerciales nuevos aún requieren el recorrido autenticado completo de navegador.
 
-La aplicación está publicada en [saas.alldecorterrace.com](https://saas.alldecorterrace.com/login), en un subdominio nuevo y una carpeta separada del hosting existente. No depende de un túnel local. La separación de entornos sigue pendiente. No se han trasladado datos ni modificado los registros de ADT.
+La aplicación está publicada en [saas.alldecorterrace.com](https://saas.alldecorterrace.com/login), en un subdominio nuevo y una carpeta separada del hosting existente. No depende de un túnel local. La separación de entornos sigue pendiente. Se copiaron diez tarifas de venta a All Decor Terrace; los registros y archivos operativos siguen pendientes de migración. No se modificaron los registros de ADT.
 
 ## Documentación
 
@@ -26,6 +26,8 @@ La aplicación está publicada en [saas.alldecorterrace.com](https://saas.alldec
 - [Leads, Productos y Actividad](docs/COMERCIAL.md)
 - [Estimados: funciones y validación](docs/ESTIMADOS.md)
 - [Facturas, proyectos, pagos, trabajadores y gastos](docs/FINANZAS-Y-OPERACIONES.md)
+- [Operaciones, inventario, documentos y horas](docs/OPERACIONES-Y-HORAS.md)
+- [Diseños, precios, web, portal e IA](docs/DISENOS-PORTAL-IA.md)
 - [Publicación permanente y operación](docs/ALOJAMIENTO.md)
 - [Ejecución local y base de datos](docs/DESARROLLO.md)
 - [Alcance y matriz inicial de paridad](docs/ALCANCE-Y-PARIDAD.md)

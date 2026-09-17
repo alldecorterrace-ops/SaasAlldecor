@@ -12,9 +12,9 @@ En PowerShell usar `Copy-Item .env.example .env.local`. Completar las variables 
 
 ## Base de datos
 
-En un proyecto Supabase nuevo y vacío, revisar y ejecutar los archivos de `supabase/migrations/` en orden 001–007, desde SQL Editor con un rol administrativo. Las ampliaciones 005, 006 y 007 agregan facturas/proyectos/pagos, trabajadores/gastos/recibos y la protección de recibos de gastos anulados. No ejecutarlos sobre una base existente sin revisar su estado. En el proyecto del propietario los siete ya están aplicados manualmente; reconciliar el historial de Supabase CLI antes de usar db push. Los archivos `supabase/verify-*.sql` contienen comprobaciones de solo lectura.
+En un proyecto Supabase nuevo y vacío, revisar y ejecutar los archivos de `supabase/migrations/` en orden 001–014, desde SQL Editor con un rol administrativo. Las ampliaciones 005, 006 y 007 agregan facturas/proyectos/pagos, trabajadores/gastos/recibos y la protección de recibos de gastos anulados. No ejecutarlos sobre una base existente sin revisar su estado. En el proyecto del propietario los catorce ya están aplicados manualmente; reconciliar el historial de Supabase CLI antes de usar db push. Los archivos `supabase/verify-*.sql` contienen comprobaciones de solo lectura.
 
-Las migraciones no importan datos de ADT. Las pruebas automatizadas usan datos sintéticos en memoria en PGlite, sin conexión al proyecto remoto. Los ensayos adicionales de despliegue ejecutados en Supabase usaron empresas sintéticas dentro de transacciones terminadas en ROLLBACK, sin conservar registros de prueba.
+Las migraciones no importan datos de ADT. Las tarifas iniciales se cargaron por separado mediante un archivo privado que no está en el repositorio. Para IA, configurar OPENAI_API_KEY solo en el servidor y revisar el límite por empresa. Las pruebas automatizadas usan datos sintéticos en memoria en PGlite, sin conexión al proyecto remoto. Los ensayos adicionales de despliegue ejecutados en Supabase usaron empresas sintéticas dentro de transacciones terminadas en ROLLBACK, sin conservar registros de prueba.
 
 ## Primer acceso
 

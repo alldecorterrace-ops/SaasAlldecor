@@ -1,40 +1,52 @@
 # Estado de implementación — 17 de septiembre de 2026
 
-## Disponible para auditar
+## Los 23 módulos tienen una primera implementación
 
-Hay una primera implementación de 11 de los 23 módulos: Dashboard, Leads, Clientes, Productos, Estimados, Facturas, Proyectos, Gastos, Trabajadores, Actividad y Configuración. Esto no acredita paridad completa con ADT Admin.
+Cada entrada del catálogo abre una pantalla con operaciones y persistencia. **Esto no acredita paridad completa con ADT Admin ni una migración terminada.** El alcance y las diferencias están documentados para auditar cada flujo.
 
-- Autenticación con confirmación de correo, empresas y permisos de lectura/escritura por módulo.
-- Clientes con búsqueda, edición, archivo/restauración, control de versiones y auditoría.
-- Leads y conversión a cliente; productos con precios, reglas, opciones e imágenes privadas.
-- Estimados con seis bases de cálculo, numeración, revisiones, impresión y aprobación administrativa que genera factura y proyecto en una transacción.
-- Facturas con saldo, registro y reversión documentada de pagos, impresión, fechas y anulación sin borrar información. No procesa cargos bancarios.
-- Proyectos con estados, fechas, notas y requisito de anticipo para avanzar a producción, instalación o completado.
-- Trabajadores con ficha, tarifa, equipo y archivo. Crear la ficha no crea una cuenta de acceso.
-- Gastos editables, incluidas fecha, importe y recibo privado; revisión administrativa, anulación con motivo e historial. Corregir datos financieros o recibo invalida la aprobación anterior.
+| Grupo | Módulos |
+| --- | --- |
+| General y administración | Dashboard, Actividad, Configuración |
+| Comercial | Leads, Clientes, Productos, Estimados |
+| Finanzas y personal | Facturas, Proyectos, Gastos, Trabajadores |
+| Operaciones | Permisos, Inventario, Instalaciones, Manual de fabricación, Mapa de zonas, Horas y solicitudes |
+| Nuevas funciones comerciales | Precios, Pérgola sin 3D, Nuevo estimado 3D, Estimados web, Portal del cliente, IA Assistant |
 
-Detalles: [Comercial](COMERCIAL.md), [Estimados](ESTIMADOS.md), [Finanzas y operaciones](FINANZAS-Y-OPERACIONES.md).
+Documentación: [Comercial](COMERCIAL.md), [Estimados](ESTIMADOS.md), [Finanzas](FINANZAS-Y-OPERACIONES.md), [Operaciones y horas](OPERACIONES-Y-HORAS.md), [Diseños, portal e IA](DISENOS-PORTAL-IA.md).
 
-La aplicación se publicó en [saas.alldecorterrace.com](https://saas.alldecorterrace.com/login), sobre el hosting existente y fuera de la carpeta de ADT. HTTPS, pantalla de login y redirección de rutas privadas verificados. Véase [Alojamiento](ALOJAMIENTO.md).
+## Evidencia
 
-## Evidencia y límites
+- Código de los seis módulos finales: `72267e8`. [GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35284534911) completó lint, tipos, 97 comprobaciones y build correctamente.
+- Migraciones 001–014 aplicadas manualmente en SQL Editor. No usar `supabase db push` sin reconciliar antes ese historial.
+- Las siete tablas de esta ampliación tienen RLS y carecen de lectura anónima y escritura directa del rol authenticated. Las funciones públicas de enlaces y formularios validan su alcance antes de devolver o registrar datos.
+- Ensayo real: diseño → estimado → enlace → aceptación anónima con token → solicitud web → lead → revocación, y comprobación de cuota de IA. Terminó con `COMPLETION_SMOKE_PASS_ROLLED_BACK` y cero empresas sintéticas persistidas. No generó facturas a partir de una aceptación pública.
+- Ensayos anteriores comprobaron finanzas, recibos, inventario, horarios, solicitudes y cierre semanal, también con ROLLBACK.
+- OpenAI respondió desde el servidor con HTTP 200 y `gpt-4o-mini-2024-07-18`. Esa prueba mínima no usó datos de clientes.
+- Se copiaron diez tarifas de venta vigentes desde ADT a All Decor Terrace, sin sobrescribir un libro existente. La configuración de IA de esa empresa quedó activa con límite de 20 intentos por 24 horas. La otra empresa no recibió estas configuraciones.
+- Las tarifas reales y credenciales están fuera de GitHub. La clave de IA permanece en el entorno privado del servidor. Las consultas pueden generar consumo en la cuenta API existente.
 
-Las migraciones 001–007 se aplicaron manualmente mediante SQL Editor. Las tablas operativas tienen RLS, sin lectura anónima ni escritura directa desde el rol authenticated. Las mutaciones validan permisos, empresa, versiones y referencias en funciones PostgreSQL. No se usa service_role en la aplicación.
+El propietario confirmó previamente el acceso remoto y creó empresas. **Los nuevos flujos todavía requieren un recorrido con una sesión autenticada de la aplicación en navegador.** La sesión de Supabase, las pruebas SQL y la respuesta del proveedor IA no sustituyen ese recorrido.
 
-71 comprobaciones automatizadas aprobaron en GitHub Actions para la entrega financiera y operativa. Cubren aislamiento, permisos, fórmulas, numeración, conflictos, duplicados, aprobaciones, pagos y recibos. La corrección 007 añade una comprobación dentro del ensayo de gastos: un miembro no puede cambiar el recibo de un gasto anulado.
+La aplicación usa el [dominio permanente](https://saas.alldecorterrace.com/login) sobre el hosting existente. Las entregas se compilan fuera de la carpeta activa y conservan la versión anterior. Véase [Alojamiento](ALOJAMIENTO.md).
 
-El ensayo financiero y operativo en Supabase usó datos sintéticos y rol authenticated: aprobar estimado, reintento sin duplicación, registrar pago, verificar saldo, avanzar proyecto, revertir pago, anular factura, crear trabajador y corregir gasto aprobado. Finalizó con `FINANCE_OPERATIONS_PASS_ROLLED_BACK`, sin conservar registros de prueba. La consulta posterior confirmó RLS y ausencia de privilegios de escritura directa en las cinco tablas nuevas.
+La publicación `72267e8` se comprobó mediante la raíz del proceso activo, HTTP y navegador: páginas públicas disponibles, rutas privadas dirigidas al login y código privado inválido rechazado. No se accedió a los módulos con la sesión del propietario en esta comprobación.
 
-El propietario confirmó anteriormente el acceso remoto y creó empresas. **Los módulos nuevos todavía requieren un recorrido con una sesión autenticada de la aplicación en el navegador.** Una sesión administrativa de Supabase y los ensayos SQL no sustituyen esa prueba.
+## Diferencias que siguen abiertas
 
-## Pendiente para completar el encargo
+- El visor 3D es conceptual y rectangular: faltan geometría avanzada, equipos dentro del diseño, despiece y planos del configurador anterior. Precios incorpora tarifas de venta, no todo el catálogo de costos y márgenes.
+- Zonas es esquemático: faltan calles, rutas y GPS de marcaciones. Horas no incluye nómina, horas extra, auto-cierre ni recordatorios.
+- Portal muestra proyectos y saldos; faltan documentos, fotos, mensajes y cobros en línea. La aceptación por enlace no equivale a firma certificada.
+- IA admite preguntas independientes sobre un resumen agregado autorizado. Faltan conversación persistente, archivos, imágenes y herramientas de acción.
+- Quedan integraciones, SMTP/notificaciones, recuperación de contraseña, invitaciones, pruebas de carga, monitoreo, staging y ensayo de restauración.
+- Falta trasladar y conciliar registros y archivos históricos de ADT, incluidas solicitudes web y referencias de trabajadores. Solo se importaron las diez tarifas indicadas; no se migraron clientes, facturas, horas ni archivos. ADT sigue siendo la fuente vigente.
 
-- Implementar Horas y solicitudes, Manual de fabricación, Permisos, Inventario, Mapa de zonas, Instalaciones, Portal del cliente, IA, Nuevo estimado 3D, Pérgola sin 3D, Estimados web y Precios.
-- Completar la paridad de los módulos ya implementados: firmas, aceptación del cliente, documentos, ajustes de facturas, calendarios de anticipos e integraciones.
-- Recuperación de contraseña, invitaciones, SMTP y notificaciones. El registro actual utiliza Supabase Auth y sus límites de correo.
-- Pruebas autenticadas, observabilidad, entornos separados y ensayo de restauración.
-- Exportar e importar los datos y archivos de ADT; conciliar referencias, cantidades e importes antes del corte.
+## Recorrido recomendado de auditoría
 
-El propietario eligió All Decor Terrace como destino de la migración. Se verificó su identificador sin confundirla con la empresa de piscinas. El inventario de tablas de ADT es de solo lectura y está fuera del repositorio público; **no constituye un respaldo de sus registros ni una migración completada**. No se han importado datos de ADT ni alterado sus registros.
-
-Antes de utilizar Supabase CLI `db push`, reconciliar su historial con las siete migraciones aplicadas manualmente. No volver a ejecutar la migración inicial ni eliminar tablas para retirar una interfaz.
+1. Revisar Precios y su historial en All Decor Terrace.
+2. Crear cliente y diseño, guardar, reabrir, cambiar medidas y generar un estimado.
+3. Publicar propuesta web, abrir su enlace en otra sesión, responder y revocar.
+4. Aprobar internamente el estimado, registrar un pago externo de prueba y revisar factura/proyecto. No usar pagos reales como prueba.
+5. Crear permiso, manual, instalación y movimientos de inventario; revisar conflictos e historial.
+6. Vincular un trabajador, registrar horas, solicitar corrección y cerrar una semana revisada.
+7. Verificar que el portal no muestra otros clientes y que un usuario de permisos limitados tampoco obtiene otros módulos mediante IA.
+8. Repetir el aislamiento en la segunda empresa y conciliar diferencias con ADT antes de migrar registros.

@@ -34,6 +34,6 @@ Los administradores cierran semanas que comienzan en lunes, según el horario de
 
 ## Verificación y despliegue
 
-`tests/workspaces.test.ts` ejecuta las migraciones 008–009 junto con sus dependencias en PostgreSQL/PGlite. Cubre referencias de empresa, RLS, permisos por módulo, stock, reintentos/reversos, horarios, revisiones, documentos privados, solicitudes, semanas cerradas y reloj. El conjunto del repositorio pasa 82 comprobaciones. Lint, tipos y compilación local pasaron.
+`tests/workspaces.test.ts` ejecuta las migraciones 008–009 junto con sus dependencias en PostgreSQL/PGlite. Cubre referencias de empresa, RLS, permisos por módulo, stock, reintentos/reversos, horarios, revisiones, documentos privados, solicitudes, semanas cerradas y reloj. La entrega de este grupo pasó 82 comprobaciones; la entrega posterior de los 23 módulos amplió el conjunto a 97. Lint, tipos y compilación local pasaron.
 
-El despliegue y el ensayo SQL remoto se registrarán al aplicar las migraciones. La validación de navegador autenticado permanece pendiente; las pruebas de PostgreSQL no la sustituyen. No se importaron datos ni se modificaron registros de ADT.
+Las migraciones 008–009 se aplicaron. La carpeta a472306 se preparó, pero LiteSpeed conservó el proceso anterior; la primera publicación comprobada de estos módulos corresponde a 72267e8, tras reiniciar la raíz activa. El ensayo remoto de inventario, horas y cierre semanal terminó con ROLLBACK; se verificaron seis tablas con RLS, sin lectura anónima ni escritura directa. La validación de navegador autenticado permanece pendiente; las pruebas de PostgreSQL no la sustituyen. No se importaron datos ni se modificaron registros de ADT.

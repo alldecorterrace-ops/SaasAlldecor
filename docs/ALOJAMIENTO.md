@@ -17,6 +17,8 @@ NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS=--max-old-space-size=1536 RAYON_NUM_THREA
 
 No recompilar sobre una carpeta que esté sirviendo usuarios. Para futuras entregas, preparar una carpeta de versión nueva con el commit revisado, su entorno privado y sus dependencias; compilar y verificar antes de cambiar PassengerAppRoot. Conservar la carpeta anterior y su configuración como punto de retorno. Reiniciar solo la aplicación del SaaS mediante su archivo `tmp/restart.txt`.
 
+En la actualización a `72267e8`, LiteSpeed conservó el proceso de la raíz anterior aunque PassengerAppRoot ya había cambiado. Fue necesario tocar `tmp/restart.txt` en **la raíz del proceso anterior** para que arrancara el de la nueva carpeta. Hubo respuestas 503 durante ese reinicio breve. No basta con verificar `.htaccess`: comprobar la ruta del proceso `lsnode` activo y una ruta que solo exista en la entrega nueva. La raíz activa verificada es la carpeta de versión `saas-releases/72267e8`; la configuración anterior y las carpetas previas se conservaron fuera del directorio público.
+
 La entrada pública configura PassengerAppRoot, PassengerAppType=node, PassengerStartupFile=server.cjs, PassengerNodejs con la ruta absoluta a Node 22 y PassengerAppEnv=production. Desactiva los listados de directorio y las páginas de error detalladas. No modificar la configuración de ADT ni de otras aplicaciones del hosting.
 
 ## Autenticación y comprobaciones
@@ -27,6 +29,7 @@ La entrada pública configura PassengerAppRoot, PassengerAppType=node, Passenger
 - `.env.local` y `.git/config`: HTTP 403; `package.json`: 404. No se publican los archivos del proyecto como contenido estático.
 - Callback sin código: redirección al login con mensaje de enlace inválido. No se ha enviado un nuevo correo real como prueba del despliegue.
 - Pantalla de login revisada visualmente en navegador con estilos cargados. Pendiente recorrido autenticado de los módulos nuevos.
+- Entrega `72267e8`: login, acceso del cliente y página de cliente sin sesión responden 200; las rutas nuevas de Precios, Diseños, Solicitudes web, Propuestas, Portal e IA redirigen al login sin sesión. Un formulario inexistente responde 404. El navegador confirmó que un código privado inválido muestra el mensaje de rechazo, sin conceder acceso.
 
 El alojamiento compartido tiene límites de recursos y no se ha sometido a una prueba de carga. Quedan pendientes monitoreo, alertas, copias programadas, ensayo de restauración y un entorno de staging independiente. No interpretar una respuesta HTTP correcta como prueba de capacidad o de todos los flujos de negocio.
 
