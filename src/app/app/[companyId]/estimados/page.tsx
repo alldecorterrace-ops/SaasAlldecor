@@ -59,11 +59,16 @@ export default async function Estimates({
             Propuestas con detalle, importes y revisiones conservadas.
           </p>
         </div>
-        {canAccess(member, "fin-estimados", "write") && (
-          <Button asChild>
-            <Link href={`${base}/nuevo`}>Nuevo estimado</Link>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" asChild>
+            <Link href={`${base}/historico`}>Histórico ADT</Link>
           </Button>
-        )}
+          {canAccess(member, "fin-estimados", "write") && (
+            <Button asChild>
+              <Link href={`${base}/nuevo`}>Nuevo estimado</Link>
+            </Button>
+          )}
+        </div>
       </div>
       <form className="card grid gap-4 mb-5 sm:grid-cols-2 xl:grid-cols-[2fr_1fr_1fr_1fr_auto]">
         <label className="field">
