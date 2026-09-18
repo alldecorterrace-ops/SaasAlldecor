@@ -125,3 +125,8 @@ cambiar la carga. Los resultados y cantidades están en el anexo privado.
 conflicto tardío y la incorporación posterior de registros nuevos válidos.
 La ampliación pasó localmente las 143 pruebas, lint, tipos y build. Se mantiene
 como herramienta offline; no requiere desplegar otra versión de la aplicación.
+
+La ampliación de [relaciones del histórico](MIGRACION-HISTORICO.md) conserva
+también clientes, proyectos, facturas, pagos, documentos y contratos. Comprueba
+las correspondencias exactas, aísla relaciones contradictorias y prepara la
+clasificación de consulta histórica sin inventar partidas.

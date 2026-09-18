@@ -9,7 +9,7 @@ Ningún paso se cierra solamente porque una página responda o el código compil
 | --- | --- | --- |
 | 1. Auditoría de los 23 módulos | Pruebas de negocio existentes; auditoría adicional con todas las migraciones, permisos globales, aislamiento, flujo financiero e historial. Comprobación real de RLS y ensayo financiero en Supabase con ROLLBACK. | Recorridos autenticados de escritorio y móvil, archivos reales de prueba y comparación de acciones con ADT. |
 | 2. Paridad funcional | Catálogo completo y primeras implementaciones; diferencias enumeradas en ALCANCE-Y-PARIDAD y ESTADO-IMPLEMENTACION. | Configurador avanzado, catálogo/cálculos, expedientes, mapa/GPS, horas/Workforce, portal, IA e integraciones. Cada diferencia necesita implementación y evidencia. |
-| 3. Migración | Inventario actualizado del origen; respaldo privado de base y archivos; restauración de la base en un destino aislado; diagnóstico de relaciones y estados históricos. Plan de estimados y carga repetible en PostgreSQL local, conservando originales y rechazando conflictos y otra empresa. Evidencia de redondeo documentada sin cambiar importes. | Resolver la presentación de documentos sin partidas; completar referencias y correspondencias; implementar el importador de producción con conciliación. |
+| 3. Migración | Respaldo privado y restauración aislada del origen. Carga local repetible de ocho entidades del histórico; originales conservados, correspondencias exactas y relaciones contradictorias aisladas. Plan de consulta de estimados históricos sin inventar partidas; evidencia de redondeo sin cambiar importes. | Implementar consulta histórica y permisos de producción; revisar referencias ausentes, contradictorias y fuera del alcance de la copia; completar conciliación e importador de producción. |
 | 4. Acceso y correo | Recuperación publicada y confirmada por el propietario. Invitaciones internas con aceptación por correo confirmado, vencimiento y revocación; aceptación con segunda cuenta confirmada por el propietario y en Supabase. Migraciones 015–016 aplicadas; aviso automático publicado y correo técnico recibido en Recibidos, confirmado por el propietario. | Crear una invitación nueva desde la pantalla autenticada y comprobar su aviso e historial; notificaciones de negocio. |
 | 5. Operación estable | Compilaciones fuera de la carpeta activa; respaldo del origen y ensayo de restauración de 208 tablas. Endpoint de salud con consulta anónima de solo lectura y sin información privada. | Monitoreo externo activo, respaldos programados de Supabase y sus objetos, restauración del destino, staging completo y prueba de carga controlada. |
 | 6. Retirar instalación anterior | No se ha retirado; la compilación auxiliar detenida no era el sitio activo. | Completar los cinco pasos anteriores, definir el corte de escrituras, conciliar el delta y conservar una recuperación probada. |
@@ -126,6 +126,12 @@ repetirla no duplicó registros. Las pruebas comprueban aislamiento de empresa,
 rechazo de cambios del origen y reversión del lote ante conflictos. El diagnóstico
 de redondeo conserva las marcas de revisión y los importes históricos. No se ha
 importado este histórico a Supabase ni cerrado el paso de migración.
+
+El [ensayo de relaciones del histórico](MIGRACION-HISTORICO.md) incorpora ocho
+entidades en una transacción local con claves foráneas por empresa. Conserva
+referencias ausentes sin inventar destinos y bloquea relaciones que contradicen
+el cliente de un documento. El plan distingue datos históricos de consulta de
+operaciones actuales; esa presentación todavía requiere implementación en el SaaS.
 
 La sesión de la aplicación accesible al agente sigue cerrada. El propietario
 confirmó que trabaja desde otra PC y pidió continuar con tareas independientes;
