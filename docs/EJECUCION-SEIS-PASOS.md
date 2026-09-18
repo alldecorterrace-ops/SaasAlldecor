@@ -124,8 +124,9 @@ escrituras en bases de negocio. Véase [Ensayo de estimados](MIGRACION-ESTIMADOS
 La carga posterior en PostgreSQL local aislado conservó originales y hashes;
 repetirla no duplicó registros. Las pruebas comprueban aislamiento de empresa,
 rechazo de cambios del origen y reversión del lote ante conflictos. El diagnóstico
-de redondeo conserva las marcas de revisión y los importes históricos. No se ha
-importado este histórico a Supabase ni cerrado el paso de migración.
+de redondeo conserva las marcas de revisión y los importes históricos. Ese ensayo
+no escribió en Supabase. La carga posterior de estimados se documenta debajo;
+el paso completo de migración permanece abierto.
 
 El [ensayo de relaciones del histórico](MIGRACION-HISTORICO.md) incorpora ocho
 entidades en una transacción local con claves foráneas por empresa. Conserva
