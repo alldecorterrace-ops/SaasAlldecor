@@ -18,11 +18,12 @@ Se contrastó el catálogo de 23 módulos y la presencia de siete módulos propi
 
 La estructura inicial y las ampliaciones comerciales están versionadas en Supabase SQL. La aplicación usa la clave pública y el usuario autenticado. El propietario confirmó el acceso remoto y creó empresas. Las pruebas PostgreSQL verifican aislamiento, permisos y conversión; los módulos comerciales nuevos aún requieren el recorrido autenticado completo de navegador.
 
-La aplicación está publicada en [saas.alldecorterrace.com](https://saas.alldecorterrace.com/login), en un subdominio nuevo y una carpeta separada del hosting existente. No depende de un túnel local. La separación de entornos sigue pendiente. Se copiaron diez tarifas de venta a All Decor Terrace; los registros y archivos operativos siguen pendientes de migración. No se modificaron los registros de ADT.
+La aplicación está publicada en [app.alldecorpatio.com](https://app.alldecorpatio.com/login), en el segundo hosting del propietario. La instalación anterior se conserva como opción de retorno. No depende de un túnel local. La separación de entornos sigue pendiente. Se copiaron diez tarifas de venta a All Decor Terrace; los registros y archivos operativos siguen pendientes de migración. No se modificaron los registros de ADT.
 
 ## Documentación
 
 - [Estado, evidencia y próximos pasos](docs/ESTADO-IMPLEMENTACION.md)
+- [Ejecución y cierre de los seis pasos](docs/EJECUCION-SEIS-PASOS.md)
 - [Leads, Productos y Actividad](docs/COMERCIAL.md)
 - [Estimados: funciones y validación](docs/ESTIMADOS.md)
 - [Facturas, proyectos, pagos, trabajadores y gastos](docs/FINANZAS-Y-OPERACIONES.md)

@@ -1,6 +1,6 @@
 # Migración y verificación
 
-Estado: procedimiento propuesto; **no se ha exportado ni importado la base real**.
+Estado al 18 de septiembre de 2026: respaldo de la base real y archivos del origen preparado, con restauración de 208 tablas MySQL en una base aislada. **Los registros históricos todavía no se han importado al SaaS.** La inspección de la copia detectó detalles JSON y estados históricos que requieren mapeo explícito. Véase [ejecución de los seis pasos](EJECUCION-SEIS-PASOS.md).
 
 ## Invariantes
 

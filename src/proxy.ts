@@ -22,5 +22,13 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 export const config = {
-  matcher: ["/app/:path*", "/empresas", "/login", "/registro", "/auth/:path*"],
+  matcher: [
+    "/app/:path*",
+    "/empresas",
+    "/login",
+    "/registro",
+    "/auth/:path*",
+    "/recuperar-contrasena",
+    "/actualizar-contrasena",
+  ],
 };

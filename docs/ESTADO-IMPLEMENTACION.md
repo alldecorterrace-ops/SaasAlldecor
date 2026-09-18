@@ -27,7 +27,7 @@ Documentación: [Comercial](COMERCIAL.md), [Estimados](ESTIMADOS.md), [Finanzas]
 
 El propietario confirmó previamente el acceso remoto y creó empresas. **Los nuevos flujos todavía requieren un recorrido con una sesión autenticada de la aplicación en navegador.** La sesión de Supabase, las pruebas SQL y la respuesta del proveedor IA no sustituyen ese recorrido.
 
-La aplicación usa el [dominio permanente](https://saas.alldecorterrace.com/login) sobre el hosting existente. Las entregas se compilan fuera de la carpeta activa y conservan la versión anterior. Véase [Alojamiento](ALOJAMIENTO.md).
+La aplicación usa el [dominio permanente](https://app.alldecorpatio.com/login) sobre el segundo hosting del propietario. Las entregas se compilan fuera de la carpeta activa y conservan la versión anterior. Véase [Alojamiento](ALOJAMIENTO.md) y el [seguimiento de los seis pasos](EJECUCION-SEIS-PASOS.md).
 
 La publicación `72267e8` se comprobó mediante la raíz del proceso activo, HTTP y navegador: páginas públicas disponibles, rutas privadas dirigidas al login y código privado inválido rechazado. No se accedió a los módulos con la sesión del propietario en esta comprobación.
 
@@ -37,7 +37,7 @@ La publicación `72267e8` se comprobó mediante la raíz del proceso activo, HTT
 - Zonas es esquemático: faltan calles, rutas y GPS de marcaciones. Horas no incluye nómina, horas extra, auto-cierre ni recordatorios.
 - Portal muestra proyectos y saldos; faltan documentos, fotos, mensajes y cobros en línea. La aceptación por enlace no equivale a firma certificada.
 - IA admite preguntas independientes sobre un resumen agregado autorizado. Faltan conversación persistente, archivos, imágenes y herramientas de acción.
-- Quedan integraciones, SMTP/notificaciones, recuperación de contraseña, invitaciones, pruebas de carga, monitoreo, staging y ensayo de restauración.
+- Quedan integraciones, SMTP/notificaciones, invitaciones, pruebas de carga, monitoreo y staging. La recuperación de contraseña ya tiene implementación y pruebas locales; falta comprobar el correo y el cambio real. Se restauró una copia MySQL del origen; falta ensayar la restauración de PostgreSQL y objetos del SaaS.
 - Falta trasladar y conciliar registros y archivos históricos de ADT, incluidas solicitudes web y referencias de trabajadores. Solo se importaron las diez tarifas indicadas; no se migraron clientes, facturas, horas ni archivos. ADT sigue siendo la fuente vigente.
 
 ## Recorrido recomendado de auditoría

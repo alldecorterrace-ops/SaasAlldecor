@@ -118,6 +118,14 @@ export function AuthForm({
               </SubmitButton>
             </div>
           </form>
+          {!registering && (
+            <Link
+              className="mt-5 block text-center text-sm font-semibold text-primary underline"
+              href="/recuperar-contrasena"
+            >
+              Olvidé mi contraseña
+            </Link>
+          )}
           <p className="mt-7 text-center text-sm text-muted-foreground">
             {registering ? "¿Ya tienes una cuenta?" : "¿Primera vez aquí?"}{" "}
             <Link

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { authCallbackPath } from "@/lib/password-recovery";
 export async function GET(request: Request) {
   const url = new URL(request.url),
     code = url.searchParams.get("code");
@@ -8,7 +9,10 @@ export async function GET(request: Request) {
   if (code) {
     const db = await createClient();
     const { error } = await db.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(new URL("/empresas", origin));
+    if (!error)
+      return NextResponse.redirect(
+        new URL(authCallbackPath(url.searchParams.get("next")), origin),
+      );
   }
   return NextResponse.redirect(
     new URL(
