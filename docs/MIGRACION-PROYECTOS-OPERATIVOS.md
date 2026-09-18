@@ -83,3 +83,17 @@ Se verificó la revisión del proceso activo y pasaron las comprobaciones HTTP
 de salud, recuperación, clientes, proyectos y protección de documentos. La
 pantalla nueva redirige al login en el navegador controlado; su auditoría visual
 autenticada continúa pendiente.
+
+La entrega `8a9e5f5` y la migración 024 incorporan el estado `PENDIENTE`.
+Pasaron 210 pruebas, lint, tipos, compilación local y
+[GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35385694553),
+además de la compilación del hosting. Se verificó la revisión del proceso activo.
+El ensayo privado comprobó aislamiento, reversión ante fallos tardíos, repetición
+y conservación de ediciones posteriores. El ensayo en Supabase se revirtió
+antes de aplicar el plan definitivo.
+
+La auditoría posterior contrastó todos los campos y vínculos incorporados y la
+conservación de registros anteriores, correspondencias ajenas al lote, originales
+y planes iniciales. Facturas, pagos y aprobaciones permanecieron intactos. Se
+comprobó la lectura bajo la identidad existente del propietario y la protección
+HTTP de las rutas. La prueba visual con sesión real sigue pendiente.
