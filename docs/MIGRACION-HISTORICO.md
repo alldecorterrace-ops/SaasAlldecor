@@ -5,7 +5,8 @@ facturas, pagos, documentos y contratos. Trabaja exclusivamente con una copia
 restaurada y PostgreSQL local aislado. No carga esas entidades en las tablas del
 SaaS ni activa cobros, aprobaciones, firmas, correos o accesos de clientes.
 Las cargas posteriores de consulta histórica se documentan por separado en
-[Estimados](HISTORICO-ESTIMADOS.md) y [Clientes, proyectos, facturas y pagos](HISTORICO-NEGOCIO.md).
+[Estimados](HISTORICO-ESTIMADOS.md), [Clientes, proyectos, facturas y pagos](HISTORICO-NEGOCIO.md)
+y [Documentos y contratos](HISTORICO-DOCUMENTOS.md).
 
 ## Fuente privada
 
@@ -61,7 +62,9 @@ La [consulta histórica de estimados](HISTORICO-ESTIMADOS.md) implementa esta
 presentación y está publicada con permisos de empresa y módulo en servidor.
 La carga de estimados usa un modelo de solo lectura separado de las operaciones
 actuales. Clientes, proyectos, facturas y pagos también tienen una carga histórica
-separada aplicada. Documentos y contratos continúan pendientes de revisión y carga.
+separada aplicada. Documentos y contratos están conservados en un archivo de
+consulta; sus referencias pendientes permanecen sin adjuntar y reservadas a
+administradores. La resolución de esas referencias sigue abierta.
 
 ## Ejecución reproducible
 
@@ -104,9 +107,10 @@ Las pruebas sintéticas de `tests/migration-history.test.ts` cubren ciclos,
 aislamiento, conservación, identidades duplicadas, referencias ausentes,
 contradicciones, rechazo de destinos inexistentes por PostgreSQL, repetición y
 reversión ante un conflicto tardío. La auditoría de pantallas autenticadas y la
-carga de documentos y contratos en Supabase siguen pendientes. La publicación y
+resolución de referencias y archivos faltantes siguen pendientes. La publicación y
 las cargas posteriores se documentan en [Estimados](HISTORICO-ESTIMADOS.md) y
-[Clientes, proyectos, facturas y pagos](HISTORICO-NEGOCIO.md).
+[Clientes, proyectos, facturas y pagos](HISTORICO-NEGOCIO.md) y
+[Documentos y contratos](HISTORICO-DOCUMENTOS.md).
 
 La entrega pasó localmente las 154 pruebas, lint, comprobación de tipos y
 compilación. El código de esta entrega es offline y no cambia la aplicación

@@ -56,3 +56,29 @@ La revisión visual y la descarga con una sesión real son evidencia adicional;
 no se sustituyen por pruebas locales, un build o una respuesta HTTP sin sesión.
 La migración operativa, resolución de pendientes y delta posterior al respaldo
 siguen siendo trabajos separados. Conservar ADT y la versión previa del SaaS.
+
+## Entrega publicada
+
+El 18 de septiembre de 2026 se aplicó la migración 019 y se cargó el archivo por
+lotes administrativos. La comparación remota de originales, proyecciones,
+referencias e identidades de archivo coincidió con el ensayo. No se adjuntaron
+casos pendientes ni se modificaron los registros actuales. Se comprobaron RLS,
+lectura del propietario, denegación sin identidad y restricciones de escritura,
+originales privados y ejecución del importador.
+
+Los PDF se transfirieron mediante la terminal autenticada a un directorio privado.
+El SHA-256 del paquete coincidió con el origen; cada PDF disponible coincidió en
+tamaño y hash con su manifiesto. Los faltantes y registros sin PDF conservaron
+sus estados explícitos. No se regeneraron archivos ni se validó jurídicamente
+el estado de las firmas.
+
+Entrega `4f77244`: pasaron las 177 pruebas, lint, tipos y build locales y en
+[GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35375235390).
+El servidor compiló fuera de la carpeta activa; se conservó `8993867` y una copia
+de su configuración. Tras activar la entrega pasaron las comprobaciones de
+salud, login, recuperación, redirección de pantallas privadas, rechazo de
+descargas sin sesión y protección de archivos internos.
+
+La revisión visual y una descarga con sesión real siguen pendientes: el navegador
+disponible para el agente abre el login. Esto no cierra la auditoría completa de
+los módulos ni la migración operativa.
