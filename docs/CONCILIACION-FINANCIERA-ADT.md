@@ -136,3 +136,13 @@ conciliación, incluido el filtro nuevo. Se conserva `054ae4e` y una copia de la
 configuración para reversión. Una consulta independiente de solo lectura confirmó
 las coincidencias del ensayo privado. No hubo migraciones ni cambios financieros.
 La prueba visual con sesión real continúa pendiente.
+
+La entrega `228d54c` añade la revisión del detalle propio mediante la migración
+023. Pasaron 210 pruebas, lint, tipos, compilación local y
+[GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35384442144),
+además de la compilación del hosting. El ensayo SQL revertido y la consulta
+posterior a la instalación devolvieron el mismo diagnóstico. Se comprobó el
+rechazo de acceso anónimo por la API y nueve rutas de salud y protección.
+El proceso activo corresponde a esta entrega; se conserva `29119c0` con copia
+privada de la configuración para reversión. No se modificaron importes ni
+registros operativos. La comprobación visual autenticada sigue pendiente.
