@@ -14,12 +14,26 @@ export function HistoricalNavigation({
       className="flex flex-wrap gap-3 text-sm mb-6"
     >
       {canAccess(member, "fin-estimados") && (
-        <Link
-          className="text-primary underline"
-          href={`/app/${companyId}/estimados/historico`}
-        >
-          Estimados históricos
-        </Link>
+        <>
+          <Link
+            className="text-primary underline"
+            href={`/app/${companyId}/estimados/historico`}
+          >
+            Estimados históricos
+          </Link>
+          <Link
+            className="text-primary underline"
+            href={`/app/${companyId}/archivo/documents`}
+          >
+            Documentos históricos
+          </Link>
+          <Link
+            className="text-primary underline"
+            href={`/app/${companyId}/archivo/contracts`}
+          >
+            Contratos históricos
+          </Link>
+        </>
       )}
       {historicalKinds
         .filter((kind) => canAccess(member, historicalSections[kind].module))
