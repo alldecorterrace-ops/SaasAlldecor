@@ -36,6 +36,64 @@ const item = (extra = {}) => ({
   ...extra,
 });
 
+test("small line differences require corroborating saved and engine summaries", () => {
+  const payload = {
+    subtotal: 10,
+    total: 10,
+    discount: 0,
+    taxes: 0,
+    items: [
+      { price: 9.99 },
+      {
+        price: 0,
+        data: {
+          origen: "motor-sin-3d",
+          totales: {
+            partidas: 10,
+            extras: 0,
+            subtotal: 10,
+            descuento: 0,
+            impuesto: 0,
+            total: 10,
+          },
+        },
+      },
+    ],
+  };
+  const make = (value: unknown) =>
+    planEstimateMigration(
+      snapshot([estimate({ source_json: JSON.stringify(value) })]),
+      company,
+    ).records[0];
+  const confirmed = make(payload);
+  assert.equal(
+    confirmed.reconciliation.roundingEvidence,
+    "consistent_with_source_line_rounding",
+  );
+  assert.equal(confirmed.reconciliation.differenceCents, "-1");
+  assert.equal(confirmed.reconciliation.historicalAmountsChanged, false);
+  assert.ok(confirmed.reviewReasons.includes("historical_total_mismatch"));
+  assert.equal(confirmed.original.estimate.total, "10.00");
+  assert.equal(
+    make({ ...payload, items: [{ price: 9.99 }] }).reconciliation
+      .roundingEvidence,
+    null,
+  );
+  assert.equal(
+    make({ ...payload, total: 11 }).reconciliation.roundingEvidence,
+    null,
+  );
+  const badEngine = structuredClone(payload);
+  badEngine.items[1].data!.totales.total = 11;
+  assert.equal(make(badEngine).reconciliation.roundingEvidence, null);
+  const larger = structuredClone(payload);
+  larger.items[0].price = 9.97;
+  assert.equal(make(larger).reconciliation.roundingEvidence, null);
+  const twoEngines = structuredClone(payload);
+  twoEngines.items.push(twoEngines.items[1]);
+  assert.equal(make(twoEngines).reconciliation.roundingEvidence, null);
+});
+
 test("historical money uses exact cents and never silently rounds", () => {
   assert.equal(exactCents("99999999999999.99"), 9999999999999999n);
   assert.equal(exactCents("0.10"), 10n);

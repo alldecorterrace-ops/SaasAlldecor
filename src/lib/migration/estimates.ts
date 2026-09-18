@@ -149,6 +149,45 @@ export function planEstimateMigration(input: unknown, companyId: string) {
           : null;
       if (calculated !== null && total !== null && calculated !== total)
         reasons.push("historical_total_mismatch");
+      const savedSubtotal = exactCents(json?.subtotal);
+      const savedTotal = exactCents(json?.total);
+      const summaryMatches =
+        savedSubtotal !== null &&
+        total !== null &&
+        discount !== null &&
+        taxes !== null &&
+        savedTotal === total &&
+        exactCents(json?.discount) === discount &&
+        exactCents(json?.taxes) === taxes &&
+        savedSubtotal - discount + taxes === total;
+      const engines = sourceItems
+        .map((v) => object(object(v)?.data))
+        .filter((v) => v?.origen === "motor-sin-3d" && object(v.totales));
+      const engine = engines.length === 1 ? engines[0] : null;
+      const engineTotals = object(engine?.totales);
+      const engineParts = exactCents(engineTotals?.partidas);
+      const engineExtras = exactCents(engineTotals?.extras);
+      const engineMatches =
+        summaryMatches &&
+        engineTotals !== null &&
+        exactCents(engineTotals.subtotal) === savedSubtotal &&
+        exactCents(engineTotals.total) === total &&
+        exactCents(engineTotals.descuento) === discount &&
+        exactCents(engineTotals.impuesto) === taxes &&
+        engineParts !== null &&
+        engineExtras !== null &&
+        engineParts + engineExtras === savedSubtotal;
+      const delta =
+        calculated !== null && total !== null ? calculated - total : null;
+      const roundingSupported =
+        itemSource === "source_json" &&
+        engineMatches &&
+        !reasons.includes("invalid_item_amount") &&
+        !reasons.includes("invalid_document_amount") &&
+        delta !== null &&
+        delta !== 0n &&
+        delta >= -2n &&
+        delta <= 2n;
       // A reconciliation result is evidence, never authorization to issue/approve
       // an estimate, invoice, project, payment, or overwrite a historical record.
       return {
@@ -168,6 +207,14 @@ export function planEstimateMigration(input: unknown, companyId: string) {
             calculated !== null && total !== null
               ? (calculated - total).toString()
               : null,
+          savedSubtotalCents: savedSubtotal?.toString() ?? null,
+          sourceSummaryMatchesTotal: summaryMatches,
+          engineSummaryMatches: engineMatches,
+          roundingEvidence: roundingSupported
+            ? "consistent_with_source_line_rounding"
+            : null,
+          // Evidence only: never add an adjustment line or clear review flags.
+          historicalAmountsChanged: false,
         },
         reviewReasons: [...new Set(reasons)],
       };
@@ -191,6 +238,9 @@ export function planEstimateMigration(input: unknown, companyId: string) {
       withoutItems: records.filter((r) => !r.effectiveLines.length).length,
       requiresReview: records.filter((r) => r.reviewReasons.length).length,
       reconciled: records.filter((r) => !r.reviewReasons.length).length,
+      roundingSupported: records.filter(
+        (r) => r.reconciliation.roundingEvidence !== null,
+      ).length,
     },
     records,
   };
