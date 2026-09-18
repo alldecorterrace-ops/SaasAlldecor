@@ -59,5 +59,22 @@ archivos de Supabase Storage requieren una copia independiente, como documenta
 [Supabase sobre respaldos](https://supabase.com/docs/guides/platform/backups).
 
 La confirmación del propietario de que abre el dominio nuevo se registra como
-evidencia de acceso. El equipo de trabajo todavía tuvo una resolución DNS local
-fallida; las comprobaciones dirigidas a la IP mantuvieron la validación TLS.
+evidencia de acceso. La resolución DNS del equipo de trabajo se recuperó y se verificó el formulario público en navegador; las comprobaciones dirigidas a la IP también mantuvieron la validación TLS.
+
+## Publicación de recuperación y salud
+
+El 18 de septiembre se publicó `c328de8` en el hosting de destino, conservando
+la entrega anterior y un respaldo privado de su configuración. Las 108 pruebas,
+lint, tipos y build pasaron localmente y en
+[GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35359909505).
+
+Después de activar el nuevo proceso: login y recuperación respondieron 200,
+actualización de contraseña sin sesión redirigió al login, y `/api/health`
+respondió 200 con `{"status":"ok"}` y `Cache-Control: no-store`. El navegador
+mostró el enlace y el formulario publicados. Se añadió el callback exacto de
+recuperación a Supabase, manteniendo los anteriores.
+
+El propietario creó `notificacione@alldecorpatio.com` y eligió `SaasAlldecor`
+como nombre visible. SMTP quedó preparado con el servidor y puerto indicados
+por cPanel; sigue pendiente confirmar el guardado de su contraseña y comprobar
+entrega real. No se ha cambiado ninguna contraseña real durante estas pruebas.
