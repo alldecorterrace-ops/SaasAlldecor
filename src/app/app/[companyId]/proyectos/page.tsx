@@ -12,7 +12,7 @@ export default async function Projects({
   searchParams: Promise<{ q?: string; status?: string; page?: string }>;
 }) {
   const { companyId } = await params,
-    { db } = await requireModule(companyId, "fin-proyectos"),
+    { db, member } = await requireModule(companyId, "fin-proyectos"),
     s = await searchParams,
     q = (s.q ?? "").trim().slice(0, 100),
     status = Object.hasOwn(projectStatuses, s.status ?? "") ? s.status! : "",
@@ -42,8 +42,15 @@ export default async function Projects({
             Histórico ADT
           </Link>
         </Button>
+        {(member.role === "owner" || member.role === "admin") && (
+          <Button asChild variant="outline" className="mt-4 ml-3">
+            <Link href={`/app/${companyId}/proyectos/migracion`}>
+              Revisar migración
+            </Link>
+          </Button>
+        )}
         <p className="mt-2 text-sm text-muted-foreground">
-          Expedientes creados desde estimados aprobados, con fechas y
+          Proyectos actuales y expedientes incorporados desde ADT, con fechas y
           seguimiento de ejecución.
         </p>
       </div>

@@ -5,10 +5,13 @@ Clientes, Proyectos y Facturas se puede abrir el histórico correspondiente; las
 secciones históricas comparten navegación. El detalle permite seguir referencias
 exactas hacia cliente, proyecto, factura, pagos y estimado según los permisos.
 
-Estos son registros de la copia respaldada, en modo de consulta. No se convierten
-en clientes editables ni generan aprobaciones, facturas, cobros, asientos o avisos
-actuales. Los estados, fechas e importes originales se conservan. La migración
-operativa y el delta posterior al respaldo siguen pendientes.
+Estos son registros de la copia respaldada, en modo de consulta. Sus originales
+no se modifican ni generan aprobaciones, facturas, cobros, asientos o avisos
+actuales. Las migraciones operativas separadas pueden crear copias editables
+enlazadas, manteniendo estados, fechas e importes originales en el histórico.
+Véanse [Clientes](MIGRACION-CLIENTES-OPERATIVOS.md) y
+[Proyectos](MIGRACION-PROYECTOS-OPERATIVOS.md). La migración financiera y el delta
+posterior al respaldo siguen pendientes.
 
 ## Permisos y conservación
 

@@ -54,7 +54,7 @@ export default async function Project({
         >
           Historial de cambios
         </Link>
-        {canAccess(member, "fin-estimados") && (
+        {p.estimate_id && canAccess(member, "fin-estimados") && (
           <Link
             className="underline"
             href={`/app/${companyId}/estimados/${p.estimate_id}`}
@@ -71,6 +71,27 @@ export default async function Project({
           </Link>
         )}
       </div>
+      {p.historical_project_id && (
+        <aside className="card mb-6 text-sm">
+          <p>
+            Proyecto incorporado desde ADT. Su fecha y estado inicial proceden
+            del respaldo. Consulta el histórico para ver el estimado, los
+            importes y documentos originales.
+          </p>
+          <Link
+            className="text-primary underline block mt-3"
+            href={`/app/${companyId}/historico/projects/${p.historical_project_id}`}
+          >
+            Consultar proyecto original y sus relaciones
+          </Link>
+          {!invoice && (
+            <p className="mt-3">
+              La factura y los pagos históricos todavía requieren conciliación
+              antes de habilitar la programación y el avance a producción.
+            </p>
+          )}
+        </aside>
+      )}
       {invoice && (
         <div className="card mb-6">
           <Link

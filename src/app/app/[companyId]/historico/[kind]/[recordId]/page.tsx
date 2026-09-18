@@ -11,6 +11,7 @@ import {
 import { HistoricalNavigation } from "@/components/historical-navigation";
 import { HistoricalBusinessDetail } from "@/components/historical-business-detail";
 import { customerMigrationReason } from "@/lib/customer-migration";
+import { projectMigrationReason } from "@/lib/project-migration";
 export default async function BusinessHistoryDetail({
   params,
 }: {
@@ -50,6 +51,22 @@ export default async function BusinessHistoryDetail({
     links.push({
       label: "Abrir ficha editable",
       href: `${base}/clientes/${migration.data.customer_id}`,
+    });
+  const projectMigration =
+    kind === "projects"
+      ? await db
+          .from("historical_project_migrations")
+          .select("project_id,state,review_reasons")
+          .eq("company_id", p.companyId)
+          .eq("historical_id", p.recordId)
+          .maybeSingle()
+      : { data: null, error: null };
+  if (projectMigration.error)
+    throw new Error("No se pudo consultar la migración del proyecto.");
+  if (projectMigration.data?.project_id)
+    links.push({
+      label: "Abrir proyecto editable",
+      href: `${base}/proyectos/${projectMigration.data.project_id}`,
     });
   for (const [field, target, label] of [
     ["client_id", "clients", "Cliente original"],
@@ -105,6 +122,18 @@ export default async function BusinessHistoryDetail({
             {(migration.data.review_reasons as string[]).map((reason) => (
               <li key={reason}>{customerMigrationReason(reason)}</li>
             ))}
+          </ul>
+        </aside>
+      )}
+      {projectMigration.data?.state === "review" && (
+        <aside className="card mt-5">
+          <h2 className="font-semibold">Proyecto pendiente de incorporación</h2>
+          <ul className="list-disc pl-5 mt-3 text-sm">
+            {(projectMigration.data.review_reasons as string[]).map(
+              (reason) => (
+                <li key={reason}>{projectMigrationReason(reason)}</li>
+              ),
+            )}
           </ul>
         </aside>
       )}
