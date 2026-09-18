@@ -10,7 +10,7 @@ Ningún paso se cierra solamente porque una página responda o el código compil
 | 1. Auditoría de los 23 módulos | Pruebas de negocio existentes; auditoría adicional con todas las migraciones, permisos globales, aislamiento, flujo financiero e historial. Comprobación real de RLS y ensayo financiero en Supabase con ROLLBACK. | Recorridos autenticados de escritorio y móvil, archivos reales de prueba y comparación de acciones con ADT. |
 | 2. Paridad funcional | Catálogo completo y primeras implementaciones; diferencias enumeradas en ALCANCE-Y-PARIDAD y ESTADO-IMPLEMENTACION. | Configurador avanzado, catálogo/cálculos, expedientes, mapa/GPS, horas/Workforce, portal, IA e integraciones. Cada diferencia necesita implementación y evidencia. |
 | 3. Migración | Inventario actualizado del origen; respaldo privado de base y archivos; restauración de la base en un destino aislado; diagnóstico de relaciones y estados históricos. | Interpretar los detalles JSON, conservar estados adicionales, preparar correspondencias e importación reanudable, ensayar y conciliar antes de trasladar registros al SaaS. |
-| 4. Acceso y correo | Recuperación publicada y confirmada por el propietario. Invitaciones internas con aceptación por correo confirmado, vencimiento y revocación; aceptación con segunda cuenta confirmada por el propietario y en Supabase. Migraciones 015–016 aplicadas; aviso automático implementado. | Publicar y comprobar la recepción real del aviso automático; notificaciones de negocio. |
+| 4. Acceso y correo | Recuperación publicada y confirmada por el propietario. Invitaciones internas con aceptación por correo confirmado, vencimiento y revocación; aceptación con segunda cuenta confirmada por el propietario y en Supabase. Migraciones 015–016 aplicadas; aviso automático publicado y correo técnico recibido en Recibidos, confirmado por el propietario. | Crear una invitación nueva desde la pantalla autenticada y comprobar su aviso e historial; notificaciones de negocio. |
 | 5. Operación estable | Compilaciones fuera de la carpeta activa; respaldo del origen y ensayo de restauración de 208 tablas. Endpoint de salud con consulta anónima de solo lectura y sin información privada. | Monitoreo externo activo, respaldos programados de Supabase y sus objetos, restauración del destino, staging completo y prueba de carga controlada. |
 | 6. Retirar instalación anterior | No se ha retirado; la compilación auxiliar detenida no era el sitio activo. | Completar los cinco pasos anteriores, definir el corte de escrituras, conciliar el delta y conservar una recuperación probada. |
 
@@ -102,4 +102,13 @@ pantallas con sesión real mantienen sus pruebas pendientes.
 La ampliación de correo pasa 127 pruebas, lint, tipos y build locales. La
 migración 016 se aplicó en el destino: RLS activo, sin lectura anónima ni
 escritura directa, y se conservaron las dos empresas y tres membresías.
-Publicación y entrega real pendientes de registrar.
+Entrega `d6fe007` publicada y [GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35364352066)
+aprobado. La compilación del hosting se completó con un trabajador. Se conservó
+`623b273` y su configuración para reversión. Se verificaron la raíz del proceso
+activo, el entorno del correo y 24 comprobaciones HTTP sin fallos.
+
+Un único mensaje técnico, claramente identificado como prueba, fue aceptado por
+el MTA y por el relay del proveedor; el propietario confirmó su llegada a
+Recibidos. No se creó ni se reenvió una invitación ya aceptada. Esta evidencia
+valida el transporte de correo, no reemplaza crear una nueva invitación desde
+Configuración con una sesión real y revisar su historial de envío.

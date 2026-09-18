@@ -48,3 +48,8 @@ El recorrido de una segunda cuenta en navegador se registra por separado.
 reintentos y resultados inciertos. La aceptación con una segunda cuenta fue
 confirmada por el propietario y corroborada en la base remota. La entrega real
 del aviso se documenta separadamente de las pruebas locales.
+
+La entrega `d6fe007` incluye los avisos automáticos. Un correo técnico enviado
+por el mismo transporte llegó a Recibidos, según confirmación del propietario.
+Queda comprobar una invitación nueva desde Configuración con sesión real,
+incluido su estado de envío. El ensayo técnico no creó invitaciones ficticias.
