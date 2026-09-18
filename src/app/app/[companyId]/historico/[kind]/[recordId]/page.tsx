@@ -10,6 +10,7 @@ import {
 } from "@/lib/historical-business";
 import { HistoricalNavigation } from "@/components/historical-navigation";
 import { HistoricalBusinessDetail } from "@/components/historical-business-detail";
+import { customerMigrationReason } from "@/lib/customer-migration";
 export default async function BusinessHistoryDetail({
   params,
 }: {
@@ -34,6 +35,22 @@ export default async function BusinessHistoryDetail({
   if (!data) notFound();
   const base = `/app/${p.companyId}`,
     links: { label: string; href: string }[] = [];
+  const migration =
+    kind === "clients"
+      ? await db
+          .from("historical_customer_migrations")
+          .select("customer_id,state,review_reasons")
+          .eq("company_id", p.companyId)
+          .eq("historical_id", p.recordId)
+          .maybeSingle()
+      : { data: null, error: null };
+  if (migration.error)
+    throw new Error("No se pudo consultar la migración del cliente.");
+  if (migration.data?.customer_id)
+    links.push({
+      label: "Abrir ficha editable",
+      href: `${base}/clientes/${migration.data.customer_id}`,
+    });
   for (const [field, target, label] of [
     ["client_id", "clients", "Cliente original"],
     ["project_id", "projects", "Proyecto original"],
@@ -79,6 +96,18 @@ export default async function BusinessHistoryDetail({
       <HistoricalBusinessDetail
         record={historicalBusinessSchema.parse(data.presentation)}
       />
+      {migration.data?.state === "review" && (
+        <aside className="card mt-5">
+          <h2 className="font-semibold">
+            Pendiente de incorporación al módulo editable
+          </h2>
+          <ul className="list-disc pl-5 mt-3 text-sm">
+            {(migration.data.review_reasons as string[]).map((reason) => (
+              <li key={reason}>{customerMigrationReason(reason)}</li>
+            ))}
+          </ul>
+        </aside>
+      )}
       {!!links.length && (
         <nav
           aria-label="Registros relacionados"

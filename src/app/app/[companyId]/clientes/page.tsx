@@ -52,6 +52,13 @@ export default async function Customers({
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          {(member.role === "owner" || member.role === "admin") && (
+            <Button asChild variant="outline">
+              <Link href={`/app/${companyId}/clientes/migracion`}>
+                Revisar migración
+              </Link>
+            </Button>
+          )}
           <Button asChild variant="outline">
             <Link href={`/app/${companyId}/historico/clients`}>
               Histórico ADT
@@ -161,7 +168,7 @@ export default async function Customers({
             <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted-foreground">
               {q
                 ? "Prueba con otro nombre o revisa el estado seleccionado."
-                : "Los clientes que registres en esta empresa aparecerán aquí. Los datos de ADT todavía no se han migrado."}
+                : "Aquí aparecen los clientes editables de esta empresa. Los registros originales se conservan en Histórico ADT."}
             </p>
           </div>
         )}
