@@ -1,6 +1,11 @@
 import { requireModule } from "@/lib/auth";
 import { randomUUID } from "node:crypto";
-import { InviteMember, RevokeInvitation } from "@/components/invitation-forms";
+import {
+  InviteMember,
+  RevokeInvitation,
+  ResendInvitation,
+} from "@/components/invitation-forms";
+import { invitationMailConfig } from "@/lib/invitation-mail";
 import { canAccess, type Membership } from "@/lib/modules";
 import {
   CompanySettings,
@@ -25,13 +30,28 @@ export default async function Settings({
   const { data: invitations, error: inviteError } = manager
     ? await db
         .from("company_invitations")
-        .select("id,email,status,created_at,expires_at")
+        .select(
+          "id,email,status,created_at,expires_at,invitation_email_attempts(status,created_at)",
+        )
         .eq("company_id", companyId)
         .order("created_at", { ascending: false })
+        .order("created_at", {
+          referencedTable: "invitation_email_attempts",
+          ascending: false,
+        })
+        .limit(1, { referencedTable: "invitation_email_attempts" })
         .limit(100)
     : { data: [], error: null };
   if (inviteError) throw new Error("Invitaciones no disponibles");
   const renderedAt = new Date().getTime();
+  const mailEnabled = Boolean(invitationMailConfig(process.env));
+  const deliveryLabels: Record<string, string> = {
+    processing: "Envío iniciado; resultado sin confirmar",
+    queued: "Aceptado por el servidor de correo",
+    failed: "El servidor no aceptó el aviso",
+    unknown:
+      "Resultado sin confirmar; comprueba la recepción antes de reenviar",
+  };
   const dates = new Intl.DateTimeFormat("es", {
     timeZone: company.timezone,
     dateStyle: "medium",
@@ -57,7 +77,11 @@ export default async function Settings({
           writable={canAccess(member, "config", "write")}
         />
         {manager && (
-          <InviteMember companyId={companyId} requestId={randomUUID()} />
+          <InviteMember
+            companyId={companyId}
+            requestId={randomUUID()}
+            mailEnabled={mailEnabled}
+          />
         )}
       </div>
       {manager && (
@@ -70,6 +94,7 @@ export default async function Settings({
             <div className="grid gap-3">
               {invitations.map((i) => {
                 const expired = new Date(i.expires_at).getTime() <= renderedAt;
+                const delivery = i.invitation_email_attempts?.[0];
                 return (
                   <div
                     key={i.id}
@@ -83,9 +108,19 @@ export default async function Settings({
                           : states[i.status]}{" "}
                         · Vence {dates.format(new Date(i.expires_at))}
                       </p>
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        {delivery
+                          ? `${deliveryLabels[delivery.status]} · ${dates.format(new Date(delivery.created_at))}`
+                          : "Sin intentos de correo registrados"}
+                      </p>
                     </div>
                     {i.status === "pending" && !expired && (
-                      <RevokeInvitation companyId={companyId} id={i.id} />
+                      <div className="grid gap-3">
+                        {mailEnabled && (
+                          <ResendInvitation companyId={companyId} id={i.id} />
+                        )}
+                        <RevokeInvitation companyId={companyId} id={i.id} />
+                      </div>
                     )}
                   </div>
                 );

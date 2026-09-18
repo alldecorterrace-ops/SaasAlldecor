@@ -4,6 +4,7 @@ import {
   createInvitation,
   revokeInvitation,
   respondInvitation,
+  resendInvitation,
   type InvitationState,
 } from "@/app/empresas/invitation-actions";
 import { Input } from "./ui/input";
@@ -14,9 +15,11 @@ import { Feedback } from "./feedback";
 export function InviteMember({
   companyId,
   requestId,
+  mailEnabled,
 }: {
   companyId: string;
   requestId: string;
+  mailEnabled: boolean;
 }) {
   const [state, action, pending] = useActionState(
     createInvitation.bind(null, companyId),
@@ -46,13 +49,15 @@ export function InviteMember({
           />
         </label>
         <div>
-          <SubmitButton>Crear invitación</SubmitButton>
+          <SubmitButton>
+            {mailEnabled ? "Crear y enviar invitación" : "Crear invitación"}
+          </SubmitButton>
         </div>
       </form>
       <p className="text-xs leading-5 text-muted-foreground">
-        Las invitaciones aparecen dentro de la aplicación. El envío automático
-        por correo aún no está habilitado. Comparte el acceso al SaaS con el
-        destinatario.
+        {mailEnabled
+          ? "Enviaremos un aviso al destinatario. La aceptación se realiza dentro de la aplicación con su correo confirmado."
+          : "El correo no está habilitado en este entorno. Comparte el acceso al SaaS con el destinatario."}
       </p>
       <Button
         type="button"
@@ -76,6 +81,24 @@ export function InviteMember({
         </p>
       )}
     </section>
+  );
+}
+export function ResendInvitation({
+  companyId,
+  id,
+}: {
+  companyId: string;
+  id: string;
+}) {
+  const [state, action] = useActionState(
+    resendInvitation.bind(null, companyId, id),
+    {} as InvitationState,
+  );
+  return (
+    <form action={action}>
+      <Feedback {...state} />
+      <SubmitButton>Reenviar aviso</SubmitButton>
+    </form>
   );
 }
 export function RevokeInvitation({

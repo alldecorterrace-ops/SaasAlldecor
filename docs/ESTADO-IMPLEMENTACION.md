@@ -17,7 +17,7 @@ Documentación: [Comercial](COMERCIAL.md), [Estimados](ESTIMADOS.md), [Finanzas]
 ## Evidencia
 
 - Código de los seis módulos finales: `72267e8`. [GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35284534911) completó lint, tipos, 97 comprobaciones y build correctamente.
-- Migraciones 001–015 aplicadas manualmente en SQL Editor. No usar `supabase db push` sin reconciliar antes ese historial.
+- Migraciones 001–016 aplicadas manualmente en SQL Editor. No usar `supabase db push` sin reconciliar antes ese historial.
 - Las siete tablas de esta ampliación tienen RLS y carecen de lectura anónima y escritura directa del rol authenticated. Las funciones públicas de enlaces y formularios validan su alcance antes de devolver o registrar datos.
 - Ensayo real: diseño → estimado → enlace → aceptación anónima con token → solicitud web → lead → revocación, y comprobación de cuota de IA. Terminó con `COMPLETION_SMOKE_PASS_ROLLED_BACK` y cero empresas sintéticas persistidas. No generó facturas a partir de una aceptación pública.
 - Ensayos anteriores comprobaron finanzas, recibos, inventario, horarios, solicitudes y cierre semanal, también con ROLLBACK.
@@ -37,7 +37,7 @@ La publicación `72267e8` se comprobó mediante la raíz del proceso activo, HTT
 - Zonas es esquemático: faltan calles, rutas y GPS de marcaciones. Horas no incluye nómina, horas extra, auto-cierre ni recordatorios.
 - Portal muestra proyectos y saldos; faltan documentos, fotos, mensajes y cobros en línea. La aceptación por enlace no equivale a firma certificada.
 - IA admite preguntas independientes sobre un resumen agregado autorizado. Faltan conversación persistente, archivos, imágenes y herramientas de acción.
-- Quedan integraciones, avisos de invitación por correo, notificaciones de negocio, pruebas de carga, monitoreo y staging. El propietario confirmó que la recuperación de contraseña funciona. Las invitaciones internas tienen creación, aceptación, rechazo, vencimiento y revocación; falta el recorrido con la segunda cuenta. Véase [Invitaciones](INVITACIONES.md). Se restauró una copia MySQL del origen; falta ensayar la restauración de PostgreSQL y objetos del SaaS.
+- Quedan integraciones, notificaciones de negocio, pruebas de carga, monitoreo y staging. El propietario confirmó que la recuperación de contraseña funciona. Las invitaciones internas tienen creación, aceptación, rechazo, vencimiento y revocación; el propietario confirmó la aceptación con la segunda cuenta y se corroboró en Supabase. Se implementó el aviso automático con registro de intentos; su recepción real necesita evidencia separada. Véase [Invitaciones](INVITACIONES.md). Se restauró una copia MySQL del origen; falta ensayar la restauración de PostgreSQL y objetos del SaaS.
 - Falta trasladar y conciliar registros y archivos históricos de ADT, incluidas solicitudes web y referencias de trabajadores. Solo se importaron las diez tarifas indicadas; no se migraron clientes, facturas, horas ni archivos. ADT sigue siendo la fuente vigente.
 
 ## Recorrido recomendado de auditoría
