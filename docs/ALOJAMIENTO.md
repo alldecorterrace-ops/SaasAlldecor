@@ -56,3 +56,17 @@ El alojamiento compartido tiene límites de recursos y no se ha sometido a una p
 ## Retorno
 
 Conservar la versión anterior antes de cada actualización y restaurar su PassengerAppRoot si una comprobación falla. No revertir datos ni eliminar tablas para retirar una versión de interfaz. Revisar compatibilidad de estados y funciones SQL antes de usar código anterior. Durante la primera publicación solo existía el túnel temporal, que ya no está disponible; no constituye un destino de respaldo.
+
+## Dependencias compartidas entre entregas
+
+Si una instalación nueva alcanza el límite de archivos del hosting, comprobar
+que `package-lock.json` es idéntico al de una entrega ya compilada. Una entrega
+nueva puede usar un enlace simbólico a esas dependencias, conservando su propio
+código, entorno y carpeta `.next`. Compilar con `--webpack` evita depender de la
+resolución de enlaces fuera de la raíz de Turbopack.
+
+Registrar el destino del enlace en la evidencia de entrega. La carpeta que
+contiene esas dependencias pasa a ser necesaria para el servicio: no retirarla
+como parte de la limpieza de versiones anteriores. No ejecutar `npm ci` sobre
+las dependencias compartidas ni sobre la aplicación activa. Cuando cambie el
+archivo de versiones, preparar una instalación distinta y volver a validar.

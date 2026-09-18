@@ -47,3 +47,21 @@ copias. Conservar la aplicación anterior y su configuración para recuperar el
 servicio; nunca borrar copias ni volver a estados editables para revertir una
 pantalla. Una reversión de código debe mantener la presentación y protección
 de los documentos importados, especialmente el estado ENVIADO.
+
+## Publicación y evidencia
+
+La migración 025 y la entrega `3c0c412` se publicaron el 18 de septiembre de 2026.
+Pasaron 218 pruebas, lint, tipos, compilación local y
+[GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35388158462).
+La compilación del hosting con Webpack reutilizó dependencias cuyo archivo de
+versiones coincide exactamente; la versión que las contiene debe conservarse.
+Se verificaron la raíz del proceso activo y el respaldo de la configuración.
+
+El lote privado pasó ensayos con reversión y comparación contra ADT vivo. Se
+excluyó cualquier documento que hubiera cambiado desde el respaldo. Después de
+la carga, la comparación exacta confirmó campos, partidas, condiciones y
+revisiones; los registros preexistentes, contadores y hashes del archivo quedaron
+intactos. La lectura SQL bajo rol autenticado del propietario y 22 comprobaciones
+HTTP pasaron. El navegador accesible al agente solicita login: la revisión visual
+con sesión real sigue pendiente. Cantidades de negocio, planes y diferencias
+concretas se conservan únicamente en la evidencia privada.
