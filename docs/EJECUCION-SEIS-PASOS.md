@@ -10,7 +10,7 @@ Ningún paso se cierra solamente porque una página responda o el código compil
 | 1. Auditoría de los 23 módulos | Pruebas de negocio existentes; auditoría adicional con todas las migraciones, permisos globales, aislamiento, flujo financiero e historial. Comprobación real de RLS y ensayo financiero en Supabase con ROLLBACK. | Recorridos autenticados de escritorio y móvil, archivos reales de prueba y comparación de acciones con ADT. |
 | 2. Paridad funcional | Catálogo completo y primeras implementaciones; diferencias enumeradas en ALCANCE-Y-PARIDAD y ESTADO-IMPLEMENTACION. | Configurador avanzado, catálogo/cálculos, expedientes, mapa/GPS, horas/Workforce, portal, IA e integraciones. Cada diferencia necesita implementación y evidencia. |
 | 3. Migración | Inventario actualizado del origen; respaldo privado de base y archivos; restauración de la base en un destino aislado; diagnóstico de relaciones y estados históricos. | Interpretar los detalles JSON, conservar estados adicionales, preparar correspondencias e importación reanudable, ensayar y conciliar antes de trasladar registros al SaaS. |
-| 4. Acceso y correo | Recuperación de contraseña implementada con PKCE, destino de retorno limitado y comprobación de usuario en servidor. Remitente elegido por el propietario. | Completar SMTP con credencial introducida por el propietario, verificar entrega y recuperación real, implementar invitaciones y notificaciones. |
+| 4. Acceso y correo | Recuperación publicada y confirmada por el propietario. Invitaciones internas con aceptación por correo confirmado, vencimiento y revocación; migración 015 aplicada. | Recorrido de invitaciones con una segunda cuenta, envío automático del aviso de invitación y notificaciones de negocio. |
 | 5. Operación estable | Compilaciones fuera de la carpeta activa; respaldo del origen y ensayo de restauración de 208 tablas. Endpoint de salud con consulta anónima de solo lectura y sin información privada. | Monitoreo externo activo, respaldos programados de Supabase y sus objetos, restauración del destino, staging completo y prueba de carga controlada. |
 | 6. Retirar instalación anterior | No se ha retirado; la compilación auxiliar detenida no era el sitio activo. | Completar los cinco pasos anteriores, definir el corte de escrituras, conciliar el delta y conservar una recuperación probada. |
 
@@ -75,6 +75,13 @@ mostró el enlace y el formulario publicados. Se añadió el callback exacto de
 recuperación a Supabase, manteniendo los anteriores.
 
 El propietario creó `notificacione@alldecorpatio.com` y eligió `SaasAlldecor`
-como nombre visible. SMTP quedó preparado con el servidor y puerto indicados
-por cPanel; sigue pendiente confirmar el guardado de su contraseña y comprobar
-entrega real. No se ha cambiado ninguna contraseña real durante estas pruebas.
+como nombre visible. Tras abrir inicialmente el correo en otro navegador,
+solicitó un enlace nuevo y confirmó que la recuperación funciona. Es evidencia
+aportada por el propietario; el agente no introdujo ni cambió su contraseña.
+
+## Invitaciones internas
+
+La migración 015 añade invitaciones sin modificar las dos empresas ni sus dos
+membresías existentes. Los nuevos miembros empiezan sin módulos asignados.
+Las 118 pruebas, lint, tipos y compilación local pasaron. Véase
+[Invitaciones](INVITACIONES.md) para alcance, controles y envío de avisos pendiente.

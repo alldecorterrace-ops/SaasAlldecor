@@ -5,6 +5,7 @@ import { requireUser } from "@/lib/auth";
 import { signOut } from "@/app/auth/actions";
 import { CompanyForm } from "@/components/company-form";
 import { Button } from "@/components/ui/button";
+import { IncomingInvitation } from "@/components/invitation-forms";
 export const dynamic = "force-dynamic";
 export default async function Companies() {
   const { db, user } = await requireUser();
@@ -13,6 +14,15 @@ export default async function Companies() {
     .select("id,name,timezone")
     .order("name");
   if (error) throw new Error("Companies unavailable");
+  const { data: invitations, error: invitationError } = await db.rpc(
+    "my_company_invitations",
+  );
+  if (invitationError) throw new Error("Invitaciones no disponibles");
+  const dates = new Intl.DateTimeFormat("es", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "UTC",
+  });
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
       <header className="flex flex-wrap items-center justify-between gap-4">
@@ -33,6 +43,26 @@ export default async function Companies() {
           Selecciona dónde quieres trabajar. Sesión de {user.email}.
         </p>
       </div>
+      {invitations?.length > 0 && (
+        <section
+          className="mb-8 grid gap-4"
+          aria-label="Invitaciones pendientes"
+        >
+          <h2 className="text-lg font-semibold">
+            Te invitaron a estas empresas
+          </h2>
+          {invitations.map(
+            (i: { id: string; company_name: string; expires_at: string }) => (
+              <IncomingInvitation
+                key={i.id}
+                id={i.id}
+                name={i.company_name}
+                expires={`${dates.format(new Date(i.expires_at))} UTC`}
+              />
+            ),
+          )}
+        </section>
+      )}
       <div className="grid gap-8 md:grid-cols-[1.3fr_1fr]">
         <section className="grid content-start gap-4">
           {data?.length ? (

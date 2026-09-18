@@ -17,6 +17,7 @@ export default async function Activity({
   });
   if (error) throw new Error("No se pudo cargar la actividad.");
   const labels: Record<string, string> = {
+    company_invitations: "Invitaciones del equipo",
     web_forms: "Formularios web",
     web_requests: "Solicitudes web",
     designs: "Diseños",
