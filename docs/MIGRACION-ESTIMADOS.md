@@ -71,3 +71,14 @@ generaron planes idénticos. Se verificó que el archivo descargado coincide con
 el SHA-256 del servidor, que no se sobrescribe un plan existente y que se
 rechaza una salida fuera de `.local`. La copia local hereda una ACL limitada
 al propietario y SYSTEM.
+
+También se localizaron y respaldaron los archivos privados de importaciones
+anteriores referenciados por el controlador. Aportan datos de origen, fechas y
+referencias que no deben descartarse, pero no contienen el desglose de partidas
+que falta en el respaldo revisado. Se detectaron asimismo referencias de
+adjuntos a estimados ausentes; no se reasignarán automáticamente a otro registro.
+Las correspondencias y sus cantidades se conservan en el informe privado.
+
+[GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35365560017)
+aprobó las 136 pruebas y las comprobaciones de lint, tipos y build. Esta entrega
+es una herramienta de ensayo offline: no requiere cambiar la aplicación pública.
