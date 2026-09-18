@@ -66,3 +66,20 @@ aplicación no elimina la factura ni sus pagos. El esquema es aditivo: no se deb
 eliminar registros importados ni columnas de procedencia para revertir una pantalla,
 especialmente después de nuevas operaciones. Cualquier incidencia contable se
 resuelve con una revisión específica, preservando el historial.
+
+## Publicación verificada
+
+El 18 de septiembre de 2026 se aplicó únicamente la migración 022 y se publicó
+`29119c0`, conservando la entrega anterior `543ebf7` y su configuración privada.
+Pasaron 208 pruebas, lint, tipos, compilación local y
+[GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35382330069),
+además de la compilación del hosting. Se verificó la revisión del proceso activo
+y trece comprobaciones HTTP de salud y protección de rutas.
+
+El primer plan revisado pasó un ensayo local con el respaldo y otro ensayo en
+Supabase con reversión explícita antes de su ejecución definitiva. La comparación
+posterior confirmó los campos copiados y la conservación de clientes, proyectos
+y archivo histórico. La lectura bajo la identidad existente del propietario y
+rol autenticado fue comprobada dentro de una transacción revertida. Esto no prueba
+emisión de JWT ni sustituye la auditoría visual con sesión real, que sigue pendiente.
+Los resultados e identificadores concretos se conservan solo en evidencia privada.
