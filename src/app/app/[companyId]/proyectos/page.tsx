@@ -37,6 +37,11 @@ export default async function Projects({
       <div className="mb-7">
         <p className="eyebrow">Operaciones</p>
         <h1 className="page-title mt-2">Proyectos</h1>
+        <Button asChild variant="outline" className="mt-4">
+          <Link href={`/app/${companyId}/historico/projects`}>
+            Histórico ADT
+          </Link>
+        </Button>
         <p className="mt-2 text-sm text-muted-foreground">
           Expedientes creados desde estimados aprobados, con fechas y
           seguimiento de ejecución.

@@ -51,14 +51,21 @@ export default async function Customers({
             El contacto y la información de cada cliente, siempre a mano.
           </p>
         </div>
-        {canAccess(member, "clientes", "write") && (
-          <Button asChild>
-            <Link href={`/app/${companyId}/clientes/nuevo`}>
-              <Plus size={16} />
-              Nuevo cliente
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline">
+            <Link href={`/app/${companyId}/historico/clients`}>
+              Histórico ADT
             </Link>
           </Button>
-        )}
+          {canAccess(member, "clientes", "write") && (
+            <Button asChild>
+              <Link href={`/app/${companyId}/clientes/nuevo`}>
+                <Plus size={16} />
+                Nuevo cliente
+              </Link>
+            </Button>
+          )}
+        </div>
       </div>
       <section className="card p-0! overflow-hidden">
         <form

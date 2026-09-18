@@ -38,6 +38,18 @@ export default async function Invoices({
       <div className="mb-7">
         <p className="eyebrow">Finanzas</p>
         <h1 className="page-title mt-2">Facturas</h1>
+        <div className="flex flex-wrap gap-2 mt-4">
+          <Button asChild variant="outline">
+            <Link href={`/app/${companyId}/historico/invoices`}>
+              Facturas históricas
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={`/app/${companyId}/historico/payments`}>
+              Pagos históricos
+            </Link>
+          </Button>
+        </div>
         <p className="text-sm text-muted-foreground mt-2">
           Se generan al registrar la aprobación de un estimado. Los pagos se
           registran por separado.

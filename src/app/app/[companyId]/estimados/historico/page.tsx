@@ -4,6 +4,7 @@ import { historicalMoney } from "@/lib/historical-estimates";
 import { ListPagination } from "@/components/list-pagination";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { HistoricalNavigation } from "@/components/historical-navigation";
 
 export default async function HistoricalEstimates({
   params,
@@ -13,7 +14,7 @@ export default async function HistoricalEstimates({
   searchParams: Promise<{ q?: string; page?: string }>;
 }) {
   const { companyId } = await params,
-    { db } = await requireModule(companyId, "fin-estimados"),
+    { db, member } = await requireModule(companyId, "fin-estimados"),
     search = await searchParams;
   const q = (search.q ?? "").trim().slice(0, 100),
     page = Math.min(
@@ -38,6 +39,7 @@ export default async function HistoricalEstimates({
   if (error) throw new Error("No se pudo cargar el histórico de estimados.");
   return (
     <>
+      <HistoricalNavigation companyId={companyId} member={member} />
       <div className="flex flex-wrap gap-4 justify-between items-center mb-7">
         <div>
           <p className="eyebrow">Estimados · Histórico ADT</p>
