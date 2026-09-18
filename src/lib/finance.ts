@@ -1,6 +1,7 @@
 import { z } from "zod";
 export const projectStatuses = {
   NUEVO: "Nuevo",
+  PENDIENTE: "Pendiente",
   PLANIFICACION: "Planificación",
   PRODUCCION: "Producción",
   INSTALACION: "Instalación",

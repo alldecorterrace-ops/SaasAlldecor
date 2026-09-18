@@ -6,6 +6,7 @@ import { historicalBusinessPayload } from "../src/lib/migration/historical-busin
 import { historicalEstimatePayload } from "../src/lib/migration/historical-estimate-payload";
 import { planOperationalCustomers } from "../src/lib/migration/operational-customers";
 import { planOperationalProjects } from "../src/lib/migration/operational-projects";
+import { projectSchema } from "../src/lib/finance";
 function fixture() {
   const clients = ["a", "b"].map((id) => ({
     external_id: id,
@@ -277,6 +278,35 @@ test("project import preserves provenance, has no financial side effects and kee
             JSON.stringify({ ...data, start_date: "2026-09-20" }),
           ]),
           /deposit_required/,
+        );
+        const pending = projectSchema.parse({ ...data, status: "PENDIENTE" });
+        await db.query("select public.update_project($1,$2,2,$3)", [
+          company,
+          project,
+          JSON.stringify(pending),
+        ]);
+        for (const blocked of [
+          { ...pending, status: "PRODUCCION" },
+          { ...pending, status: "INSTALACION" },
+          { ...pending, status: "COMPLETADO" },
+          { ...pending, start_date: "2026-09-20" },
+        ])
+          await assert.rejects(
+            db.query("select public.update_project($1,$2,3,$3)", [
+              company,
+              project,
+              JSON.stringify(blocked),
+            ]),
+            /deposit_required/,
+          );
+        assert.equal(
+          (
+            await db.query<{ status: string }>(
+              "select status from public.projects where id=$1",
+              [project],
+            )
+          ).rows[0].status,
+          "PENDIENTE",
         );
         await db.exec("reset role");
         assert.deepEqual((await load()).rows[0].result, {

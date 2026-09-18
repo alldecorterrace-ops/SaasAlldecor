@@ -5,7 +5,9 @@ con un vínculo permanente al original. No registra una aprobación actual, no
 crea estimados ni facturas y no vuelve a contabilizar pagos históricos.
 
 Un proyecto incorporado conserva nombre y fecha. El estado original `Nuevo`
-corresponde a `NUEVO`; otros estados necesitan una equivalencia revisada. El
+corresponde a `NUEVO`. La migración 024 permite conservar `PENDIENTE` como
+`PENDIENTE`, sin convertirlo en nuevo, aprobado o en producción. Otros estados
+necesitan una equivalencia revisada. El
 cliente debe tener una ficha operativa enlazada por la migración de clientes.
 El estimado histórico debe estar relacionado de forma consistente. No se
 deducen fechas de ejecución ni notas que no estén en la fuente revisada.
@@ -46,6 +48,23 @@ datos, conservación de vínculos y controles de pagos.
 La auditoría visual con sesión real y la conciliación posterior al respaldo
 son pasos independientes. No retirar ADT ni considerar completa la migración
 financiera por haber incorporado estos expedientes.
+
+## Resolución posterior de pendientes
+
+La incorporación de un estado ya revisado se realiza mediante un plan privado
+separado. No se modifica ni se vuelve a ejecutar el plan inicial de la migración
+021. La resolución comprueba el original, el motivo pendiente esperado y la
+correspondencia del cliente, y deja constancia en la auditoría.
+
+`PENDIENTE` aparece en el listado, el filtro y el editor. Conserva los mismos
+permisos, control de versión y requisito de pago para programar el inicio o
+avanzar a producción, instalación o completado. El cambio de catálogo no mueve
+por sí solo ningún proyecto ni crea facturas, cobros o aprobaciones.
+
+Aplicar la migración 024 y publicar el código compatible antes de incorporar
+proyectos con este estado. La reversión del código debe conservar su etiqueta
+y editor compatibles mientras existan proyectos pendientes; no cambiar sus
+estados únicamente para volver a una versión anterior.
 
 ## Publicación y evidencia
 
