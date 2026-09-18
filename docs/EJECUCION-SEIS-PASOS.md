@@ -85,3 +85,13 @@ La migración 015 añade invitaciones sin modificar las dos empresas ni sus dos
 membresías existentes. Los nuevos miembros empiezan sin módulos asignados.
 Las 118 pruebas, lint, tipos y compilación local pasaron. Véase
 [Invitaciones](INVITACIONES.md) para alcance, controles y envío de avisos pendiente.
+
+Entrega publicada: `623b273`. [GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35362218349)
+aprobó las mismas comprobaciones. Se verificó la raíz del proceso activo en el
+hosting y pasaron las 24 comprobaciones HTTP de salud, recuperación, rutas
+públicas/privadas y recursos protegidos. La tabla nueva tiene RLS, sin lectura
+anónima ni escrituras directas. Se creó la invitación pendiente que autorizó el
+propietario para una segunda cuenta, mediante SQL administrativo con el rol
+autenticado limitado a la empresa. No se aceptó en nombre del destinatario ni
+se envió un aviso automático. La aceptación y las pantallas con sesión real
+continúan pendientes de prueba.
