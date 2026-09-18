@@ -55,10 +55,10 @@ motivos de revisión. Propone `historical_read_only`, con detalle guardado o con
 la indicación `unavailable_in_reviewed_sources`. No inventa una partida para
 igualar el total y no permite recalcular o emitir desde este plan.
 
-Es una clasificación para preparar la implementación: todavía no constituye una
-pantalla publicada, una restricción de producción ni un importador al SaaS. El
-histórico debe presentarse explícitamente como consulta y conservar los permisos
-de empresa y módulo en servidor antes de cualquier carga de producción.
+La [consulta histórica de estimados](HISTORICO-ESTIMADOS.md) implementa esta
+presentación y está publicada con permisos de empresa y módulo en servidor.
+La carga de estimados usa un modelo de solo lectura separado de las operaciones
+actuales. El resto de entidades de este ensayo todavía no se ha cargado al SaaS.
 
 ## Ejecución reproducible
 
@@ -101,7 +101,8 @@ Las pruebas sintéticas de `tests/migration-history.test.ts` cubren ciclos,
 aislamiento, conservación, identidades duplicadas, referencias ausentes,
 contradicciones, rechazo de destinos inexistentes por PostgreSQL, repetición y
 reversión ante un conflicto tardío. La auditoría de pantallas autenticadas y la
-carga real en Supabase siguen pendientes.
+carga del resto de entidades en Supabase siguen pendientes. La publicación y
+la carga posterior de estimados se documentan en [Consulta histórica](HISTORICO-ESTIMADOS.md).
 
 La entrega pasó localmente las 154 pruebas, lint, comprobación de tipos y
 compilación. El código de esta entrega es offline y no cambia la aplicación

@@ -54,3 +54,28 @@ igualdad de originales y proyecciones sin crear operaciones financieras actuales
 
 La prueba autenticada en el navegador del propietario es una verificación distinta
 de esas pruebas locales y debe registrarse por separado.
+
+## Publicación del 18 de septiembre de 2026
+
+La migración 017 está aplicada y la consulta está publicada en la entrega
+`d246f17`. [GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35371287489)
+aprobó lint, tipos, pruebas y compilación. La compilación del hosting se realizó
+en una carpeta nueva; se conservó `d6fe007` y su configuración para reversión.
+Se verificó que el proceso activo utiliza la nueva raíz.
+
+Se cargaron los estimados del respaldo para la empresa indicada por el propietario.
+La repetición verificó igualdad y no insertó duplicados. Los conteos de documentos
+actuales y membresías permanecieron iguales. RLS está activo en las tablas nuevas;
+la aplicación no puede modificar el histórico, ejecutar la carga ni leer originales
+privados. La simulación SQL del propietario leyó el histórico; una consulta sin
+identidad no leyó filas. Esto no sustituye una prueba de navegador autenticado.
+
+Salud y recuperación respondieron correctamente, las rutas históricas sin sesión
+redirigieron al login y los archivos privados del hosting permanecieron bloqueados.
+El navegador disponible al agente mostró el login. La revisión visual con sesión
+del propietario y en móvil queda pendiente. Las cantidades y evidencias privadas
+no se publican en este repositorio.
+
+Esta carga corresponde a la copia restaurada: no es sincronización continua con
+ADT. Faltan la conciliación del delta y las demás entidades de negocio; la consulta
+histórica no cierra la migración completa ni permite retirar ADT.
