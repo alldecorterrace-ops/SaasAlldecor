@@ -62,3 +62,29 @@ se mantienen en evidencias privadas fuera de GitHub.
 La auditoría visual autenticada de escritorio y móvil es independiente de las
 pruebas técnicas. Conservar la entrega anterior y su configuración al publicar;
 no retirar ADT ni volver a ejecutar migraciones previas.
+
+## Publicación y verificación
+
+El 18 de septiembre de 2026 se aplicó la migración 018 y se publicó la entrega
+`8993867` en el hosting. Las 170 pruebas, lint, tipos y build pasaron localmente y
+en [GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35373504626).
+Se conservó la entrega anterior y una copia privada de su configuración para
+reversión; se verificó que el proceso activo usa la nueva entrega.
+
+El límite de tamaño del editor SQL exigió dividir la carga en lotes: clientes,
+proyectos, facturas y pagos, en ese orden. Cada lote tiene su propia transacción;
+la carga completa no es una única transacción. El ensayo local del mismo orden
+comprobó las relaciones y la repetición sin duplicados. Todos los lotes de
+producción finalizaron correctamente.
+
+La verificación remota comparó las representaciones canónicas de originales,
+campos visibles, referencias e identificadores con las obtenidas en el ensayo.
+No encontró diferencias ni registros fuera de la empresa elegida. Se comprobó
+RLS, lectura con identidad del propietario, ausencia de lectura sin identidad
+y prohibición de escrituras, originales privados e importador para los roles
+de aplicación. Los registros actuales y las membresías se conservaron.
+
+Después de publicar, login, recuperación y salud respondieron correctamente;
+las rutas históricas sin sesión redirigieron al login y los archivos internos
+permanecieron protegidos. Estas comprobaciones técnicas no sustituyen el
+recorrido visual autenticado de escritorio y móvil, que sigue pendiente.
