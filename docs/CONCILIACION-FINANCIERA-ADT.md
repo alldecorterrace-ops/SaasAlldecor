@@ -23,6 +23,21 @@ La etiqueta **Sin diferencias numéricas** se limita a estas comprobaciones.
 No confirma recepción bancaria, validez documental ni preparación para importar
 la factura al módulo actual.
 
+## Importes conservados al anular
+
+El procedimiento de anulación de ADT cambia el estado de la factura y convierte
+sus pagos aplicados en `ASSOCIATED_TO_VOID_INVOICE`, pero conserva el pagado y
+saldo anteriores. La conciliación identifica esa coincidencia cuando la factura
+y su estado de pago son `VOID`, no quedan pagos aplicados, la suma de los pagos
+asociados coincide exactamente con el pagado guardado y el saldo conservado es
+total menos ese pagado. Se requieren importes válidos y vínculos compatibles.
+
+La vista **Importes conservados al anular** muestra esos casos y desglosa los
+pagos asociados y anulados. La explicación no elimina las diferencias de la
+comparación con los pagos aplicados y el saldo esperado cero. No acredita una
+devolución, no convierte pagos excluidos en cobros actuales y no modifica los
+registros originales. Una coincidencia numérica tampoco sustituye los documentos.
+
 ## Datos y dependencias
 
 La vista señala fechas inválidas, métodos de pagos aplicados por confirmar,

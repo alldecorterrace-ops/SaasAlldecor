@@ -61,6 +61,15 @@ export function FinancialReconciliationTable({
                 <td>
                   <p>{r.appliedCount} aplicados</p>
                   <p>{r.excludedCount} excluidos por estado</p>
+                  {!!r.associatedCount && (
+                    <p className="text-xs mt-1">
+                      {r.associatedCount} asociados a anulación:{" "}
+                      {historicalMoney(r.associated)}
+                    </p>
+                  )}
+                  {!!r.voidCount && (
+                    <p className="text-xs">{r.voidCount} anulados</p>
+                  )}
                   <Link
                     className="text-primary underline"
                     href={`/app/${companyId}/historico/payments?invoice=${r.id}`}
@@ -69,6 +78,21 @@ export function FinancialReconciliationTable({
                   </Link>
                 </td>
                 <td className="min-w-72">
+                  {r.retainedVoidAmounts && (
+                    <div className="mb-3 rounded-md bg-muted p-3 text-xs">
+                      <p className="font-semibold">
+                        Importes conservados al anular
+                      </p>
+                      <p className="mt-1">
+                        El pagado guardado coincide con los pagos asociados a la
+                        anulación; el saldo guardado coincide con total menos
+                        ese pagado. ADT conserva estos importes al anular la
+                        factura. Las diferencias siguen pendientes de revisión;
+                        estos pagos no son cobros actuales ni acreditan una
+                        devolución.
+                      </p>
+                    </div>
+                  )}
                   <p
                     className={
                       r.arithmeticIssues.length

@@ -190,6 +190,95 @@ test("exact cents preserve values beyond safe JavaScript integer precision", () 
   assert.equal(row.paidDifference, "0");
   assert.deepEqual(row.arithmeticIssues, []);
 });
+test("retained void amounts are explained without clearing differences or changing payments", () => {
+  const input = fixture();
+  input.history[0].presentation.original_status = "VOID";
+  input.history[0].presentation.details.payment_status = "VOID";
+  input.history[2].presentation.original_status = "ASSOCIATED_TO_VOID_INVOICE";
+  const before = structuredClone(input),
+    result = reconcileHistoricalFinance(input),
+    row = result.rows[0];
+  assert.equal(row.retainedVoidAmounts, true);
+  assert.equal(row.associated, "4000");
+  assert.equal(row.associatedCount, 1);
+  assert.equal(row.voidCount, 1);
+  assert.equal(row.applied, "0");
+  assert.equal(row.expectedBalance, "0");
+  assert.deepEqual(row.arithmeticIssues, [
+    "paid_difference",
+    "balance_difference",
+  ]);
+  assert.equal(result.summary.arithmeticReview, 1);
+  assert.equal(result.summary.arithmeticClear, 0);
+  assert.equal(result.summary.retainedVoidAmounts, 1);
+  assert.deepEqual(input, before);
+  const html = renderToStaticMarkup(
+    createElement(FinancialReconciliationTable, {
+      rows: result.rows,
+      companyId: input.companyId,
+    }),
+  );
+  assert.ok(html.includes("Importes conservados al anular"));
+  assert.ok(html.includes("Revisar importes"));
+  assert.ok(html.includes("acreditan una devolución"));
+});
+test("void explanation requires matching amounts, states and relationships", () => {
+  const base = fixture();
+  base.history[0].presentation.original_status = "VOID";
+  base.history[0].presentation.details.payment_status = "VOID";
+  base.history[2].presentation.original_status = "ASSOCIATED_TO_VOID_INVOICE";
+  const mutations: ((input: ReconciliationInput) => void)[] = [
+    (i) => {
+      i.history[0].presentation.original_status = "OPEN";
+    },
+    (i) => {
+      i.history[0].presentation.details.payment_status = "PARTIAL";
+    },
+    (i) => {
+      i.history[0].presentation.details.balance_cents = "5000";
+    },
+    (i) => {
+      i.history[0].presentation.details.paid_cents = "3000";
+    },
+    (i) => {
+      i.history[2].presentation.amount_cents = null;
+    },
+    (i) => {
+      i.history[2].presentation.amount_cents = "-4000";
+    },
+    (i) => {
+      i.history[2].presentation.amount_cents = "0";
+    },
+    (i) => {
+      i.history[2].client_id = randomUUID();
+    },
+    (i) => {
+      i.history[2].project_id = randomUUID();
+    },
+    (i) => {
+      i.history[3].presentation.original_status = "UNKNOWN";
+    },
+    (i) => {
+      i.history[2].presentation.original_status = "APPLIED";
+    },
+    (i) => {
+      i.history[2].presentation.original_status = "VOID";
+    },
+    (i) => {
+      i.history[0].presentation.review_reasons = ["client_conflict"];
+    },
+  ];
+  for (const mutate of mutations) {
+    const input = structuredClone(base);
+    mutate(input);
+    assert.equal(
+      reconcileHistoricalFinance(input).rows[0].retainedVoidAmounts,
+      false,
+    );
+  }
+  base.history[2].presentation.amount_cents = null;
+  assert.equal(reconcileHistoricalFinance(base).rows[0].associated, null);
+});
 test("differences, unknown states and invalid amounts cannot be marked numerically clear", () => {
   const input = fixture();
   input.history[0].presentation.details.paid_cents = "2000";

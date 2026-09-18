@@ -142,6 +142,16 @@ export function reconcileHistoricalFinance(input: unknown) {
         amounts.some((a) => a === null || a <= 0n)
           ? null
           : amounts.reduce<bigint>((a, b) => a + b!, 0n);
+      const associated = related.filter(
+          (r) =>
+            r.presentation.original_status === "ASSOCIATED_TO_VOID_INVOICE",
+        ),
+        associatedAmounts = associated.map((r) =>
+          cents(r.presentation.amount_cents),
+        ),
+        associatedSum = associatedAmounts.some((a) => a === null || a <= 0n)
+          ? null
+          : associatedAmounts.reduce<bigint>((a, b) => a + b!, 0n);
       const expectedBalance = voided
         ? 0n
         : p.original_status === "OPEN" && total !== null && sum !== null
@@ -225,6 +235,26 @@ export function reconcileHistoricalFinance(input: unknown) {
         )
       )
         dataIssues.push("source_relationship");
+      // ADT's void action retains paid/balance and relabels applied payments.
+      // This explains matching retained amounts; it never clears differences,
+      // proves a refund, or turns associated payments into applied payments.
+      const retainedVoidAmounts =
+        voided &&
+        p.details.payment_status === "VOID" &&
+        associated.length > 0 &&
+        associatedSum !== null &&
+        sum === 0n &&
+        applied.length === 0 &&
+        total !== null &&
+        paid !== null &&
+        balance !== null &&
+        total >= 0n &&
+        paid > 0n &&
+        balance >= 0n &&
+        associatedSum === paid &&
+        balance === total - paid &&
+        !dataIssues.includes("payment_relationship") &&
+        !dataIssues.includes("source_relationship");
       const customer = source.customers.find(
           (r) =>
             r.historical_id === invoice.client_id && r.state === "imported",
@@ -269,6 +299,12 @@ export function reconcileHistoricalFinance(input: unknown) {
         storedPaid: p.details.paid_cents ?? null,
         storedBalance: p.details.balance_cents ?? null,
         applied: text(sum),
+        associated: text(associatedSum),
+        associatedCount: associated.length,
+        voidCount: related.filter(
+          (r) => r.presentation.original_status === "VOID",
+        ).length,
+        retainedVoidAmounts,
         expectedBalance: text(expectedBalance),
         paidDifference: paid !== null && sum !== null ? text(sum - paid) : null,
         balanceDifference:
@@ -306,6 +342,7 @@ export function reconcileHistoricalFinance(input: unknown) {
       payments: payments.length,
       arithmeticClear: rows.filter((r) => !r.arithmeticIssues.length).length,
       arithmeticReview: rows.filter((r) => r.arithmeticIssues.length).length,
+      retainedVoidAmounts: rows.filter((r) => r.retainedVoidAmounts).length,
       dataReview: rows.filter((r) => r.dataIssues.length).length,
       dependencyReview: rows.filter((r) => r.dependencyIssues.length).length,
       orphanPayments: orphans.length,

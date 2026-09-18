@@ -20,7 +20,13 @@ export default async function Reconciliation({
   if (member.role !== "owner" && member.role !== "admin") notFound();
   const s = await searchParams,
     q = (s.q ?? "").trim().slice(0, 100),
-    view = ["amounts", "data", "dependencies", "clear"].includes(s.view ?? "")
+    view = [
+      "amounts",
+      "data",
+      "dependencies",
+      "clear",
+      "void-retained",
+    ].includes(s.view ?? "")
       ? s.view!
       : "",
     page = Math.min(100000, Math.max(1, parseInt(s.page ?? "1") || 1));
@@ -91,13 +97,15 @@ export default async function Reconciliation({
           .toLocaleLowerCase()
           .includes(q.toLocaleLowerCase())) &&
       (!view ||
-        (view === "clear"
-          ? !r.arithmeticIssues.length
-          : view === "amounts"
-            ? r.arithmeticIssues.length
-            : view === "data"
-              ? r.dataIssues.length
-              : r.dependencyIssues.length)),
+        (view === "void-retained"
+          ? r.retainedVoidAmounts
+          : view === "clear"
+            ? !r.arithmeticIssues.length
+            : view === "amounts"
+              ? r.arithmeticIssues.length
+              : view === "data"
+                ? r.dataIssues.length
+                : r.dependencyIssues.length)),
   );
   return (
     <>
@@ -158,6 +166,15 @@ export default async function Reconciliation({
           {result.summary.dependencyReview} con dependencias pendientes. Una
           factura puede aparecer en varios grupos.
         </p>
+        {!!result.summary.retainedVoidAmounts && (
+          <p className="mt-2">
+            {result.summary.retainedVoidAmounts} facturas anuladas conservan
+            importes que coinciden con sus pagos asociados a la anulación.
+            Puedes revisar ese grupo en la vista «Importes conservados al
+            anular». Siguen incluidas entre los importes por revisar; esta
+            coincidencia no confirma devoluciones.
+          </p>
+        )}
       </section>
       <form className="card flex flex-wrap items-end gap-4 mb-5">
         <label className="field grow">
@@ -169,6 +186,9 @@ export default async function Reconciliation({
           <select name="view" defaultValue={view}>
             <option value="">Todas</option>
             <option value="amounts">Revisar importes</option>
+            <option value="void-retained">
+              Importes conservados al anular
+            </option>
             <option value="data">Revisar datos</option>
             <option value="dependencies">Dependencias pendientes</option>
             <option value="clear">Sin diferencias numéricas</option>
