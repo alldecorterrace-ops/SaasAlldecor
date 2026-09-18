@@ -7,12 +7,14 @@ export function DocumentLines({
   discount,
   taxes,
   total,
+  historical = false,
 }: {
   items: (EstimateItem & { line_total: string })[];
   subtotal: string | number;
   discount: string | number;
   taxes: string | number;
   total: string | number;
+  historical?: boolean;
 }) {
   return (
     <section className="card overflow-x-auto">
@@ -20,8 +22,8 @@ export function DocumentLines({
         <thead>
           <tr>
             <th>Concepto</th>
-            <th>Cantidad / medidas</th>
-            <th>Precio</th>
+            {!historical && <th>Cantidad / medidas</th>}
+            {!historical && <th>Precio</th>}
             <th>Importe</th>
           </tr>
         </thead>
@@ -32,17 +34,21 @@ export function DocumentLines({
                 <strong>{i.name}</strong>
                 <p className="whitespace-pre-wrap text-sm">{i.description}</p>
               </td>
-              <td>
-                {i.qty} · {priceBases[i.base]}
-                {["area_ft2", "linear_ft", "volume_ft3"].includes(i.base) && (
-                  <p>
-                    {i.length}
-                    {i.base !== "linear_ft" ? ` × ${i.width}` : ""}
-                    {i.base === "volume_ft3" ? ` × ${i.height}` : ""} ft
-                  </p>
-                )}
-              </td>
-              <td>{i.base === "manual" ? "Manual" : usd(i.unit_price)}</td>
+              {!historical && (
+                <td>
+                  {i.qty} · {priceBases[i.base]}
+                  {["area_ft2", "linear_ft", "volume_ft3"].includes(i.base) && (
+                    <p>
+                      {i.length}
+                      {i.base !== "linear_ft" ? ` × ${i.width}` : ""}
+                      {i.base === "volume_ft3" ? ` × ${i.height}` : ""} ft
+                    </p>
+                  )}
+                </td>
+              )}
+              {!historical && (
+                <td>{i.base === "manual" ? "Manual" : usd(i.unit_price)}</td>
+              )}
               <td>{usd(i.line_total)}</td>
             </tr>
           ))}

@@ -76,6 +76,34 @@ export default async function BusinessHistoryDetail({
       label: "Abrir proyecto editable",
       href: `${base}/proyectos/${projectMigration.data.project_id}`,
     });
+  if (kind === "invoices" || kind === "payments") {
+    const operational =
+      kind === "invoices"
+        ? await db
+            .from("invoices")
+            .select("id")
+            .eq("company_id", p.companyId)
+            .eq("historical_invoice_id", p.recordId)
+            .maybeSingle()
+        : await db
+            .from("payments")
+            .select("invoice_id")
+            .eq("company_id", p.companyId)
+            .eq("historical_payment_id", p.recordId)
+            .maybeSingle();
+    if (operational.error)
+      throw new Error("No se pudo consultar la incorporación financiera.");
+    const invoiceId =
+      operational.data &&
+      ("invoice_id" in operational.data
+        ? operational.data.invoice_id
+        : operational.data.id);
+    if (invoiceId)
+      links.push({
+        label: "Abrir factura operativa",
+        href: `${base}/facturas/${invoiceId}`,
+      });
+  }
   for (const [field, target, label] of [
     ["client_id", "clients", "Cliente original"],
     ["project_id", "projects", "Proyecto original"],

@@ -11,6 +11,7 @@ import { DocumentLines } from "@/components/document-lines";
 import { PrintButton } from "@/components/print-button";
 import { Input } from "@/components/ui/input";
 import { ListPagination } from "@/components/list-pagination";
+import { InvoiceProvenance } from "@/components/invoice-provenance";
 export default async function Invoice({
   params,
   searchParams,
@@ -63,7 +64,7 @@ export default async function Invoice({
         >
           Historial de cambios
         </Link>
-        {canAccess(member, "fin-estimados") && (
+        {i.estimate_id && canAccess(member, "fin-estimados") && (
           <Link
             className="underline"
             href={`/app/${companyId}/estimados/${i.estimate_id}`}
@@ -80,6 +81,14 @@ export default async function Invoice({
           </Link>
         )}
       </div>
+      {i.historical_invoice_id && (
+        <div className="mb-6">
+          <InvoiceProvenance
+            companyId={companyId}
+            historicalId={i.historical_invoice_id}
+          />
+        </div>
+      )}
       <article className="space-y-6">
         <header className="card">
           <p className="eyebrow">{company.name} · USD</p>
@@ -115,17 +124,20 @@ export default async function Invoice({
           discount={i.discount}
           taxes={i.taxes}
           total={i.total}
+          historical={!!i.historical_invoice_id}
         />
-        <section className="card print:hidden">
-          <h2 className="font-semibold mb-3">
-            Constancia de aprobación registrada por oficina
-          </h2>
-          <p className="whitespace-pre-wrap text-sm">{i.approval_note}</p>
-          <p className="text-xs text-muted-foreground mt-2">
-            Origen: revisión {i.estimate_version} del estimado. No equivale a
-            firma electrónica del cliente.
-          </p>
-        </section>
+        {!i.historical_invoice_id && (
+          <section className="card print:hidden">
+            <h2 className="font-semibold mb-3">
+              Constancia de aprobación registrada por oficina
+            </h2>
+            <p className="whitespace-pre-wrap text-sm">{i.approval_note}</p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Origen: revisión {i.estimate_version} del estimado. No equivale a
+              firma electrónica del cliente.
+            </p>
+          </section>
+        )}
         <section className="card overflow-x-auto">
           <h2 className="font-semibold mb-4">Pagos registrados</h2>
           <p className="text-sm text-muted-foreground mb-4">
@@ -148,6 +160,16 @@ export default async function Invoice({
                   <tr key={p.id}>
                     <td>
                       {p.payment_date}
+                      {p.historical_payment_id && (
+                        <p className="text-xs">
+                          <Link
+                            className="underline"
+                            href={`/app/${companyId}/historico/payments/${p.historical_payment_id}`}
+                          >
+                            Pago incorporado de ADT
+                          </Link>
+                        </p>
+                      )}
                       <p>
                         {
                           paymentMethods[
