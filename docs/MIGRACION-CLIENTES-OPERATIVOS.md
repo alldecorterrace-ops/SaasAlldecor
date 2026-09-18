@@ -48,3 +48,25 @@ los campos incorporados, los registros existentes, los permisos y el proceso
 activo. Las comprobaciones HTTP de salud, acceso a clientes y protección de
 documentos pasaron. No se ha probado todavía la nueva pantalla con sesión real:
 el navegador controlado redirige al login.
+
+## Resolución de coincidencias por decisión del propietario
+
+Compartir correo o teléfono no basta para combinar fichas. Cuando el propietario
+confirma que deben conservarse separadas, se prepara un plan privado que mantiene
+los datos originales y asigna una identidad operativa distinta a cada ficha.
+Los proyectos conservan el vínculo con su cliente de origen.
+
+La resolución administrativa verifica las huellas originales, los motivos de
+revisión esperados y la ausencia de nuevas coincidencias fuera del grupo aprobado.
+Se guarda la decisión y el estado anterior de las correspondencias en una entrada
+`migration_review / RESOLVE` del historial de auditoría. Los planes iniciales y
+los originales se conservan intactos; no se reescriben para ocultar la revisión.
+
+El caso ejecutado pasó ensayos privados y un ensayo en Supabase revertido antes
+de aplicarse. La resolución de clientes y proyectos y la incorporación financiera
+dependiente se ejecutaron en una sola transacción. Se comprobó la reversión ante
+fallos tardíos y la repetición sin duplicados ni sobrescrituras. La auditoría
+posterior confirmó la conservación de registros anteriores y correspondencias
+ajenas al caso, además de la lectura autorizada y la protección de las rutas.
+Los nombres, contactos, identificadores, decisiones concretas y evidencias reales
+permanecen fuera del repositorio público. La revisión visual autenticada sigue pendiente.
