@@ -1,3 +1,4 @@
+import { ImportedEstimateDetail } from "@/components/imported-estimate-detail";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { requireModule } from "@/lib/auth";
@@ -45,6 +46,54 @@ export default async function EstimatePage({
       estimateId,
       search.revision,
     );
+    if (record.historical_estimate_id) {
+      let projects: { id: string; name: string }[] = [];
+      if (canAccess(context.member, "fin-proyectos")) {
+        const histories = await context.db
+          .from("historical_business")
+          .select("id")
+          .eq("company_id", companyId)
+          .eq("kind", "projects")
+          .eq("estimate_id", record.historical_estimate_id);
+        if (histories.error)
+          throw new Error("No se pudieron cargar los v�nculos hist�ricos.");
+        if (histories.data?.length) {
+          const linked = await context.db
+            .from("projects")
+            .select("id,name")
+            .eq("company_id", companyId)
+            .in(
+              "historical_project_id",
+              histories.data.map((p) => p.id),
+            );
+          if (linked.error)
+            throw new Error("No se pudieron cargar los proyectos vinculados.");
+          projects = linked.data ?? [];
+        }
+      }
+      return (
+        <>
+          <div className="mb-5 flex gap-4 print:hidden">
+            <Button asChild variant="outline">
+              <Link href={`/app/${companyId}/estimados`}>
+                Volver a estimados
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/app/${companyId}/estimados/${record.id}/imprimir`}>
+                Imprimir / guardar PDF
+              </Link>
+            </Button>
+          </div>
+          <ImportedEstimateDetail
+            record={record}
+            companyId={companyId}
+            customerLink={canAccess(context.member, "clientes")}
+            projects={projects}
+          />
+        </>
+      );
+    }
     id = record.id;
     version = record.version;
     latest = latestVersion;
@@ -52,6 +101,7 @@ export default async function EstimatePage({
     customerName = record.customer_snapshot.full_name;
     initial = {
       ...record,
+      status: record.status as EstimateInput["status"],
       discount: String(record.discount),
       taxes: String(record.taxes),
     };

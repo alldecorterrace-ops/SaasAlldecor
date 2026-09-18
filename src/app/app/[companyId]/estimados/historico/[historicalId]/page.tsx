@@ -23,6 +23,13 @@ export default async function HistoricalEstimatePage({
   if (error) throw new Error("No se pudo cargar el estimado histórico.");
   if (!data) notFound();
   const record = historicalEstimateSchema.parse(data.presentation);
+  const { data: copy, error: copyError } = await db
+    .from("estimates")
+    .select("id")
+    .eq("company_id", companyId)
+    .eq("historical_estimate_id", historicalId)
+    .maybeSingle();
+  if (copyError) throw new Error("No se pudo comprobar la copia del estimado.");
   return (
     <>
       <div className="mb-5">
@@ -32,6 +39,18 @@ export default async function HistoricalEstimatePage({
           </Link>
         </Button>
       </div>
+      {copy && (
+        <p className="card mb-5">
+          Este documento tiene una{" "}
+          <Link
+            className="text-primary underline"
+            href={`/app/${companyId}/estimados/${copy.id}`}
+          >
+            copia de consulta en Estimados
+          </Link>
+          .
+        </p>
+      )}
       <HistoricalEstimateDetail record={record} />
     </>
   );

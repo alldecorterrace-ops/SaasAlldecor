@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { decimal, priceBases } from "./commercial";
 export const estimateStatuses = {
+  ENVIADO: "Enviado",
   APROBADO: "Aprobado",
   BORRADOR: "Borrador",
   PENDIENTE: "Pendiente",

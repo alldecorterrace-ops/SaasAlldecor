@@ -3,7 +3,13 @@ import { notFound } from "next/navigation";
 import { requireModule } from "./auth";
 import { uuid } from "./validation";
 import type { EstimateInput } from "./estimates";
-export type EstimateRecord = Omit<EstimateInput, "items"> & {
+export type EstimateRecord = Omit<EstimateInput, "items" | "status"> & {
+  status: EstimateInput["status"] | "ENVIADO";
+  historical_estimate_id?: string | null;
+  historical_terms?: Record<
+    string,
+    string | number | (string | number)[]
+  > | null;
   id: string;
   number: string;
   version: number;

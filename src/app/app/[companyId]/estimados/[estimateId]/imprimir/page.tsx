@@ -1,3 +1,4 @@
+import { ImportedEstimateDetail } from "@/components/imported-estimate-detail";
 import Link from "next/link";
 import { estimateRecord } from "@/lib/estimate-record";
 import { estimateStatuses } from "@/lib/estimates";
@@ -22,6 +23,15 @@ export default async function PrintEstimate({
       style: "currency",
       currency: "USD",
     }).format(Number(v));
+  if (r.historical_estimate_id)
+    return (
+      <>
+        <div className="mb-5 print:hidden">
+          <PrintButton />
+        </div>
+        <ImportedEstimateDetail record={r} companyId={companyId} />
+      </>
+    );
   return (
     <>
       <div className="print:hidden mb-6 flex items-center gap-5">

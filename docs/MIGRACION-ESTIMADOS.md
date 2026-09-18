@@ -130,3 +130,5 @@ La ampliación de [relaciones del histórico](MIGRACION-HISTORICO.md) conserva
 también clientes, proyectos, facturas, pagos, documentos y contratos. Comprueba
 las correspondencias exactas, aísla relaciones contradictorias y prepara la
 clasificación de consulta histórica sin inventar partidas.
+
+La incorporación de copias revisadas al módulo principal se documenta en [Estimados ADT incorporados](MIGRACION-ESTIMADOS-OPERATIVOS.md). Mantiene estados originales y consulta protegida; no habilita edición ni nuevas aprobaciones del histórico.

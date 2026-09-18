@@ -29,9 +29,12 @@ export default async function Estimates({
     page = Math.min(100000, Math.max(1, Number.parseInt(s.page ?? "1") || 1));
   let query = db
     .from("estimates")
-    .select("id,number,customer_snapshot,estimate_date,status,total,version", {
-      count: "exact",
-    })
+    .select(
+      "id,number,customer_snapshot,estimate_date,status,total,version,historical_estimate_id",
+      {
+        count: "exact",
+      },
+    )
     .eq("company_id", companyId)
     .order("estimate_date", { ascending: false })
     .order("id");
@@ -118,6 +121,11 @@ export default async function Estimates({
                       href={`${base}/${r.id}`}
                     >
                       {r.number}
+                      {r.historical_estimate_id && (
+                        <span className="block text-xs font-normal">
+                          Copia ADT � consulta
+                        </span>
+                      )}
                     </Link>
                   </td>
                   <td>{r.customer_snapshot.full_name}</td>
