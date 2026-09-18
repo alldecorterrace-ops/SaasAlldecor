@@ -99,3 +99,13 @@ Se verificó la revisión del proceso activo y pasaron 25 comprobaciones HTTP de
 salud, recuperación y protección de conciliación, clientes, proyectos y documentos.
 El navegador controlado redirige la nueva ruta al login; la auditoría visual con
 sesión real sigue pendiente.
+
+La entrega posterior `543ebf7` añadió la explicación de importes conservados al
+anular y su filtro. Pasaron 200 pruebas, lint, tipos, compilación local y
+[GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35380886795),
+además de la compilación en el hosting. Se verificaron la revisión del proceso
+activo y nueve comprobaciones HTTP de salud, recuperación y protección de la
+conciliación, incluido el filtro nuevo. Se conserva `054ae4e` y una copia de la
+configuración para reversión. Una consulta independiente de solo lectura confirmó
+las coincidencias del ensayo privado. No hubo migraciones ni cambios financieros.
+La prueba visual con sesión real continúa pendiente.
