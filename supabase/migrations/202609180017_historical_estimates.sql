@@ -64,6 +64,8 @@ create table app_private.historical_estimate_imports(
  imported_at timestamptz not null default now()
 );
 revoke all on app_private.historical_estimate_sources,app_private.historical_estimate_imports from public,anon,authenticated;
+alter table app_private.historical_estimate_sources enable row level security;
+alter table app_private.historical_estimate_imports enable row level security;
 
 -- Administrative SQL only, outside the PostgREST public schema; no app role can execute.
 create function app_private.import_historical_estimates(p_company uuid,p_snapshot text,p_records jsonb) returns jsonb
