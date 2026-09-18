@@ -1,14 +1,16 @@
 import {
   historicalFields,
   historicalBusinessReview,
+  historicalBusinessForDisplay,
   type HistoricalBusiness,
 } from "@/lib/historical-business";
 import { historicalMoney } from "@/lib/historical-estimates";
 export function HistoricalBusinessDetail({
-  record,
+  record: original,
 }: {
   record: HistoricalBusiness;
 }) {
+  const record = historicalBusinessForDisplay(original);
   return (
     <>
       <section className="card mb-5">

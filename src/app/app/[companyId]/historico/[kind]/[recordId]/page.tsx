@@ -36,6 +36,14 @@ export default async function BusinessHistoryDetail({
   if (!data) notFound();
   const base = `/app/${p.companyId}`,
     links: { label: string; href: string }[] = [];
+  if (
+    kind === "invoices" &&
+    (member.role === "owner" || member.role === "admin")
+  )
+    links.push({
+      label: "Conciliación de facturas y pagos",
+      href: `${base}/facturas/conciliacion`,
+    });
   const migration =
     kind === "clients"
       ? await db

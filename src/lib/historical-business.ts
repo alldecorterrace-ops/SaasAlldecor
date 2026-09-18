@@ -68,11 +68,37 @@ export const historicalBusinessSchema = z
   })
   .strict();
 export type HistoricalBusiness = z.infer<typeof historicalBusinessSchema>;
+// Derive a display-only comparison. The stored projection and original remain
+// immutable; a void invoice's expected balance is zero, not total minus paid.
+export function historicalBusinessForDisplay(
+  record: HistoricalBusiness,
+): HistoricalBusiness {
+  if (record.original_status !== "VOID" || record.details.balance_cents == null)
+    return record;
+  const balance = BigInt(record.details.balance_cents),
+    reasons = record.review_reasons.filter((r) => r !== "balance_mismatch");
+  if (balance !== 0n) reasons.push("balance_mismatch");
+  if (
+    record.details.applied_cents != null &&
+    BigInt(record.details.applied_cents) > 0n
+  )
+    reasons.push("void_applied_payments");
+  return {
+    ...record,
+    details: {
+      ...record.details,
+      balance_difference_cents: (-balance).toString(),
+    },
+    review_reasons: [...new Set(reasons)],
+  };
+}
 export function historicalBusinessReview(reason: string) {
   if (reason === "paid_mismatch")
     return "El pagado guardado difiere de la suma de pagos aplicados del respaldo.";
   if (reason === "balance_mismatch")
-    return "El saldo guardado difiere del total menos los pagos aplicados del respaldo.";
+    return "El saldo guardado difiere del saldo esperado para el estado original de la factura.";
+  if (reason === "void_applied_payments")
+    return "La factura está anulada pero conserva pagos aplicados que requieren revisión.";
   if (reason === "unknown_payment_status")
     return "Hay pagos con un estado que necesita revisión antes de conciliar.";
   if (reason === "invalid_money")

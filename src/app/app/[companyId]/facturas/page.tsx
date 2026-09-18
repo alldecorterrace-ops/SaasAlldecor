@@ -12,7 +12,7 @@ export default async function Invoices({
   searchParams: Promise<{ q?: string; status?: string; page?: string }>;
 }) {
   const { companyId } = await params,
-    { db } = await requireModule(companyId, "fin-invoices"),
+    { db, member } = await requireModule(companyId, "fin-invoices"),
     s = await searchParams;
   const q = (s.q ?? "").trim().slice(0, 100),
     status = Object.hasOwn(paymentStatuses, s.status ?? "") ? s.status! : "",
@@ -39,6 +39,13 @@ export default async function Invoices({
         <p className="eyebrow">Finanzas</p>
         <h1 className="page-title mt-2">Facturas</h1>
         <div className="flex flex-wrap gap-2 mt-4">
+          {(member.role === "owner" || member.role === "admin") && (
+            <Button asChild variant="outline">
+              <Link href={`/app/${companyId}/facturas/conciliacion`}>
+                Conciliación ADT
+              </Link>
+            </Button>
+          )}
           <Button asChild variant="outline">
             <Link href={`/app/${companyId}/historico/invoices`}>
               Facturas históricas
