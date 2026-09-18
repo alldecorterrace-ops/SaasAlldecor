@@ -33,3 +33,18 @@ La verificación local y de base no sustituye una prueba autenticada de pantalla
 
 La instalación anterior continúa operativa. Todavía hace falta conciliar cambios
 posteriores al respaldo y resolver los pendientes antes de acordar el corte.
+
+## Evidencia de publicación
+
+El 18 de septiembre se aplicó la migración 020 y se publicó `3199cfe` en el
+hosting de destino, con la entrega anterior y su configuración conservadas.
+Pasaron 183 pruebas, lint, tipos y compilación local; también
+[GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35377204542)
+y la compilación del hosting.
+
+El ensayo privado comprobó fidelidad de todos los campos, preservación de los
+clientes existentes y repetición sin duplicados. En producción se comprobaron
+los campos incorporados, los registros existentes, los permisos y el proceso
+activo. Las comprobaciones HTTP de salud, acceso a clientes y protección de
+documentos pasaron. No se ha probado todavía la nueva pantalla con sesión real:
+el navegador controlado redirige al login.
