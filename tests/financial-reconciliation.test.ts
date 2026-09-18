@@ -141,6 +141,61 @@ test("reconciliation uses only applied payments and leaves source unchanged", ()
   assert.equal(result.rows[0].expectedBalance, "6000");
   assert.deepEqual(input, before);
 });
+test("own invoice line differences stay pending without changing totals or payments", () => {
+  const input = fixture();
+  input.invoiceDetails = [
+    {
+      company_id: input.companyId,
+      historical_id: input.history[0].id,
+      detail_state: "saved_lines",
+      item_count: 2,
+      line_sum_cents: "9999",
+      subtotal_cents: "10000",
+      line_difference_cents: "-1",
+      summary_difference_cents: "0",
+      saved_total_matches: true,
+    },
+  ];
+  const before = structuredClone(input),
+    result = reconcileHistoricalFinance(input);
+  assert.ok(
+    result.rows[0].arithmeticIssues.includes("invoice_line_difference"),
+  );
+  assert.equal(result.summary.arithmeticClear, 0);
+  assert.equal(result.rows[0].total, "10000");
+  assert.equal(result.rows[0].applied, "4000");
+  assert.deepEqual(input, before);
+  const html = renderToStaticMarkup(
+    createElement(FinancialReconciliationTable, {
+      rows: result.rows,
+      companyId: input.companyId,
+    }),
+  );
+  assert.ok(html.includes("Detalle propio de la factura"));
+  assert.ok(html.includes("−$0.01"));
+  assert.ok(html.includes("Revisar importes"));
+  input.invoiceDetails[0].detail_state = "missing";
+  input.invoiceDetails[0].line_difference_cents = null;
+  assert.ok(
+    reconcileHistoricalFinance(input).rows[0].dataIssues.includes(
+      "invoice_details_missing",
+    ),
+  );
+  input.invoiceDetails = [];
+  assert.throws(
+    () => reconcileHistoricalFinance(input),
+    /incomplete_invoice_detail_review/,
+  );
+  input.invoiceDetails = before.invoiceDetails!.concat(before.invoiceDetails!);
+  assert.throws(
+    () => reconcileHistoricalFinance(input),
+    /incomplete_invoice_detail_review/,
+  );
+  input.invoiceDetails = [
+    { ...before.invoiceDetails![0], company_id: randomUUID() },
+  ];
+  assert.throws(() => reconcileHistoricalFinance(input), /wrong_company/);
+});
 test("void invoices expect zero balance and never count associated or void payments", () => {
   const input = fixture();
   input.history[0].presentation.original_status = "VOID";

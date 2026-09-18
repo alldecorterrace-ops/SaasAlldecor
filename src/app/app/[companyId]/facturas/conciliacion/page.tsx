@@ -30,58 +30,74 @@ export default async function Reconciliation({
       ? s.view!
       : "",
     page = Math.min(100000, Math.max(1, parseInt(s.page ?? "1") || 1));
-  const [history, estimates, customers, projectMappings, projects] =
-    await Promise.all([
-      completeQuery((from, to) =>
-        db
-          .from("historical_business")
-          .select(
-            "id,company_id,kind,client_id,project_id,invoice_id,estimate_id,presentation",
-            { count: "exact" },
-          )
-          .eq("company_id", companyId)
-          .in("kind", ["projects", "invoices", "payments"])
-          .order("kind")
-          .order("id")
-          .range(from, to),
-      ),
-      completeQuery((from, to) =>
-        db
-          .from("historical_estimates")
-          .select("id,company_id,presentation", { count: "exact" })
-          .eq("company_id", companyId)
-          .order("id")
-          .range(from, to),
-      ),
-      completeQuery((from, to) =>
-        db
-          .from("historical_customer_migrations")
-          .select("company_id,historical_id,customer_id,state", {
-            count: "exact",
-          })
-          .eq("company_id", companyId)
-          .order("historical_id")
-          .range(from, to),
-      ),
-      completeQuery((from, to) =>
-        db
-          .from("historical_project_migrations")
-          .select("company_id,historical_id,project_id,state", {
-            count: "exact",
-          })
-          .eq("company_id", companyId)
-          .order("historical_id")
-          .range(from, to),
-      ),
-      completeQuery((from, to) =>
-        db
-          .from("projects")
-          .select("id,company_id,customer_id", { count: "exact" })
-          .eq("company_id", companyId)
-          .order("id")
-          .range(from, to),
-      ),
-    ]);
+  const [
+    history,
+    estimates,
+    customers,
+    projectMappings,
+    projects,
+    invoiceDetails,
+  ] = await Promise.all([
+    completeQuery((from, to) =>
+      db
+        .from("historical_business")
+        .select(
+          "id,company_id,kind,client_id,project_id,invoice_id,estimate_id,presentation",
+          { count: "exact" },
+        )
+        .eq("company_id", companyId)
+        .in("kind", ["projects", "invoices", "payments"])
+        .order("kind")
+        .order("id")
+        .range(from, to),
+    ),
+    completeQuery((from, to) =>
+      db
+        .from("historical_estimates")
+        .select("id,company_id,presentation", { count: "exact" })
+        .eq("company_id", companyId)
+        .order("id")
+        .range(from, to),
+    ),
+    completeQuery((from, to) =>
+      db
+        .from("historical_customer_migrations")
+        .select("company_id,historical_id,customer_id,state", {
+          count: "exact",
+        })
+        .eq("company_id", companyId)
+        .order("historical_id")
+        .range(from, to),
+    ),
+    completeQuery((from, to) =>
+      db
+        .from("historical_project_migrations")
+        .select("company_id,historical_id,project_id,state", {
+          count: "exact",
+        })
+        .eq("company_id", companyId)
+        .order("historical_id")
+        .range(from, to),
+    ),
+    completeQuery((from, to) =>
+      db
+        .from("projects")
+        .select("id,company_id,customer_id", { count: "exact" })
+        .eq("company_id", companyId)
+        .order("id")
+        .range(from, to),
+    ),
+    completeQuery((from, to) =>
+      db
+        .rpc(
+          "review_invoice_details",
+          { p_company: companyId },
+          { count: "exact" },
+        )
+        .order("historical_id")
+        .range(from, to),
+    ),
+  ]);
   const result = reconcileHistoricalFinance({
     companyId,
     history,
@@ -89,6 +105,7 @@ export default async function Reconciliation({
     customers,
     projectMappings,
     projects,
+    invoiceDetails,
   });
   const filtered = result.rows.filter(
     (r) =>
@@ -157,9 +174,11 @@ export default async function Reconciliation({
         </p>
         <p className="mt-2">
           Las diferencias se muestran como valor calculado menos valor guardado.
-          “Sin diferencias numéricas” solo confirma esa comparación: todavía se
-          deben comprobar documentos, detalle de factura, dependencias y cambios
-          posteriores al respaldo.
+          También se compara la suma de las líneas propias con su subtotal,
+          descuento, impuestos y total cuando ese detalle está guardado. “Sin
+          diferencias numéricas” solo confirma las comparaciones disponibles:
+          todavía se deben comprobar documentos, detalle de factura,
+          dependencias y cambios posteriores al respaldo.
         </p>
         <p className="mt-2">
           {result.summary.dataReview} facturas con datos por revisar ·{" "}

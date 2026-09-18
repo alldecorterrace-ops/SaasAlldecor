@@ -2,8 +2,32 @@ import { z } from "zod";
 import { historicalBusinessSchema } from "./historical-business";
 import { historicalEstimateSchema } from "./historical-estimates";
 const id = z.uuid();
+export const invoiceDetailReviewSchema = z.object({
+  company_id: id,
+  historical_id: id,
+  detail_state: z.enum(["missing", "invalid", "saved_lines"]),
+  item_count: z.number().int().nonnegative(),
+  line_sum_cents: z
+    .string()
+    .regex(/^-?\d{1,18}$/)
+    .nullable(),
+  subtotal_cents: z
+    .string()
+    .regex(/^-?\d{1,18}$/)
+    .nullable(),
+  line_difference_cents: z
+    .string()
+    .regex(/^-?\d{1,18}$/)
+    .nullable(),
+  summary_difference_cents: z
+    .string()
+    .regex(/^-?\d{1,18}$/)
+    .nullable(),
+  saved_total_matches: z.boolean().nullable(),
+});
 export const reconciliationInputSchema = z.object({
   companyId: id,
+  invoiceDetails: z.array(invoiceDetailReviewSchema).optional(),
   history: z.array(
     z.object({
       id,
@@ -39,6 +63,16 @@ export const reconciliationInputSchema = z.object({
 });
 export type ReconciliationInput = z.infer<typeof reconciliationInputSchema>;
 export const financialReconciliationLabels: Record<string, string> = {
+  invoice_details_missing:
+    "Faltan las líneas propias de la factura en la copia revisada.",
+  invoice_details_invalid:
+    "El detalle propio de la factura contiene datos inválidos o incompletos.",
+  invoice_line_difference:
+    "La suma de las líneas propias difiere del subtotal guardado.",
+  invoice_summary_difference:
+    "El subtotal, descuento e impuestos propios no coinciden con el total de factura.",
+  invoice_saved_total_difference:
+    "El total del detalle guardado difiere del total de factura.",
   invalid_money: "Hay importes ausentes, negativos o inválidos.",
   unknown_invoice_status: "El estado de la factura requiere revisión.",
   unknown_payment_status: "Hay pagos con estados no reconocidos.",
@@ -92,6 +126,7 @@ export function reconcileHistoricalFinance(input: unknown) {
     source.customers,
     source.projectMappings,
     source.projects,
+    source.invoiceDetails ?? [],
   ])
     if (records.some((r) => r.company_id !== source.companyId))
       throw new Error("reconciliation_wrong_company");
@@ -100,6 +135,17 @@ export function reconcileHistoricalFinance(input: unknown) {
   const keys = source.history.map((r) => `${r.kind}:${r.id}`);
   if (new Set(keys).size !== keys.length)
     throw new Error("duplicate_reconciliation_record");
+  if (source.invoiceDetails) {
+    const detailIds = new Set(
+      source.invoiceDetails.map((r) => r.historical_id),
+    );
+    if (
+      detailIds.size !== source.invoiceDetails.length ||
+      detailIds.size !== invoices.length ||
+      invoices.some((r) => !detailIds.has(r.id))
+    )
+      throw new Error("incomplete_invoice_detail_review");
+  }
   const rows = invoices
     .map((invoice) => {
       const p = invoice.presentation,
@@ -107,6 +153,27 @@ export function reconcileHistoricalFinance(input: unknown) {
         arithmeticIssues: string[] = [],
         dataIssues: string[] = [],
         dependencyIssues: string[] = [];
+      const ownDetails =
+        source.invoiceDetails?.find((r) => r.historical_id === invoice.id) ??
+        null;
+      if (ownDetails) {
+        if (ownDetails.detail_state === "missing")
+          dataIssues.push("invoice_details_missing");
+        if (ownDetails.detail_state === "invalid")
+          dataIssues.push("invoice_details_invalid");
+        if (
+          ownDetails.line_difference_cents !== null &&
+          BigInt(ownDetails.line_difference_cents) !== 0n
+        )
+          arithmeticIssues.push("invoice_line_difference");
+        if (
+          ownDetails.summary_difference_cents !== null &&
+          BigInt(ownDetails.summary_difference_cents) !== 0n
+        )
+          arithmeticIssues.push("invoice_summary_difference");
+        if (ownDetails.saved_total_matches === false)
+          arithmeticIssues.push("invoice_saved_total_difference");
+      }
       const total = cents(p.amount_cents),
         paid = cents(p.details.paid_cents),
         balance = cents(p.details.balance_cents),
@@ -305,6 +372,7 @@ export function reconcileHistoricalFinance(input: unknown) {
           (r) => r.presentation.original_status === "VOID",
         ).length,
         retainedVoidAmounts,
+        ownDetails,
         expectedBalance: text(expectedBalance),
         paidDifference: paid !== null && sum !== null ? text(sum - paid) : null,
         balanceDifference:

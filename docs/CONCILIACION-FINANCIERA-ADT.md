@@ -23,6 +23,19 @@ La etiqueta **Sin diferencias numéricas** se limita a estas comprobaciones.
 No confirma recepción bancaria, validez documental ni preparación para importar
 la factura al módulo actual.
 
+## Detalle propio de la factura
+
+La migración 023 incorpora una consulta de solo lectura que suma los precios de
+las líneas guardadas en cada factura y los compara con su subtotal. Compara
+también subtotal menos descuento más impuestos con el total original, y verifica
+que el total del detalle coincida con el de la factura. Incluso una diferencia de
+un centavo permanece entre los importes por revisar; no se atribuye automáticamente
+a redondeo ni se crea una línea de ajuste.
+
+Los detalles ausentes o inválidos aparecen como datos pendientes. El desglose del
+estimado no reemplaza el de la factura. El importador operativo conserva todos
+sus controles y continúa rechazando diferencias entre líneas y subtotal.
+
 ## Importes conservados al anular
 
 El procedimiento de anulación de ADT cambia el estado de la factura y convierte
@@ -58,14 +71,19 @@ no establece una conexión bancaria ni interpreta un registro como un cobro nuev
 ## Acceso y consulta completa
 
 La ruta exige una membresía activa con rol propietario o administrador y permiso
-de Facturas. Todas las consultas se filtran por empresa y conservan RLS. Solo
-se leen proyecciones públicas autorizadas y tablas de correspondencia; no se
-leen JSON privados, tokens, firmas o credenciales.
+de Facturas. Las consultas a tablas se filtran por empresa y conservan RLS.
+La RPC `review_invoice_details` vuelve a comprobar membresía, rol y permiso en
+PostgreSQL. Lee los originales dentro de la base y devuelve únicamente cantidades,
+estados de validación y comparaciones monetarias permitidas. No devuelve JSON
+originales, contactos, metadatos del motor, tokens, firmas ni credenciales.
+Los originales privados mantienen sus restricciones de acceso.
 
 Las consultas paginan según el número real de filas recibidas y el total exacto
 informado por la API. Un error, un cambio de conteo durante la lectura, una
 respuesta incompleta o más de diez mil filas por consulta detienen el informe.
 La pantalla no presenta como completo un resultado truncado.
+También rechaza un diagnóstico de líneas que no incluya exactamente una entrada
+por factura consultada dentro de la misma empresa.
 
 El detalle histórico ajusta únicamente la comparación visual del saldo de las
 facturas anuladas a su estado. No reescribe la proyección ni su original.
@@ -77,6 +95,15 @@ anuladas, centavos por encima del límite seguro de JavaScript, datos inválidos
 dependencias, pagos sin factura, aislamiento, escape de contenido y paginación.
 El ensayo privado compara el respaldo con las correspondencias reales del
 destino. Sus identificadores, resultados e importes quedan fuera de GitHub.
+
+`tests/invoice-detail-review.test.ts` comprueba diferencias de un centavo en ambos
+sentidos, importes exactos, datos malformados y restricciones de acceso. La nueva
+consulta no inserta ni modifica clientes, proyectos, facturas o pagos.
+
+Para publicar esta ampliación, aplicar únicamente la migración 023 antes del
+código que consume la RPC. Conservar la entrega anterior para reversión; puede
+seguir funcionando con la función nueva instalada. No repetir migraciones
+anteriores ni cargar de nuevo los planes iniciales de importación.
 
 La prueba visual con sesión real y la migración financiera operativa son trabajos
 pendientes independientes de esta consulta de conciliación.

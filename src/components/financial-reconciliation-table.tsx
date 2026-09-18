@@ -78,6 +78,29 @@ export function FinancialReconciliationTable({
                   </Link>
                 </td>
                 <td className="min-w-72">
+                  {r.ownDetails && r.ownDetails.detail_state !== "missing" && (
+                    <div className="mb-3 rounded-md bg-muted p-3 text-xs">
+                      <p className="font-semibold">
+                        Detalle propio de la factura
+                      </p>
+                      <p>
+                        {r.ownDetails.item_count} líneas · Suma:{" "}
+                        {historicalMoney(r.ownDetails.line_sum_cents)}
+                      </p>
+                      <p>
+                        Subtotal guardado:{" "}
+                        {historicalMoney(r.ownDetails.subtotal_cents)}
+                      </p>
+                      <p>
+                        Diferencia de líneas:{" "}
+                        {historicalMoney(r.ownDetails.line_difference_cents)}
+                      </p>
+                      <p className="mt-1">
+                        Se conservan los importes originales. Una diferencia
+                        pequeña también requiere revisión.
+                      </p>
+                    </div>
+                  )}
                   {r.retainedVoidAmounts && (
                     <div className="mb-3 rounded-md bg-muted p-3 text-xs">
                       <p className="font-semibold">
