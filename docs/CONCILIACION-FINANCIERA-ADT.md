@@ -65,3 +65,22 @@ destino. Sus identificadores, resultados e importes quedan fuera de GitHub.
 
 La prueba visual con sesión real y la migración financiera operativa son trabajos
 pendientes independientes de esta consulta de conciliación.
+
+## Publicación
+
+El 18 de septiembre de 2026 se publicó `054ae4e`, conservando la entrega anterior
+y una copia privada de su configuración. Pasaron 198 pruebas, lint, tipos y
+compilación local, además de
+[GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35379735966)
+y la compilación del hosting.
+
+Una consulta independiente en Supabase confirmó las diferencias del ensayo.
+Se comprobó la lectura de todas las tablas necesarias bajo el rol autenticado
+con la identidad existente del propietario, dentro de una transacción revertida.
+Esto valida lectura y RLS, pero no sustituye una sesión de navegador ni prueba
+de emisión de JWT. No se aplicaron migraciones de esquema ni cambios de saldos.
+
+Se verificó la revisión del proceso activo y pasaron 25 comprobaciones HTTP de
+salud, recuperación y protección de conciliación, clientes, proyectos y documentos.
+El navegador controlado redirige la nueva ruta al login; la auditoría visual con
+sesión real sigue pendiente.

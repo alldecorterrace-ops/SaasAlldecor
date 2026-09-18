@@ -46,6 +46,9 @@ revisión. La diferencia de pagado es suma aplicada menos pagado guardado; la
 diferencia de saldo es total menos suma aplicada menos saldo guardado. Una
 diferencia no modifica datos, anula pagos ni determina un nuevo saldo exigible.
 La comparación es del respaldo; no acredita una conciliación bancaria.
+La vista de detalle y la [conciliación financiera](CONCILIACION-FINANCIERA-ADT.md)
+tratan el saldo esperado de una factura anulada como cero. La corrección es
+visual y no reescribe las proyecciones ni los originales guardados.
 
 ## Carga administrativa y pruebas
 

@@ -143,3 +143,8 @@ originales. Las copias operativas de clientes y proyectos se documentan por sepa
 La sesión de la aplicación accesible al agente sigue cerrada. El propietario
 confirmó que trabaja desde otra PC y pidió continuar con tareas independientes;
 la auditoría de pantallas autenticadas continúa pendiente.
+
+La [conciliación de facturas y pagos](CONCILIACION-FINANCIERA-ADT.md) añade una
+consulta administrativa de importes guardados frente a calculados, con estados
+de anulación, datos por confirmar y dependencias operativas separados. Esta
+consulta no incorpora facturas ni pagos actuales ni cierra la migración financiera.
