@@ -46,3 +46,21 @@ datos, conservación de vínculos y controles de pagos.
 La auditoría visual con sesión real y la conciliación posterior al respaldo
 son pasos independientes. No retirar ADT ni considerar completa la migración
 financiera por haber incorporado estos expedientes.
+
+## Publicación y evidencia
+
+El 18 de septiembre de 2026 se aplicó la migración 021 y se publicó `a989e11`
+en el hosting de destino. Se conservaron la entrega anterior y un respaldo de
+su configuración. Pasaron 189 pruebas, lint, tipos y compilación local, además
+de [GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35378511022)
+y la compilación del hosting.
+
+La verificación en Supabase comprobó los campos y relaciones incorporados,
+la conservación de clientes y originales mediante comparaciones antes/después,
+y los permisos de las tablas y del importador. Las empresas y membresías
+permanecieron iguales y no se crearon estimados actuales, facturas ni pagos.
+
+Se verificó la revisión del proceso activo y pasaron las comprobaciones HTTP
+de salud, recuperación, clientes, proyectos y protección de documentos. La
+pantalla nueva redirige al login en el navegador controlado; su auditoría visual
+autenticada continúa pendiente.
