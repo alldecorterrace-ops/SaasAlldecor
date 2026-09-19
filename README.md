@@ -8,6 +8,7 @@ Nueva aplicación SaaS para varias empresas, con migración de datos y paridad f
 - Migrar los datos de ADT Admin a una aplicación nueva.
 - Incluir todos los módulos actuales de ADT Admin con sus funciones; el trabajo por dependencias no reduce el alcance final.
 - Stack: TypeScript, Next.js, Supabase/PostgreSQL, Tailwind CSS y componentes basados en shadcn/ui. Código e historial en GitHub; aplicación alojada en el hosting existente.
+- Versionar en GitHub. El servidor conserva la entrega activa, una anterior validada para retorno y sus dependencias necesarias, según la [política de retención](docs/VERSIONADO-Y-RETENCION.md).
 - All Decor Terrace será la empresa inicial para el traslado de sus datos.
 
 ## Estado real
@@ -30,6 +31,7 @@ La aplicación está publicada en [app.alldecorpatio.com](https://app.alldecorpa
 - [Operaciones, inventario, documentos y horas](docs/OPERACIONES-Y-HORAS.md)
 - [Diseños, precios, web, portal e IA](docs/DISENOS-PORTAL-IA.md)
 - [Publicación permanente y operación](docs/ALOJAMIENTO.md)
+- [Versionado en GitHub y retención en el hosting](docs/VERSIONADO-Y-RETENCION.md)
 - [Ejecución local y base de datos](docs/DESARROLLO.md)
 - [Alcance y matriz inicial de paridad](docs/ALCANCE-Y-PARIDAD.md)
 - [Arquitectura propuesta](docs/ARQUITECTURA.md)

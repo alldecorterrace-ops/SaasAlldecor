@@ -1,5 +1,14 @@
 # Alojamiento permanente
 
+## Política vigente de versiones
+
+GitHub conserva el código y su historial. El hosting mantiene una entrega activa,
+una anterior validada para retorno y las dependencias compartidas que ambas
+necesiten. Las carpetas candidatas son temporales; no acumular una copia permanente
+por cada despliegue. Aplicar la [política de versionado y retención](VERSIONADO-Y-RETENCION.md)
+al cerrar cada entrega. Los apartados históricos siguientes describen despliegues
+pasados y no amplían esa retención.
+
 El 18 de septiembre de 2026 se instaló la versión `b82fbde` en https://app.alldecorpatio.com/login, en el segundo hosting del propietario. Utiliza cPanel/LiteSpeed, Node.js 22 y una entrada compatible con Passenger (`server.cjs`). No se contrató un plan adicional. Vercel no participa en este despliegue. La dirección anterior, https://saas.alldecorterrace.com/login, se conserva como opción de retorno.
 
 ## Traslado a app.alldecorpatio.com
