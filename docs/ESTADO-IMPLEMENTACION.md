@@ -1,4 +1,4 @@
-# Estado de implementación — 18 de septiembre de 2026
+# Estado de implementación — 22 de septiembre de 2026
 
 ## Los 23 módulos tienen una primera implementación
 
@@ -17,7 +17,7 @@ Documentación: [Comercial](COMERCIAL.md), [Estimados](ESTIMADOS.md), [Finanzas]
 ## Evidencia
 
 - Código de los seis módulos finales: `72267e8`. [GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35284534911) completó lint, tipos, 97 comprobaciones y build correctamente.
-- Migraciones 001–016 aplicadas manualmente en SQL Editor. No usar `supabase db push` sin reconciliar antes ese historial.
+- Migraciones 001–025 aplicadas manualmente en SQL Editor según las evidencias de publicación. La 026 está preparada para ensayo aislado y no aplicada a producción. No usar `supabase db push` sin reconciliar antes el historial manual.
 - Las siete tablas de esta ampliación tienen RLS y carecen de lectura anónima y escritura directa del rol authenticated. Las funciones públicas de enlaces y formularios validan su alcance antes de devolver o registrar datos.
 - Ensayo real: diseño → estimado → enlace → aceptación anónima con token → solicitud web → lead → revocación, y comprobación de cuota de IA. Terminó con `COMPLETION_SMOKE_PASS_ROLLED_BACK` y cero empresas sintéticas persistidas. No generó facturas a partir de una aceptación pública.
 - Ensayos anteriores comprobaron finanzas, recibos, inventario, horarios, solicitudes y cierre semanal, también con ROLLBACK.
@@ -38,7 +38,8 @@ La publicación `72267e8` se comprobó mediante la raíz del proceso activo, HTT
 - Portal muestra proyectos y saldos; faltan documentos, fotos, mensajes y cobros en línea. La aceptación por enlace no equivale a firma certificada.
 - IA admite preguntas independientes sobre un resumen agregado autorizado. Faltan conversación persistente, archivos, imágenes y herramientas de acción.
 - Quedan integraciones, notificaciones de negocio, pruebas de carga, monitoreo y staging. El propietario confirmó que la recuperación de contraseña funciona. Las invitaciones internas tienen creación, aceptación, rechazo, vencimiento y revocación; el propietario confirmó la aceptación con la segunda cuenta y se corroboró en Supabase. Se publicó el aviso automático con registro de intentos. El propietario confirmó un correo técnico en Recibidos; queda el recorrido de creación y aviso de una invitación nueva desde la pantalla autenticada. Véase [Invitaciones](INVITACIONES.md). Se restauró una copia MySQL del origen; falta ensayar la restauración de PostgreSQL y objetos del SaaS.
-- Falta trasladar y conciliar registros y archivos históricos de ADT, incluidas solicitudes web y referencias de trabajadores. Solo se importaron las diez tarifas indicadas; no se migraron clientes, facturas, horas ni archivos. ADT sigue siendo la fuente vigente.
+- La migración es parcial: ya se publicaron el histórico, documentos privados y lotes operativos de clientes, proyectos, estimados, facturas y pagos. Faltan entidades, referencias, archivos y el delta del origen; las excepciones siguen abiertas. ADT sigue siendo la fuente vigente. Véase [Migración](MIGRACION.md).
+- La entrega de infraestructura del 22 de septiembre añade guardas de staging, herramientas de verificación de copias/retención, monitor externo y una cola duradera desactivada. No acredita por sí misma respaldo, restauración, paridad ni traspaso. [Estado de los seis puntos](EJECUCION-SEIS-PASOS.md).
 
 ## Recorrido recomendado de auditoría
 

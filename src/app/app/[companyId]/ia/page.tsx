@@ -4,6 +4,7 @@ import { canAccess } from "@/lib/modules";
 import { ActionForm } from "@/components/action-form";
 import { AssistantForm } from "@/components/assistant-form";
 import { configureAssistant } from "./actions";
+import { externalEffectsAllowed } from "@/lib/deployment-environment";
 export default async function Assistant({
   params,
 }: {
@@ -17,7 +18,8 @@ export default async function Assistant({
       .eq("company_id", companyId)
       .maybeSingle();
   if (error) throw new Error("No se pudo cargar el asistente.");
-  const configured = !!process.env.OPENAI_API_KEY;
+  const configured =
+    !!process.env.OPENAI_API_KEY && externalEffectsAllowed(process.env);
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">IA Assistant</h1>

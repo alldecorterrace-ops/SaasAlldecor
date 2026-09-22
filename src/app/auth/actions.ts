@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient, isConfigured } from "@/lib/supabase/server";
+import { externalEffectsAllowed } from "@/lib/deployment-environment";
 export type AuthState = { error?: string; success?: string };
 export async function authenticate(
   mode: "login" | "register",
@@ -10,6 +11,11 @@ export async function authenticate(
 ): Promise<AuthState> {
   if (!isConfigured())
     return { error: "La conexión de este entorno está pendiente." };
+  if (mode === "register" && !externalEffectsAllowed(process.env))
+    return {
+      error:
+        "El registro por correo está desactivado en el entorno de pruebas. Usa una cuenta de prueba preparada.",
+    };
   const parsed = z
     .object({
       email: z.email(),

@@ -2,6 +2,7 @@
 import { requireModule } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import type { ActionState } from "@/components/action-form";
+import { externalEffectsAllowed } from "@/lib/deployment-environment";
 export async function configureAssistant(
   companyId: string,
   _: ActionState,
@@ -36,6 +37,11 @@ export async function askAssistant(
     key = process.env.OPENAI_API_KEY;
   if (question.length < 3 || question.length > 2000)
     return { error: "Escribe una consulta de 3 a 2000 caracteres." };
+  if (!externalEffectsAllowed(process.env))
+    return {
+      error:
+        "Las consultas externas están desactivadas en el entorno de pruebas.",
+    };
   if (!key)
     return { error: "Falta configurar la conexión con OpenAI en el servidor." };
   const { data: reserved, error: reservationError } = await db.rpc(

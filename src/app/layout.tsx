@@ -12,7 +12,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body>
+        {process.env.APP_ENVIRONMENT === "staging" && (
+          <div
+            role="status"
+            className="bg-amber-100 px-4 py-2 text-center text-sm text-amber-950"
+          >
+            Entorno de pruebas · Datos ficticios · Envíos externos desactivados
+          </div>
+        )}
+        {children}
+      </body>
     </html>
   );
 }

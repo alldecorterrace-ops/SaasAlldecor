@@ -1,18 +1,26 @@
 # Ejecución y auditoría de los seis pasos
 
-Fecha de inicio: 18 de septiembre de 2026. Destino: https://app.alldecorpatio.com.
+Fecha de inicio: 18 de septiembre de 2026. Seguimiento actualizado: 22 de septiembre de 2026. Destino: https://app.alldecorpatio.com.
 
 Este documento distingue implementación, pruebas técnicas y recorridos reales.
 Ningún paso se cierra solamente porque una página responda o el código compile.
 
-| Paso | Trabajo comprobado | Lo que falta para cerrarlo |
+La numeración siguiente reemplaza el orden del seguimiento inicial y corresponde
+al plan aprobado el 22 de septiembre. **Los seis puntos siguen abiertos.** ADT
+conserva la operación principal. Los trabajos locales no equivalen a despliegue.
+
+| Punto | Evidencia disponible | Pendiente de cierre |
 | --- | --- | --- |
-| 1. Auditoría de los 23 módulos | Pruebas de negocio existentes; auditoría adicional con todas las migraciones, permisos globales, aislamiento, flujo financiero e historial. Comprobación real de RLS y ensayo financiero en Supabase con ROLLBACK. | Recorridos autenticados de escritorio y móvil, archivos reales de prueba y comparación de acciones con ADT. |
-| 2. Paridad funcional | Catálogo completo y primeras implementaciones; diferencias enumeradas en ALCANCE-Y-PARIDAD y ESTADO-IMPLEMENTACION. | Configurador avanzado, catálogo/cálculos, expedientes, mapa/GPS, horas/Workforce, portal, IA e integraciones. Cada diferencia necesita implementación y evidencia. |
-| 3. Migración | Respaldo privado y restauración aislada. Consulta histórica de estimados, clientes, proyectos, facturas, pagos, documentos y contratos publicada; originales y relaciones verificados en Supabase. PDF disponibles conservados en almacenamiento privado con descarga protegida. Copias editables de clientes y proyectos válidos incorporadas con enlaces al histórico; dependencias y datos pendientes separados para revisión. Se conservaron los registros actuales. | Revisar pantallas y descargas con sesión real; resolver clientes y proyectos pendientes, referencias y archivos faltantes; completar la migración financiera y demás entidades operativas; conciliar el delta desde el respaldo. |
-| 4. Acceso y correo | Recuperación publicada y confirmada por el propietario. Invitaciones internas con aceptación por correo confirmado, vencimiento y revocación; aceptación con segunda cuenta confirmada por el propietario y en Supabase. Migraciones 015–016 aplicadas; aviso automático publicado y correo técnico recibido en Recibidos, confirmado por el propietario. | Crear una invitación nueva desde la pantalla autenticada y comprobar su aviso e historial; notificaciones de negocio. |
-| 5. Operación estable | Compilaciones fuera de la carpeta activa; respaldo del origen y ensayo de restauración de 208 tablas. Endpoint de salud con consulta anónima de solo lectura y sin información privada. | Monitoreo externo activo, respaldos programados de Supabase y sus objetos, restauración del destino, staging completo y prueba de carga controlada. |
-| 6. Retirar instalación anterior | No se ha retirado; la compilación auxiliar detenida no era el sitio activo. | Completar los cinco pasos anteriores, definir el corte de escrituras, conciliar el delta y conservar una recuperación probada. |
+| 1. Versiones del servidor | Política publicada; planificador conservador probado que protege aplicación activa, retorno, procesos y dependencias transitivas. | Renovar cPanel, inventario actual, validar retorno, comprobar archivos únicos, confirmar lista exacta de eliminación y medir antes/después. No se han eliminado entregas en esta ejecución. |
+| 2. Migración conciliada | Histórico publicado y lotes operativos de clientes, proyectos, estimados, facturas y pagos documentados por separado. Se conserva procedencia, originales y excepciones. | Delta contra ADT actual, entidades restantes, archivos faltantes y diferencias financieras. Mantener fichas separadas aprobadas y el cliente de correo inválido solo en histórico. Nuevas cargas reales esperan recuperación y staging. |
+| 3. Paridad de 23 módulos | Primeras implementaciones y pruebas de persistencia/permisos; inventario actualizado de definiciones de ruta del origen el 22 de septiembre. | Cerrar acciones, cálculos, diseño avanzado, documentos, Workforce, portal e IA contra ADT vivo. Ningún módulo se declara todavía con paridad completa. |
+| 4. Auditoría completa | Suite local, controles SQL remotos anteriores, correo/recuperación/aceptación confirmados por el propietario, comprobaciones públicas HTTP actuales. | Recorridos autenticados por cinco perfiles, escritorio/móvil, nueva invitación desde Configuración, concurrencia y dos empresas. La salud HTTP no sustituye esos recorridos. |
+| 5. Recuperación y operación | Carpeta privada de Drive preparada, guardas de entorno de pruebas, verificador de manifiestos y retención, workflow de disponibilidad añadido. | Crear staging (propietario lo hará después), configurar exportación/cifrado/transferencia y cuota, activar calendario de copias, verificar alertas, restaurar y probar carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
+| 6. Traspaso | Migración 026 y API de cola preparadas y probadas localmente: idempotencia, identidad, estados, revisión de resultados inciertos y pausa. Desactivadas por defecto. | Adaptadores transaccionales, registro de cambios, cobertura de todas las escrituras, fencing en ADT, ensayo concurrente y cierre de 1–5. No hay cambio de autoridad disponible ni se ha aplicado 026 a producción. |
+
+Detalles de esta entrega: [Operación y recuperación](OPERACION-Y-RECUPERACION.md),
+[Cola de transición](COLA-DE-TRANSICION.md). Los apartados siguientes conservan
+la evidencia histórica con sus fechas; no representan comprobaciones repetidas hoy.
 
 ## Pruebas reproducibles
 
@@ -140,11 +148,14 @@ contratos](HISTORICO-DOCUMENTOS.md) también está publicado, con originales
 privados, PDF conservados y casos pendientes separados. Se conservan los
 originales. Las copias operativas de clientes y proyectos se documentan por separado; no se generaron nuevas aprobaciones, facturas ni pagos.
 
-La sesión de la aplicación accesible al agente sigue cerrada. El propietario
-confirmó que trabaja desde otra PC y pidió continuar con tareas independientes;
-la auditoría de pantallas autenticadas continúa pendiente.
+En aquella ejecución la sesión de la aplicación accesible al agente estaba
+cerrada. Esa limitación histórica no demuestra el estado actual de la sesión;
+los recorridos completos por perfiles continúan pendientes.
 
 La [conciliación de facturas y pagos](CONCILIACION-FINANCIERA-ADT.md) añade una
 consulta administrativa de importes guardados frente a calculados, con estados
 de anulación, datos por confirmar y dependencias operativas separados. Esta
-consulta no incorpora facturas ni pagos actuales ni cierra la migración financiera.
+consulta no incorpora por sí sola facturas ni pagos actuales ni cierra la migración financiera.
+Posteriormente se incorporaron lotes operativos documentados en
+[Migración de facturas](MIGRACION-FACTURAS-OPERATIVAS.md) y
+[Migración de estimados](MIGRACION-ESTIMADOS-OPERATIVOS.md).

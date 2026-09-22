@@ -1,6 +1,14 @@
 # Migración y verificación
 
-Estado al 18 de septiembre de 2026: respaldo de la base real y archivos del origen preparado, con restauración de 208 tablas MySQL en una base aislada. **Los registros históricos todavía no se han importado al SaaS.** La inspección de la copia detectó detalles JSON y estados históricos que requieren mapeo explícito. Véase [ejecución de los seis pasos](EJECUCION-SEIS-PASOS.md).
+Estado documental actualizado al 22 de septiembre de 2026: existe un respaldo
+privado del origen con ensayo de restauración MySQL. El histórico y lotes
+operativos de clientes, proyectos, estimados, facturas y pagos **ya se incorporaron
+parcialmente**; las notas anteriores que indicaban que nada se había importado
+quedan sustituidas. Esto no acredita migración completa ni actualización automática
+con ADT. Las excepciones, huellas y cantidades concretas permanecen en evidencia
+privada. Véase [ejecución de los seis puntos](EJECUCION-SEIS-PASOS.md),
+[estimados operativos](MIGRACION-ESTIMADOS-OPERATIVOS.md) y
+[facturas operativas](MIGRACION-FACTURAS-OPERATIVAS.md).
 
 ## Invariantes
 

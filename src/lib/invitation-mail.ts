@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { spawn } from "node:child_process";
 import { z } from "zod";
+import { externalEffectsAllowed } from "./deployment-environment";
 
 const address = z
   .string()
@@ -19,7 +20,8 @@ export type MailOutcome = "queued" | "failed" | "unknown";
 export function invitationMailConfig(
   env: Record<string, string | undefined>,
 ): MailConfig | null {
-  if (env.INVITATION_MAIL_ENABLED !== "true") return null;
+  if (!externalEffectsAllowed(env) || env.INVITATION_MAIL_ENABLED !== "true")
+    return null;
   const from = address.safeParse(env.MAIL_FROM_ADDRESS);
   const name = env.MAIL_FROM_NAME ?? "SaasAlldecor";
   try {

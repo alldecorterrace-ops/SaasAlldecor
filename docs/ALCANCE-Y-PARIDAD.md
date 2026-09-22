@@ -1,6 +1,6 @@
 # Alcance y paridad con ADT Admin
 
-Fecha: 17 de septiembre de 2026.
+Fecha inicial: 17 de septiembre de 2026. Inventario de rutas renovado el 22 de septiembre.
 
 ## Resultado requerido por el propietario
 
@@ -13,6 +13,13 @@ Todos los módulos forman parte del alcance. Que un módulo esté implementado y
 Se leyó el catálogo vigente `ADT_MODULES` desde el servidor, sin ejecutar la aplicación ni consultar registros de la base de datos. Se confirmaron **23 entradas**. También se encontraron siete directorios de módulos propios de Drupal y se extrajeron **116 definiciones de ruta**. Una ruta puede contener varias acciones; esta cifra no equivale a cobertura funcional.
 
 Se comprobó la presencia de los archivos del panel, estimador y puente 3D. Los hashes y el inventario técnico se conservan localmente como evidencia, fuera del repositorio público.
+
+El 22 de septiembre se descargaron en modo de solo lectura las definiciones
+vigentes de CRM, estimados, Workforce, finanzas, costos y Plaid: conservan 116
+definiciones entre los seis archivos de rutas. No todos los directorios propios
+tienen archivo de rutas. Las huellas y archivos de esta actualización son privados.
+Esta inspección no ejecutó acciones de negocio ni certifica la paridad de sus
+controladores, formularios, tareas o aplicaciones PHP externas a Drupal.
 
 Las pruebas siguientes son criterios iniciales por completar contra la interfaz actual. El SaaS dispone de una primera implementación de los 23 módulos. **Ningún módulo se declara todavía con paridad completa**; véase el [estado de implementación](ESTADO-IMPLEMENTACION.md) para distinguir funciones disponibles y pruebas pendientes.
 
