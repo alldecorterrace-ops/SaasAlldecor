@@ -15,7 +15,7 @@ conserva la operación principal. Los trabajos locales no equivalen a despliegue
 | 2. Migración conciliada | Histórico publicado y lotes operativos de clientes, proyectos, estimados, facturas y pagos documentados por separado. Se conserva procedencia, originales y excepciones. | Delta contra ADT actual, entidades restantes, archivos faltantes y diferencias financieras. Mantener fichas separadas aprobadas y el cliente de correo inválido solo en histórico. Nuevas cargas reales esperan recuperación y staging. |
 | 3. Paridad de 23 módulos | Primeras implementaciones y pruebas de persistencia/permisos; inventario actualizado de definiciones de ruta del origen el 22 de septiembre. | Cerrar acciones, cálculos, diseño avanzado, documentos, Workforce, portal e IA contra ADT vivo. Ningún módulo se declara todavía con paridad completa. |
 | 4. Auditoría completa | Suite local, controles SQL remotos anteriores, correo/recuperación/aceptación confirmados por el propietario, comprobaciones públicas HTTP actuales. | Recorridos autenticados por cinco perfiles, escritorio/móvil, nueva invitación desde Configuración, concurrencia y dos empresas. La salud HTTP no sustituye esos recorridos. |
-| 5. Recuperación y operación | Carpeta privada de Drive preparada, guardas de entorno de pruebas, verificador de manifiestos y retención, workflow de disponibilidad añadido. | Crear staging (propietario lo hará después), configurar exportación/cifrado/transferencia y cuota, activar calendario de copias, verificar alertas, restaurar y probar carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
+| 5. Recuperación y operación | Carpeta privada de Drive preparada, guardas de staging, exportador PostgreSQL con snapshot común, captura de Storage/hosting, cifrado age, transferencia rclone con lectura posterior y recuperación aislada de archivos. Ensayo sintético local pasado; job de restauración PostgreSQL añadido. | Crear staging, configurar y probar acceso real/ETag/cuotas/custodia de clave/OAuth, comprobar captura completa, activar calendario y retención, verificar alertas, restaurar y probar carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
 | 6. Traspaso | Migraciones 026–027 y API desactivadas; punto de corte para drenar trabajo anterior y retener el nuevo. Primer adaptador transaccional de cliente SaaS y ensayo de concurrencia para PostgreSQL independiente. | Aplicación en staging; adaptadores ADT y resto de acciones SaaS, cobertura de escrituras, recepción separada del proceso web, fencing real en ADT y cierre de 1–5. Las atestaciones sintéticas no autorizan traspaso; 026–027 no se han aplicado a producción. |
 
 Detalles de esta entrega: [Operación y recuperación](OPERACION-Y-RECUPERACION.md),
@@ -35,6 +35,11 @@ la evidencia histórica con sus fechas; no representan comprobaciones repetidas 
 Las pruebas locales simulan únicamente los contratos mínimos de Auth y Storage.
 No prueban emisión de JWT, entrega de correo, subida binaria ni interacción autenticada.
 El ensayo SQL remoto tampoco acredita esos recorridos de navegador.
+
+El cambio `edaa154` pasó 244 pruebas, lint, tipos y build local. Su
+[ejecución en GitHub](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35741223991)
+también pasó, incluido el ensayo de cola con conexiones concurrentes en PostgreSQL 17.
+Es evidencia sintética del mecanismo y del adaptador de clientes, no del traspaso real.
 
 ## Recuperación de contraseña
 

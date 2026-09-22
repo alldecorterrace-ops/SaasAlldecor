@@ -53,8 +53,9 @@ mediante un canal administrativo protegido. La clave de producción nunca se cop
 ## Copias
 
 Se preparó una carpeta privada en el Drive indicado por el propietario, sin enlaces
-públicos. Está pendiente instalar/configurar el exportador, cifrado y transferencia
-periódica. El conector interactivo no configura credenciales persistentes del servidor.
+públicos. Hay código de exportación, cifrado, transferencia y recuperación de archivos;
+está pendiente configurarlo y ensayarlo contra los servicios reales. El conector
+interactivo no configura credenciales persistentes del servidor.
 No se han subido allí datos sin cifrar ni una copia de producción en esta entrega.
 
 Un snapshot completo debe contener:
@@ -75,9 +76,78 @@ El resultado indica explícitamente `remoteVerified:false` y `restoreVerified:fa
 No exporta, cifra ni prueba que PostgreSQL pueda restaurar esos bytes. `fullSnapshot`
 necesita evidencia del exportador; no se deduce de la existencia de archivos.
 
+### Exportación y transferencia implementadas
+
+`npx tsx scripts/run-backup.ts CONFIGURACION_PRIVADA.json` coordina el recorrido.
+No lo programar antes de completar el inventario del origen, claves, cuotas y ensayo.
+El archivo se mantiene fuera del repositorio, con permisos restringidos; contiene:
+
+- `projectRef`, `spoolRoot`, `receiptRoot`, `recipientFile` (solo clave pública age),
+  `sourceInventorySha256` (huella del inventario privado revisado).
+- `tools`: rutas de `age`, `tar`, `rclone`, `pgDump`, `pgDumpAll` verificados.
+- `hosting.documents` y `hosting.configuration`: cada uno tiene `root` y una lista
+  `paths` relativa y explícita. Resolver previamente enlaces al destino real. No
+  incluir el directorio de trabajo, dependencias, cachés ni la clave privada age.
+- `drive`: `rcloneConfig` privado, `remote` de tipo Drive y `folderId` privado
+  comprobado en la cuenta acordada. La autorización OAuth sigue pendiente.
+
+La conexión usa `PGHOST`, `PGPORT=5432`, `PGDATABASE=postgres`, `PGUSER`,
+`PGSSLMODE=verify-full` y el canal privado de contraseña de PostgreSQL. Rechaza el
+pooler transaccional y referencias ajenas. Storage usa `BACKUP_STORAGE_SERVICE_KEY`
+solo en el proceso de respaldo. Ninguna credencial aparece en argumentos, recibos
+públicos ni código del navegador.
+
+El exportador mantiene abierto un snapshot `REPEATABLE READ READ ONLY` e importa
+ese mismo punto en todos los `pg_dump`. Añade `full.dump` y `snapshot.json` con
+recuentos por tabla. Los roles se exportan sin contraseñas y se comparan antes y
+después: `pg_dumpall` no comparte el snapshot de filas; evitar cambios administrativos
+durante la captura. `managed-schema.sql` documenta esquemas gestionados completos:
+**no aplicarlo ciegamente sobre otro Supabase**. Revisar sus diferencias y seguir el
+procedimiento oficial de restauración, incluidas las claves de Vault si se utilizan.
+
+Storage se inventaría desde ese snapshot, conserva el mapeo privado de objetos y
+descarga los binarios. Exige tamaño y ETag fuerte coincidentes con los metadatos;
+una versión ausente/cambiada detiene la copia. La compatibilidad de los ETag con el
+proyecto real está pendiente de comprobar; no degradar ese control para obtener un
+recibo verde. Los archivos del hosting se comparan antes y después de comprimirlos.
+La captura entre servicios exige conservar objetos inmutables y controlar los cambios
+de configuración; el código no demuestra por sí solo que no exista un escritor externo.
+
+El paquete se comprime directamente hacia age, sin un TAR sin cifrar intermedio.
+Rclone sube únicamente el paquete y su recibo cifrados, descarga ambos y compara
+SHA-256. Los recibos privados sobreviven fuera del spool. Solo tras verificar el
+destino se elimina el directorio temporal creado por ese trabajo; si falla, conserva
+un único trabajo y su bloqueo para revisión, evitando acumular nuevas copias fallidas.
+No borra datos del origen, versiones del SaaS ni respaldos remotos.
+
+`retentionFits` calcula 42 copias de cuatro horas, cuatro semanales y una candidata,
+con 20 % de margen. Una subida individual puede caber sin que quepa toda la retención:
+en ese caso no activar el calendario. El espacio de filesystem no sustituye la cuota
+de la cuenta cPanel; verificar también esta última. La eliminación remota aún requiere
+aplicar el plan de retención a los dos objetos de cada copia y confirmar su inventario.
+
+También pueden ejecutarse por separado `export-postgres-snapshot.ts`,
+`package-backup.ts` y `recover-backup-files.ts` con configuración privada validada
+por sus esquemas. Recuperar primero el recibo cifrado usando age y la clave del
+propietario, después el paquete. La recuperación crea un directorio nuevo, verifica
+la huella del cifrado, rechaza rutas escapadas/enlaces y comprueba todos los archivos.
+No ejecuta SQL ni arranca aplicaciones por sí sola.
+
+### Evidencia sintética
+
+`scripts/test-backup-recovery.ts` genera una clave desechable, cifra, transfiere con
+rclone local y recupera ocho archivos sintéticos; detecta corrupción por huella y
+cifrado autenticado. Ese ensayo pasó localmente en Windows el 22 de septiembre.
+No se utilizó la clave real del propietario ni información de clientes.
+
+El job `backup-recovery` en GitHub añade PostgreSQL 17: exporta mientras otra conexión
+confirma cambios, cifra y transfiere localmente, descifra y restaura en una base nueva.
+Comprueba referencias y decimales anteriores al cambio. Su resultado debe registrarse
+en el seguimiento; no acredita Drive, Supabase Auth real, carga ni RPO/RTO de producción.
+
 Antes de activar las copias cada cuatro horas: comprobar cuota de Drive y espacio
 temporal, exportación consistente, cifrado local mediante una herramienta mantenida
-(por ejemplo age con clave pública del propietario), custodia de la clave privada
+(age con clave pública del propietario), custodia de la clave privada
 fuera del servidor/GitHub, transferencia cifrada, lectura posterior y comparación.
 Retener siete días de copias completas de cuatro horas y cuatro puntos semanales.
 El planificador conserva además copias sin verificar para revisión y nunca elimina

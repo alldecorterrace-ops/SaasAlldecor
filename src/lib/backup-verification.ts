@@ -21,7 +21,7 @@ const required = [
   "hosting/private-files.tar.gz",
   "hosting/configuration.tar.gz",
 ];
-const digest = (file: string) =>
+export const backupDigest = (file: string) =>
   new Promise<string>((resolve, reject) => {
     const h = createHash("sha256");
     createReadStream(file)
@@ -29,14 +29,16 @@ const digest = (file: string) =>
       .on("error", reject)
       .on("end", () => resolve(h.digest("hex")));
   });
-function artifactPath(value: string) {
+export function backupArtifactPath(value: string) {
   if (
     !value ||
     value.includes("\\") ||
-    value.includes("\0") ||
+    /[\x00-\x1f\x7f]/.test(value) ||
     value.startsWith("/") ||
     /^[a-zA-Z]:/.test(value) ||
-    value.split("/").some((p) => p === ".." || p === "." || !p)
+    value
+      .split("/")
+      .some((p) => p === ".." || p === "." || !p || p.startsWith("-"))
   )
     throw new Error("Ruta de respaldo inválida");
   return value;
@@ -67,7 +69,7 @@ export async function verifyBackup(
   const root = await realpath(directory),
     names = new Set<string>();
   for (const item of manifest.artifacts) {
-    const name = artifactPath(item.path);
+    const name = backupArtifactPath(item.path);
     if (
       names.has(name) ||
       !Number.isSafeInteger(item.bytes) ||
@@ -82,7 +84,7 @@ export async function verifyBackup(
       throw new Error("El respaldo contiene enlaces o archivos no regulares");
     if (
       (await lstat(file)).size !== item.bytes ||
-      (await digest(file)) !== item.sha256
+      (await backupDigest(file)) !== item.sha256
     )
       throw new Error("No coincide tamaño o huella del archivo");
   }
@@ -103,7 +105,7 @@ export async function verifyBackup(
       objectNames.has(object.path)
     )
       throw new Error("Objeto de Storage inválido o duplicado");
-    artifactPath(object.path);
+    backupArtifactPath(object.path);
     objectNames.add(object.path);
     const item = manifest.artifacts.find((a) => a.path === object.path);
     if (!item || item.bytes !== object.bytes || item.sha256 !== object.sha256)
