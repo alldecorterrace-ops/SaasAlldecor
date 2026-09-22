@@ -111,9 +111,9 @@ export default async function Dashboard({
           </span>
         </div>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          El expediente completo de clientes y la migración de datos siguen
-          pendientes. Los módulos señalados como «En preparación» todavía no
-          realizan operaciones.
+          La migración de datos está en curso. Puedes consultar los registros
+          incorporados y su histórico; algunas funciones siguen en revisión.
+          ADT continúa como sistema principal hasta completar el traspaso.
         </p>
         <div className="mt-6 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {modules

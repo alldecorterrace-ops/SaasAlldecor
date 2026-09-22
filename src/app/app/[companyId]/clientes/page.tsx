@@ -101,7 +101,7 @@ export default async function Customers({
           </Button>
         </form>
         {data?.length ? (
-          <div className="overflow-x-auto">
+          <div className="relative overflow-x-auto">
             <table>
               <caption className="sr-only">
                 Clientes de la empresa seleccionada

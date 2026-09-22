@@ -19,7 +19,10 @@ conserva la operación principal. Los trabajos locales no equivalen a despliegue
 | 6. Traspaso | Migración 026 y API de cola preparadas y probadas localmente: idempotencia, identidad, estados, revisión de resultados inciertos y pausa. Desactivadas por defecto. | Adaptadores transaccionales, registro de cambios, cobertura de todas las escrituras, fencing en ADT, ensayo concurrente y cierre de 1–5. No hay cambio de autoridad disponible ni se ha aplicado 026 a producción. |
 
 Detalles de esta entrega: [Operación y recuperación](OPERACION-Y-RECUPERACION.md),
-[Cola de transición](COLA-DE-TRANSICION.md). Los apartados siguientes conservan
+[Cola de transición](COLA-DE-TRANSICION.md) y
+[lectura autenticada de los 23 módulos](AUDITORIA-LECTURA-20260922.md). La lectura
+de propietario pasó en escritorio/móvil salvo desbordamiento de Clientes en móvil,
+corregido en código y pendiente de publicación. Los apartados siguientes conservan
 la evidencia histórica con sus fechas; no representan comprobaciones repetidas hoy.
 
 ## Pruebas reproducibles
