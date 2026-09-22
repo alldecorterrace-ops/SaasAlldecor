@@ -49,3 +49,17 @@ test("provider errors are sanitized and external redirects fail", async () => {
   assert.equal(redirects[3].ok, false);
   await assert.rejects(checkAvailability("https://user:password@example.test"));
 });
+
+test("enabled backup monitoring fails if the receipt status is stale or merely returns HTML", async () => {
+  const results = await checkAvailability(
+    "https://example.test",
+    async () => new Response("<html>ok</html>"),
+    true,
+  );
+  assert.equal(results.length, 5);
+  assert.deepEqual(results[4], {
+    route: "/api/backup-health",
+    ok: false,
+    status: null,
+  });
+});

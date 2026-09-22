@@ -1,6 +1,10 @@
 import { pathToFileURL } from "node:url";
 
-export async function checkAvailability(origin, request = fetch) {
+export async function checkAvailability(
+  origin,
+  request = fetch,
+  includeBackups = false,
+) {
   const url = new URL(origin);
   if (
     url.protocol !== "https:" ||
@@ -12,12 +16,14 @@ export async function checkAvailability(origin, request = fetch) {
   )
     throw new Error("An HTTPS origin without credentials is required");
   const results = [];
-  for (const [route, expected] of [
+  const routes = [
     ["/api/health", 200],
     ["/login", 200],
     ["/recuperar-contrasena", 200],
     ["/actualizar-contrasena", 307],
-  ]) {
+  ];
+  if (includeBackups) routes.push(["/api/backup-health", 200]);
+  for (const [route, expected] of routes) {
     try {
       const response = await request(new URL(route, url), {
         redirect: "manual",
@@ -25,7 +31,7 @@ export async function checkAvailability(origin, request = fetch) {
         headers: { "Cache-Control": "no-cache" },
       });
       let ok = response.status === expected;
-      if (route === "/api/health") {
+      if (route === "/api/health" || route === "/api/backup-health") {
         const body = await response.text();
         ok =
           ok &&
@@ -56,7 +62,11 @@ if (
   process.argv[1] &&
   import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
-  checkAvailability(process.env.SAAS_ORIGIN || "https://app.alldecorpatio.com")
+  checkAvailability(
+    process.env.SAAS_ORIGIN || "https://app.alldecorpatio.com",
+    fetch,
+    process.env.CHECK_BACKUPS === "true",
+  )
     .then((results) => {
       for (const result of results) console.log(JSON.stringify(result));
       if (results.some((r) => !r.ok)) process.exitCode = 1;

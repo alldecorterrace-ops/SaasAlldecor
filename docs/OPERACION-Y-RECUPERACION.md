@@ -154,8 +154,12 @@ El planificador conserva además copias sin verificar para revisión y nunca eli
 automáticamente. No eliminar objetos compartidos con un punto de restauración vivo.
 
 `backupFreshness` toma el inicio del snapshot, no la hora de subida. Un recibo solo
-cuenta si es completo, cifrado y verificado en destino. Falta conectar los recibos
-reales al monitor de atrasos; esa alerta no se declara activa todavía.
+cuenta si es completo, cifrado y verificado en destino. `/api/backup-health` comprueba
+los recibos privados del proyecto actual con un límite estricto de cuatro horas;
+solo devuelve `ok`/`unavailable`, sin nombres, fechas, rutas ni datos privados.
+Requiere `BACKUP_MONITOR_ENABLED=true` y `BACKUP_RECEIPT_ROOT` en el servidor.
+Está desactivado por defecto. Si la exportación tarda, la periodicidad de cuatro
+horas no garantiza por sí sola ese RPO: el monitor debe señalar el atraso real.
 
 Los respaldos de base de Supabase no incluyen los binarios de Storage. La exportación
 y la restauración deben seguir sus [instrucciones de respaldo](https://supabase.com/docs/guides/platform/backups)
@@ -167,7 +171,11 @@ y [reconstrucción del proyecto](https://supabase.com/docs/guides/platform/migra
 desde GitHub Actions cada cinco minutos, en ejecución manual y cuando cambia su código.
 No necesita secretos. Comprueba salud semántica/no-store, formularios de acceso y
 recuperación y redirección de actualización sin sesión. No registra cuerpos ni errores
-del proveedor. No sustituye el recorrido autenticado ni supervisa aún los respaldos.
+del proveedor. No sustituye el recorrido autenticado. Cuando se active y publique el
+comprobador de recibos, establecer la variable de repositorio
+`BACKUP_MONITOR_ENABLED=true` para incorporar su endpoint a la comprobación externa.
+La ruta y las pruebas están implementadas, pero el monitor de respaldos y la recepción
+de alertas siguen pendientes de activación y evidencia reales.
 
 El horario de Actions puede [retrasarse](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule);
 es una primera comprobación externa y no una garantía de detección en cinco minutos.

@@ -23,4 +23,6 @@ jobs:
         with:
           node-version: 22
       - name: Check public service without credentials
+        env:
+          CHECK_BACKUPS: ${{ vars.BACKUP_MONITOR_ENABLED }}
         run: node scripts/check-availability.mjs
