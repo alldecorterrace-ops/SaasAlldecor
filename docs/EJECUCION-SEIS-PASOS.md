@@ -52,6 +52,21 @@ oficial antes de obtener ese resultado. Las cuatro comprobaciones públicas volv
 a pasar, también en el [monitor por evento push](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35743327273).
 La ejecución programada y la recepción de alertas aún necesitan evidencia.
 
+La preparación del receptor independiente `34e57b9` pasó 254 pruebas, lint, tipos,
+build y comprobación del runtime Deno, además de repetir con éxito concurrencia y
+restauración sintética en [GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35744039536).
+Las migraciones 026–027, la función Edge y los cambios web de esta jornada continúan
+sin desplegar. La cola permanece desactivada. Se revisó la cuota de Drive en la cuenta
+acordada; cifras y observación están en evidencia privada. Falta medir el volumen real
+del respaldo y la cuota del hosting antes de afirmar que cabe la retención.
+
+Al terminar esta comprobación, cPanel seguía en su pantalla de acceso y el formulario
+de creación de staging seguía pendiente de contraseña/envío por el propietario. Esas
+dependencias impiden publicar, verificar el proceso activo y realizar restauración y
+recorridos reales. También faltan la autorización persistente de rclone y la custodia
+comprobada de la clave de recuperación. No se han cerrado paridad, delta de migración,
+limpieza de entregas, carga al doble del pico ni traspaso/observación de catorce días.
+
 ## Recuperación de contraseña
 
 El enlace «Olvidé mi contraseña» abre `/recuperar-contrasena`. La solicitud usa
