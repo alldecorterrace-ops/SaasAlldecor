@@ -42,6 +42,12 @@ pero sus etiquetas accesibles con posición absoluta no tenían un ancestro
 posicionado dentro de ese contenedor. Se añadió `relative` al contenedor para
 confinarlas sin ocultarlas a lectores de pantalla ni recortar la tabla.
 
+La reproducción aislada usó datos sintéticos, el CSS compilado de la aplicación
+y el mismo patrón de tabla/etiquetas. Con viewport de 390 px, el documento medía
+565 px antes y 390 px después; la tabla conservó 590 px dentro de un contenedor
+de 348 px con desplazamiento propio. Este ensayo confirma la causa de CSS;
+la comprobación de la pantalla real tras publicar sigue pendiente.
+
 La inspección prueba apertura con esa sesión y esos tamaños, no persistencia de
 ediciones, paridad con ADT, todos los elementos fuera de pantalla, roles adicionales,
 pantallas de detalle o un teléfono físico. La auditoría de acciones completas y
@@ -55,3 +61,6 @@ El [primer monitor externo](https://github.com/alldecorterrace-ops/SaasAlldecor/
 completó correctamente las cuatro comprobaciones públicas. Su calendario está
 publicado; falta confirmar ejecución programada y entrega de alertas por fallo.
 La aplicación y la migración 026 de esa entrega aún no se desplegaron en el hosting.
+
+La corrección de Clientes y texto de Dashboard se publicó en GitHub como `e6ba2f0`;
+su [CI también terminó correctamente](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35735489253).
