@@ -154,7 +154,7 @@ test("durable queue isolates tenants, captures actor, and never replays ambiguou
         await as(owner);
         await assert.rejects(submit(), /queue_unavailable/);
         await db.exec(
-          "reset role; update app_private.operation_handlers set verified=true",
+          "reset role; insert into app_private.operation_adapters values('customer.save','adt',true,repeat('a',64))",
         );
         await as(owner);
         assert.equal((await submit()).rows[0].result.replayed, false);
@@ -364,7 +364,7 @@ test("durable queue isolates tenants, captures actor, and never replays ambiguou
     );
 
     await t.test(
-      "draining receives durable requests but stops worker claims; no switch is exposed",
+      "draining holds requests received after the cut; no switch is exposed",
       async () => {
         await as(owner);
         await db.query("select public.pause_operation_queue($1)", [company]);
