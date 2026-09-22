@@ -16,7 +16,7 @@ conserva la operación principal. Los trabajos locales no equivalen a despliegue
 | 3. Paridad de 23 módulos | Primeras implementaciones y pruebas de persistencia/permisos; inventario actualizado de definiciones de ruta del origen el 22 de septiembre. | Cerrar acciones, cálculos, diseño avanzado, documentos, Workforce, portal e IA contra ADT vivo. Ningún módulo se declara todavía con paridad completa. |
 | 4. Auditoría completa | Suite local, controles SQL remotos anteriores, correo/recuperación/aceptación confirmados por el propietario, comprobaciones públicas HTTP actuales. | Recorridos autenticados por cinco perfiles, escritorio/móvil, nueva invitación desde Configuración, concurrencia y dos empresas. La salud HTTP no sustituye esos recorridos. |
 | 5. Recuperación y operación | Carpeta privada de Drive preparada, guardas de staging, exportador PostgreSQL con snapshot común, captura de Storage/hosting, cifrado age, transferencia rclone con lectura posterior y recuperación aislada de archivos. Ensayo sintético local pasado; job de restauración PostgreSQL añadido. | Crear staging, configurar y probar acceso real/ETag/cuotas/custodia de clave/OAuth, comprobar captura completa, activar calendario y retención, verificar alertas, restaurar y probar carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
-| 6. Traspaso | Migraciones 026–027 y API desactivadas; punto de corte para drenar trabajo anterior y retener el nuevo. Primer adaptador transaccional de cliente SaaS y ensayo de concurrencia para PostgreSQL independiente. | Aplicación en staging; adaptadores ADT y resto de acciones SaaS, cobertura de escrituras, recepción separada del proceso web, fencing real en ADT y cierre de 1–5. Las atestaciones sintéticas no autorizan traspaso; 026–027 no se han aplicado a producción. |
+| 6. Traspaso | Migraciones 026–027 y API desactivadas; corte para drenar solicitudes anteriores y retener las nuevas. Primer adaptador transaccional de cliente SaaS y ensayo concurrente PostgreSQL aprobado. Receptor independiente en Supabase preparado. | Desplegar y ensayar en staging; adaptadores ADT y resto de acciones SaaS, integrar todas las entradas con el receptor, fencing real en ADT y cierre de 1–5. Las atestaciones sintéticas no autorizan traspaso; 026–027 no se han aplicado a producción. |
 
 Detalles de esta entrega: [Operación y recuperación](OPERACION-Y-RECUPERACION.md),
 [Cola de transición](COLA-DE-TRANSICION.md) y
@@ -40,6 +40,17 @@ El cambio `edaa154` pasó 244 pruebas, lint, tipos y build local. Su
 [ejecución en GitHub](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35741223991)
 también pasó, incluido el ensayo de cola con conexiones concurrentes en PostgreSQL 17.
 Es evidencia sintética del mecanismo y del adaptador de clientes, no del traspaso real.
+
+La entrega de respaldos y monitor `8c77c45` pasó los tres jobs de
+[GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35743327176):
+250 pruebas/lint/tipos/build, concurrencia PostgreSQL y recuperación cifrada sintética.
+El último ensayo exportó mientras otra conexión confirmaba cambios, cifró con age,
+transfirió con rclone local y restauró en una base nueva, conservando relaciones e
+importes del snapshot. No utilizó Drive ni datos de clientes; no acredita RPO/RTO reales.
+Se corrigió la instalación del cliente PostgreSQL 17 del runner usando el repositorio
+oficial antes de obtener ese resultado. Las cuatro comprobaciones públicas volvieron
+a pasar, también en el [monitor por evento push](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/35743327273).
+La ejecución programada y la recepción de alertas aún necesitan evidencia.
 
 ## Recuperación de contraseña
 

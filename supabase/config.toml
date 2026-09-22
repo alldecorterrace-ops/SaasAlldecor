@@ -1,0 +1,6 @@
+# Gateway verifies user JWTs; handler additionally verifies identity with GoTrue.
+# This file does not enable reception or deploy a function.
+project_id = "saas-alldecor"
+
+[functions.operation-ingress]
+verify_jwt = true

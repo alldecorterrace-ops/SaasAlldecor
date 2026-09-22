@@ -79,8 +79,29 @@ Inventariar e interceptar todas las escrituras: acciones web actuales, formulari
 públicos, Storage, webhooks, cron, integraciones, Campo y dispositivos pendientes.
 Hoy continúan fuera de esta cola, por lo que **el cambio está bloqueado por diseño**.
 No habilitar un botón de cambio hasta cerrar esa cobertura y los otros cinco puntos.
-La recepción HTTP sigue en Next.js y debe separarse del proceso que se reinicia en
-los despliegues antes de afirmar continuidad de recepción.
+La recepción publicada sigue en Next.js. Se preparó una función independiente de
+Supabase en `supabase/functions/operation-ingress`, pendiente de despliegue en staging.
+Acepta `POST /functions/v1/operation-ingress/companies/{companyId}/requests` y
+`GET .../requests/{id}` con el JWT del usuario y el mismo cuerpo de la API Next.js.
+El gateway mantiene `verify_jwt=true`; el handler vuelve a consultar la identidad
+en Auth y ejecuta las RPC con ese JWT y una clave pública, nunca con service role.
+Exige el Origin configurado, limita el cuerpo real a 32 KiB y filtra campos de salida.
+Un fallo después del envío devuelve un resultado incierto; consultar/reintentar el
+mismo ID es obligatorio. No redirige ni reenvía automáticamente a otro sistema.
+
+Variables de la función: `OPERATION_INGRESS_ENABLED=false` por defecto,
+`INGRESS_PROJECT_REF`, `INGRESS_SITE_ORIGIN` HTTPS exacto, `SUPABASE_ANON_KEY` pública y
+`APP_ENVIRONMENT=staging`. Staging rechaza el proyecto y dominios vivos. Desplegar
+primero en el proyecto independiente, aplicar 026–027, configurar usuarios sintéticos
+y adaptadores de ensayo, y comprobar JWT/CORS reales antes de activarla. No ejecutar
+`db push` sobre producción: las migraciones históricas fueron aplicadas manualmente
+y su registro CLI requiere conciliación previa.
+
+Las pruebas del handler validan errores, identidad, CORS, tamaño, salida privada y
+respuesta perdida con un proveedor simulado. No prueban la plataforma Edge desplegada.
+Falta integrar las pantallas con el receptor y cubrir formularios públicos, integraciones,
+tareas y dispositivos con sus propios contratos autenticados. No afirmar continuidad
+de recepción hasta ensayar reinicios del proceso web con tráfico real de staging.
 
 El ensayo debe probar recepción concurrente, drenaje, punto conciliado, reasignación
 atómica de pendientes y exclusión de escrituras antiguas mediante fencing en ADT.
