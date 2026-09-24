@@ -12,7 +12,8 @@ consultas y evidencias detalladas se conservan fuera de GitHub.
   notas, correo y teléfono ficticios aparecen de nuevo en ficha/listado.
 - El listado de A estaba vacío tras crear el cliente B; después muestra solo su
   cliente A. El propietario tiene acceso a ambas: esto no demuestra todavía
-  aislamiento frente a un usuario sin membresía.
+  aislamiento frente a un usuario sin membresía. Abrir la ficha A bajo la ruta
+  de empresa B devuelve «Página no disponible», sin mostrar sus datos.
 - Clientes con nombre largo: a 390 × 844, ancho de documento y cuerpo de 390 px;
   tabla de 514 px dentro de un contenedor de 348 px con desplazamiento interno.
   Las capturas del navegador integrado no conservaron una escala visual útil;
@@ -21,6 +22,33 @@ consultas y evidencias detalladas se conservan fuera de GitHub.
 - Crear una invitación desde Configuración y revocarla: pasa de Pendiente a
   Revocada y conserva «Sin intentos de correo registrados». Los envíos externos
   permanecen desactivados. No demuestra entrega ni aceptación por otro perfil.
+- Actividad muestra las altas, ediciones, cambio de empresa y la invitación
+  creada/revocada, con la zona horaria correspondiente.
+
+## Recorrido comercial y financiero sintético
+
+Desde la sesión de propietario se creó un estimado para el cliente A con una
+partida de tres unidades a 33,35 USD: subtotal 100,05, descuento 0,10, impuestos
+2,05 y total 102,00. Guardado y reapertura conservaron datos e importes.
+
+Una aprobación explícitamente marcada como simulación creó una factura y un
+proyecto enlazados, sin registrar pagos automáticamente. La factura mostró el
+total de 102,00 y saldo de 102,00. El intento de registrar 103,00 fue rechazado
+por superar el saldo, sin crear un pago. Un registro ficticio posterior de 30,00,
+método Otro y referencia de simulación, dejó estado Pago parcial y saldo 72,00.
+No hubo cobro, transferencia, envío comercial ni autorización de un cliente real.
+
+El proyecto enlazado muestra los mismos importes; pasó a Planificación con fechas
+de prueba y conservó estado, fechas y notas después de recargar. La vista imprimible
+del estimado muestra estado Aprobado, revisión 2 y los importes correctos. No se
+exportó un PDF ni se comprobó impresión física en este recorrido.
+
+Incidencia abierta de interfaz: al devolver el error de sobrepago, `FinanceForm`
+restablece sus campos (incluidos importe, método y referencia) a los valores
+iniciales. No altera el saldo, pero obliga a reintroducir los datos. Debe conservar
+la entrada ante un rechazo y limpiar únicamente tras el éxito; falta corregir y
+repetir ese caso. Tampoco se ensayaron aún reversión, anulación, otros perfiles ni
+concurrencia financiera por navegador.
 
 ## Defecto descubierto al editar desde dos pestañas
 
@@ -40,10 +68,32 @@ deliberados a `PT409`, sin modificar firmas, permisos ni reglas de negocio. Incl
 también ese rechazo sin registrar un efecto. La aplicación mantiene mensajes
 comprensibles y compatibilidad con el código anterior durante la publicación.
 
-Las pruebas comprueban conflicto terminal, conservación del registro y auditoría,
+Las 274 pruebas, lint, tipos y compilación pasaron, junto con los tres jobs de
+[CI del commit f1fbf02](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36042644319).
+Comprueban conflicto terminal, conservación del registro y auditoría,
 reaplicación sin cambios de acceso, traducción de errores y rechazo sin efecto en
-la cola. El ensayo remoto después de aplicar la corrección se registrará por separado;
-las pruebas locales no acreditan el comportamiento de PostgREST real.
+la cola.
+
+La migración terminó con `COMMIT` exclusivamente en staging y el historial registra
+28 entradas. La comparación de funciones conservó ACL, modo de seguridad y
+`search_path`; no quedan funciones de negocio que eleven deliberadamente `40001`.
+El contenido registrado de 028 coincide con el archivo publicado. La preparación
+local tuvo dos intentos detenidos por el control de huellas, ambos revertidos antes
+de cambiar funciones; corregir la lectura UTF-8 en Windows permitió comprobar las
+27 entradas existentes sin excepciones ni modificaciones del historial.
+
+Se publicó `f1fbf02` después de comprobar CI y build del hosting. El proceso activo
+resuelve a esa entrega; producción mantiene su raíz y proceso anteriores. Ambas
+rutas de salud responden 200. La nueva prueba de dos pestañas devuelve el aviso
+de versión obsoleta, conserva el texto no guardado y habilita de nuevo el botón.
+Repetir el intento devuelve el mismo rechazo; la base conserva la edición ganadora
+en versión 4. Tras la prueba no había RPC activas reintentando. El historial visible
+muestra las escrituras aceptadas y la creación/revocación de la invitación.
+
+La entrega anterior `d530c33` se conserva como retorno de código, junto con la
+dependencia compartida `b149bee/node_modules`. Su mensaje para `PT409` es genérico:
+volver al código anterior no debe deshacer la protección de la base ni reintroducir
+el reintento. No se ha ensayado todavía un retorno completo.
 
 ## Límites de esta evidencia
 

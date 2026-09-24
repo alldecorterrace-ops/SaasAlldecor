@@ -194,3 +194,21 @@ Retención de esta publicación: `d530c33` activo, `9ccf77f` anterior comprobado
 en las pantallas públicas y `b149bee/node_modules` como dependencia compartida
 indispensable. No eliminar esta dependencia ni declarar el retorno completamente
 auditado sin el recorrido autenticado. La limpieza histórica sigue pendiente.
+
+## Continuación autenticada y migración 028
+
+La publicación posterior `f1fbf02` y la migración 028 corrigen los conflictos de
+edición que quedaban reintentando en PostgREST 14.5. Pasaron 274 pruebas, lint,
+tipos, build y los tres jobs de [CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36042644319).
+Staging registra ahora 28 migraciones, con contenido de 028 conciliado; se
+verificaron firmas, ACL y opciones de seguridad al reemplazar las funciones.
+La primera sesión real creó dos empresas ficticias y recorrió clientes,
+configuración, invitación/revocación, estimado, factura, pago parcial y proyecto.
+El conflicto entre dos pestañas ahora termina sin sobrescribir el registro;
+la repetición también se rechaza. Véanse [resultados y límites](AUDITORIA-STAGING-20260924.md).
+
+`f1fbf02` es la entrega activa; `d530c33` se conserva como anterior y
+`b149bee/node_modules` continúa siendo su dependencia compartida indispensable.
+El retorno completo no está ensayado. Las entregas más antiguas esperan la
+revisión de contenido y la confirmación de eliminación. Producción conserva
+su entrega anterior y no recibió las migraciones 026–028.
