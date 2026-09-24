@@ -85,3 +85,36 @@ y HTTPS valida su certificado. La raíz aún responde 404 porque no hay aplicaci
 publicada. Se activó Force HTTPS en cPanel, pero una petición HTTP todavía dio
 404: la redirección efectiva debe comprobarse/corregirse durante la publicación.
 No se considera el entorno navegable ni apto para auditoría por tener dominio y base.
+
+## Receptor privado de correo Auth
+
+`supabase/staging/auth-mail-sink.sql` es una instalación **exclusiva de staging**,
+fuera de las migraciones compartidas. Requiere verificar la conexión oficial y
+ejecutar `SET saas.install_staging_mail_sink = 'verified-empty-staging';` antes
+de cargarlo con `ON_ERROR_STOP`. Esa declaración no detecta el destino: la
+verificación de conexión sigue siendo obligatoria. Rechaza bases con usuarios,
+empresas u objetos, y no reemplaza una instalación existente. Ante error ejecutar
+`ROLLBACK` y revisar la causa.
+
+Configurar **Authentication → Hooks → Send Email → Postgres function** con
+`public.staging_capture_auth_email` antes de habilitar el proveedor Email.
+Conservar desactivado el registro público. El hook reemplaza el envío de correo;
+no usa SMTP, HTTP ni credenciales de producción. Acepta únicamente destinatarios
+de `saasalldecor.invalid`, incluso ambas direcciones de un cambio de correo.
+Un destinatario distinto genera error. Nunca quitar el hook mientras Email esté
+habilitado; desactivar primero el proveedor si se necesita retirar el receptor.
+Contrato oficial: [Send Email hook](https://supabase.com/docs/guides/auth/auth-hooks/send-email-hook).
+
+Los mensajes quedan en `staging_private.auth_mail`. Contienen tokens activos:
+no consultarlos en resultados públicos, logs, capturas o GitHub. Solo el operador
+de la base puede leerlos. `supabase_auth_admin` solo puede invocar el hook e
+insertar; los roles de la aplicación no pueden leer ni invocar. El esquema no
+debe añadirse a la lista de esquemas expuestos por la API. Usar únicamente
+cuentas sintéticas y revisar/purgar las capturas tras el ensayo según su retención;
+no trasladarlas a producción.
+
+Las pruebas PostgreSQL aisladas comprueban captura y permisos, rechazo de bases
+con datos, reinstalación, destinatarios externos y mensajes inválidos. Esto no
+acredita la configuración real del hook ni un recorrido de recuperación: después
+de instalar se debe comprobar una solicitud sintética real y su captura privada,
+sin publicar el token ni marcar como verificado un correo externo.
