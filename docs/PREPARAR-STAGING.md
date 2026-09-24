@@ -171,3 +171,24 @@ no llaman al proveedor de Auth.
 
 Quedan pendientes la creación privada de contraseña de la primera cuenta de
 auditoría, sus recorridos autenticados y la recuperación de datos real desde Drive.
+
+La entrega `d530c33d38f0e76bf620aa91f3004ceda4dc9244` pasó **272 pruebas, lint,
+tipos y build**, además de los tres jobs de
+[CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36040044187).
+Está publicada en staging con la marca del receptor verificado. Se comprobó la
+raíz del proceso nuevo y conserva cinco hilos; producción conserva su proceso
+anterior. Las dos rutas de salud respondieron 200.
+
+Desde la pantalla publicada, una dirección ajena al dominio sintético fue
+bloqueada por la aplicación. La solicitud de recuperación sintética llegó al
+proveedor y recibió **429**; la interfaz mostró el límite temporal sin declarar
+envío correcto. La tabla privada sigue con una captura `invite` y ninguna
+`recovery`. El recorrido de recuperación sigue pendiente hasta disponer de
+capacidad del proveedor; no se relajaron sus límites ni se repitieron solicitudes.
+La API pública rechazó el esquema `staging_private` con `PGRST106`, exponiendo
+únicamente `public` y `graphql_public`.
+
+Retención de esta publicación: `d530c33` activo, `9ccf77f` anterior comprobado
+en las pantallas públicas y `b149bee/node_modules` como dependencia compartida
+indispensable. No eliminar esta dependencia ni declarar el retorno completamente
+auditado sin el recorrido autenticado. La limpieza histórica sigue pendiente.

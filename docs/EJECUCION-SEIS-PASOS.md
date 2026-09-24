@@ -82,6 +82,10 @@ El receptor privado de Auth capturó una invitación sintética; un destinatario
 otro dominio ficticio no creó usuario ni captura. Falta la primera cuenta de
 auditoría con contraseña privada y los recorridos autenticados. Detalles y límites
 en [staging](PREPARAR-STAGING.md).
+La entrega posterior `d530c33` pasó 272 pruebas y CI y quedó publicada exclusivamente
+en staging. Permite recuperación de cuentas ficticias con el receptor previamente
+verificado. La interfaz bloqueó otro dominio y manejó el 429 real del proveedor;
+no se acredita todavía la captura de recuperación ni el cambio de contraseña.
 Producción no recibió las migraciones 026–027 ni cambios de autoridad.
 
 Se midieron 457.595 entradas en las 16 carpetas de entregas y se identificó un
