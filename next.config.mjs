@@ -1,5 +1,7 @@
-import type { NextConfig } from "next";
-const config: NextConfig = {
+// Keep runtime configuration in JavaScript: loading a .ts config starts SWC's
+// native worker pool even for a prebuilt Passenger production server.
+/** @type {import('next').NextConfig} */
+const config = {
   poweredByHeader: false,
   experimental: { cpus: 1, serverActions: { bodySizeLimit: "6mb" } },
   async headers() {
