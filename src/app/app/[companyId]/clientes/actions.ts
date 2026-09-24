@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireModule } from "@/lib/auth";
+import { isRecordConflict } from "@/lib/database-errors";
 import { customerFromForm, uuid } from "@/lib/validation";
 export type CustomerState = { error?: string };
 export async function saveCustomer(
@@ -30,7 +31,7 @@ export async function saveCustomer(
   if (error)
     return {
       error:
-        error.code === "40001"
+        isRecordConflict(error.code)
           ? "Este cliente cambió mientras lo editabas. Conserva tus cambios y vuelve a abrir su ficha para revisar la última versión."
           : error.code === "23505"
             ? "Esta solicitud ya se guardó. Vuelve al listado para consultar el cliente."

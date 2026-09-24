@@ -1,5 +1,6 @@
 "use server";
 import { requireModule } from "@/lib/auth";
+import { isRecordConflict } from "@/lib/database-errors";
 import { designModule, rateLabels, dimensionLabels } from "@/lib/designs";
 import { uuid } from "@/lib/validation";
 import { redirect } from "next/navigation";
@@ -22,7 +23,7 @@ export async function priceAction(
   if (error)
     return {
       error:
-        error.code === "40001"
+        isRecordConflict(error.code)
           ? "Hay otra revisión. Vuelve a abrir Precios."
           : "Revisa todas las tarifas. Los techos deben tener precio positivo; admite dos decimales.",
     };
@@ -83,7 +84,7 @@ export async function designAction(
   if (error)
     return {
       error:
-        error.code === "40001"
+        isRecordConflict(error.code)
           ? "Hay otra revisión. Recarga antes de guardar."
           : error.message.includes("prices_required")
             ? "Primero configura las tarifas de esta empresa en Precios."

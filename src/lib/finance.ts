@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isRecordConflict } from "./database-errors";
 export const projectStatuses = {
   NUEVO: "Nuevo",
   PENDIENTE: "Pendiente",
@@ -54,7 +55,7 @@ export const projectSchema = z
     "La fecha final debe ser posterior o igual al inicio.",
   );
 export function financeError(error: { code?: string; message: string }) {
-  if (error.code === "40001")
+  if (isRecordConflict(error.code))
     return "El registro cambió. Recarga la página antes de guardar de nuevo.";
   if (error.code === "23505")
     return "La referencia o solicitud ya existe. Revisa los registros antes de repetirla.";

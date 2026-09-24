@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isRecordConflict } from "./database-errors";
 
 export const operationInput = z
   .object({
@@ -73,7 +74,7 @@ export async function readOperationInput(request: Request) {
 export function operationError(code: string | undefined) {
   if (code === "42501")
     return { status: 403, message: "Acceso no autorizado." };
-  if (code === "23505" || code === "40001")
+  if (code === "23505" || isRecordConflict(code))
     return {
       status: 409,
       message: "Ese identificador ya corresponde a otra solicitud.",

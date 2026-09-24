@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isRecordConflict } from "./database-errors";
 import { customerSchema } from "./validation";
 export const leadStatuses = [
   "NUEVO",
@@ -131,7 +132,7 @@ export const emptyProduct: ProductInput = {
   options: [],
 };
 export function commercialError(code?: string) {
-  return code === "40001"
+  return isRecordConflict(code)
     ? "Este registro cambió mientras lo editabas. Copia tus cambios y vuelve a abrir la ficha para revisar la última versión."
     : code === "23505"
       ? "Esta solicitud ya se guardó. Vuelve al listado para consultar el registro."

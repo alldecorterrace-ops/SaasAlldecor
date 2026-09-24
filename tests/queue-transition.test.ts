@@ -220,6 +220,19 @@ test("transition requires a drained checkpoint and fresh private evidence", asyn
           ).rows.length,
           0,
         );
+        // Exercise PT409, not only the duplicate-insert 23505 path above.
+        const versionConflict = await enqueue(payload(99, lateBody.recordId));
+        await admin();
+        assert.equal((await execute()).rows[0].r?.status, "rejected");
+        assert.equal(
+          (
+            await db.query(
+              "select * from app_private.operation_effects where request_id=$1",
+              [versionConflict],
+            )
+          ).rows.length,
+          0,
+        );
         const next = await enqueue();
         await admin();
         await db.exec(

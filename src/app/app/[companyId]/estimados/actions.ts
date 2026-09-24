@@ -2,6 +2,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireModule } from "@/lib/auth";
+import { isRecordConflict } from "@/lib/database-errors";
 import { uuid } from "@/lib/validation";
 import { estimateSchema, estimateTotals } from "@/lib/estimates";
 import type { CommercialState } from "../leads/actions";
@@ -47,7 +48,7 @@ export async function saveEstimate(
   if (error)
     return {
       error:
-        error.code === "40001"
+        isRecordConflict(error.code)
           ? "Existe una revisión más reciente. Copia tus cambios y vuelve a abrir el estimado."
           : error.code === "23505"
             ? "Esta solicitud ya se guardó. Vuelve al listado."

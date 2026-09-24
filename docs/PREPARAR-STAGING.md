@@ -169,8 +169,10 @@ esta marca y desactivar Email antes de cambiar o quitar el hook. Las pruebas
 comprueban que destinos externos, configuración de producción y falta de la marca
 no llaman al proveedor de Auth.
 
-Quedan pendientes la creación privada de contraseña de la primera cuenta de
-auditoría, sus recorridos autenticados y la recuperación de datos real desde Drive.
+El propietario completó posteriormente la primera cuenta y el inicio de sesión.
+La [auditoría autenticada](AUDITORIA-STAGING-20260924.md) comprueba escrituras
+sintéticas de clientes y configuración y documenta el conflicto de concurrencia
+descubierto. Siguen pendientes los demás perfiles y la recuperación real desde Drive.
 
 La entrega `d530c33d38f0e76bf620aa91f3004ceda4dc9244` pasó **272 pruebas, lint,
 tipos y build**, además de los tres jobs de

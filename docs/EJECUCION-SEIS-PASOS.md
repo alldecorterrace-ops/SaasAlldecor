@@ -22,7 +22,11 @@ Detalles de esta entrega: [Operación y recuperación](OPERACION-Y-RECUPERACION.
 [Cola de transición](COLA-DE-TRANSICION.md) y
 [lectura autenticada de los 23 módulos](AUDITORIA-LECTURA-20260922.md). La lectura
 de propietario pasó en escritorio/móvil salvo desbordamiento de Clientes en móvil,
-corregido y publicado en staging; falta repetir el recorrido autenticado y publicarlo en producción. Los apartados siguientes conservan
+corregido y publicado en staging; la [auditoría autenticada del 24 de septiembre](AUDITORIA-STAGING-20260924.md)
+verifica sus dimensiones con datos sintéticos. Falta publicarlo en producción.
+La primera sesión ya permite crear empresas, editar clientes y crear/revocar invitaciones;
+la prueba de ediciones simultáneas descubrió un reintento indefinido de conflictos que
+requiere la migración 028 y una nueva comprobación remota. Los apartados siguientes conservan
 la evidencia histórica con sus fechas; no representan comprobaciones repetidas hoy.
 
 ## Pruebas reproducibles
