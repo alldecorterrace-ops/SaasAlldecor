@@ -229,6 +229,24 @@ no es administrador y no tiene membresía en la otra empresa. No se hicieron
 cobros, envíos comerciales ni aprobación de un cliente real. Catálogo, precios,
 envío, aprobación y recorrido financiero con este perfil siguen pendientes.
 
+## Catálogo y conservación del formulario de Precios
+
+Se creó desde la interfaz administrativa un producto sintético por área a 12,35
+USD/ft², con especificación y acabado de 1,25 por medida. La reapertura conservó
+los datos. El perfil de ventas puede consultarlo con campos deshabilitados, sin
+guardar ni subir imágenes. Desde su estimado buscó el producto y agregó dos
+unidades de 2,5 × 4 ft: la línea calculó 247,00 USD y el total 306,95 USD.
+Las opciones de acabado todavía deben incorporarse como líneas separadas; no se
+ha demostrado selección automática de variantes ni paridad del catálogo de ADT.
+
+La primera prueba de Precios, aún sin tarifas en la empresa sintética, rechazó
+una tarifa de techo cero. La base conservó cero registros, pero React reinició
+los diez campos del formulario, incluidas las tarifas válidas. `ActionForm`
+ahora permite el reinicio únicamente después de éxito confirmado sin error;
+los rechazos conservan la entrada para corregirla. Lint, tipos, 281 pruebas y
+compilación local pasaron. La comprobación posterior en staging se registra
+una vez publicada esta corrección.
+
 ## Límites de esta evidencia
 
 No cierra ninguno de los seis puntos. Faltan completar la matriz de perfiles y
