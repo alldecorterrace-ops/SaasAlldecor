@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
@@ -8,6 +8,7 @@ import {
 } from "../src/lib/backup-verification";
 import { encryptBackup, recoverBackupFiles } from "./ops/backup-package";
 import { commandFile, commandText } from "./ops/process";
+import { planStorageRecovery } from "./ops/storage-recovery";
 
 async function main() {
   const age = process.env.AGE_BIN,
@@ -33,6 +34,19 @@ async function main() {
     fullSnapshot: true,
     artifacts: [],
   };
+  const storageSource = {
+    id: "synthetic-object-id",
+    bucket_id: "work-files",
+    name: "synthetic-company/record/sample.txt",
+    metadata: {
+      size: Buffer.byteLength("synthetic storage object\n"),
+      mimetype: "text/plain",
+      eTag: "synthetic",
+    },
+  };
+  const objectPath = `storage/objects/${createHash("sha256")
+    .update(storageSource.bucket_id + "\0" + storageSource.name)
+    .digest("hex")}`;
   const artifacts: Record<string, string> = {
     "database/roles.sql": "-- synthetic roles only\n",
     "database/schema.sql": "CREATE TABLE synthetic_document(id integer);\n",
@@ -42,7 +56,16 @@ async function main() {
       "synthetic placeholder, not a hosting backup\n",
     "hosting/configuration.tar.gz":
       "synthetic placeholder, not a configuration backup\n",
-    "storage/objects/sample": "synthetic storage object\n",
+    "storage/buckets.json": JSON.stringify([
+      {
+        id: "work-files",
+        name: "work-files",
+        public: false,
+        file_size_limit: 5000000,
+        allowed_mime_types: ["text/plain"],
+      },
+    ]),
+    [objectPath]: "synthetic storage object\n",
   };
   for (const [name, body] of Object.entries(artifacts)) {
     const target = path.join(snapshot, name);
@@ -54,9 +77,9 @@ async function main() {
       sha256: await backupDigest(target),
     });
   }
-  const storage = manifest.artifacts.filter((x) =>
-    x.path.startsWith("storage/objects/"),
-  );
+  const storage = manifest.artifacts
+    .filter((x) => x.path.startsWith("storage/objects/"))
+    .map((x) => ({ ...x, source: storageSource }));
   await writeFile(
     path.join(snapshot, "storage/manifest.json"),
     JSON.stringify(storage),
@@ -97,15 +120,21 @@ async function main() {
     outputRoot: root,
     tools,
   });
-  assert.equal(restored.files, 8);
+  assert.equal(restored.files, 9);
   assert.equal(restored.storageObjects, 1);
   assert.equal(
-    await readFile(
-      path.join(restored.directory, "storage/objects/sample"),
-      "utf8",
-    ),
-    artifacts["storage/objects/sample"],
+    await readFile(path.join(restored.directory, objectPath), "utf8"),
+    artifacts[objectPath],
   );
+  const storagePlan = await planStorageRecovery({
+    directory: restored.directory,
+    sourceProjectRef: manifest.projectRef,
+    targetProjectRef: "z".repeat(20),
+    manifestSha256: encrypted.receipt.manifestSha256,
+    maxObjectBytes: 5000000,
+  });
+  assert.equal(storagePlan.objects[0].source.name, storageSource.name);
+  assert.equal(storagePlan.totalBytes, storageSource.metadata.size);
   const bad = path.join(root, "corrupt.age"),
     bytes = await readFile(transfer);
   bytes[bytes.length - 1] ^= 1;
@@ -143,6 +172,8 @@ async function main() {
       transport: "rclone-local",
       filesRecovered: restored.files,
       tamperingRejected: true,
+      storageRecoveryPlanVerified: true,
+      storageServiceRestored: false,
       driveVerified: false,
       databaseRestored: false,
       applicationRestored: false,

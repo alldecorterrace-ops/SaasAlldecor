@@ -28,7 +28,9 @@ permanentemente cada versión eliminada. [Política](VERSIONADO-Y-RETENCION.md).
 
 Proyecto Supabase independiente, dominio independiente y datos sintéticos o
 anonimizados. No restaurar la producción sobre staging sin anonimización aislada.
-El propietario ha pospuesto crear el proyecto preparado en su organización.
+El propietario creó SaasAlldecor-Staging el 24 de septiembre. Se comprobó su estado
+saludable y se desactivaron registro y proveedor Email durante la preparación;
+dominio, esquema, datos sintéticos y recorridos siguen pendientes.
 Configuración privada necesaria:
 
 ```dotenv
@@ -133,11 +135,20 @@ propietario, después el paquete. La recuperación crea un directorio nuevo, ver
 la huella del cifrado, rechaza rutas escapadas/enlaces y comprueba todos los archivos.
 No ejecuta SQL ni arranca aplicaciones por sí sola.
 
+La ampliación del 24 de septiembre añade `scripts/recover-storage.ts` para recuperar
+binarios en otro proyecto aislado. Tiene modo de planificación sin red, rechaza
+producción, comprueba una atestación temporal de aislamiento y verifica por lectura
+posterior los archivos subidos o reutilizados. No sobrescribe ni elimina. Véase
+[Recuperación de Storage](RECUPERACION-STORAGE.md) para límites, credenciales privadas,
+reanudación y separación respecto a los metadatos administrados de PostgreSQL.
+Sus pruebas HTTP son simuladas; no se ha ejecutado una recuperación real de Supabase.
+
 ### Evidencia sintética
 
 `scripts/test-backup-recovery.ts` genera una clave desechable, cifra, transfiere con
-rclone local y recupera ocho archivos sintéticos; detecta corrupción por huella y
-cifrado autenticado. Ese ensayo pasó localmente en Windows el 22 de septiembre.
+rclone local y recupera nueve archivos sintéticos, incluido el mapeo de Storage;
+detecta corrupción por huella y cifrado autenticado. El ensayo ampliado pasó
+localmente en Windows el 24 de septiembre.
 No se utilizó la clave real del propietario ni información de clientes.
 
 El job `backup-recovery` en GitHub añade PostgreSQL 17: exporta mientras otra conexión

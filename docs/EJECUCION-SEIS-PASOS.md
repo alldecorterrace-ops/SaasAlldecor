@@ -1,6 +1,6 @@
 # Ejecución y auditoría de los seis pasos
 
-Fecha de inicio: 18 de septiembre de 2026. Seguimiento actualizado: 22 de septiembre de 2026. Destino: https://app.alldecorpatio.com.
+Fecha de inicio: 18 de septiembre de 2026. Seguimiento actualizado: 24 de septiembre de 2026. Destino: https://app.alldecorpatio.com.
 
 Este documento distingue implementación, pruebas técnicas y recorridos reales.
 Ningún paso se cierra solamente porque una página responda o el código compile.
@@ -26,6 +26,38 @@ corregido en código y pendiente de publicación. Los apartados siguientes conse
 la evidencia histórica con sus fechas; no representan comprobaciones repetidas hoy.
 
 ## Pruebas reproducibles
+
+### Continuación del 24 de septiembre
+
+El propietario completó el acceso al hosting y creó SaasAlldecor-Staging. Se verificó
+el nuevo proyecto saludable y la identidad del hosting. En staging se desactivaron
+el registro público y el proveedor Email; tras recargar persistieron desactivados,
+igual que los demás proveedores. No hay hooks de Auth configurados. Es una medida
+inicial: antes de habilitar acceso sintético se necesita un receptor de correo de
+prueba y comprobar todos los emisores. No se aplicaron aún migraciones, cargas reales,
+limpieza ni despliegues en esta continuación.
+
+El inventario inicial del hosting conserva dieciséis carpetas de entregas. Se observó
+una dependencia compartida y una utilización del límite de archivos que requiere
+revisar la retención antes de instalar más copias. Cifras e identidades del entorno
+se conservan en evidencia privada. Falta seleccionar y validar retorno, inventariar
+contenido único y verificar procesos antes de proponer una eliminación concreta.
+
+Se añadió [recuperación aislada de binarios de Storage](RECUPERACION-STORAGE.md):
+plan local por defecto, bloqueo del origen y producción, buckets privados, subidas
+sin sobrescritura, comprobación de contenido/MIME y reanudación tras respuesta perdida.
+Las once pruebas nuevas usan HTTP simulado; el ensayo age/rclone local recuperó
+nueve archivos y validó el mapeo descifrado. No acredita restauración real de Supabase,
+Auth, Drive ni RPO/RTO. La suite local pasó **265 pruebas, lint, tipos y build**.
+
+El monitor ya tiene evidencia de ejecución programada, incluida la del
+[24 de septiembre](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36020079574).
+Las cuatro rutas públicas también pasaron la comprobación directa. Los intervalos
+observados de Actions superan los cinco minutos configurados: no se declara garantizada
+esa frecuencia. Siguen pendientes recepción de alertas y monitor de respaldos reales.
+Los seis puntos permanecen abiertos.
+
+### Comprobaciones y evidencia previa
 
 - `npm run check`: lint, tipos, pruebas PostgreSQL/validación y build.
 - `tests/full-audit.test.ts`: aplica automáticamente todas las migraciones en una base desechable; verifica que ampliaciones posteriores no reabran escrituras, lectura anónima ni permisos financieros.
