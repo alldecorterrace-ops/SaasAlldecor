@@ -17,10 +17,12 @@ export default async function Hours({
   const { companyId } = await params,
     { db, member, company } = await requireModule(companyId, "horasfix"),
     search = await searchParams,
-    view = ["requests", "periods"].includes(search.view ?? "")
+    manager = ["owner", "admin"].includes(member.role),
+    view = (manager ? ["requests", "periods"] : ["requests"]).includes(
+      search.view ?? "",
+    )
       ? search.view!
       : "entries",
-    manager = ["owner", "admin"].includes(member.role),
     write = canAccess(member, "horasfix", "write"),
     base = `/app/${companyId}/horas`,
     page = Math.max(1, Math.min(100000, parseInt(search.page ?? "1") || 1));
@@ -103,6 +105,7 @@ export default async function Hours({
           <p className="text-sm mt-2 text-muted-foreground">
             Marcaciones, descansos y correcciones con historial. Horario de
             consulta: {company.timezone}.
+            {!manager && " Solo se muestran tus marcaciones y solicitudes."}
           </p>
         </div>
         {manager && (
@@ -165,9 +168,11 @@ export default async function Hours({
         <Link className="underline" href={`${base}?view=requests`}>
           Solicitudes
         </Link>
-        <Link className="underline" href={`${base}?view=periods`}>
-          Cierre de semanas
-        </Link>
+        {manager && (
+          <Link className="underline" href={`${base}?view=periods`}>
+            Cierre de semanas
+          </Link>
+        )}
       </nav>
       {view !== "periods" && (
         <form className="card flex gap-4 items-end mb-5">

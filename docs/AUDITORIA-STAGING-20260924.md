@@ -157,6 +157,35 @@ dependencia compartida `b149bee/node_modules`. Su mensaje para `PT409` es genér
 volver al código anterior no debe deshacer la protección de la base ni reintroducir
 el reintento. No se ha ensayado todavía un retorno completo.
 
+## Alcance de lectura de Horas entre trabajadores
+
+Se añadió un segundo trabajador ficticio con una marcación de 15 minutos.
+La sesión del auditor, como miembro con Horas y Actividad, podía listar esa
+marcación, abrir sus notas y consultar su historial. Es un defecto de alcance:
+la regla anterior filtraba empresa y módulo, pero no trabajador. La copia local
+del controlador operativo de Campo de ADT distingue la consulta propia y el
+equipo asignado de un encargado; esa comparación no acredita todavía la paridad
+completa de Campo.
+
+La migración aditiva `202609240029_time_read_scope.sql` restringe marcaciones
+a la ficha activa vinculada al usuario y solicitudes a las propias sobre esa
+ficha. Propietario y administrador mantienen gestión general. El cierre semanal
+queda reservado a esos perfiles. Historial y Actividad aplican el mismo alcance,
+incluido el control de ambas imágenes de auditoría cuando se reasigna una
+marcación. No se eliminan ni reescriben registros o eventos anteriores.
+
+La prueba de regresión cubre lectura directa por identificador, otra empresa,
+historial, actividad, administrador/propietario, lectura sin escritura, revocación,
+membresía o trabajador inactivo, reasignación y acceso anónimo. Se limitaron a dos
+los archivos de pruebas concurrentes: una ejecución sin límite terminó un proceso
+de pruebas sin diagnóstico; ese archivo pasó aislado y la suite completa limitada
+pasó sus 281 pruebas. La ejecución limitada no elimina casos.
+
+Pendiente en esta revisión: aplicar/publicar únicamente en staging y repetir la
+prueba autenticada. No hay aún un perfil de encargado con delegación por equipo;
+no se debe sustituir esa función concediendo acceso general de administrador.
+La protección no se ha aplicado en producción.
+
 ## Límites de esta evidencia
 
 No cierra ninguno de los seis puntos. Faltan completar la matriz de perfiles y
