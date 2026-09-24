@@ -15,7 +15,7 @@ conserva la operación principal. Los trabajos locales no equivalen a despliegue
 | 2. Migración conciliada | Histórico publicado y lotes operativos de clientes, proyectos, estimados, facturas y pagos documentados por separado. Se conserva procedencia, originales y excepciones. | Delta contra ADT actual, entidades restantes, archivos faltantes y diferencias financieras. Mantener fichas separadas aprobadas y el cliente de correo inválido solo en histórico. Nuevas cargas reales esperan recuperación y staging. |
 | 3. Paridad de 23 módulos | Primeras implementaciones y pruebas de persistencia/permisos; inventario actualizado de definiciones de ruta del origen el 22 de septiembre. | Cerrar acciones, cálculos, diseño avanzado, documentos, Workforce, portal e IA contra ADT vivo. Ningún módulo se declara todavía con paridad completa. |
 | 4. Auditoría completa | 281 pruebas locales y CI; dos cuentas autenticadas y empresas ficticias. Invitación aceptada, restricciones por módulo/empresa, perfiles por fases, revocación con formulario abierto y suspensión verificadas. Edición de clientes, pago/reversión y jornada/solicitud de corrección persistidos. Corregidos en staging conflictos, pérdida de campos al rechazar pagos y lectura de horas ajenas. Ventas recorrió lead, conversión a cliente y tres revisiones de estimado con catálogo. Precios conserva campos rechazados; diseño básico, cambio explícito de tarifas y dos estimados independientes conciliados. | Completar recorridos de los cinco perfiles, escritorio/móvil real, editor visual de permisos, delegación de encargados, aislamiento exhaustivo y concurrencia de todas las operaciones. La salud HTTP no sustituye esos recorridos. |
-| 5. Recuperación y operación | Staging publicado con 29 migraciones y entrega f29072d; registro público cerrado, Email con receptor privado, dos cuentas autenticadas e invitación sintética capturada. Corrección de arranque verificada. Carpeta privada de Drive y herramientas de copia/recuperación preparadas; ensayos sintéticos y job PostgreSQL aprobados. | Recuperación de cuenta y recorridos restantes de staging, acceso real/ETag/cuotas/custodia de clave/OAuth, captura completa, calendario y retención, alertas, restauración y carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
+| 5. Recuperación y operación | Staging publicado con 29 migraciones y entrega 685b5da; registro público cerrado, Email con receptor privado, dos cuentas autenticadas e invitación sintética capturada. Corrección de arranque verificada. Carpeta privada de Drive y herramientas de copia/recuperación preparadas; ensayos sintéticos y job PostgreSQL aprobados. | Recuperación de cuenta y recorridos restantes de staging, acceso real/ETag/cuotas/custodia de clave/OAuth, captura completa, calendario y retención, alertas, restauración y carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
 | 6. Traspaso | Migraciones 026–027 y API desactivadas; corte para drenar solicitudes anteriores y retener las nuevas. Primer adaptador transaccional de cliente SaaS y ensayo concurrente PostgreSQL aprobado. Receptor independiente en Supabase preparado. | Desplegar y ensayar en staging; adaptadores ADT y resto de acciones SaaS, integrar todas las entradas con el receptor, fencing real en ADT y cierre de 1–5. Las atestaciones sintéticas no autorizan traspaso; 026–027 no se han aplicado a producción. |
 
 Detalles de esta entrega: [Operación y recuperación](OPERACION-Y-RECUPERACION.md),
@@ -43,7 +43,7 @@ Pasaron 281 pruebas y [CI](https://github.com/alldecorterrace-ops/SaasAlldecor/a
 Ventas creó y convirtió un lead, y guardó/reabrió dos revisiones de un estimado
 con sus importes conciliados. Producción todavía no recibió 026–029.
 
-La entrega actual de staging `f29072d` corrige el reinicio de formularios rechazados.
+La entrega anterior de staging `f29072d` corrigió el reinicio de formularios rechazados.
 Pasó 281 pruebas y los tres trabajos de [CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36050044247).
 Se repitieron rechazo y corrección de tarifas, catálogo en ventas y conservación
 de importes en estimados. El cálculo básico de diseño pasó de 3.176 a 3.296 USD
@@ -52,6 +52,20 @@ Tras inventario y autorización expresa, se eliminaron cuatro entregas antiguas
 de staging y sus cuatro archivos fuente: 930,8 MiB y 4.644 entradas liberadas.
 La sesión autenticada y salud de ambos entornos pasaron después. El resto de la
 retención y el ensayo completo de retorno siguen abiertos.
+
+La entrega actual de staging `685b5da` extiende la conservación de borradores a
+los formularios operativos y archivos. Pasó lint, tipos, 281 pruebas, build y
+[CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36052658348).
+El recorrido autenticado de Gastos comprobó alta, aprobación, corrección de
+importe, rechazo de archivo inválido, reemplazo de recibo y seis versiones
+persistidas. Los permisos de aprobación y consulta y la ficha móvil emulada
+se comprobaron por separado. Véanse alcances y límites en la auditoría.
+Se conserva `f29072d` para retorno y `b149bee/node_modules` como dependencia.
+El ensayo de cambiar a la anterior y recuperar la actual confirmó proceso,
+salud y lectura autenticada del estimado, sin restaurar ni modificar datos.
+`6866a73` y su archivo fuente están inventariados: 232,9 MiB pendientes de la
+confirmación de eliminación solicitada. Producción no recibió esta entrega
+ni migraciones nuevas. Los seis puntos siguen abiertos.
 
 ## Pruebas reproducibles
 

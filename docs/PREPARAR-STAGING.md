@@ -246,7 +246,7 @@ resto de recorridos mantienen los límites descritos en la auditoría.
 
 ## Catálogo y publicación f29072d
 
-La entrega activa es `f29072da3322c86c02949d0d89bc57afef785870`.
+En esa publicación quedó activa `f29072da3322c86c02949d0d89bc57afef785870`.
 Conserva 29 migraciones y corrige el reinicio de formularios rechazados.
 Lint, tipos, 281 pruebas, compilación y los tres trabajos de CI pasaron antes
 de preparar la entrega del hosting. Se repitió el rechazo de una tarifa cero,
@@ -259,3 +259,28 @@ se retiraron cuatro entregas anteriores y sus archivos fuente. Se liberaron
 930,8 MiB; la sesión autenticada y salud de ambos entornos pasaron después.
 No se modificó producción ni se cerraron los requisitos de recuperación,
 retorno completo, carga o traspaso.
+
+## Gastos y publicación 685b5da
+
+La entrega activa es `685b5da1dc377705828beec50cf731c0c4c91517`, con `f29072d`
+como anterior y `b149bee/node_modules` compartido. Continúan las 29 migraciones.
+Los formularios operativos conservan campos y archivos al devolver errores;
+se reutiliza la misma protección en los formularios generales y financieros.
+Lint, tipos, 281 pruebas, compilación y
+[CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36052658348)
+pasaron antes de la publicación.
+
+Se repitieron en staging el rechazo y corrección de un gasto, aprobación,
+reemplazo de recibo, consulta restringida e historial de seis versiones. Los
+dos PDF sintéticos se abrieron y conservaron. La ficha se inspeccionó en móvil
+emulado, sin desbordamiento horizontal. La auditoría contiene los límites de
+estas pruebas: no cubren todavía todos los formularios ni dispositivos reales.
+
+Se ensayó cambiar a `f29072d` y recuperar `685b5da`, comprobando proceso, salud y
+lectura del estimado existente en ambos cambios. No se restauró la base ni se
+ensayaron escrituras concurrentes. La recuperación completa sigue pendiente.
+
+`6866a73` y su archivo fuente están inventariados, sin dependencias entrantes ni
+datos únicos pendientes de conservación. Suman 232,9 MiB; su eliminación espera
+la confirmación solicitada. No hubo cambios de producción ni cierre de los
+requisitos de recuperación, carga o traspaso.

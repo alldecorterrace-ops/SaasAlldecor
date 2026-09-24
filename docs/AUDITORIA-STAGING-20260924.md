@@ -326,14 +326,80 @@ reinicio. Los guardados con redirección abren el registro persistido. Se aplica
 a Gastos/Trabajadores, Horas, fichas operativas, movimientos y adjuntos, imágenes,
 además de los formularios generales y financieros ya protegidos. El importe
 cero recibe ahora una explicación en español. No cambia reglas financieras,
-permisos, migraciones ni datos. La verificación de la nueva entrega en staging
-se registrará después del despliegue.
+permisos, migraciones ni datos. La entrega `685b5da` pasó lint, tipos, 281 pruebas,
+compilación y los tres trabajos de
+[CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36052658348)
+antes de publicarse en staging. El proceso activo se verificó dentro de esa
+entrega; `f29072d` queda como anterior y `b149bee/node_modules` como dependencia
+compartida. Producción conserva su configuración. Ambas rutas de salud pasaron
+con HTTP 200 y `no-store`; no hubo nuevas migraciones.
+
+### Gasto sintético, recibos y permisos
+
+Se creó desde la interfaz un gasto ficticio de 12,34 USD, sin proyecto ni
+trabajador asignados, con método Otro, proveedor y referencia de prueba. Se
+subió un PDF sintético y se abrió su contenido desde el enlace privado. Un
+administrador lo aprobó; al reabrir persistió el estado.
+
+En la nueva entrega, enviar importe cero devolvió el mensaje en español y
+conservó categoría, proveedor, referencia, método y descripción. Corregir solo
+el importe a 15,67 USD guardó los cambios y devolvió el gasto aprobado a revisión.
+La validación rechazada no generó una versión persistida.
+
+Un archivo de texto renombrado como PDF fue rechazado por su contenido: conservó
+el archivo seleccionado y el recibo válido anterior. Tras otra aprobación,
+subir el segundo PDF volvió a dejar el gasto pendiente, con la explicación
+«Recibo corregido; requiere nueva revisión». El nuevo enlace abrió el PDF de
+15,67 USD. La base conserva exactamente dos objetos privados de 617 bytes, y
+el historial de la interfaz muestra seis versiones: creación, primer recibo,
+aprobación, corrección de importe, segunda aprobación y segundo recibo. El primer
+archivo permanece conservado. No hubo compra, desembolso ni envío real.
+
+Con escritura de Gastos, los controles de aprobación y reembolso estuvieron
+deshabilitados. Una llamada transaccional con el rol autenticado y sujeto del
+auditor confirmó el rechazo de aprobación con `42501`; terminó en `ROLLBACK`.
+Con lectura únicamente, no aparecen acciones de guardado, carga o eliminación
+del recibo, mientras su lectura privada sigue disponible. También se confirmó
+el rechazo transaccional `42501` al intentar cambiar la descripción con ese perfil.
+Al retirar Gastos y restablecer Ventas, recargar la ficha devolvió «Página no
+disponible». La cuenta terminó sin acceso administrativo. La ficha bajo la
+empresa B devolvió «Página no disponible». El intento de obtener el objeto por
+la ruta pública respondió HTTP 400, con error de bucket no encontrado, sin PDF.
+Esto no sustituye una prueba de revocación de todos los enlaces firmados ya emitidos.
+
+La ficha completa se inspeccionó a 390 × 844: encabezado, campos, revisión y
+recibo permanecen legibles sin desbordamiento horizontal (contenido de 375 px
+dentro del viewport de 390 px, con barra vertical). Se restableció el tamaño
+normal. Es emulación de navegador y lectura; no acredita un teléfono físico ni
+la captura de fotos o GPS. Los demás formularios que comparten la protección
+requieren sus recorridos propios; no se declaran auditados por esta reutilización.
 
 El contraste de catálogo revisó el editor de partidas de ADT conservado y el
 archivo público actual de Pérgola: ambos incorporan el precio base, sin ejecutar
 las opciones `addType`. Esto no demuestra el comportamiento de otros editores
 de ADT. No se introduce una fórmula nueva de adicionales como supuesta paridad;
 queda pendiente localizar y comprobar ese recorrido si está operativo allí.
+
+### Ensayo de retorno de código y retención
+
+Se cambió staging temporalmente de `685b5da` a `f29072d`, con verificación de
+commits, compilaciones, entorno idéntico y dependencias compartidas. Se comprobó
+el nuevo proceso sirviendo desde la entrega anterior, salud HTTP 200 y la sesión
+de Ventas reabriendo el estimado sintético en revisión 3 con 306,95 USD. Después
+se recuperó `685b5da`; se comprobaron nuevamente proceso, salud y el mismo
+estimado sin cambios. La configuración y el proceso de producción permanecieron
+intactos. El cambio de raíz no ejecutó SQL ni restauró datos.
+
+Este ensayo acredita arranque y lectura autenticada del retorno entre estas dos
+entregas, con 29 migraciones. No acredita restauración desde copias, continuidad
+de escrituras concurrentes, retorno de producción ni recuperación de los 23 módulos.
+
+La entrega sobrante `6866a73` y su archivo fuente suman 238.472 KiB (232,9 MiB),
+785 archivos y 1.165 entradas. Se renovó el inventario: código original sin
+cambios ni ausencias, configuración sin diferencias, ningún proceso ni enlace
+entrante dependiente. El único diagnóstico adicional se conservó junto con los
+anteriores en un archivo privado consolidado de 520 bytes. Se solicitaron los
+dos destinos exactos para confirmación; siguen conservados mientras esté pendiente.
 
 ## Límites de esta evidencia
 
