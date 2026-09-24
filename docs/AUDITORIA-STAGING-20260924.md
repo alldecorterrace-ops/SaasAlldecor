@@ -43,12 +43,19 @@ de prueba y conservó estado, fechas y notas después de recargar. La vista impr
 del estimado muestra estado Aprobado, revisión 2 y los importes correctos. No se
 exportó un PDF ni se comprobó impresión física en este recorrido.
 
-Incidencia abierta de interfaz: al devolver el error de sobrepago, `FinanceForm`
+Incidencia descubierta de interfaz: al devolver el error de sobrepago, `FinanceForm`
 restablece sus campos (incluidos importe, método y referencia) a los valores
 iniciales. No altera el saldo, pero obliga a reintroducir los datos. Debe conservar
-la entrada ante un rechazo y limpiar únicamente tras el éxito; falta corregir y
-repetir ese caso. Tampoco se ensayaron aún reversión, anulación, otros perfiles ni
+la entrada ante un rechazo y limpiar únicamente tras el éxito. La corrección de
+código cancela el restablecimiento automático salvo cuando la acción confirma un
+guardado; [React documenta ese restablecimiento de campos no controlados](https://react.dev/reference/react-dom/components/form).
+Falta publicar y repetir el rechazo y el guardado válido para cerrar la incidencia.
+Tampoco se ensayaron aún reversión, anulación, otros perfiles ni
 concurrencia financiera por navegador.
+
+El titular creó la segunda cuenta sintética en Supabase. Se verificó su existencia
+y se creó su invitación desde Configuración, sin intentos de correo. Queda pendiente
+su inicio de sesión privado, aceptación y recorrido con permisos restringidos.
 
 ## Defecto descubierto al editar desde dos pestañas
 
