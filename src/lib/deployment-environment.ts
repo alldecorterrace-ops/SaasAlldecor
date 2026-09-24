@@ -13,6 +13,26 @@ export function externalEffectsAllowed(env: Environment) {
   );
 }
 
+// This flag records an operator-verified Supabase Send Email hook. It does not
+// configure that hook; the private capture must already be installed and tested.
+export function authRecoveryAllowed(env: Environment, email: string) {
+  if (externalEffectsAllowed(env)) return true;
+  if (
+    env.APP_ENVIRONMENT !== "staging" ||
+    env.STAGING_AUTH_EMAIL_CAPTURE_VERIFIED !== "true" ||
+    !/^[a-z0-9][a-z0-9._+-]{0,63}@saasalldecor[.]invalid$/.test(
+      email.toLowerCase(),
+    )
+  )
+    return false;
+  try {
+    assertDeploymentEnvironment(env);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function assertDeploymentEnvironment(env: Environment) {
   if (env.APP_ENVIRONMENT === undefined || env.APP_ENVIRONMENT === "production")
     return;

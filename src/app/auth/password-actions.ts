@@ -1,6 +1,5 @@
 "use server";
 import { createClient, isConfigured } from "@/lib/supabase/server";
-import { externalEffectsAllowed } from "@/lib/deployment-environment";
 import {
   sendRecoveryRequest,
   saveNewPassword,
@@ -11,11 +10,6 @@ export async function requestPasswordReset(
   _: RecoveryState,
   form: FormData,
 ): Promise<RecoveryState> {
-  if (!externalEffectsAllowed(process.env))
-    return {
-      error:
-        "Los correos de recuperación están desactivados en el entorno de pruebas.",
-    };
   if (!isConfigured())
     return { error: "La conexión de este entorno está pendiente." };
   const db = await createClient();
@@ -23,6 +17,7 @@ export async function requestPasswordReset(
     db.auth,
     form.get("email"),
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+    process.env,
   );
 }
 

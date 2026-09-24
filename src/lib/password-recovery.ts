@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { authRecoveryAllowed } from "./deployment-environment";
 
 export type RecoveryState = { error?: string; success?: string };
 export const recoveryEmailSchema = z.string().trim().max(254).pipe(z.email());
@@ -29,9 +30,15 @@ export async function sendRecoveryRequest(
   auth: RecoveryAuth,
   email: unknown,
   site: string,
+  environment: Record<string, string | undefined> = process.env,
 ): Promise<RecoveryState> {
   const parsed = recoveryEmailSchema.safeParse(email);
   if (!parsed.success) return { error: "Escribe un correo válido." };
+  if (!authRecoveryAllowed(environment, parsed.data))
+    return {
+      error:
+        "La recuperación de pruebas requiere una cuenta ficticia y el receptor privado verificado.",
+    };
   try {
     const callback = new URL("/auth/callback", site);
     callback.searchParams.set("next", "/actualizar-contrasena");
@@ -46,7 +53,9 @@ export async function sendRecoveryRequest(
     // Do not distinguish unknown accounts from provider/account-specific errors.
     return {
       success:
-        "Si el correo corresponde a una cuenta habilitada, recibirás un enlace para cambiar tu contraseña. Ábrelo en este mismo navegador.",
+        environment.APP_ENVIRONMENT === "staging"
+          ? "Si la cuenta ficticia está habilitada, el enlace quedará en el receptor privado de pruebas. No se enviará correo externo."
+          : "Si el correo corresponde a una cuenta habilitada, recibirás un enlace para cambiar tu contraseña. Ábrelo en este mismo navegador.",
     };
   } catch {
     return {

@@ -76,15 +76,14 @@ Los controles de [verificación](../supabase/verify-staging-bootstrap.sql) diero
 - Tres buckets privados: productos, recibos y archivos de trabajo; cero objetos.
 - Cero usuarios, empresas, solicitudes, colas activas o adaptadores verificados.
 
-Es evidencia del esquema en Supabase real, **no de la aplicación operativa**.
-Siguen pendientes publicación web, receptor de correo, cuentas sintéticas,
-recorridos de interfaz y recuperación completa. Producción no recibió migraciones.
+Es evidencia del esquema en Supabase real, **no de los recorridos de aplicación**.
+La publicación y el receptor comprobados posteriormente se documentan debajo.
+Producción no recibió migraciones.
 
 Se creó `staging.alldecorpatio.com` con raíz independiente; DNS resuelve al hosting
-y HTTPS valida su certificado. La raíz aún responde 404 porque no hay aplicación
-publicada. Se activó Force HTTPS en cPanel, pero una petición HTTP todavía dio
-404: la redirección efectiva debe comprobarse/corregirse durante la publicación.
-No se considera el entorno navegable ni apto para auditoría por tener dominio y base.
+y HTTPS valida su certificado. Antes de publicar, la raíz respondía 404 y Force
+HTTPS de cPanel no producía la redirección efectiva. Se corrigió al configurar
+la aplicación; dominio y esquema por sí solos no se contaron como staging operativo.
 
 ## Receptor privado de correo Auth
 
@@ -118,3 +117,57 @@ con datos, reinstalación, destinatarios externos y mensajes inválidos. Esto no
 acredita la configuración real del hook ni un recorrido de recuperación: después
 de instalar se debe comprobar una solicitud sintética real y su captura privada,
 sin publicar el token ni marcar como verificado un correo externo.
+
+## Publicación web y límite de procesos
+
+La primera entrega web `b149bee` respondió 200 en salud, login y recuperación;
+HTTP redirigió a HTTPS y las rutas privadas exigieron sesión. Se observaron login
+y recuperación a 390 × 844, con aviso visible de entorno de pruebas. Esto prueba
+las pantallas públicas, no los recorridos autenticados.
+
+Al coexistir con producción, su proceso abrió 32 hilos y el usuario alcanzó 74
+en total. cPanel informó `cagefs_enter: Unable to fork` y la terminal confirmó
+`Resource temporarily unavailable`. Se detuvo únicamente el proceso identificado
+por la carpeta de staging; no se reinició producción. Los límites de UV, Rayon,
+V8 y Tokio por entorno no redujeron el grupo nativo observado.
+
+La comprobación local aisló la carga de `next.config.ts`: el arranque de Next
+precargaba SWC nativo aunque la aplicación estuviera compilada. La corrección
+`9ccf77f` conserva las mismas opciones en `next.config.mjs`; la misma sonda de
+arranque pasa de `nativeSwcLoaded: true` a `false`. Pasan 270 pruebas, lint, tipos
+y build, y [CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36038605924).
+La compilación inicial falló con `EAGAIN` al coexistir con un proceso antiguo de
+staging que reapareció. Se aisló temporalmente solo staging con respuesta 503,
+se detuvo su proceso y se compiló con Node directo, un CPU y dependencias de staging
+sin modificaciones. La compilación terminó y se activó `9ccf77f`.
+
+Después de publicar, el proceso identificado por su raíz nueva usa **5 hilos**;
+producción conserva su proceso anterior con 40. Ambas rutas de salud responden
+200 y cPanel Resource Usage vuelve a abrir. La pantalla de recuperación muestra
+el aviso de entorno de pruebas. Esto resuelve el fallo observado de arranque;
+no acredita carga al doble del pico ni capacidad de recuperación.
+
+## Auth aislado comprobado
+
+El SQL del receptor terminó con `COMMIT` en staging. El hook Send Email está
+habilitado con `public.staging_capture_auth_email`, configurado antes de activar
+Email. El registro público, acceso anónimo y otros proveedores siguen desactivados.
+Site URL usa `https://staging.alldecorpatio.com`, con los callbacks exactos
+`/auth/callback` y `/auth/callback?next=%2Factualizar-contrasena`.
+
+Una invitación sintética desde Supabase creó un usuario y una captura privada
+de tipo `invite`. El intento posterior con un dominio ficticio distinto no creó
+usuario ni captura; los conteos permanecieron en uno. Solo se consultaron metadatos,
+sin mostrar tokens. No prueba aceptación ni recuperación completa.
+
+La aplicación bloquea por defecto la recuperación en staging. Para ensayar ese
+recorrido después de verificar el hook, configurar exclusivamente en el servidor
+`STAGING_AUTH_EMAIL_CAPTURE_VERIFIED=true`. Permite solo destinatarios
+`@saasalldecor.invalid` y vuelve a comprobar que el entorno apunta a una base y
+origen separados. No habilita correo externo, invitaciones SMTP ni IA. Retirar
+esta marca y desactivar Email antes de cambiar o quitar el hook. Las pruebas
+comprueban que destinos externos, configuración de producción y falta de la marca
+no llaman al proveedor de Auth.
+
+Quedan pendientes la creación privada de contraseña de la primera cuenta de
+auditoría, sus recorridos autenticados y la recuperación de datos real desde Drive.

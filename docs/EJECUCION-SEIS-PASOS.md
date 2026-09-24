@@ -15,14 +15,14 @@ conserva la operación principal. Los trabajos locales no equivalen a despliegue
 | 2. Migración conciliada | Histórico publicado y lotes operativos de clientes, proyectos, estimados, facturas y pagos documentados por separado. Se conserva procedencia, originales y excepciones. | Delta contra ADT actual, entidades restantes, archivos faltantes y diferencias financieras. Mantener fichas separadas aprobadas y el cliente de correo inválido solo en histórico. Nuevas cargas reales esperan recuperación y staging. |
 | 3. Paridad de 23 módulos | Primeras implementaciones y pruebas de persistencia/permisos; inventario actualizado de definiciones de ruta del origen el 22 de septiembre. | Cerrar acciones, cálculos, diseño avanzado, documentos, Workforce, portal e IA contra ADT vivo. Ningún módulo se declara todavía con paridad completa. |
 | 4. Auditoría completa | Suite local, controles SQL remotos anteriores, correo/recuperación/aceptación confirmados por el propietario, comprobaciones públicas HTTP actuales. | Recorridos autenticados por cinco perfiles, escritorio/móvil, nueva invitación desde Configuración, concurrencia y dos empresas. La salud HTTP no sustituye esos recorridos. |
-| 5. Recuperación y operación | Proyecto staging creado, 27 migraciones aplicadas e historial conciliado; registro y Email desactivados. Carpeta privada de Drive preparada, guardas de entorno, exportador PostgreSQL con snapshot común, captura de Storage/hosting, cifrado age, transferencia rclone con lectura posterior y recuperación aislada de archivos. Ensayos sintéticos y job PostgreSQL aprobados. | Completar aplicación de staging, configurar y probar acceso real/ETag/cuotas/custodia de clave/OAuth, comprobar captura completa, activar calendario y retención, verificar alertas, restaurar y probar carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
+| 5. Recuperación y operación | Staging publicado, 27 migraciones e historial conciliado; registro público cerrado, Email con receptor privado e invitación sintética capturada. Corrección de arranque reduce su proceso de 32 a 5 hilos. Carpeta privada de Drive y herramientas de copia/recuperación preparadas; ensayos sintéticos y job PostgreSQL aprobados. | Cuentas y recorridos autenticados de staging, acceso real/ETag/cuotas/custodia de clave/OAuth, captura completa, calendario y retención, alertas, restauración y carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
 | 6. Traspaso | Migraciones 026–027 y API desactivadas; corte para drenar solicitudes anteriores y retener las nuevas. Primer adaptador transaccional de cliente SaaS y ensayo concurrente PostgreSQL aprobado. Receptor independiente en Supabase preparado. | Desplegar y ensayar en staging; adaptadores ADT y resto de acciones SaaS, integrar todas las entradas con el receptor, fencing real en ADT y cierre de 1–5. Las atestaciones sintéticas no autorizan traspaso; 026–027 no se han aplicado a producción. |
 
 Detalles de esta entrega: [Operación y recuperación](OPERACION-Y-RECUPERACION.md),
 [Cola de transición](COLA-DE-TRANSICION.md) y
 [lectura autenticada de los 23 módulos](AUDITORIA-LECTURA-20260922.md). La lectura
 de propietario pasó en escritorio/móvil salvo desbordamiento de Clientes en móvil,
-corregido en código y pendiente de publicación. Los apartados siguientes conservan
+corregido y publicado en staging; falta repetir el recorrido autenticado y publicarlo en producción. Los apartados siguientes conservan
 la evidencia histórica con sus fechas; no representan comprobaciones repetidas hoy.
 
 ## Pruebas reproducibles
@@ -30,12 +30,11 @@ la evidencia histórica con sus fechas; no representan comprobaciones repetidas 
 ### Continuación del 24 de septiembre
 
 El propietario completó el acceso al hosting y creó SaasAlldecor-Staging. Se verificó
-el nuevo proyecto saludable y la identidad del hosting. En staging se desactivaron
+el nuevo proyecto saludable y la identidad del hosting. Inicialmente se desactivaron
 el registro público y el proveedor Email; tras recargar persistieron desactivados,
-igual que los demás proveedores. No hay hooks de Auth configurados. Es una medida
-inicial: antes de habilitar acceso sintético se necesita un receptor de correo de
-prueba y comprobar todos los emisores. Se aplicó después el esquema de staging,
-como se detalla más abajo; no hubo cargas reales, limpieza ni despliegue web.
+igual que los demás proveedores. Después se instaló y comprobó un receptor privado
+antes de habilitar Email. El registro público sigue cerrado. Se aplicó el esquema
+y se publicó la aplicación, como se detalla más abajo; no hubo cargas reales ni limpieza.
 
 El inventario inicial del hosting conserva dieciséis carpetas de entregas. Se observó
 una dependencia compartida y una utilización del límite de archivos que requiere
@@ -72,11 +71,17 @@ la autenticación privada y se verificó el destino vacío antes de ejecutar el 
 Terminó con `COMMIT`, 27 migraciones e historial cuya huella coincide con GitHub.
 Los controles reales comprobaron 23 módulos, RLS en las 34 tablas públicas, cero
 lectura anónima/escritura directa, tres buckets privados sin objetos y cola apagada.
-No hay usuarios ni empresas. La excepción interna `document_counters` conserva
+En ese control inicial no había usuarios ni empresas. La excepción interna `document_counters` conserva
 solo permisos de `postgres` y queda detallada en [staging](PREPARAR-STAGING.md).
 Se creó el subdominio de staging con raíz independiente, DNS y certificado HTTPS
-válidos. Aún responde 404; la redirección HTTP configurada tampoco quedó verificada.
-Staging todavía necesita publicar la aplicación, correo aislado y cuentas sintéticas.
+válidos. La publicación posterior `9ccf77f` respondió 200 en salud y pantallas públicas,
+con redirección HTTPS, separación de base y aviso de pruebas. Un exceso de hilos
+del arranque nativo se corrigió y midió en el proceso real: 32 antes, 5 después.
+Producción conservó su proceso y respondió 200. cPanel volvió a abrir normalmente.
+El receptor privado de Auth capturó una invitación sintética; un destinatario de
+otro dominio ficticio no creó usuario ni captura. Falta la primera cuenta de
+auditoría con contraseña privada y los recorridos autenticados. Detalles y límites
+en [staging](PREPARAR-STAGING.md).
 Producción no recibió las migraciones 026–027 ni cambios de autoridad.
 
 Se midieron 457.595 entradas en las 16 carpetas de entregas y se identificó un
