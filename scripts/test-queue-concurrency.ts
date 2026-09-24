@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
 import { Pool, type PoolClient } from "pg";
 import { authStorageContract } from "../tests/helpers/auth-storage-contract";
+import { stagingBootstrap } from "./ops/staging-bootstrap";
 
 async function main() {
   const connection = process.env.QUEUE_TEST_DATABASE_URL;
@@ -66,10 +67,24 @@ async function main() {
     );
     await pool.query(authStorageContract);
     const directory = new URL("../supabase/migrations/", import.meta.url);
-    for (const file of (await readdir(directory))
-      .filter((x) => x.endsWith(".sql"))
-      .sort())
-      await pool.query(await readFile(new URL(file, directory), "utf8"));
+    const migrations = await Promise.all(
+      (await readdir(directory))
+        .filter((x) => x.endsWith(".sql"))
+        .sort()
+        .map(async (name) => ({
+          name,
+          sql: await readFile(new URL(name, directory), "utf8"),
+        })),
+    );
+    await pool.query(stagingBootstrap(migrations));
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from supabase_migrations.schema_migrations",
+        )
+      ).rows[0].n,
+      migrations.length,
+    );
     await pool.query(
       "insert into auth.users values($1,'concurrency-owner@example.test',now())",
       [owner],

@@ -57,6 +57,13 @@ observados de Actions superan los cinco minutos configurados: no se declara gara
 esa frecuencia. Siguen pendientes recepción de alertas y monitor de respaldos reales.
 Los seis puntos permanecen abiertos.
 
+También se preparó el [bootstrap transaccional de staging](PREPARAR-STAGING.md),
+con historial de las 27 migraciones y rechazo de destinos con datos. Dos pruebas
+adicionales comprueban aplicación/repetición y reversión ante fallos; la suite
+local pasó 267 pruebas, lint, tipos y compilación. Se generó un SQL y se transfirió
+al directorio privado del hosting; su SHA-256 coincide. Su ejecución remota requiere
+la conexión privada de PostgreSQL y continúa pendiente en este registro.
+
 ### Comprobaciones y evidencia previa
 
 - `npm run check`: lint, tipos, pruebas PostgreSQL/validación y build.
