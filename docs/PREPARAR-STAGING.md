@@ -215,7 +215,7 @@ su entrega anterior y no recibió las migraciones 026–028.
 
 ## Segunda cuenta y publicación e1187ec
 
-La entrega activa actual es `e1187ec1549a09b0a2f001aa128e7410a8f53f28`, con
+En esa publicación quedó activa `e1187ec1549a09b0a2f001aa128e7410a8f53f28`, con
 `f1fbf02` anterior y `b149bee/node_modules` compartido. Pasaron 274 pruebas,
 lint, tipos, build y [CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36044709994)
 antes de activar. La segunda cuenta aceptó la invitación y permitió comprobar
@@ -226,3 +226,19 @@ en la [auditoría autenticada](AUDITORIA-STAGING-20260924.md).
 
 No hubo migraciones nuevas ni cambios de producción en esta publicación. Retorno,
 contenido único de las entregas sobrantes y restauración desde Drive siguen pendientes.
+
+## Alcance de Horas y publicación 6866a73
+
+La entrega activa actual es `6866a73ef6172b120eb30f52c77cf4ea5e38b785`, con
+`e1187ec` anterior y `b149bee/node_modules` compartido. Staging tiene 29 migraciones.
+La migración 029 limita al trabajador a sus marcaciones/solicitudes y filtra
+historial y Actividad; administrador y propietario conservan gestión general.
+Se respaldaron las reglas previas y se comprobaron las huellas de las 28 entradas
+anteriores antes de aplicar. Pasaron 281 pruebas, lint, tipos, build y
+[CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36047579817).
+
+La prueba autenticada confirmó el bloqueo de ficha e historial ajenos, lectura
+propia y gestión administrativa. La misma cuenta recorrió después ventas con
+permisos limitados, creando lead, cliente y estimado con dos revisiones.
+Producción sigue sin cambios. Retorno completo, limpieza, recuperación real y
+resto de recorridos mantienen los límites descritos en la auditoría.

@@ -181,10 +181,53 @@ los archivos de pruebas concurrentes: una ejecución sin límite terminó un pro
 de pruebas sin diagnóstico; ese archivo pasó aislado y la suite completa limitada
 pasó sus 281 pruebas. La ejecución limitada no elimina casos.
 
-Pendiente en esta revisión: aplicar/publicar únicamente en staging y repetir la
-prueba autenticada. No hay aún un perfil de encargado con delegación por equipo;
+La entrega `6866a73ef6172b120eb30f52c77cf4ea5e38b785` pasó lint, tipos, build,
+281 pruebas y los tres trabajos de [CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36047579817).
+La migración terminó con COMMIT en staging tras conciliar las 28 anteriores;
+quedan 29 entradas de migración. Su contenido registrado coincide con GitHub.
+Las dos funciones y tres políticas previas quedaron respaldadas de forma privada.
+
+Después de aplicar, la misma sesión real ve una marcación propia y sus dos
+solicitudes. La ficha ajena devuelve Página no disponible; su historial no
+devuelve eventos. Actividad solo muestra los eventos propios. La base conserva
+las dos marcaciones y sus 20 minutos totales. Con el perfil administrador, la
+interfaz vuelve a mostrar ambas marcaciones y los controles de gestión.
+
+La aplicación publicada oculta el cierre de semanas al trabajador y explica el
+alcance propio. Se comprobó el proceso activo, cinco hilos y dependencia compartida;
+staging y producción responden salud 200 sin caché. La entrega anterior es
+`e1187ec`; `b149bee/node_modules` sigue siendo indispensable. Las carpetas
+`9ccf77f`, `d530c33` y `f1fbf02` no tienen procesos activos en el inventario nuevo,
+pero siguen pendientes de revisión de contenido único y confirmación de borrado.
+
+No hay aún un perfil de encargado con delegación por equipo;
 no se debe sustituir esa función concediendo acceso general de administrador.
 La protección no se ha aplicado en producción.
+
+## Lead, conversión y revisiones con perfil de ventas
+
+Con la segunda cuenta en perfil miembro y permisos comerciales se creó un lead
+ficticio, se reabrió y se convirtió a cliente desde la interfaz. La base confirmó
+un único cliente vinculado y conservación de correo, teléfono, dirección y notas.
+El lead queda en estado Cliente, con enlace al cliente y sin repetir el botón de
+conversión. Esto acredita la conversión observada; el ensayo de dos conversiones
+concurrentes sigue siendo una prueba técnica, no una prueba simultánea de navegador.
+
+Ventas buscó al cliente convertido y creó `EST-2026-0002` en Borrador: dos unidades
+a 19,95 USD, descuento 0,90 e impuestos 1,00 dieron 40,00 USD. Guardar una segunda
+revisión con tres unidades dejó 59,95 USD. La reapertura y la base confirmaron
+ambos importes. El historial permite consultar la primera revisión sin editarla;
+su vista imprimible mantiene cantidad dos, datos del cliente y total 40,00.
+La revisión actual conserva cantidad tres y total 59,95. No se exportó PDF.
+En viewport emulado de 390 × 844, documento y cuerpo miden 390 px; se abrió y
+cerró el menú móvil y se restauró el tamaño normal. No acredita teléfono físico
+ni guardado con teclado móvil.
+
+Este perfil no muestra aprobación/facturación y la ruta de Facturas devuelve
+Página no disponible. Quedó activo únicamente el conjunto comercial de prueba;
+no es administrador y no tiene membresía en la otra empresa. No se hicieron
+cobros, envíos comerciales ni aprobación de un cliente real. Catálogo, precios,
+envío, aprobación y recorrido financiero con este perfil siguen pendientes.
 
 ## Límites de esta evidencia
 
