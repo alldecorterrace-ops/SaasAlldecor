@@ -74,8 +74,14 @@ Los controles reales comprobaron 23 módulos, RLS en las 34 tablas públicas, ce
 lectura anónima/escritura directa, tres buckets privados sin objetos y cola apagada.
 No hay usuarios ni empresas. La excepción interna `document_counters` conserva
 solo permisos de `postgres` y queda detallada en [staging](PREPARAR-STAGING.md).
-Staging aún necesita aplicación, dominio, correo aislado y cuentas sintéticas.
+Se creó el subdominio de staging con raíz independiente, DNS y certificado HTTPS
+válidos. Aún responde 404; la redirección HTTP configurada tampoco quedó verificada.
+Staging todavía necesita publicar la aplicación, correo aislado y cuentas sintéticas.
 Producción no recibió las migraciones 026–027 ni cambios de autoridad.
+
+Se midieron 457.595 entradas en las 16 carpetas de entregas y se identificó un
+proceso en la raíz configurada. No es una lista de borrado: falta verificar contenido
+único y un retorno compatible. La dependencia compartida de la aplicación se conserva.
 
 ### Comprobaciones y evidencia previa
 

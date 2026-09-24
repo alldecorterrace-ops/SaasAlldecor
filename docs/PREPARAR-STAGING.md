@@ -77,5 +77,11 @@ Los controles de [verificación](../supabase/verify-staging-bootstrap.sql) diero
 - Cero usuarios, empresas, solicitudes, colas activas o adaptadores verificados.
 
 Es evidencia del esquema en Supabase real, **no de la aplicación operativa**.
-Siguen pendientes dominio, publicación web, receptor de correo, cuentas sintéticas,
+Siguen pendientes publicación web, receptor de correo, cuentas sintéticas,
 recorridos de interfaz y recuperación completa. Producción no recibió migraciones.
+
+Se creó `staging.alldecorpatio.com` con raíz independiente; DNS resuelve al hosting
+y HTTPS valida su certificado. La raíz aún responde 404 porque no hay aplicación
+publicada. Se activó Force HTTPS en cPanel, pero una petición HTTP todavía dio
+404: la redirección efectiva debe comprobarse/corregirse durante la publicación.
+No se considera el entorno navegable ni apto para auditoría por tener dominio y base.
