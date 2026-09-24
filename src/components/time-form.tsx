@@ -1,5 +1,6 @@
 "use client";
-import { useActionState, type ReactNode } from "react";
+import { usePreservedActionState } from "./use-preserved-action-state";
+import type { ReactNode } from "react";
 import {
   timeAction,
   type TimeState,
@@ -17,12 +18,12 @@ export function TimeForm({
   label: string;
   children: ReactNode;
 }) {
-  const [state, action, pending] = useActionState(
+  const [state, action, pending, onReset] = usePreservedActionState(
     timeAction.bind(null, companyId, operation),
     {} as TimeState,
   );
   return (
-    <form action={action} className="space-y-4">
+    <form onReset={onReset} action={action} className="space-y-4">
       <Feedback error={state.error} success={state.success} />
       <fieldset disabled={pending} className="grid gap-4 md:grid-cols-2">
         {children}

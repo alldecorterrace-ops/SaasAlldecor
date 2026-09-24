@@ -313,6 +313,28 @@ la configuración de producción. Las cifras generales de `df` corresponden al
 disco compartido del servidor, no a la cuota de esta cuenta. El resto del hosting
 y el ensayo completo de retorno siguen pendientes; no se cierra el punto 1.
 
+## Continuación: validación de gastos y conservación del formulario
+
+En la entrega `f29072d`, un miembro con escritura en Gastos completó categoría,
+proveedor, referencia, descripción y método Otro, dejando importe cero. El
+servidor rechazó el gasto, pero React reinició los campos sin guardar. El mensaje
+era `Invalid input`. Se reprodujo con una sesión real sobre datos sintéticos.
+
+La corrección reutiliza una protección común: un resultado de error conserva
+los campos y archivos seleccionados; solo un éxito confirmado permite el
+reinicio. Los guardados con redirección abren el registro persistido. Se aplica
+a Gastos/Trabajadores, Horas, fichas operativas, movimientos y adjuntos, imágenes,
+además de los formularios generales y financieros ya protegidos. El importe
+cero recibe ahora una explicación en español. No cambia reglas financieras,
+permisos, migraciones ni datos. La verificación de la nueva entrega en staging
+se registrará después del despliegue.
+
+El contraste de catálogo revisó el editor de partidas de ADT conservado y el
+archivo público actual de Pérgola: ambos incorporan el precio base, sin ejecutar
+las opciones `addType`. Esto no demuestra el comportamiento de otros editores
+de ADT. No se introduce una fórmula nueva de adicionales como supuesta paridad;
+queda pendiente localizar y comprobar ese recorrido si está operativo allí.
+
 ## Límites de esta evidencia
 
 No cierra ninguno de los seis puntos. Faltan completar la matriz de perfiles y

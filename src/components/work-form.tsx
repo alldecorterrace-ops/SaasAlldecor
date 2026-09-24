@@ -1,10 +1,6 @@
 "use client";
-import {
-  useActionState,
-  useSyncExternalStore,
-  useState,
-  type ReactNode,
-} from "react";
+import { usePreservedActionState } from "./use-preserved-action-state";
+import { useSyncExternalStore, useState, type ReactNode } from "react";
 import {
   saveWork,
   inventoryMovement,
@@ -89,12 +85,12 @@ export function WorkForm({
   saved: boolean;
   children?: ReactNode;
 }) {
-  const [state, action, pending] = useActionState(
+  const [state, action, pending, onReset] = usePreservedActionState(
     saveWork.bind(null, companyId, kind),
     {} as WorkState,
   );
   return (
-    <form action={action} className="card space-y-5">
+    <form onReset={onReset} action={action} className="card space-y-5">
       <Feedback
         error={state.error}
         success={saved ? "Registro guardado." : undefined}
@@ -181,9 +177,12 @@ export function WorkActionForm({
     operation === "movement"
       ? inventoryMovement.bind(null, companyId)
       : workAttachment.bind(null, companyId, kind);
-  const [state, action, pending] = useActionState(actionFn, {} as WorkState);
+  const [state, action, pending, onReset] = usePreservedActionState(
+    actionFn,
+    {} as WorkState,
+  );
   return (
-    <form action={action} className="space-y-3">
+    <form onReset={onReset} action={action} className="space-y-3">
       <Feedback error={state.error} success={state.success} />
       <fieldset disabled={pending} className="space-y-3">
         {children}

@@ -1,5 +1,6 @@
 "use client";
-import { useActionState, type ReactNode } from "react";
+import { usePreservedActionState } from "./use-preserved-action-state";
+import type { ReactNode } from "react";
 import {
   saveOperation,
   type OperationState,
@@ -31,12 +32,12 @@ export function OperationForm({
   saved: boolean;
   children?: ReactNode;
 }) {
-  const [state, action, pending] = useActionState(
+  const [state, action, pending, onReset] = usePreservedActionState(
     saveOperation.bind(null, companyId, kind),
     {} as OperationState,
   );
   return (
-    <form action={action} className="card space-y-5">
+    <form onReset={onReset} action={action} className="card space-y-5">
       <Feedback
         error={state.error}
         success={saved ? "Registro guardado." : undefined}

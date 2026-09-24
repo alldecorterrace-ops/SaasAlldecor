@@ -1,5 +1,5 @@
 "use client";
-import { useActionState } from "react";
+import { usePreservedActionState } from "./use-preserved-action-state";
 import { setExpenseReceipt } from "@/app/app/[companyId]/gastos/receipts";
 import type { OperationState } from "@/app/app/[companyId]/operaciones/actions";
 import { Feedback } from "./feedback";
@@ -17,7 +17,7 @@ export function ExpenseReceipt({
   url: string | null;
   readOnly: boolean;
 }) {
-  const [state, action] = useActionState(
+  const [state, action, , onReset] = usePreservedActionState(
     setExpenseReceipt.bind(null, companyId, id, version),
     {} as OperationState,
   );
@@ -37,7 +37,7 @@ export function ExpenseReceipt({
         <p className="text-sm">Sin recibo adjunto.</p>
       )}
       {!readOnly && (
-        <form className="mt-5 space-y-4" action={action}>
+        <form onReset={onReset} className="mt-5 space-y-4" action={action}>
           <Feedback error={state.error} />
           <label className="field">
             Subir o reemplazar recibo

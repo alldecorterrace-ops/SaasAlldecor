@@ -1,6 +1,6 @@
 "use client";
+import { usePreservedActionState } from "./use-preserved-action-state";
 import Image from "next/image";
-import { useActionState } from "react";
 import { setProductImage } from "@/app/app/[companyId]/productos/images";
 import type { CommercialState } from "@/app/app/[companyId]/leads/actions";
 import { SubmitButton } from "./submit-button";
@@ -18,7 +18,7 @@ export function ProductImage({
   url: string | null;
   readOnly: boolean;
 }) {
-  const [state, action] = useActionState(
+  const [state, action, , onReset] = usePreservedActionState(
     setProductImage.bind(null, companyId, id, version),
     {} as CommercialState,
   );
@@ -39,7 +39,7 @@ export function ProductImage({
         <p className="mt-3 text-sm text-muted-foreground">Sin imagen.</p>
       )}
       {!readOnly && (
-        <form action={action} className="mt-5 space-y-4">
+        <form onReset={onReset} action={action} className="mt-5 space-y-4">
           <Feedback error={state.error} />
           <label className="field">
             Subir o reemplazar imagen

@@ -1,5 +1,6 @@
 "use client";
-import { useActionState, useRef, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import { usePreservedActionState } from "./use-preserved-action-state";
 import {
   financeAction,
   type FinanceState,
@@ -23,26 +24,12 @@ export function FinanceForm({
   children: ReactNode;
   readOnly?: boolean;
 }) {
-  const resetAllowed = useRef(false);
-  const [state, action, pending] = useActionState(
-    async (previous: FinanceState, form: FormData) => {
-      resetAllowed.current = false;
-      const result = await financeAction(companyId, previous, form);
-      // React resets uncontrolled fields whenever an action resolves, including
-      // a returned validation error. Clear them only after a confirmed save.
-      resetAllowed.current = Boolean(result.success) && !result.error;
-      return result;
-    },
+  const [state, action, pending, onReset] = usePreservedActionState(
+    financeAction.bind(null, companyId),
     {} as FinanceState,
   );
   return (
-    <form
-      action={action}
-      onReset={(event) => {
-        if (!resetAllowed.current) event.preventDefault();
-      }}
-      className="space-y-4"
-    >
+    <form action={action} onReset={onReset} className="space-y-4">
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="version" value={version} />
       <input type="hidden" name="operation" value={operation} />

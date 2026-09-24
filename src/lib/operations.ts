@@ -32,7 +32,9 @@ export const expenseSchema = z
     description: z.string().max(2000),
     vendor: z.string().max(190),
     document_number: z.string().max(100),
-    amount: decimal.refine((x) => Number(x) > 0),
+    amount: decimal.refine((x) => Number(x) > 0, {
+      message: "El importe del gasto debe ser mayor que cero.",
+    }),
     method: z.enum(
       Object.keys(paymentMethods) as [
         keyof typeof paymentMethods,
