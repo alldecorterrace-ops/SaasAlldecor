@@ -11,11 +11,11 @@ conserva la operación principal. Los trabajos locales no equivalen a despliegue
 
 | Punto | Evidencia disponible | Pendiente de cierre |
 | --- | --- | --- |
-| 1. Versiones del servidor | Política publicada; planificador conservador probado que protege aplicación activa, retorno, procesos y dependencias transitivas. | Renovar cPanel, inventario actual, validar retorno, comprobar archivos únicos, confirmar lista exacta de eliminación y medir antes/después. No se han eliminado entregas en esta ejecución. |
+| 1. Versiones del servidor | Política publicada; planificador conservador probado que protege aplicación activa, retorno, procesos y dependencias transitivas. cPanel renovado e inventario inicial de 16 carpetas el 24 de septiembre. | Completar inventario de procesos y contenido, validar retorno, comprobar archivos únicos, confirmar lista exacta de eliminación y medir antes/después. No se han eliminado entregas en esta ejecución. |
 | 2. Migración conciliada | Histórico publicado y lotes operativos de clientes, proyectos, estimados, facturas y pagos documentados por separado. Se conserva procedencia, originales y excepciones. | Delta contra ADT actual, entidades restantes, archivos faltantes y diferencias financieras. Mantener fichas separadas aprobadas y el cliente de correo inválido solo en histórico. Nuevas cargas reales esperan recuperación y staging. |
 | 3. Paridad de 23 módulos | Primeras implementaciones y pruebas de persistencia/permisos; inventario actualizado de definiciones de ruta del origen el 22 de septiembre. | Cerrar acciones, cálculos, diseño avanzado, documentos, Workforce, portal e IA contra ADT vivo. Ningún módulo se declara todavía con paridad completa. |
 | 4. Auditoría completa | Suite local, controles SQL remotos anteriores, correo/recuperación/aceptación confirmados por el propietario, comprobaciones públicas HTTP actuales. | Recorridos autenticados por cinco perfiles, escritorio/móvil, nueva invitación desde Configuración, concurrencia y dos empresas. La salud HTTP no sustituye esos recorridos. |
-| 5. Recuperación y operación | Carpeta privada de Drive preparada, guardas de staging, exportador PostgreSQL con snapshot común, captura de Storage/hosting, cifrado age, transferencia rclone con lectura posterior y recuperación aislada de archivos. Ensayo sintético local pasado; job de restauración PostgreSQL añadido. | Crear staging, configurar y probar acceso real/ETag/cuotas/custodia de clave/OAuth, comprobar captura completa, activar calendario y retención, verificar alertas, restaurar y probar carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
+| 5. Recuperación y operación | Proyecto staging creado, 27 migraciones aplicadas e historial conciliado; registro y Email desactivados. Carpeta privada de Drive preparada, guardas de entorno, exportador PostgreSQL con snapshot común, captura de Storage/hosting, cifrado age, transferencia rclone con lectura posterior y recuperación aislada de archivos. Ensayos sintéticos y job PostgreSQL aprobados. | Completar aplicación de staging, configurar y probar acceso real/ETag/cuotas/custodia de clave/OAuth, comprobar captura completa, activar calendario y retención, verificar alertas, restaurar y probar carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
 | 6. Traspaso | Migraciones 026–027 y API desactivadas; corte para drenar solicitudes anteriores y retener las nuevas. Primer adaptador transaccional de cliente SaaS y ensayo concurrente PostgreSQL aprobado. Receptor independiente en Supabase preparado. | Desplegar y ensayar en staging; adaptadores ADT y resto de acciones SaaS, integrar todas las entradas con el receptor, fencing real en ADT y cierre de 1–5. Las atestaciones sintéticas no autorizan traspaso; 026–027 no se han aplicado a producción. |
 
 Detalles de esta entrega: [Operación y recuperación](OPERACION-Y-RECUPERACION.md),
@@ -34,8 +34,8 @@ el nuevo proyecto saludable y la identidad del hosting. En staging se desactivar
 el registro público y el proveedor Email; tras recargar persistieron desactivados,
 igual que los demás proveedores. No hay hooks de Auth configurados. Es una medida
 inicial: antes de habilitar acceso sintético se necesita un receptor de correo de
-prueba y comprobar todos los emisores. No se aplicaron aún migraciones, cargas reales,
-limpieza ni despliegues en esta continuación.
+prueba y comprobar todos los emisores. Se aplicó después el esquema de staging,
+como se detalla más abajo; no hubo cargas reales, limpieza ni despliegue web.
 
 El inventario inicial del hosting conserva dieciséis carpetas de entregas. Se observó
 una dependencia compartida y una utilización del límite de archivos que requiere
@@ -61,8 +61,21 @@ También se preparó el [bootstrap transaccional de staging](PREPARAR-STAGING.md
 con historial de las 27 migraciones y rechazo de destinos con datos. Dos pruebas
 adicionales comprueban aplicación/repetición y reversión ante fallos; la suite
 local pasó 267 pruebas, lint, tipos y compilación. Se generó un SQL y se transfirió
-al directorio privado del hosting; su SHA-256 coincide. Su ejecución remota requiere
-la conexión privada de PostgreSQL y continúa pendiente en este registro.
+al directorio privado del hosting; su SHA-256 coincide.
+
+El commit `996cf07` pasó los tres jobs de
+[GitHub Actions](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36031597901),
+incluida concurrencia PostgreSQL 17 usando el bootstrap nuevo. El primer acceso
+desde hosting falló por la CA de TLS; el certificado oficial de Supabase corrigió
+la verificación de cadena y nombre, comprobada con TLS 1.3. El propietario completó
+la autenticación privada y se verificó el destino vacío antes de ejecutar el SQL.
+Terminó con `COMMIT`, 27 migraciones e historial cuya huella coincide con GitHub.
+Los controles reales comprobaron 23 módulos, RLS en las 34 tablas públicas, cero
+lectura anónima/escritura directa, tres buckets privados sin objetos y cola apagada.
+No hay usuarios ni empresas. La excepción interna `document_counters` conserva
+solo permisos de `postgres` y queda detallada en [staging](PREPARAR-STAGING.md).
+Staging aún necesita aplicación, dominio, correo aislado y cuentas sintéticas.
+Producción no recibió las migraciones 026–027 ni cambios de autoridad.
 
 ### Comprobaciones y evidencia previa
 
