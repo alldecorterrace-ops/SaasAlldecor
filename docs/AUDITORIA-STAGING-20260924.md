@@ -244,8 +244,74 @@ una tarifa de techo cero. La base conservó cero registros, pero React reinició
 los diez campos del formulario, incluidas las tarifas válidas. `ActionForm`
 ahora permite el reinicio únicamente después de éxito confirmado sin error;
 los rechazos conservan la entrada para corregirla. Lint, tipos, 281 pruebas y
-compilación local pasaron. La comprobación posterior en staging se registra
-una vez publicada esta corrección.
+compilación local pasaron. Los tres trabajos de
+[CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36050044247)
+pasaron antes de compilar y activar `f29072da3322c86c02949d0d89bc57afef785870`
+en staging. No requiere migración de base.
+
+En la aplicación publicada, repetir el techo cero conservó los diez campos.
+Cambiar únicamente esa tarifa a 20,25 permitió guardar la versión 1 con los
+otros nueve valores intactos. Una modificación posterior guardó la versión 2;
+el historial de tarifas muestra ambas. La sesión de ventas ve las tarifas
+deshabilitadas y sin botón Guardar. Una transacción de comprobación con el rol
+autenticado y el sujeto del auditor confirmó rechazo `42501` de ambas RPC de
+escritura, Productos y Precios, y terminó en ROLLBACK. No se trata de una petición
+forjada desde el navegador ni de una prueba simultánea de dos usuarios.
+
+El producto se actualizó a 15,75, versión 2. La revisión 3 del estimado conservó
+precio 12,35, partida 247,00 y total 306,95, comprobados en reapertura y base.
+Agregar otra línea del catálogo tomó 15,75 mientras la existente mantuvo 12,35;
+esa línea de comprobación se retiró del formulario sin guardarla.
+La ruta del producto bajo la segunda empresa devolvió Página no disponible.
+
+## Tarifas, diseño básico y generación de estimados
+
+Con perfil administrador se guardó un diseño sintético de 10 × 12 × 9 ft,
+pared de 4 × 6 ft, cocina de 3 ft, dos refuerzos y permiso. Las cinco partidas
+sumaron 3.176,00 USD: 2.430 + 246 + 300 + 50 + 150. La generación creó
+`EST-2026-0003`; repetirla desde la misma revisión abrió el mismo documento.
+
+Cambiar la tarifa de techo de 20,25 a 21,25 no alteró el diseño. Editar su nombre
+y guardar dejó revisión 2, tarifas 1 y total 3.176. Marcar explícitamente
+Recalcular produjo revisión 3, tarifas 2 y total 3.296. Su generación creó
+`EST-2026-0004`. La base confirmó dos estimados diferentes; el primero mantiene
+3.176 también en su vista imprimible y el segundo 3.296. No se exportó PDF,
+aprobó, facturó ni envió ninguno. Al terminar se devolvió al auditor el perfil
+comercial sin permisos administrativos ni de diseño.
+
+Esta evidencia cubre el cálculo básico observado. No acredita geometría avanzada,
+equipos, despiece, planos de fabricación, umbrales de permiso completos ni paridad
+de diseño con ADT. Las partidas generadas todavía muestran el nombre técnico
+del techo (`white`); su presentación en español queda pendiente.
+
+## Inventario de retención después de publicar
+
+Staging ejecuta `f29072d`; `6866a73` queda como retorno de código y
+`b149bee/node_modules` como dependencia compartida. Producción conserva su raíz
+y proceso anteriores. Ambas rutas de salud respondieron 200 con `no-store`.
+La comprobación del recorrido corregido no equivale a ensayo completo de retorno.
+
+Se compararon `9ccf77f`, `d530c33`, `f1fbf02` y `e1187ec` con sus archivos fuente:
+no hay código cambiado o ausente ni diferencias de configuración respecto a la
+entrega anterior conservada. Los únicos archivos adicionales son diagnósticos,
+conservados juntos en un archivo privado de 493 bytes. No hay procesos de esas
+entregas ni enlaces simbólicos entrantes desde la cuenta. Sus dependencias apuntan
+a la carpeta compartida protegida.
+
+Las cuatro carpetas suman 951.504 KiB y 3.120 archivos; sus cuatro archivos fuente
+comprimidos añaden 1.634.926 bytes. Se solicitó confirmación para esos ocho
+elementos exactos y el propietario autorizó eliminarlos. Antes de ejecutar se
+repitieron los controles de contenido, configuración, procesos y enlaces; se
+comprobó también la copia consolidada de diagnósticos. Se eliminaron solo los
+ocho elementos, liberando **953.124 KiB (930,8 MiB)** y 4.644 entradas del sistema
+de archivos, incluidas 3.124 correspondientes a archivos. Los objetivos pasan
+a cero bytes; permanecen aplicación activa, retorno y dependencias.
+
+Después de la limpieza, la sesión autenticada abrió el estimado y buscó/agregó
+un producto; staging y producción respondieron salud 200 sin caché. No cambió
+la configuración de producción. Las cifras generales de `df` corresponden al
+disco compartido del servidor, no a la cuota de esta cuenta. El resto del hosting
+y el ensayo completo de retorno siguen pendientes; no se cierra el punto 1.
 
 ## Límites de esta evidencia
 

@@ -229,7 +229,7 @@ contenido único de las entregas sobrantes y restauración desde Drive siguen pe
 
 ## Alcance de Horas y publicación 6866a73
 
-La entrega activa actual es `6866a73ef6172b120eb30f52c77cf4ea5e38b785`, con
+En esa publicación quedó activa `6866a73ef6172b120eb30f52c77cf4ea5e38b785`, con
 `e1187ec` anterior y `b149bee/node_modules` compartido. Staging tiene 29 migraciones.
 La migración 029 limita al trabajador a sus marcaciones/solicitudes y filtra
 historial y Actividad; administrador y propietario conservan gestión general.
@@ -242,3 +242,20 @@ propia y gestión administrativa. La misma cuenta recorrió después ventas con
 permisos limitados, creando lead, cliente y estimado con dos revisiones.
 Producción sigue sin cambios. Retorno completo, limpieza, recuperación real y
 resto de recorridos mantienen los límites descritos en la auditoría.
+
+
+## Catálogo y publicación f29072d
+
+La entrega activa es `f29072da3322c86c02949d0d89bc57afef785870`.
+Conserva 29 migraciones y corrige el reinicio de formularios rechazados.
+Lint, tipos, 281 pruebas, compilación y los tres trabajos de CI pasaron antes
+de preparar la entrega del hosting. Se repitió el rechazo de una tarifa cero,
+la conservación de los diez campos y el guardado corrigiendo solo esa tarifa.
+La auditoría de catálogo y diseño básico está documentada por separado.
+
+`6866a73` queda para retorno de código y `b149bee/node_modules` conserva las
+dependencias compartidas. Después del inventario y confirmación del propietario,
+se retiraron cuatro entregas anteriores y sus archivos fuente. Se liberaron
+930,8 MiB; la sesión autenticada y salud de ambos entornos pasaron después.
+No se modificó producción ni se cerraron los requisitos de recuperación,
+retorno completo, carga o traspaso.
