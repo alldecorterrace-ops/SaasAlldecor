@@ -49,13 +49,68 @@ iniciales. No altera el saldo, pero obliga a reintroducir los datos. Debe conser
 la entrada ante un rechazo y limpiar únicamente tras el éxito. La corrección de
 código cancela el restablecimiento automático salvo cuando la acción confirma un
 guardado; [React documenta ese restablecimiento de campos no controlados](https://react.dev/reference/react-dom/components/form).
-Falta publicar y repetir el rechazo y el guardado válido para cerrar la incidencia.
-Tampoco se ensayaron aún reversión, anulación, otros perfiles ni
-concurrencia financiera por navegador.
+La entrega `e1187ec1549a09b0a2f001aa128e7410a8f53f28` pasó 274 pruebas, lint,
+tipos, compilación y los tres jobs de [CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36044709994).
+Se publicó únicamente en staging. El proceso activo y sus dependencias se
+verificaron; conserva cinco hilos. Producción conserva su proceso y ambas rutas
+de salud responden 200 con `Cache-Control: no-store`.
 
-El titular creó la segunda cuenta sintética en Supabase. Se verificó su existencia
-y se creó su invitación desde Configuración, sin intentos de correo. Queda pendiente
-su inicio de sesión privado, aceptación y recorrido con permisos restringidos.
+Con la segunda cuenta en perfil administrador, un intento de 73,00 sobre saldo
+72,00 fue rechazado conservando importe, fecha, método, referencia y notas.
+Cambiar solo el importe a 1,00 creó un único pago ficticio y dejó saldo 71,00;
+el formulario se limpió después del éxito. La reversión administrativa de ese
+registro conservó importe, referencia y motivo, y devolvió el saldo a 72,00.
+La base confirma el pago anterior de 30,00 aplicado y el de 1,00 revertido.
+Queda cerrada esta incidencia de restablecimiento de campos en el caso ensayado.
+Faltan anulación de factura y concurrencia financiera completa por navegador.
+
+El titular creó e inició sesión con la segunda cuenta sintética. Esta aceptó la
+invitación desde Tus empresas y entró sin módulos. No hubo intentos de correo.
+
+## Segunda cuenta: perfiles, revocación y horas
+
+Se utilizó la misma cuenta autenticada por fases, con permisos preparados mediante
+`set_member_access` en una transacción SQL con identidad del propietario y guardas
+del entorno sintético. Esto comprueba las restricciones desde una sesión real,
+pero no equivale a cinco cuentas simultáneas ni a completar el editor visual de
+permisos del propietario.
+
+- **Sin módulos:** menú vacío; Clientes, Configuración y una ruta de la segunda
+  empresa rechazados como «Página no disponible».
+- **Administrador:** Configuración muestra la invitación aceptada y protege la
+  cuenta del propietario. Pago, reversión, alta de trabajador y vinculación a la
+  cuenta completados desde la interfaz. No se modificó otra empresa.
+- **Trabajador:** miembro con escritura solo en Horas; únicamente ese módulo en
+  el menú. Marcó entrada y salida, reabrió la marcación y solicitó una corrección.
+  No dispone de aprobación ni registro administrativo; acceso directo a
+  `/horas/nuevo` y Facturas rechazado. Un administrador aplicó después la corrección
+  ficticia de cinco minutos; solicitud Aprobada y marcación en revisión 3,
+  cinco minutos, todavía Pendiente de aprobación de horas. No hubo nómina real.
+- **Ventas:** miembro con escritura en Clientes, Leads y Estimados, y lectura en
+  Productos y Precios. Se comprobó el menú y una edición de cliente con reapertura;
+  no se ejecutaron todavía todos los recorridos de esos cinco módulos.
+- **Consulta y revocación:** se retiró escritura mientras una ficha seguía abierta.
+  El envío desde ese formulario fue rechazado y la base conservó versión 5 y las
+  notas autorizadas. Reabrir mostró la ficha sin botón de guardar. Suspender la
+  membresía bloqueó la ruta y retiró la empresa del listado sin cerrar Auth.
+  Al terminar se reactivó exclusivamente la lectura de Clientes en la empresa A.
+
+La primera solicitud de horas conserva las fechas originales: el llenado automático
+de `datetime-local` no actualizó el estado del campo. Se rechazó con motivo y se
+conservó como evidencia. Repetir con teclas de incremento/decremento sí actualizó
+las fechas: 10:00–10:05 del dispositivo se muestra 09:00–09:05 en America/Chicago
+y queda 14:00–14:05 UTC en la base. No se cambió código para ocultar esa diferencia
+de la herramienta. Tampoco se solicitó ubicación ni se acreditó GPS.
+
+En consulta, Clientes a 390 × 844 conserva ancho de documento/cuerpo de 390 px,
+con tabla de 514 px dentro de 348 px. Se ejercitaron los controles de navegación;
+la dimensión se restableció al terminar. Sigue pendiente teléfono físico, el resto
+de módulos en móvil y la lectura de horas entre trabajadores distintos.
+
+Retención actual de staging: `e1187ec` activo, `f1fbf02` anterior y dependencia
+compartida `b149bee/node_modules`. `9ccf77f` y `d530c33` son candidatos para revisar
+contenido único antes de eliminar: aproximadamente 465 MiB entre ambos. No hubo
+borrado ni se ha ensayado todavía un retorno completo.
 
 ## Defecto descubierto al editar desde dos pestañas
 
@@ -104,7 +159,7 @@ el reintento. No se ha ensayado todavía un retorno completo.
 
 ## Límites de esta evidencia
 
-No cierra ninguno de los seis puntos. Faltan los otros perfiles, aceptación y
+No cierra ninguno de los seis puntos. Faltan completar la matriz de perfiles y
 recuperación de cuenta, recorridos comerciales/financieros/operativos completos,
 restauración desde Drive, carga y traspaso. ADT sigue siendo el sistema principal.
 La migración 028 requiere las anteriores; producción todavía no tiene 026–027.

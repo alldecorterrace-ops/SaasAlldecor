@@ -207,8 +207,22 @@ configuración, invitación/revocación, estimado, factura, pago parcial y proye
 El conflicto entre dos pestañas ahora termina sin sobrescribir el registro;
 la repetición también se rechaza. Véanse [resultados y límites](AUDITORIA-STAGING-20260924.md).
 
-`f1fbf02` es la entrega activa; `d530c33` se conserva como anterior y
+En esa publicación, `f1fbf02` quedó activa y `d530c33` como anterior;
 `b149bee/node_modules` continúa siendo su dependencia compartida indispensable.
 El retorno completo no está ensayado. Las entregas más antiguas esperan la
 revisión de contenido y la confirmación de eliminación. Producción conserva
 su entrega anterior y no recibió las migraciones 026–028.
+
+## Segunda cuenta y publicación e1187ec
+
+La entrega activa actual es `e1187ec1549a09b0a2f001aa128e7410a8f53f28`, con
+`f1fbf02` anterior y `b149bee/node_modules` compartido. Pasaron 274 pruebas,
+lint, tipos, build y [CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36044709994)
+antes de activar. La segunda cuenta aceptó la invitación y permitió comprobar
+restricciones, cambios de perfil, revocación con formulario abierto, suspensión,
+pagos ficticios y jornada/corrección de horas. La corrección de FinanceForm conserva
+campos al rechazar el pago y los limpia tras guardarlo. Véanse los casos y límites
+en la [auditoría autenticada](AUDITORIA-STAGING-20260924.md).
+
+No hubo migraciones nuevas ni cambios de producción en esta publicación. Retorno,
+contenido único de las entregas sobrantes y restauración desde Drive siguen pendientes.
