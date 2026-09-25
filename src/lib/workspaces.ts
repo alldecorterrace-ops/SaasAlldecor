@@ -249,16 +249,31 @@ export const workspaces: Record<WorkKind, Workspace> = {
     schema: z.object({
       latitude: z
         .string()
-        .regex(/^-?\d{1,3}(\.\d{1,7})?$/)
-        .refine((v) => Math.abs(Number(v)) <= 90),
+        .regex(
+          /^-?\d{1,3}(\.\d{1,7})?$/,
+          "Escribe la latitud con punto decimal y hasta siete decimales.",
+        )
+        .refine(
+          (v) => Math.abs(Number(v)) <= 90,
+          "La latitud debe estar entre −90 y 90.",
+        ),
       longitude: z
         .string()
-        .regex(/^-?\d{1,3}(\.\d{1,7})?$/)
-        .refine((v) => Math.abs(Number(v)) <= 180),
+        .regex(
+          /^-?\d{1,3}(\.\d{1,7})?$/,
+          "Escribe la longitud con punto decimal y hasta siete decimales.",
+        )
+        .refine(
+          (v) => Math.abs(Number(v)) <= 180,
+          "La longitud debe estar entre −180 y 180.",
+        ),
       radius_m: z
         .string()
-        .regex(/^\d{1,7}$/)
-        .refine((v) => Number(v) >= 10 && Number(v) <= 1000000),
+        .regex(/^\d{1,7}$/, "Escribe el radio en metros enteros.")
+        .refine(
+          (v) => Number(v) >= 10 && Number(v) <= 1000000,
+          "El radio debe estar entre 10 y 1.000.000 metros.",
+        ),
       address: text(500),
       notes: text(10000),
     }),

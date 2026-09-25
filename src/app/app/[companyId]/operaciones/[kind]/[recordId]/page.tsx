@@ -158,7 +158,14 @@ export default async function WorkspaceDetail({
             Versiones e historial
           </Link>
         )}
-        {!isNew && <PrintButton />}
+        {!isNew &&
+          (k === "manuals" ? (
+            <Link className="underline" href={`${base}/${r.id}/imprimir`}>
+              Imprimir / guardar PDF
+            </Link>
+          ) : (
+            <PrintButton />
+          ))}
       </div>
       <p className="text-sm text-muted-foreground mb-5">{cfg.description}</p>
       {k === "inventory" && !isNew && (
