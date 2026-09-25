@@ -4,6 +4,19 @@ Fecha inicial: 17 de septiembre de 2026. Inventario de rutas renovado el 22 de s
 
 ## Resultado requerido por el propietario
 
+**Prioridad actual, 25 de septiembre de 2026:** completar y comprobar la paridad
+funcional exacta antes de los cambios específicos que el propietario quiere
+introducir en esta aplicación. Toda nueva migración de datos queda suspendida
+hasta una petición expresa. Se conservan los registros ya incorporados; las
+pruebas usan datos sintéticos en staging y consulta de ADT. No se ejecutan
+importaciones, deltas, sincronizaciones ni traspaso operativo por un «continuar».
+El alcance histórico siguiente se conserva como objetivo posterior, no como
+autorización vigente para trasladar datos.
+
+El orden actual y los criterios pendientes de los 23 módulos se mantienen en
+[Cierre funcional](CIERRE-FUNCIONAL.md). El primer contrato comparado de cálculo
+es el [Mapa de zonas](PARIDAD-MAPA-20260925.md).
+
 Aplicación nueva para varias empresas, migración de los datos existentes y todos los módulos de ADT Admin activos y funcionales. La organización del trabajo en etapas sirve para respetar dependencias; no entrega una versión final con módulos omitidos.
 
 Todos los módulos forman parte del alcance. Que un módulo esté implementado y disponible no concede acceso a todos los usuarios: cada administrador conserva la selección de permisos dentro de su empresa.

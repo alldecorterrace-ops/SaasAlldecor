@@ -1,5 +1,20 @@
 # Reglas del proyecto
 
+## Prioridad vigente: paridad funcional
+
+- Decisión del propietario del 25 de septiembre de 2026: suspender toda nueva
+  migración de datos de ADT hasta que la solicite expresamente. No ejecutar
+  importaciones, deltas, sincronizaciones ni cargas de archivos reales por una
+  instrucción genérica de continuar. Conservar intactos los datos ya incorporados.
+- Centrar el trabajo en verificar y completar las funciones de los 23 módulos
+  contra ADT actual. Usar lectura del origen y datos sintéticos en staging.
+  Las migraciones aditivas de esquema para implementar funciones no son una
+  autorización para trasladar datos de negocio.
+- Registrar por acción la regla del origen, equivalencia, prueba y diferencia.
+  No introducir mejoras que cambien las reglas de ADT como parte de la paridad;
+  los cambios propios de esta app se tratarán después con el propietario.
+- El traspaso operativo sigue aplazado. ADT conserva la operación principal.
+
 ## Versionado y despliegues
 
 - GitHub es la fuente oficial del código y de su historial. Antes de desplegar,

@@ -1,0 +1,201 @@
+{
+  "source_sha256": "6da7688e6ec9a2cf863d40cb1f1348ccf0036cad5cb988b5725234d8fb4e08a9",
+  "method_sha256": "c764a64f5aa06ead8dfaa5e627b769f00f934a71c3b2fc782c5b4a8fd2be1450",
+  "cases": [
+    {
+      "name": "empty",
+      "sha256": "6694e79f7537cf37f302fb855ed073a2a50c924eeed87f69f5bf629431d1e8dc",
+      "summary": {
+        "lead": 0,
+        "estimado": 0,
+        "activo": 0,
+        "terminado": 0,
+        "fuera": 0,
+        "sin_zip": 0,
+        "sin_punto": 0
+      }
+    },
+    {
+      "name": "classification-duplicates-void-area-and-missing-centers",
+      "sha256": "a5b1c84f92b7cf1c02f11ea6c40dfea02c20329010baccaccd1ea99d6c991d52",
+      "summary": {
+        "lead": 5,
+        "estimado": 6,
+        "activo": 1,
+        "terminado": 3,
+        "fuera": 4,
+        "sin_zip": 1,
+        "sin_punto": 4
+      }
+    },
+    {
+      "name": "rounding-and-first-city",
+      "sha256": "3c1bfd5997f17e082056919fe234df1a6a891c3b06c012e0cb9ede421a9ea8aa",
+      "summary": {
+        "lead": 0,
+        "estimado": 3,
+        "activo": 0,
+        "terminado": 3,
+        "fuera": 0,
+        "sin_zip": 0,
+        "sin_punto": 6
+      }
+    },
+    {
+      "name": "deterministic-mixed-1",
+      "sha256": "e7f53bffcd1bd28f987a9092114c6b5b92a52471611c6c53c49c9c2315c9cf72",
+      "summary": {
+        "lead": 13,
+        "estimado": 13,
+        "activo": 17,
+        "terminado": 5,
+        "fuera": 17,
+        "sin_zip": 8,
+        "sin_punto": 28
+      }
+    },
+    {
+      "name": "deterministic-mixed-2",
+      "sha256": "93949ed0b267b84c8010d70a7765eba78502cb0a6b9febc1c8a260332064c1de",
+      "summary": {
+        "lead": 12,
+        "estimado": 18,
+        "activo": 12,
+        "terminado": 5,
+        "fuera": 13,
+        "sin_zip": 7,
+        "sin_punto": 25
+      }
+    },
+    {
+      "name": "deterministic-mixed-3",
+      "sha256": "c0de06ee9d24d676c5091ca0df1cd17a111f01852f538cf17c8402179dad8290",
+      "summary": {
+        "lead": 12,
+        "estimado": 14,
+        "activo": 19,
+        "terminado": 2,
+        "fuera": 18,
+        "sin_zip": 12,
+        "sin_punto": 27
+      }
+    },
+    {
+      "name": "deterministic-mixed-4",
+      "sha256": "0b394976433f01693a465502183f7aa79309cdc28b19fae448017eb34088d0ac",
+      "summary": {
+        "lead": 13,
+        "estimado": 13,
+        "activo": 17,
+        "terminado": 5,
+        "fuera": 17,
+        "sin_zip": 11,
+        "sin_punto": 23
+      }
+    },
+    {
+      "name": "deterministic-mixed-5",
+      "sha256": "e3da6c2018df135e7f622db54c25222d526a3236e725bfb8b1d9644e4ee91507",
+      "summary": {
+        "lead": 12,
+        "estimado": 14,
+        "activo": 20,
+        "terminado": 1,
+        "fuera": 13,
+        "sin_zip": 10,
+        "sin_punto": 28
+      }
+    },
+    {
+      "name": "deterministic-mixed-6",
+      "sha256": "b1c69854fb3a57f77142202bdd6c5f1eb9a869edcd0ea0ce947316bdc3a31e9f",
+      "summary": {
+        "lead": 15,
+        "estimado": 16,
+        "activo": 12,
+        "terminado": 7,
+        "fuera": 21,
+        "sin_zip": 18,
+        "sin_punto": 30
+      }
+    },
+    {
+      "name": "deterministic-mixed-7",
+      "sha256": "d29b3cc79b158b5d1e9eeb0dd54abc995cda4304b7365923af5078be808d53b5",
+      "summary": {
+        "lead": 17,
+        "estimado": 13,
+        "activo": 14,
+        "terminado": 8,
+        "fuera": 21,
+        "sin_zip": 10,
+        "sin_punto": 24
+      }
+    },
+    {
+      "name": "deterministic-mixed-8",
+      "sha256": "226ec565aa3365772b6709d9421889debb9a58f8f48e2cd1647f433a2eb36ffe",
+      "summary": {
+        "lead": 14,
+        "estimado": 9,
+        "activo": 23,
+        "terminado": 3,
+        "fuera": 15,
+        "sin_zip": 8,
+        "sin_punto": 25
+      }
+    },
+    {
+      "name": "deterministic-mixed-9",
+      "sha256": "9fc577d46514f8181d4352af9d053b9a1f21518f8765686f3c35dc006130728a",
+      "summary": {
+        "lead": 12,
+        "estimado": 17,
+        "activo": 18,
+        "terminado": 0,
+        "fuera": 15,
+        "sin_zip": 6,
+        "sin_punto": 20
+      }
+    },
+    {
+      "name": "deterministic-mixed-10",
+      "sha256": "2a8c10d06163cffdfdd9fead37fb8243eb096a3f6fbcfa4b4a3f4fcf204ea203",
+      "summary": {
+        "lead": 13,
+        "estimado": 17,
+        "activo": 13,
+        "terminado": 5,
+        "fuera": 23,
+        "sin_zip": 11,
+        "sin_punto": 18
+      }
+    },
+    {
+      "name": "deterministic-mixed-11",
+      "sha256": "5314144c2da8b6b697c1adb0ac04aaed974191823b1b4b5109b44d4d4447314b",
+      "summary": {
+        "lead": 13,
+        "estimado": 8,
+        "activo": 26,
+        "terminado": 1,
+        "fuera": 15,
+        "sin_zip": 8,
+        "sin_punto": 24
+      }
+    },
+    {
+      "name": "deterministic-mixed-12",
+      "sha256": "bd6e2589a17b6699d74c895852c22ceb287fe51a9737ac69b81ed40019a284f4",
+      "summary": {
+        "lead": 16,
+        "estimado": 15,
+        "activo": 14,
+        "terminado": 6,
+        "fuera": 9,
+        "sin_zip": 3,
+        "sin_punto": 13
+      }
+    }
+  ]
+}

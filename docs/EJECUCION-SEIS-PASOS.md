@@ -5,6 +5,20 @@ Fecha de inicio: 18 de septiembre de 2026. Seguimiento actualizado: 25 de septie
 Este documento distingue implementación, pruebas técnicas y recorridos reales.
 Ningún paso se cierra solamente porque una página responda o el código compile.
 
+**Cambio de prioridad aprobado el 25 de septiembre:** nuevas migraciones de
+datos suspendidas hasta petición expresa del propietario. El trabajo activo
+se centra en paridad funcional y auditoría de los 23 módulos, con datos sintéticos
+en staging. Las cargas reales y el traspaso quedan aplazados; los registros ya
+incorporados se conservan. Las mejoras propias de esta app se abordarán después
+de comprobar las reglas actuales de ADT. Los pendientes históricos de abajo no
+autorizan importaciones ni sincronizaciones nuevas.
+
+El trabajo vigente se organiza en [Cierre funcional](CIERRE-FUNCIONAL.md).
+El [contrato del Mapa de zonas](PARIDAD-MAPA-20260925.md) compara 15 conjuntos
+sintéticos con los métodos PHP actuales de ADT; no carga registros reales ni
+acredita todavía la pantalla completa. La suite local posterior pasó 308 pruebas,
+lint, tipos y compilación. La entrega activa de staging sigue siendo `a8e1dd9`.
+
 La numeración siguiente reemplaza el orden del seguimiento inicial y corresponde
 al plan aprobado el 22 de septiembre. **Los seis puntos siguen abiertos.** ADT
 conserva la operación principal. Los trabajos locales no equivalen a despliegue.

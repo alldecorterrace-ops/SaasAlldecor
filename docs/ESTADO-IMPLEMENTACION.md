@@ -1,5 +1,10 @@
 # Estado de implementación — 22 de septiembre de 2026
 
+Prioridad actualizada el 25 de septiembre: verificar y completar equivalencia
+funcional con ADT en staging. Nuevas migraciones de datos y traspaso aplazados
+hasta petición expresa. El contenido siguiente conserva evidencia histórica;
+las auditorías recientes y su estado están en [el seguimiento](EJECUCION-SEIS-PASOS.md).
+
 ## Los 23 módulos tienen una primera implementación
 
 Cada entrada del catálogo abre una pantalla con operaciones y persistencia. **Esto no acredita paridad completa con ADT Admin ni una migración terminada.** El alcance y las diferencias están documentados para auditar cada flujo.
