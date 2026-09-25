@@ -1,6 +1,6 @@
 # Ejecución y auditoría de los seis pasos
 
-Fecha de inicio: 18 de septiembre de 2026. Seguimiento actualizado: 24 de septiembre de 2026. Destino: https://app.alldecorpatio.com.
+Fecha de inicio: 18 de septiembre de 2026. Seguimiento actualizado: 25 de septiembre de 2026. Destino: https://app.alldecorpatio.com.
 
 Este documento distingue implementación, pruebas técnicas y recorridos reales.
 Ningún paso se cierra solamente porque una página responda o el código compile.
@@ -14,8 +14,8 @@ conserva la operación principal. Los trabajos locales no equivalen a despliegue
 | 1. Versiones del servidor | Política publicada; planificador conservador probado que protege aplicación activa, retorno, procesos y dependencias transitivas. cPanel renovado e inventario inicial de 16 carpetas el 24 de septiembre. | Completar inventario de procesos y contenido, validar retorno, comprobar archivos únicos, confirmar lista exacta de eliminación y medir antes/después. Se retiraron cuatro entregas antiguas de staging y sus cuatro archivos fuente con autorización expresa: 930,8 MiB liberados. Resto del hosting pendiente. |
 | 2. Migración conciliada | Histórico publicado y lotes operativos de clientes, proyectos, estimados, facturas y pagos documentados por separado. Se conserva procedencia, originales y excepciones. | Delta contra ADT actual, entidades restantes, archivos faltantes y diferencias financieras. Mantener fichas separadas aprobadas y el cliente de correo inválido solo en histórico. Nuevas cargas reales esperan recuperación y staging. |
 | 3. Paridad de 23 módulos | Primeras implementaciones y pruebas de persistencia/permisos; inventario actualizado de definiciones de ruta del origen el 22 de septiembre. | Cerrar acciones, cálculos, diseño avanzado, documentos, Workforce, portal e IA contra ADT vivo. Ningún módulo se declara todavía con paridad completa. |
-| 4. Auditoría completa | 281 pruebas locales y CI; dos cuentas autenticadas y empresas ficticias. Invitación aceptada, restricciones por módulo/empresa, perfiles por fases, revocación con formulario abierto y suspensión verificadas. Edición de clientes, pago/reversión y jornada/solicitud de corrección persistidos. Corregidos en staging conflictos, pérdida de campos al rechazar pagos y lectura de horas ajenas. Ventas recorrió lead, conversión a cliente y tres revisiones de estimado con catálogo. Precios conserva campos rechazados; diseño básico, cambio explícito de tarifas y dos estimados independientes conciliados. | Completar recorridos de los cinco perfiles, escritorio/móvil real, editor visual de permisos, delegación de encargados, aislamiento exhaustivo y concurrencia de todas las operaciones. La salud HTTP no sustituye esos recorridos. |
-| 5. Recuperación y operación | Staging publicado con 29 migraciones y entrega 685b5da; registro público cerrado, Email con receptor privado, dos cuentas autenticadas e invitación sintética capturada. Corrección de arranque verificada. Carpeta privada de Drive y herramientas de copia/recuperación preparadas; ensayos sintéticos y job PostgreSQL aprobados. | Recuperación de cuenta y recorridos restantes de staging, acceso real/ETag/cuotas/custodia de clave/OAuth, captura completa, calendario y retención, alertas, restauración y carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
+| 4. Auditoría completa | 282 pruebas locales y CI; dos cuentas autenticadas y empresas ficticias. Invitación aceptada, restricciones por módulo/empresa, perfiles por fases, revocación con formulario abierto y suspensión verificadas. Edición de clientes, pago/reversión y jornada/solicitud de corrección persistidos. Corregidos en staging conflictos, pérdida de campos al rechazar pagos y lectura de horas ajenas. Ventas recorrió lead, conversión a cliente y tres revisiones de estimado con catálogo. Precios conserva campos rechazados; diseño básico, cambio explícito de tarifas y dos estimados independientes conciliados. Inventario probó entradas, salidas, reversos, referencias repetidas y archivos; corregido el cambio de unidad con historial y saldo cero. | Completar recorridos de los cinco perfiles, escritorio/móvil real, editor visual de permisos, delegación de encargados, aislamiento exhaustivo y concurrencia de todas las operaciones. La salud HTTP no sustituye esos recorridos. |
+| 5. Recuperación y operación | Staging publicado con 30 migraciones y entrega 7472d42; registro público cerrado, Email con receptor privado, dos cuentas autenticadas e invitación sintética capturada. Corrección de arranque verificada. Carpeta privada de Drive y herramientas de copia/recuperación preparadas; ensayos sintéticos y job PostgreSQL aprobados. | Recuperación de cuenta y recorridos restantes de staging, acceso real/ETag/cuotas/custodia de clave/OAuth, captura completa, calendario y retención, alertas, restauración y carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
 | 6. Traspaso | Migraciones 026–027 y API desactivadas; corte para drenar solicitudes anteriores y retener las nuevas. Primer adaptador transaccional de cliente SaaS y ensayo concurrente PostgreSQL aprobado. Receptor independiente en Supabase preparado. | Desplegar y ensayar en staging; adaptadores ADT y resto de acciones SaaS, integrar todas las entradas con el receptor, fencing real en ADT y cierre de 1–5. Las atestaciones sintéticas no autorizan traspaso; 026–027 no se han aplicado a producción. |
 
 Detalles de esta entrega: [Operación y recuperación](OPERACION-Y-RECUPERACION.md),
@@ -53,7 +53,7 @@ de staging y sus cuatro archivos fuente: 930,8 MiB y 4.644 entradas liberadas.
 La sesión autenticada y salud de ambos entornos pasaron después. El resto de la
 retención y el ensayo completo de retorno siguen abiertos.
 
-La entrega actual de staging `685b5da` extiende la conservación de borradores a
+La entrega de staging `685b5da` extiende la conservación de borradores a
 los formularios operativos y archivos. Pasó lint, tipos, 281 pruebas, build y
 [CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36052658348).
 El recorrido autenticado de Gastos comprobó alta, aprobación, corrección de
@@ -66,6 +66,18 @@ salud y lectura autenticada del estimado, sin restaurar ni modificar datos.
 `6866a73` y su archivo fuente están inventariados: 232,9 MiB pendientes de la
 confirmación de eliminación solicitada. Producción no recibió esta entrega
 ni migraciones nuevas. Los seis puntos siguen abiertos.
+
+El 25 de septiembre quedó activa `7472d42`, con 30 migraciones. Se corrigió un
+defecto reproducido en Inventario: llegar a saldo cero permitía cambiar la unidad
+y reinterpretar visualmente todos los movimientos anteriores. La protección
+aditiva 030 y el mensaje del formulario se comprobaron con la misma sesión;
+el rechazo no cambió registro ni movimientos y corregir la ubicación sí persistió.
+Pasaron lint, tipos, 282 pruebas, compilación y los tres trabajos de
+[CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36148761866).
+La [auditoría de Inventario](AUDITORIA-STAGING-20260925.md) separa evidencia de UI,
+base, permisos y emulación móvil. Anterior `685b5da`, dependencia `b149bee`;
+las sobrantes `6866a73` y `f29072d` siguen conservadas. Producción no recibió
+esta publicación ni 026–030. No se ha cerrado ninguno de los seis puntos.
 
 ## Pruebas reproducibles
 

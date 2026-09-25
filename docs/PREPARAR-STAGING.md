@@ -262,7 +262,7 @@ retorno completo, carga o traspaso.
 
 ## Gastos y publicación 685b5da
 
-La entrega activa es `685b5da1dc377705828beec50cf731c0c4c91517`, con `f29072d`
+En esa publicación quedó activa `685b5da1dc377705828beec50cf731c0c4c91517`, con `f29072d`
 como anterior y `b149bee/node_modules` compartido. Continúan las 29 migraciones.
 Los formularios operativos conservan campos y archivos al devolver errores;
 se reutiliza la misma protección en los formularios generales y financieros.
@@ -284,3 +284,25 @@ ensayaron escrituras concurrentes. La recuperación completa sigue pendiente.
 datos únicos pendientes de conservación. Suman 232,9 MiB; su eliminación espera
 la confirmación solicitada. No hubo cambios de producción ni cierre de los
 requisitos de recuperación, carga o traspaso.
+
+## Inventario y publicación 7472d42 — 25 de septiembre
+
+La activa es `7472d42f9db7b5c0e3366c75e4835e781df4a500`, con `685b5da` anterior
+y `b149bee/node_modules` compartido. Pasaron lint, tipos, 282 pruebas, build y
+[los tres trabajos de CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36148761866)
+antes de compilar y activar la candidata. Proceso, rutas públicas y recorrido
+autenticado de Inventario se verificaron después.
+
+La migración 030 protege la unidad de los artículos con movimientos, incluso
+tras volver a saldo cero. Se verificaron identidad sintética, 29 huellas previas
+y copia privada de los registros afectados antes de aplicarla. Terminó en
+`COMMIT` con 30 entradas de historial y huella nueva conforme al código.
+No se reescribieron movimientos ni se cargaron datos reales. No repetir el
+bootstrap ni el envoltorio de 030: ambos exigen el estado anterior a su ejecución.
+
+La prueba publicada rechazó el cambio de unidad sin aumentar la versión ni
+alterar los cuatro movimientos; permitió corregir la ubicación y reabrirla.
+El auditor volvió a ventas y perdió el acceso a Inventario. Alcance y límites
+en [la auditoría del 25 de septiembre](AUDITORIA-STAGING-20260925.md).
+`6866a73` y `f29072d` quedan pendientes de retención, sin borrados en esta entrega.
+Producción conserva su versión y esquema previos.
