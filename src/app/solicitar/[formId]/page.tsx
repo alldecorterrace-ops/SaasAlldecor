@@ -51,6 +51,24 @@ export default async function Inquiry({
             <option>Otro</option>
           </select>
         </label>
+        <label className="field">
+          Dirección del proyecto (opcional)
+          <input name="address" autoComplete="street-address" maxLength={255} />
+        </label>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="field">
+            Ciudad (opcional)
+            <input name="city" autoComplete="address-level2" maxLength={128} />
+          </label>
+          <label className="field">
+            Código postal (opcional)
+            <input
+              name="postal_code"
+              autoComplete="postal-code"
+              maxLength={24}
+            />
+          </label>
+        </div>
         <div className="grid grid-cols-3 gap-3">
           {Object.entries({
             length: "Largo (ft)",

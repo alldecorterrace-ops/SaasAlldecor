@@ -146,7 +146,17 @@ export default async function WorkspaceList({
           {filterError}
         </p>
       )}
-      {k === "zones" && <ZonesMap zones={data ?? []} />}
+      {k === "zones" && (
+        <>
+          <Link
+            className="mb-4 inline-block underline"
+            href={`/app/${companyId}/mapa-zonas`}
+          >
+            Abrir mapa comercial por código postal
+          </Link>
+          <ZonesMap zones={data ?? []} />
+        </>
+      )}
       <div className="card overflow-x-auto">
         {data?.length ? (
           <table>

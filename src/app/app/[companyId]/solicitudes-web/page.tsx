@@ -95,6 +95,13 @@ export default async function WebRequests({
               {r.data.height} ft
             </p>
             <p className="whitespace-pre-wrap">{r.data.message}</p>
+            {(r.data.address || r.data.city || r.data.postal_code) && (
+              <p>
+                {[r.data.address, r.data.city, r.data.postal_code]
+                  .filter(Boolean)
+                  .join(", ")}
+              </p>
+            )}
             {r.lead_id && canAccess(member, "crm") ? (
               <Link
                 className="underline"

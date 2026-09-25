@@ -103,12 +103,12 @@ export function moduleHref(company: string, module: string) {
   if (module === "portal") return `${base}/compartir/portal`;
   if (module === "ia") return `${base}/ia`;
   if (module === "horasfix") return `${base}/horas`;
+  if (module === "mapazonas") return `${base}/mapa-zonas`;
   const workspaceRoutes: Record<string, string> = {
     permisos: "permits",
     inventario: "inventory",
     instalaciones: "installations",
     manualfab: "manuals",
-    mapazonas: "zones",
   };
   if (workspaceRoutes[module])
     return `${base}/operaciones/${workspaceRoutes[module]}`;
