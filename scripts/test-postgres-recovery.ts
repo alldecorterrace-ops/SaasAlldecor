@@ -11,6 +11,26 @@ import { commandFile, commandText } from "./ops/process";
 import { sealSnapshot } from "./ops/seal-snapshot";
 import { encryptBackup, recoverBackupFiles } from "./ops/backup-package";
 
+const diagnosticFiles: string[] = [];
+
+// Only used after the loopback/empty synthetic database guards below. Native
+// stderr stays suppressed in production; these files contain test-tool errors.
+async function diagnosticTool(
+  directory: string,
+  name: string,
+  executable: string,
+) {
+  const stderr = path.join(directory, `${name}.stderr`);
+  const wrapper = path.join(directory, `${name}.cjs`);
+  await writeFile(
+    wrapper,
+    `#!/usr/bin/env node\nconst fs=require('node:fs');\nconst {spawnSync}=require('node:child_process');\nconst log=fs.openSync(${JSON.stringify(stderr)},'a',0o600);\nconst result=spawnSync(${JSON.stringify(executable)},process.argv.slice(2),{stdio:['inherit','inherit',log]});\nfs.closeSync(log);\nprocess.exit(result.status??1);\n`,
+    { flag: "wx", mode: 0o700 },
+  );
+  diagnosticFiles.push(stderr);
+  return wrapper;
+}
+
 async function main() {
   const config = {
     mode: "synthetic" as const,
@@ -36,6 +56,21 @@ async function main() {
       "create schema app_private; create schema auth; create schema storage; create table public.synthetic_customer(id int primary key,name text); create table public.synthetic_invoice(id int primary key,customer_id int references public.synthetic_customer(id),total numeric(12,2)); create table app_private.synthetic_receipt(id int primary key,invoice_id int references public.synthetic_invoice(id),amount numeric(12,2)); insert into public.synthetic_customer values(1,'Synthetic'); insert into public.synthetic_invoice values(1,1,100.10); insert into app_private.synthetic_receipt values(1,1,25.05)",
     );
     await mkdir(config.directory, { recursive: true, mode: 0o700 });
+    config.pgDump = await diagnosticTool(
+      config.directory,
+      "pg_dump",
+      config.pgDump,
+    );
+    config.pgDumpAll = await diagnosticTool(
+      config.directory,
+      "pg_dumpall",
+      config.pgDumpAll,
+    );
+    const pgRestore = await diagnosticTool(
+      config.directory,
+      "pg_restore",
+      process.env.PG_RESTORE_BIN ?? "pg_restore",
+    );
     const metadata = await exportPostgresSnapshot(config, async () => {
       // This transaction commits after the exported snapshot but before pg_dump.
       await client.query(
@@ -112,7 +147,7 @@ async function main() {
     const archive = path.join(recovered.directory, "database/full.dump");
     // A separate brand-new database. CREATE fails if any prior rehearsal exists.
     await client.query("create database saas_backup_restored");
-    await commandText(process.env.PG_RESTORE_BIN ?? "pg_restore", [
+    await commandText(pgRestore, [
       "--exit-on-error",
       "--single-transaction",
       "--no-owner",
@@ -173,11 +208,18 @@ async function main() {
     await client.end();
   }
 }
-main().catch((error) => {
+main().catch(async (error) => {
   console.error(
     error instanceof Error
       ? error.message
       : "Synthetic database restore failed",
   );
+  for (const file of diagnosticFiles) {
+    const diagnostic = await readFile(file, "utf8").catch(() => "");
+    if (diagnostic.trim())
+      console.error(
+        `${path.basename(file)} (synthetic only): ${diagnostic.slice(-8000)}`,
+      );
+  }
   process.exitCode = 1;
 });
