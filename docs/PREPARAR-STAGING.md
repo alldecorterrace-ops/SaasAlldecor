@@ -287,7 +287,7 @@ requisitos de recuperación, carga o traspaso.
 
 ## Inventario y publicación 7472d42 — 25 de septiembre
 
-La activa es `7472d42f9db7b5c0e3366c75e4835e781df4a500`, con `685b5da` anterior
+En esa publicación quedó activa `7472d42f9db7b5c0e3366c75e4835e781df4a500`, con `685b5da` anterior
 y `b149bee/node_modules` compartido. Pasaron lint, tipos, 282 pruebas, build y
 [los tres trabajos de CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36148761866)
 antes de compilar y activar la candidata. Proceso, rutas públicas y recorrido
@@ -306,3 +306,28 @@ El auditor volvió a ventas y perdió el acceso a Inventario. Alcance y límites
 en [la auditoría del 25 de septiembre](AUDITORIA-STAGING-20260925.md).
 `6866a73` y `f29072d` quedan pendientes de retención, sin borrados en esta entrega.
 Producción conserva su versión y esquema previos.
+
+## Permisos e Instalaciones — publicación 4293666
+
+La activa es `42936665a0f27949d4f3502ad21ebf826778aa7b`, con `7472d42` anterior
+y `b149bee/node_modules` compartido. Pasaron lint, tipos, 287 pruebas,
+compilación y [CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36150779413)
+antes de compilar en hosting. La migración 031 crea una búsqueda de solo lectura
+con RLS, texto literal y fechas inclusivas. Validó identidad sintética y las
+30 huellas previas, terminó en `COMMIT` y se comprobó su huella; hay 31 entradas
+de historial. No repetir el envoltorio de aplicación: exige el estado previo.
+
+Tras activar se comprobaron proceso, las cuatro rutas públicas y la interfaz
+autenticada: búsqueda por número/autoridad/proyecto, exclusión por fechas,
+rango invertido, limpieza y revocación del acceso al proyecto. La agenda muestra
+su zona horaria. Permiso e instalaciones conservan versiones y motivos; el
+auditor volvió a ventas y perdió acceso a operaciones. Su estimado existente
+se reabrió en revisión 3 con el mismo total. Detalles y límites en
+[la auditoría](AUDITORIA-PERMISOS-INSTALACIONES-20260925.md).
+
+Producción conserva `3c0c412` y su proceso anterior. No hubo borrados.
+`685b5da`, `6866a73` y `f29072d` y sus archivos fuente suman aproximadamente
+707,7 MiB medidos como asignación de disco; todos enlazan a `b149bee`.
+Su revisión final de contenido único y confirmación de borrado siguen pendientes.
+No se ha ensayado todavía el retorno desde 4293666 a 7472d42 ni una restauración
+completa desde Drive. Los seis puntos del plan permanecen abiertos.
