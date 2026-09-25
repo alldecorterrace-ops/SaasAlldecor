@@ -6,6 +6,8 @@ import { analyzeAdtZones, type ZoneSource } from "@/lib/zone-analysis";
 import { externalEffectsAllowed } from "@/lib/deployment-environment";
 import { usd } from "@/lib/finance";
 import { CommercialZoneMap } from "@/components/commercial-zone-map";
+import { LocatePostalCodes } from "@/components/locate-postal-codes";
+import { geocoderConfig } from "@/lib/postal-geocoder";
 
 export default async function CommercialZones({
   params,
@@ -156,6 +158,13 @@ export default async function CommercialZones({
           ))}
         </ul>
       </details>
+      {write && (
+        <LocatePostalCodes
+          companyId={companyId}
+          zips={report.zips_faltantes.map((z) => z.zip)}
+          provider={geocoderConfig(process.env).provider}
+        />
+      )}
       {write && (
         <details className="card">
           <summary>
