@@ -271,7 +271,8 @@ export function workspaceError(error: { code?: string; message: string }) {
   const messages: Record<string, string> = {
     schedule_overlap: "El responsable ya tiene una instalación en ese horario.",
     insufficient_stock: "La salida supera la existencia disponible.",
-    unit_locked: "No puedes cambiar la unidad mientras haya existencias.",
+    unit_locked:
+      "No puedes cambiar la unidad de un artículo con movimientos registrados, aunque su saldo sea cero.",
     approval_fields_required:
       "Indica número y fecha de aprobación del permiso.",
     manager_required: "Esta acción requiere un administrador.",
