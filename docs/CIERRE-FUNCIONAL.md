@@ -35,13 +35,13 @@ se conservan, sin copiar accesos globales del sistema anterior.
 | Inventario | Entradas, salidas, reversos y unidad histórica probados; contrastar movimientos y documentos reales del origen. |
 | Instalaciones | Agenda, superposición, estados y revocación probados; completar responsables y recorridos operativos. |
 | Manual de fabricación | Revisiones, aprobación, adjuntos e impresión persistida probados; faltan generación desde diseño y paquete de planos. |
-| Mapa de zonas | Motor comparado con PHP actual usando casos ficticios; falta conexión a fuentes, cartografía y UI. Véase el contrato enlazado abajo. |
+| Mapa de zonas | Motor comparado con PHP, consulta completa por empresa y UI/centros/capas/descarga/permisos probados en staging 8d936f0. Faltan geocodificación automática, proveedor cartográfico, contraste visual ADT y casos multibyte. |
 | Portal | Completar documentos, fotos, mensajes, enlaces, revocación y aislamiento de cada cliente. |
 | IA Assistant | Completar conversaciones, archivos y acciones realmente operativas en ADT, con permisos y efectos controlados. |
 
 ## Orden de trabajo
 
-1. Cerrar contrato y conexión del mapa comercial, actualmente en comparación.
+1. Cerrar geocodificación, proveedor y casos restantes del mapa comercial.
 2. Completar configuradores, cálculos, equipos, despiece y planos, siguiendo sus
    dependencias con catálogo, precios, estimados y fabricación.
 3. Cerrar recorridos comercial/financiero y operativo de extremo a extremo.
@@ -52,7 +52,8 @@ Este orden no autoriza cobros, mensajes comerciales, nuevas cargas de datos ni
 un cambio de autoridad. Recuperación, hosting y traspaso conservan sus pendientes
 en el seguimiento general, pero no se confunden con cierre funcional.
 
-Evidencia: [Mapa comercial](PARIDAD-MAPA-20260925.md),
+Evidencia: [Auditoría del mapa comercial](AUDITORIA-MAPA-COMERCIAL-20260925.md),
+[contrato del mapa](PARIDAD-MAPA-20260925.md),
 [Manuales y Zonas](AUDITORIA-MANUALES-ZONAS-20260925.md),
 [Permisos e Instalaciones](AUDITORIA-PERMISOS-INSTALACIONES-20260925.md),
 [auditoría de staging](AUDITORIA-STAGING-20260924.md),

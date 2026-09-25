@@ -349,3 +349,14 @@ documenta las pruebas publicadas y las diferencias con el mapa comercial de ADT.
 No hubo borrados: `7472d42`, `685b5da`, `6866a73` y `f29072d` quedan identificadas
 para retención. La entrega anterior todavía requiere ensayo de retorno desde
 esta nueva versión; recuperación completa, paridad y traspaso siguen abiertos.
+
+
+## Mapa comercial, 25 de septiembre de 2026
+
+Entrega activa `8d936f0`, anterior `a8e1dd9`, dependencias `b149bee`.
+Esquema 032 aplicado con 32 huellas registradas, solo en staging. Los datos
+de prueba del mapa son ficticios; no hubo importaciones ni cambios de producción.
+CI completo y 315 pruebas; guardado/reapertura, capas, ventanas, descarga,
+ubicación web, móvil emulado, revocación y aislamiento comprobados. Auditor
+restaurado a ventas y formulario público de prueba desactivado. Detalles y
+límites en [Auditoría del mapa comercial](AUDITORIA-MAPA-COMERCIAL-20260925.md).

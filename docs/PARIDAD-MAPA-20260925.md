@@ -36,7 +36,7 @@ el orden de claves, sin redondear ni omitir valores para hacerlo coincidir.
 | Capas | Filtran los puntos y los de fuera del área. No recalculan la tabla ni el CSV. |
 | CSV | Once columnas, comillas duplicadas y el orden de la tabla. La nueva utilidad neutraliza fórmulas de hoja de cálculo en textos; es una protección de exportación, no un cambio de importes. |
 
-## Resultado del cálculo
+## Resultado inicial del cálculo
 
 Quince conjuntos sintéticos coinciden con la salida PHP del origen: vacíos,
 facturas anuladas, pagos parciales/completos, varios documentos por cliente,
@@ -49,9 +49,10 @@ de entradas y rechazo de importes mal formados.
 La entrega pasó localmente lint, tipos, 308 pruebas y compilación. No requiere
 aplicar una migración de esquema ni publicar una versión del servidor.
 
-El motor está en `src/lib/zone-analysis.ts`. No está conectado todavía a las
-consultas ni a la pantalla del SaaS. Esto acredita equivalencia de cálculo para
-los casos ensayados, no el cierre del módulo ni una publicación en staging.
+El motor está en `src/lib/zone-analysis.ts`. Esa primera entrega solo acreditó
+equivalencia de cálculo para los casos ensayados. La continuación conectó fuentes
+y pantalla y publicó staging `8d936f0` con 315 pruebas; véase la
+[auditoría autenticada](AUDITORIA-MAPA-COMERCIAL-20260925.md). El módulo sigue abierto.
 Los nombres y ciudades extensos con caracteres multibyte requieren un contrato
 adicional de truncamiento: PHP recorta bytes y JavaScript unidades de texto.
 
@@ -73,14 +74,14 @@ de la nueva referencia antes de reemplazar la existente.
 
 ## Pendiente de cierre
 
-- Adaptador del SaaS que identifique las entradas web y sus estados actuales,
-  sin confundirlas con leads manuales ni cargar datos reales del origen.
-- Consulta completa por empresa, permisos, revocación y ausencia de resultados
-  parciales por límites de paginación.
-- Centros postales por empresa, guardado y errores de geocodificación.
-- Cartografía, cuatro capas, puntos, ventanas y tabla/CSV en navegador.
-- Contraste de UI actual de ADT y recorridos autenticados en staging,
-  escritorio/móvil, reintentos y dos empresas.
+- Geocodificación automática y errores del proveedor.
+- Proveedor cartográfico activo y contraste de UI actual de ADT.
+- Casos extremos multibyte y lectura del CSV autenticado descargado.
+
+El adaptador de entradas web, consulta completa, centros por empresa, UI,
+capas/puntos, descarga y controles de permisos/reintentos se comprobaron en la
+continuación; sus pruebas y límites están en la auditoría enlazada.
 
 No se ejecutó geocodificación ni se enviaron direcciones a proveedores externos.
-Producción y la entrega de staging anterior permanecen intactas.
+Producción permanece intacta. Staging avanzó de `a8e1dd9` a `8d936f0`,
+conservando la anterior para retorno y sin importar datos de ADT.
