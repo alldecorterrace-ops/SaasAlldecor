@@ -8,7 +8,7 @@ Ficha por proyecto con tipo/nombre, autoridad, número, tasa, presentación, apr
 
 ## Inventario
 
-Artículos con SKU único por empresa, unidad, ubicación, mínimo y costo unitario de referencia. Existencias calculadas desde entradas/salidas de hasta tres decimales; no se editan directamente. Los movimientos llevan fecha, referencia, motivo y proyecto opcional. Se rechazan salidas sin existencias, solicitudes repetidas con contenido distinto y referencias duplicadas. Un reverso conserva el movimiento original y tampoco puede producir existencias negativas. No permite cambiar la unidad mientras exista saldo. No incluye todavía órdenes de compra, transferencia automática entre almacenes ni valuación contable.
+Artículos con SKU único por empresa, unidad, ubicación, mínimo y costo unitario de referencia. Existencias calculadas desde entradas/salidas de hasta tres decimales; no se editan directamente. Los movimientos llevan fecha, referencia, motivo y proyecto opcional. Se rechazan salidas sin existencias, solicitudes repetidas con contenido distinto y referencias duplicadas. Un reverso conserva el movimiento original y tampoco puede producir existencias negativas. No permite cambiar la unidad después de registrar movimientos, aunque el saldo vuelva a cero. No incluye todavía órdenes de compra, transferencia automática entre almacenes ni valuación contable.
 
 ## Instalaciones
 
@@ -16,7 +16,7 @@ Agenda con inicio/fin, proyecto, responsable, equipo descrito, dirección y nota
 
 ## Fabricación
 
-Manual por proyecto con medidas, tolerancias, materiales, pasos, controles, notas y archivos privados. Historial de snapshots de cada versión; impresión desde navegador. Solo un administrador aprueba. Cambiar contenido o adjuntos de un manual aprobado devuelve el registro a revisión. No sustituye cálculos estructurales ni crea automáticamente planos del configurador 3D.
+Manual por proyecto con medidas, tolerancias, materiales, pasos, controles, notas y archivos privados. Historial de snapshots de cada versión; vista imprimible de la revisión guardada, sin borradores del editor. Solo un administrador aprueba. Cambiar contenido o adjuntos de un manual aprobado devuelve el registro a revisión. No sustituye cálculos estructurales ni crea automáticamente planos del configurador 3D.
 
 ## Zonas
 
@@ -36,4 +36,6 @@ Los administradores cierran semanas que comienzan en lunes, según el horario de
 
 `tests/workspaces.test.ts` ejecuta las migraciones 008–009 junto con sus dependencias en PostgreSQL/PGlite. Cubre referencias de empresa, RLS, permisos por módulo, stock, reintentos/reversos, horarios, revisiones, documentos privados, solicitudes, semanas cerradas y reloj. La entrega de este grupo pasó 82 comprobaciones; la entrega posterior de los 23 módulos amplió el conjunto a 97. Lint, tipos y compilación local pasaron.
 
-Las migraciones 008–009 se aplicaron. La carpeta a472306 se preparó, pero LiteSpeed conservó el proceso anterior; la primera publicación comprobada de estos módulos corresponde a 72267e8, tras reiniciar la raíz activa. El ensayo remoto de inventario, horas y cierre semanal terminó con ROLLBACK; se verificaron seis tablas con RLS, sin lectura anónima ni escritura directa. La validación de navegador autenticado permanece pendiente; las pruebas de PostgreSQL no la sustituyen. No se importaron datos ni se modificaron registros de ADT.
+Las migraciones 008–009 se aplicaron. La carpeta a472306 se preparó, pero LiteSpeed conservó el proceso anterior; la primera publicación comprobada de estos módulos corresponde a 72267e8, tras reiniciar la raíz activa. El ensayo remoto de inventario, horas y cierre semanal terminó con ROLLBACK; se verificaron seis tablas con RLS, sin lectura anónima ni escritura directa. Esa publicación inicial no acreditaba navegador autenticado. Las auditorías posteriores de septiembre de 2026 documentan recorridos concretos y sus límites; las pruebas de PostgreSQL no los sustituyen. No se importaron datos ni se modificaron registros de ADT.
+
+La [auditoría de Manuales y Zonas](AUDITORIA-MANUALES-ZONAS-20260925.md) distingue las zonas circulares disponibles del mapa comercial de ADT, cuyas capas, agregados por código postal y exportación siguen pendientes de paridad.

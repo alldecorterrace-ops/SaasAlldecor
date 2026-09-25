@@ -309,7 +309,7 @@ Producción conserva su versión y esquema previos.
 
 ## Permisos e Instalaciones — publicación 4293666
 
-La activa es `42936665a0f27949d4f3502ad21ebf826778aa7b`, con `7472d42` anterior
+En esa publicación quedó activa `42936665a0f27949d4f3502ad21ebf826778aa7b`, con `7472d42` anterior
 y `b149bee/node_modules` compartido. Pasaron lint, tipos, 287 pruebas,
 compilación y [CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36150779413)
 antes de compilar en hosting. La migración 031 crea una búsqueda de solo lectura
@@ -331,3 +331,21 @@ Producción conserva `3c0c412` y su proceso anterior. No hubo borrados.
 Su revisión final de contenido único y confirmación de borrado siguen pendientes.
 No se ha ensayado todavía el retorno desde 4293666 a 7472d42 ni una restauración
 completa desde Drive. Los seis puntos del plan permanecen abiertos.
+
+## Manuales y Zonas — publicación a8e1dd9
+
+La activa es `a8e1dd97d297244a900b787ceaa13de67e775f7a`, anterior `4293666`,
+con dependencias compartidas `b149bee/node_modules` y 31 migraciones sin cambios.
+Lint, tipos, 288 pruebas, compilación y los tres trabajos de
+[CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36152968748)
+pasaron antes de compilar en hosting. Proceso y rutas públicas fueron verificados
+después de activar. Producción conserva su proceso y versión `3c0c412`.
+
+La vista imprimible de manuales muestra la revisión guardada aunque el formulario
+tenga un borrador rechazado; respeta el acceso a empresa, módulo y proyecto.
+Los errores de coordenadas indican límites en español. La
+[auditoría de Manuales y Zonas](AUDITORIA-MANUALES-ZONAS-20260925.md)
+documenta las pruebas publicadas y las diferencias con el mapa comercial de ADT.
+No hubo borrados: `7472d42`, `685b5da`, `6866a73` y `f29072d` quedan identificadas
+para retención. La entrega anterior todavía requiere ensayo de retorno desde
+esta nueva versión; recuperación completa, paridad y traspaso siguen abiertos.
