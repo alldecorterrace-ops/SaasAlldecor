@@ -80,8 +80,14 @@ no acredita respaldos reales en Drive, restauración de la aplicación ni RPO/RT
 
 ## Pendientes expresos
 
-- Geocodificación automática: el guardado manual de centros no sustituye el
-  botón «Ubicar códigos postales» existente en ADT.
+Actualización posterior: el botón automático se implementó y se probó con
+respuestas ficticias en staging `b4377d3`; una consulta real y la caché se
+verificaron por separado. Véase la [auditoría de geocodificación](AUDITORIA-GEOCODIFICACION-20260925.md)
+para el estado vigente y las limitaciones. El resto de esta nota describe la
+entrega `8d936f0` y no se interpreta como una repetición de todos sus ensayos.
+
+- Geocodificación: el recorrido operativo del proveedor real sigue pendiente,
+  separado del botón sintético y la conexión independiente ya comprobados.
 - Proveedor cartográfico activo y contraste visual con la interfaz actual de
   ADT. Los ensayos de staging sin llamadas externas no acreditan ese proveedor.
 - Truncamiento de nombres/ciudades multibyte: PHP corta bytes y JavaScript

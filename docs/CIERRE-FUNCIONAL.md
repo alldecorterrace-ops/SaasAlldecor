@@ -35,13 +35,13 @@ se conservan, sin copiar accesos globales del sistema anterior.
 | Inventario | Entradas, salidas, reversos y unidad histórica probados; contrastar movimientos y documentos reales del origen. |
 | Instalaciones | Agenda, superposición, estados y revocación probados; completar responsables y recorridos operativos. |
 | Manual de fabricación | Revisiones, aprobación, adjuntos e impresión persistida probados; faltan generación desde diseño y paquete de planos. |
-| Mapa de zonas | Motor comparado con PHP, consulta completa por empresa y UI/centros/capas/descarga/permisos probados en staging 8d936f0. Faltan geocodificación automática, proveedor cartográfico, contraste visual ADT y casos multibyte. |
+| Mapa de zonas | Motor comparado con PHP; informe, centros, capas, descarga y permisos probados. Ubicación automática sintética publicada y probada en staging b4377d3; consulta real del proveedor y caché comprobadas por separado. Faltan cartografía, contraste visual ADT, casos multibyte y presentación monetaria, bytes CSV/HTTP denegado y ensayo operativo del proveedor. |
 | Portal | Completar documentos, fotos, mensajes, enlaces, revocación y aislamiento de cada cliente. |
 | IA Assistant | Completar conversaciones, archivos y acciones realmente operativas en ADT, con permisos y efectos controlados. |
 
 ## Orden de trabajo
 
-1. Cerrar geocodificación, proveedor y casos restantes del mapa comercial.
+1. Cerrar cartografía, contraste visual, casos restantes del mapa comercial y ensayo operativo del proveedor.
 2. Completar configuradores, cálculos, equipos, despiece y planos, siguiendo sus
    dependencias con catálogo, precios, estimados y fabricación.
 3. Cerrar recorridos comercial/financiero y operativo de extremo a extremo.
@@ -52,7 +52,8 @@ Este orden no autoriza cobros, mensajes comerciales, nuevas cargas de datos ni
 un cambio de autoridad. Recuperación, hosting y traspaso conservan sus pendientes
 en el seguimiento general, pero no se confunden con cierre funcional.
 
-Evidencia: [Auditoría del mapa comercial](AUDITORIA-MAPA-COMERCIAL-20260925.md),
+Evidencia: [Auditoría de geocodificación](AUDITORIA-GEOCODIFICACION-20260925.md),
+[Auditoría del mapa comercial](AUDITORIA-MAPA-COMERCIAL-20260925.md),
 [contrato del mapa](PARIDAD-MAPA-20260925.md),
 [Manuales y Zonas](AUDITORIA-MANUALES-ZONAS-20260925.md),
 [Permisos e Instalaciones](AUDITORIA-PERMISOS-INSTALACIONES-20260925.md),
