@@ -7,12 +7,28 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ListPagination } from "@/components/list-pagination";
 import { ZonesMap } from "@/components/zones-map";
+import { permitDateError } from "@/lib/permit-filters";
+type WorkListRow = {
+  id: string;
+  name: string;
+  status: string;
+  version: number;
+  stock: string | number;
+  data: Record<string, string>;
+  updated_at: string;
+};
 export default async function WorkspaceList({
   params,
   searchParams,
 }: {
   params: Promise<{ companyId: string; kind: string }>;
-  searchParams: Promise<{ q?: string; status?: string; page?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    status?: string;
+    page?: string;
+    from?: string;
+    to?: string;
+  }>;
 }) {
   const { companyId, kind } = await params,
     k = workspaceKind(kind);
@@ -25,20 +41,37 @@ export default async function WorkspaceList({
       ? search.status!
       : "",
     page = Math.max(1, Math.min(100000, parseInt(search.page ?? "1") || 1)),
-    base = `/app/${companyId}/operaciones/${k}`;
-  let query = db
-    .from("work_records")
-    .select("*", { count: "exact" })
-    .eq("company_id", companyId)
-    .eq("kind", k)
+    base = `/app/${companyId}/operaciones/${k}`,
+    from = k === "permits" ? (search.from ?? "") : "",
+    to = k === "permits" ? (search.to ?? "") : "",
+    filterError = k === "permits" ? permitDateError(from, to) : null;
+  let query = (
+    k === "permits"
+      ? db.rpc(
+          "search_permits",
+          {
+            p_company: companyId,
+            p_query: q,
+            p_status: status,
+            p_from: filterError ? null : from || null,
+            p_to: filterError ? null : to || null,
+          },
+          { count: "exact" },
+        )
+      : db
+          .from("work_records")
+          .select("*", { count: "exact" })
+          .eq("company_id", companyId)
+          .eq("kind", k)
+  )
     .order("updated_at", { ascending: false })
     .order("id");
-  if (q) query = query.ilike("name", `%${q.replace(/[\\%_]/g, "\\$&")}%`);
-  if (status) query = query.eq("status", status);
-  const { data, count, error } = await query.range(
-    (page - 1) * 20,
-    page * 20 - 1,
-  );
+  if (k !== "permits" && q)
+    query = query.ilike("name", `%${q.replace(/[\\%_]/g, "\\$&")}%`);
+  if (k !== "permits" && status) query = query.eq("status", status);
+  const { data, count, error } = filterError
+    ? { data: [], count: 0, error: null }
+    : await query.range((page - 1) * 20, page * 20 - 1);
   if (error) throw new Error("No se pudo cargar el módulo.");
   const format = new Intl.DateTimeFormat("es", {
     dateStyle: "medium",
@@ -63,7 +96,7 @@ export default async function WorkspaceList({
       </div>
       <form className="card flex flex-wrap items-end gap-4 mb-5">
         <label className="field grow">
-          Nombre
+          {k === "permits" ? "Buscar permiso" : "Nombre"}
           <Input name="q" defaultValue={q} />
         </label>
         <label className="field">
@@ -77,8 +110,42 @@ export default async function WorkspaceList({
             ))}
           </select>
         </label>
+        {k === "permits" && (
+          <>
+            <label className="field">
+              Desde
+              <Input name="from" type="date" defaultValue={from} />
+            </label>
+            <label className="field">
+              Hasta
+              <Input name="to" type="date" defaultValue={to} />
+            </label>
+          </>
+        )}
         <Button>Filtrar</Button>
+        {(q || status || from || to) && (
+          <Link className="text-sm underline" href={base}>
+            Limpiar filtros
+          </Link>
+        )}
+        {k === "permits" && (
+          <p className="w-full text-xs text-muted-foreground">
+            Busca por tipo, autoridad, número, notas o nombre de un proyecto al
+            que tengas acceso. Las fechas incluyen ambos días y usan la
+            presentación; sin ella, la creación en {company.timezone}.
+          </p>
+        )}
       </form>
+      {k === "installations" && (
+        <p className="mb-3 text-sm text-muted-foreground">
+          Horario de la agenda: {company.timezone}.
+        </p>
+      )}
+      {filterError && (
+        <p role="alert" className="mb-4 text-sm text-red-700">
+          {filterError}
+        </p>
+      )}
       {k === "zones" && <ZonesMap zones={data ?? []} />}
       <div className="card overflow-x-auto">
         {data?.length ? (
@@ -99,7 +166,7 @@ export default async function WorkspaceList({
               </tr>
             </thead>
             <tbody>
-              {data.map((r) => (
+              {data.map((r: WorkListRow) => (
                 <tr key={r.id}>
                   <td>
                     <Link
@@ -146,7 +213,9 @@ export default async function WorkspaceList({
           </table>
         ) : (
           <p className="py-10 text-center text-muted-foreground">
-            No hay registros con estos filtros.
+            {filterError
+              ? "Corrige las fechas para consultar los permisos."
+              : "No hay registros con estos filtros."}
           </p>
         )}
       </div>
@@ -154,7 +223,7 @@ export default async function WorkspaceList({
         path={base}
         page={page}
         count={count ?? 0}
-        query={{ q, status }}
+        query={k === "permits" ? { q, status, from, to } : { q, status }}
       />
     </>
   );
