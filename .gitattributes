@@ -1,0 +1,2 @@
+# Upstream bytes are verified against published SHA256 checksums.
+public/vendor/** -text
