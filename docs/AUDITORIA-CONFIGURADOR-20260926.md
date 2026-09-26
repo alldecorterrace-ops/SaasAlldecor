@@ -22,8 +22,8 @@ cuenta: la prueba siguiente sustituye expresamente los parámetros por ficticios
 
 | Acción o regla | Referencia actual | Estado del SaaS inspeccionado |
 | --- | --- | --- |
-| Estructuras | Ninguna o varias por estimado | DesignSpec conserva una sola estructura obligatoria. |
-| Paredes | Varias, cada una con modelo, color y medidas | Una pared por especificación. |
+| Estructuras | Ninguna o varias por estimado | Desde 034, ninguna o una pérgola en el editor sin 3D; varias estructuras siguen pendientes. |
+| Paredes | Varias, cada una con modelo, color y medidas | Desde 034, paredes independientes de cuatro modelos en el editor sin 3D, comprobadas hasta el documento. Límite SaaS explícito de 10; editor 3D pendiente. |
 | Cocina y equipos | Módulos con equipos; precio de venta distingue margen de recargo | Longitud lineal; falta el contrato completo de equipos. |
 | Condiciones | Texto para estimado/contrato, calendario validado y entrega | No están representados en la especificación del configurador. |
 | Zona | Factor opcional separado del precio base; líneas libres no pasan por él | No está representado en DesignSpec. |
@@ -32,7 +32,7 @@ cuenta: la prueba siguiente sustituye expresamente los parámetros por ficticios
 
 Se inspeccionaron src/lib/designs.ts, src/components/design-fields.tsx,
 src/app/app/[companyId]/disenos/actions.ts y la definición vigente de save_design
-en la migración 028; la corrección posterior está en 033. Esta tabla no es una
+en la migración 028; las correcciones posteriores están en 033 y 034. Esta tabla no es una
 auditoría completa de Nuevo estimado 3D.
 
 ## Hallazgo inicial del mínimo de permiso (antes de 033)
@@ -78,7 +78,7 @@ las guardas. SHA-256 de 033 normalizado a LF:
 MD5 del cuerpo de la función normalizado a LF:
 `ddb2beb0997b6b49a501177329ffa358`.
 
-La aplicación web sigue en `7017873`, compatible con 033. No hubo nueva carpeta
+En la entrega 033 la aplicación web permaneció en `7017873`, compatible. No hubo nueva carpeta
 de entrega, compilación en hosting ni reinicio. Producción conserva `3c0c412`,
 su proceso y configuración comprobados; ambas rutas de salud respondieron 200
 con no-store. Esquema 033 no aplicado a producción.
@@ -113,9 +113,14 @@ fuera de Git. No se copiaron tarifas ni registros de ADT.
 
 ## Próximo cierre funcional
 
-Registrar y portar el contrato de ninguna/varias estructuras, paredes, equipos,
+Paredes independientes y ninguna/una pérgola están comprobadas en el editor sin
+3D con 034; véase [evidencia de paredes](AUDITORIA-PAREDES-20260926.md). La aplicación
+actual de staging es `2a1e325`; 346 pruebas.
+
+Registrar y portar el contrato de varias estructuras, paredes del editor 3D, equipos,
 condiciones, catálogo, costos y factores de zona. Cada fórmula debe compararse
 con la referencia y con el documento guardado. Falta verificar también la
-semántica de tarifas ausentes/cero del motor original: el mínimo corregido se
+semántica de tarifas ausentes/cero de estructuras y permisos del motor original
+(las de paredes ya están comprobadas en 034): el mínimo corregido se
 comprobó con tarifas positivas explícitas. No se declaran cerrados los dos
 configuradores, el despiece, los planos ni la matriz completa de roles.

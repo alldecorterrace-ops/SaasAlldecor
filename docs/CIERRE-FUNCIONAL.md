@@ -24,7 +24,7 @@ se conservan, sin copiar accesos globales del sistema anterior.
 | Precios | Historial y recálculo explícito probados; completar catálogo, costos y márgenes de ADT. |
 | Estimados web | Completar formulario, estados, avisos y relación con lead/diseño actuales. |
 | Estimados | Tres revisiones comerciales probadas; cerrar documentos, revisiones, aprobación y comunicaciones. |
-| Pérgola sin 3D | Cálculo básico y dos estimados independientes probados; faltan configuraciones, equipos y reglas completas. Mínimo de permiso corregido en esquema 033 y comprobado hasta el estimado/documento guardado en staging (335 pruebas). Siguen pendientes varias estructuras, paredes, equipos y condiciones. |
+| Pérgola sin 3D | Cálculo básico y dos estimados independientes probados; faltan configuraciones, equipos y reglas completas. Mínimo de permiso corregido en esquema 033 y comprobado hasta el estimado/documento guardado en staging (335 pruebas). Esquema 034 y entrega 2a1e325 añaden pérgola opcional y paredes independientes de cuatro modelos: rechazo sin perder campos, guardado, tres revisiones, dos estimados, reintento y móvil emulado comprobados (346 pruebas). Límite explícito de 10 paredes. Siguen pendientes varias estructuras, equipos, costos y condiciones. |
 | Nuevo estimado 3D | Regla compartida de permiso probada localmente; rama por área comprobada hasta el documento guardado en staging con 033. Faltan geometría avanzada, equipos, despiece y planos; visor rectangular no acredita paridad. |
 | Facturas | Pago/reversión y control de importes probados; cerrar documento, anulación, recibo y recorrido completo. |
 | Proyectos | Relaciones financieras disponibles; completar estados y expediente con acciones actuales. |
@@ -52,7 +52,8 @@ Este orden no autoriza cobros, mensajes comerciales, nuevas cargas de datos ni
 un cambio de autoridad. Recuperación, hosting y traspaso conservan sus pendientes
 en el seguimiento general, pero no se confunden con cierre funcional.
 
-Evidencia: [Configurador y motor](AUDITORIA-CONFIGURADOR-20260926.md),
+Evidencia: [Paredes independientes](AUDITORIA-PAREDES-20260926.md),
+[Configurador y motor](AUDITORIA-CONFIGURADOR-20260926.md),
 [Presentación y exportación del mapa](AUDITORIA-MAPA-20260926.md),
 [Auditoría de geocodificación](AUDITORIA-GEOCODIFICACION-20260925.md),
 [Auditoría del mapa comercial](AUDITORIA-MAPA-COMERCIAL-20260925.md),
