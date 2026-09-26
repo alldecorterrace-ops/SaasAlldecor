@@ -104,23 +104,35 @@ export default async function CommercialZones({
             <tr>
               <th>Código postal</th>
               <th>Ciudad</th>
-              <th>Contactos</th>
-              <th>Cerrados</th>
-              <th>Cierre</th>
-              <th>Facturado</th>
-              <th>Ticket promedio</th>
+              <th style={{ textAlign: "right" }}>Contactos</th>
+              <th style={{ textAlign: "right" }}>Cerrados</th>
+              <th style={{ textAlign: "right" }}>Cierre</th>
+              <th style={{ textAlign: "right" }}>Facturado</th>
+              <th style={{ textAlign: "right" }}>Ticket promedio</th>
             </tr>
           </thead>
           <tbody>
             {report.zonas.map((z) => (
               <tr key={z.zip}>
-                <td>{z.zip}</td>
-                <td>{z.ciudad || "—"}</td>
-                <td>{z.contactos}</td>
-                <td>{z.cerrados}</td>
-                <td>{z.cierre}%</td>
-                <td>{zoneTableMoney(z.ingresos)}</td>
-                <td>{zoneTableTicket(z.ticket)}</td>
+                <td style={{ fontWeight: 700 }}>{z.zip}</td>
+                <td>{z.ciudad || "-"}</td>
+                <td style={{ textAlign: "right" }}>{z.contactos}</td>
+                <td style={{ textAlign: "right" }}>{z.cerrados}</td>
+                <td
+                  style={{
+                    textAlign: "right",
+                    fontWeight: 700,
+                    color: z.cierre >= 50 ? "#1F5233" : z.cierre > 0 ? "#8A6D1F" : "#94A3B8",
+                  }}
+                >
+                  {z.cierre}%
+                </td>
+                <td style={{ textAlign: "right", fontWeight: 800 }}>
+                  {zoneTableMoney(z.ingresos)}
+                </td>
+                <td style={{ textAlign: "right", color: "#5B6572" }}>
+                  {zoneTableTicket(z.ticket)}
+                </td>
               </tr>
             ))}
           </tbody>
