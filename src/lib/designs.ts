@@ -4,13 +4,43 @@ export const rateLabels: Record<string, string> = {
   roof_composite: "Pérgola composite · USD/ft²",
   wall_panel: "Pared panel · USD/ft²",
   wall_composite: "Pared composite · USD/ft²",
+  wall_aluminum: "Pared aluminio · USD/ft²",
+  wall_solid31: "Pared panel sólido 3×1 · USD/ft²",
   kitchen: "Cocina · USD/ft lineal",
   permit_fixed: "Permiso · precio fijo USD",
   permit_threshold: "Permiso · umbral ft²",
   permit_area: "Permiso sobre el umbral · USD/ft²",
   heavy_piece: "Refuerzo · USD/pieza",
 };
+export const wallModels = {
+  panel: "Panel económico",
+  composite: "Composite imitación madera",
+  aluminum: "Aluminio",
+  solid31: "Paneles sólido 3×1",
+} as const;
+export type DesignWall = {
+  length: string;
+  height: string;
+  model: keyof typeof wallModels;
+  color: string;
+};
+export const maxDesignWalls = 10;
+export function designWalls(spec: DesignSpec): DesignWall[] {
+  if (Array.isArray(spec.walls)) return spec.walls;
+  return spec.wall === "panel" || spec.wall === "composite"
+    ? [
+        {
+          length: spec.wall_length,
+          height: spec.wall_height,
+          model: spec.wall,
+          color: "",
+        },
+      ]
+    : [];
+}
 export type DesignSpec = {
+  roof_enabled?: boolean;
+  walls?: DesignWall[];
   length: string;
   width: string;
   height: string;

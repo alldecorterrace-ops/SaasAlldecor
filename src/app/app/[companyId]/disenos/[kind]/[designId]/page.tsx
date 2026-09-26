@@ -103,7 +103,12 @@ export default async function Design({
           </select>
         </label>
         <DesignFields
-          initial={d?.spec ?? initialDesign}
+          initial={
+            d?.spec ??
+            (kind === "nuevo3d"
+              ? initialDesign
+              : { ...initialDesign, roof_enabled: false, walls: [] })
+          }
           three={kind === "nuevo3d"}
         />
         {d && (

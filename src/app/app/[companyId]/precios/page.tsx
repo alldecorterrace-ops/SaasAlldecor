@@ -40,7 +40,10 @@ export default async function Prices({
                 required
                 inputMode="decimal"
                 pattern="[0-9]{1,7}([.][0-9]{1,2})?"
-                defaultValue={data?.rates[k] ?? ""}
+                defaultValue={
+                  data?.rates[k] ??
+                  (k === "wall_aluminum" || k === "wall_solid31" ? "30" : "")
+                }
               />
             </label>
           ))}

@@ -22,10 +22,9 @@ export async function priceAction(
   });
   if (error)
     return {
-      error:
-        isRecordConflict(error.code)
-          ? "Hay otra revisión. Vuelve a abrir Precios."
-          : "Revisa todas las tarifas. Los techos deben tener precio positivo; admite dos decimales.",
+      error: isRecordConflict(error.code)
+        ? "Hay otra revisión. Vuelve a abrir Precios."
+        : "Revisa todas las tarifas. Los techos deben tener precio positivo; admite dos decimales.",
     };
   revalidatePath(`/app/${companyId}`, "layout");
   return {
@@ -68,6 +67,19 @@ export async function designAction(
     ]),
   );
   spec.permit = form.get("permit") === "on";
+  if (form.has("walls")) {
+    try {
+      const walls = JSON.parse(String(form.get("walls")));
+      if (!Array.isArray(walls)) throw new Error("invalid_walls");
+      spec.walls = walls;
+      spec.roof_enabled = form.get("roof_enabled") === "on";
+    } catch {
+      return {
+        error:
+          "No se pudieron leer las paredes. Revisa el formulario antes de guardar.",
+      };
+    }
+  }
   const { error } = await db.rpc("save_design", {
     p_company: companyId,
     p_id: id,
@@ -83,12 +95,13 @@ export async function designAction(
   });
   if (error)
     return {
-      error:
-        isRecordConflict(error.code)
-          ? "Hay otra revisión. Recarga antes de guardar."
-          : error.message.includes("prices_required")
-            ? "Primero configura las tarifas de esta empresa en Precios."
-            : "Revisa el cliente, las medidas (0–200 ft), el tipo de pared y tus permisos.",
+      error: isRecordConflict(error.code)
+        ? "Hay otra revisión. Recarga antes de guardar."
+        : error.message.includes("prices_required")
+          ? "Primero configura las tarifas de esta empresa en Precios."
+          : error.message.includes("design_client_outdated")
+            ? "Este diseño contiene paredes independientes. Actualiza la página antes de editar para conservarlas."
+            : "Revisa el cliente, las medidas (0–200 ft), las paredes (máximo 10) y tus permisos. Incluye al menos una partida con importe positivo.",
     };
   revalidatePath(`/app/${companyId}`, "layout");
   redirect(`/app/${companyId}/disenos/${kind}/${id}?saved=1`);
