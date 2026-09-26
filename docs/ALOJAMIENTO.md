@@ -79,3 +79,16 @@ contiene esas dependencias pasa a ser necesaria para el servicio: no retirarla
 como parte de la limpieza de versiones anteriores. No ejecutar `npm ci` sobre
 las dependencias compartidas ni sobre la aplicación activa. Cuando cambie el
 archivo de versiones, preparar una instalación distinta y volver a validar.
+
+
+## Reemplazo atómico de configuración web
+
+Antes de cambiar PassengerAppRoot, registrar contenido y modo de .htaccess.
+Conservar el modo original en el archivo candidato **antes** del reemplazo
+atómico y comprobarlo después. En staging el modo compatible es 0644; crear el
+temporal bajo umask 077 sin restaurarlo dejó la configuración ilegible para
+LiteSpeed y produjo 404 el 26 de septiembre. La reversión debe preservar también
+el modo, no solamente los bytes. Las copias privadas y .env.local siguen con 0600.
+Tras activar o volver atrás, verificar una página autenticada, el proceso real,
+salud pública y rechazo HTTP de archivos privados. Véase la incidencia resuelta
+en [Auditoría del mapa](AUDITORIA-MAPA-20260926.md).

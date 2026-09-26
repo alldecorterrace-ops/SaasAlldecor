@@ -118,3 +118,57 @@ etiquetas sin partir letras está consultada al propietario, pendiente de respue
 También se observó texto desactualizado en Dashboard («migración en curso»);
 queda identificado para corregirlo según la suspensión vigente.
 No están cerrados los 23 módulos ni los seis puntos.
+
+
+## Contraste visual con ADT actual y entrega 7017873
+
+El 26 de septiembre se recuperó una sesión autenticada del ADT original y se
+abrió su Mapa de zonas en modo de lectura. Se observaron cinco indicadores,
+cuatro capas, el filtro de fuera de área, exportación y tabla de siete columnas.
+El mapa original cargó 20 de 20 teselas observadas de OpenStreetMap; esto acredita
+la cartografía del origen, no la integración externa del SaaS.
+
+El segmento JavaScript desde la definición de AdtMapaZonasModule hasta antes de
+su asignación a window conserva el mismo contenido que la copia del 25 de
+septiembre. SHA-256 de ese segmento:
+`7eff387f2d13a3444a7276bb74d82149bd23b22c2fc4c33cd29b58e05c9540d9`.
+Las cifras y fichas reales vistas no se copiaron al SaaS ni al repositorio.
+
+La inspección de estilos efectivos confirmó tres colores del porcentaje de
+cierre: verde desde 50%, ocre por encima de cero y por debajo de 50%, gris en cero.
+Se copiaron las reglas exactas de la tabla, incluido número a la derecha, ZIP
+en negrita, facturado con peso 800 y ticket gris. El Dashboard ahora indica que
+la importación de nuevos datos está pausada, conforme a la decisión vigente.
+
+Entrega publicada en staging: **7017873abcd804e5ddcd18125273145e36bdc98b**.
+[CI](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36266425597)
+aprobó aplicación, concurrencia y recuperación. Localmente pasaron lint, tipos,
+328 pruebas y compilación; el hosting también compiló. No hubo cambios SQL.
+
+La sesión real del auditor reabrió el mismo caso ficticio: las cinco columnas
+numéricas quedaron alineadas a la derecha, cierre 100% verde/peso 700, importe
+`$100`/peso 800 y ticket gris. La prueba publicada cubre el caso verde; las ramas
+ocre y gris se contrastaron en ADT y en código, sin crear registros adicionales.
+Se comprobó también el texto nuevo del Dashboard. No se repitió la descarga del
+CSV ni toda la matriz de permisos de 50e96d4, cuyos componentes no cambiaron.
+
+Durante la primera activación, el archivo de configuración web quedó con modo
+0600 por la creación atómica bajo umask 077. LiteSpeed respondió 404. Se restauró
+la entrega anterior y el modo original 0644, y se confirmó que volvió a servir.
+La segunda activación preservó explícitamente ese modo antes del reemplazo y
+funcionó. Los secretos continuaron con 0600 fuera de la raíz pública. El proceso
+activo corresponde a 7017873; producción conservó proceso, entrega y huella de
+configuración. La interrupción fue de staging; no acredita despliegue sin pausa.
+
+Pasaron doce comprobaciones posteriores: login, recuperación, salud, redirección
+de empresas y rechazo de dos rutas privadas, en staging y producción. Se
+conservaron 50e96d4 para retorno y b149bee para dependencias. La revisión de
+retención identificó además b4377d3 junto con las siete carpetas ya enumeradas;
+no se borró ninguna. Continúan pendientes su revisión de contenido único y
+confirmación exacta para retirar las que correspondan.
+
+Este contraste cierra la ausencia de referencia visual actual de controles y
+tabla. Siguen pendientes cartografía externa del SaaS, prueba operativa completa
+del geocodificador y decisión sobre truncamiento multibyte. No se declara el
+módulo completo. La revisión del siguiente bloque está en
+[Configurador y motor](AUDITORIA-CONFIGURADOR-20260926.md).

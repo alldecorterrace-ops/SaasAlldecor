@@ -24,7 +24,7 @@ se conservan, sin copiar accesos globales del sistema anterior.
 | Precios | Historial y recálculo explícito probados; completar catálogo, costos y márgenes de ADT. |
 | Estimados web | Completar formulario, estados, avisos y relación con lead/diseño actuales. |
 | Estimados | Tres revisiones comerciales probadas; cerrar documentos, revisiones, aprobación y comunicaciones. |
-| Pérgola sin 3D | Cálculo básico y dos estimados independientes probados; faltan configuraciones, equipos y reglas completas. |
+| Pérgola sin 3D | Cálculo básico y dos estimados independientes probados; faltan configuraciones, equipos y reglas completas. Inspección del 26 de septiembre identifica mínimo de permiso, varias estructuras, paredes, equipos y condiciones como diferencias por cerrar. |
 | Nuevo estimado 3D | Faltan geometría avanzada, equipos, despiece y planos; visor rectangular no acredita paridad. |
 | Facturas | Pago/reversión y control de importes probados; cerrar documento, anulación, recibo y recorrido completo. |
 | Proyectos | Relaciones financieras disponibles; completar estados y expediente con acciones actuales. |
@@ -35,13 +35,13 @@ se conservan, sin copiar accesos globales del sistema anterior.
 | Inventario | Entradas, salidas, reversos y unidad histórica probados; contrastar movimientos y documentos reales del origen. |
 | Instalaciones | Agenda, superposición, estados y revocación probados; completar responsables y recorridos operativos. |
 | Manual de fabricación | Revisiones, aprobación, adjuntos e impresión persistida probados; faltan generación desde diseño y paquete de planos. |
-| Mapa de zonas | Motor comparado con PHP; informe, centros, capas, descarga y permisos probados. Ubicación automática sintética publicada y probada en staging b4377d3; consulta real del proveedor y caché comprobadas por separado. Presentación monetaria publicada en 50e96d4; descarga autenticada comparada byte por byte, detalle con centavos y rechazos HTTP comprobados (26 septiembre, 328 pruebas). Faltan cartografía, contraste visual ADT, contrato multibyte y ensayo operativo del proveedor. |
+| Mapa de zonas | Motor comparado con PHP; informe, centros, capas, descarga y permisos probados. Ubicación automática sintética publicada y probada en staging b4377d3; consulta real del proveedor y caché comprobadas por separado. Presentación monetaria publicada en 50e96d4; descarga autenticada comparada byte por byte, detalle con centavos y rechazos HTTP comprobados (26 septiembre, 328 pruebas). Contraste visual con ADT actual y estilos de tabla comprobados; publicado 7017873. Faltan cartografía externa del SaaS, contrato multibyte y ensayo operativo del proveedor. |
 | Portal | Completar documentos, fotos, mensajes, enlaces, revocación y aislamiento de cada cliente. |
 | IA Assistant | Completar conversaciones, archivos y acciones realmente operativas en ADT, con permisos y efectos controlados. |
 
 ## Orden de trabajo
 
-1. Cerrar cartografía, contraste visual, casos restantes del mapa comercial y ensayo operativo del proveedor.
+1. Cerrar cartografía, contrato multibyte y ensayo operativo del proveedor del mapa; el contraste visual del origen ya se realizó.
 2. Completar configuradores, cálculos, equipos, despiece y planos, siguiendo sus
    dependencias con catálogo, precios, estimados y fabricación.
 3. Cerrar recorridos comercial/financiero y operativo de extremo a extremo.
@@ -52,7 +52,8 @@ Este orden no autoriza cobros, mensajes comerciales, nuevas cargas de datos ni
 un cambio de autoridad. Recuperación, hosting y traspaso conservan sus pendientes
 en el seguimiento general, pero no se confunden con cierre funcional.
 
-Evidencia: [Presentación y exportación del mapa](AUDITORIA-MAPA-20260926.md),
+Evidencia: [Configurador y motor](AUDITORIA-CONFIGURADOR-20260926.md),
+[Presentación y exportación del mapa](AUDITORIA-MAPA-20260926.md),
 [Auditoría de geocodificación](AUDITORIA-GEOCODIFICACION-20260925.md),
 [Auditoría del mapa comercial](AUDITORIA-MAPA-COMERCIAL-20260925.md),
 [contrato del mapa](PARIDAD-MAPA-20260925.md),
