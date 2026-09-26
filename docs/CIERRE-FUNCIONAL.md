@@ -35,7 +35,7 @@ se conservan, sin copiar accesos globales del sistema anterior.
 | Inventario | Entradas, salidas, reversos y unidad histórica probados; contrastar movimientos y documentos reales del origen. |
 | Instalaciones | Agenda, superposición, estados y revocación probados; completar responsables y recorridos operativos. |
 | Manual de fabricación | Revisiones, aprobación, adjuntos e impresión persistida probados; faltan generación desde diseño y paquete de planos. |
-| Mapa de zonas | Motor comparado con PHP; informe, centros, capas, descarga y permisos probados. Ubicación automática sintética publicada y probada en staging b4377d3; consulta real del proveedor y caché comprobadas por separado. Presentación monetaria corregida y bytes CSV ensayados localmente; HTTP denegado verificado con sesión real (26 septiembre). Faltan publicación de esas correcciones, descarga válida autenticada, cartografía, contraste visual ADT, contrato multibyte y ensayo operativo del proveedor. |
+| Mapa de zonas | Motor comparado con PHP; informe, centros, capas, descarga y permisos probados. Ubicación automática sintética publicada y probada en staging b4377d3; consulta real del proveedor y caché comprobadas por separado. Presentación monetaria publicada en 50e96d4; descarga autenticada comparada byte por byte, detalle con centavos y rechazos HTTP comprobados (26 septiembre, 328 pruebas). Faltan cartografía, contraste visual ADT, contrato multibyte y ensayo operativo del proveedor. |
 | Portal | Completar documentos, fotos, mensajes, enlaces, revocación y aislamiento de cada cliente. |
 | IA Assistant | Completar conversaciones, archivos y acciones realmente operativas en ADT, con permisos y efectos controlados. |
 

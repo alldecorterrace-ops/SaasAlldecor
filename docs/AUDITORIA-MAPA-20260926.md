@@ -65,8 +65,56 @@ dispare el fallo. No se cambió el contrato de truncamiento ni se replicó ese
 fallo en el SaaS. Hace falta resolver explícitamente esta diferencia para cerrar
 la paridad de texto extenso; no se marca como corregida.
 
-## Pendiente
+## Publicación y recorrido autenticado
 
-Publicar esta entrega y repetir presentación/descarga válida autenticadas.
+Código publicado y activo en staging: **50e96d49225d7794ae754a1bb6c590a2ffc5a55e**.
+[CI de esta entrega](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36265401457):
+aplicación, concurrencia PostgreSQL y recuperación sintética aprobados.
+Compilación local y en hosting completadas. La candidata reutiliza las mismas
+dependencias y configuración de staging; no se aplicó ninguna migración SQL.
+
+Se creó desde la interfaz una tercera empresa sintética, con el auditor como
+propietario únicamente de ese nuevo espacio. Sus accesos anteriores se conservaron.
+Se recorrió cliente → estimado de 200.50 → aprobación ficticia → factura/proyecto
+→ registro administrativo simulado de 100.25. Todos los registros llevan notas de
+prueba; no hubo dinero recibido, cobros, transferencias ni mensajes a clientes.
+
+| Comprobación publicada | Resultado |
+| --- | --- |
+| Clasificación | Un cliente activo por pago parcial; un contacto, un cerrado, cierre 100%. |
+| Tabla | Facturado y ticket muestran `$100`. |
+| Detalle del punto | Conserva `$100.25`, nombre y ciudad acentuados. |
+| Persistencia | Centro ficticio del ZIP guardado desde UI; al volver al mapa aparece un punto. |
+| Descarga real | Archivo guardado mediante el enlace autenticado; sus 206 bytes coinciden exactamente con el caso esperado, especificado independientemente del serializador. |
+| CSV | Once columnas; ciudad `Peña, "Árbol"`; valores `100.25` en ingresos y ticket; UTF-8 válido y comillas escapadas. |
+| Cabeceras | 200, `text/csv; charset=utf-8`, attachment, `private, no-store`, nosniff y CSP sandbox. |
+| Capas | Ocultar activos retira el punto; tabla y CSV siguen iguales. Capa restaurada al terminar. |
+| Roles y empresas | El mismo usuario recibe 403 en la empresa anterior sin permisos del mapa y 403 en la empresa a la que no pertenece. Sin sesión: 401. |
+| Móvil | Emulación CDP 390×844: viewport/cuerpo 390, mapa 350; tabla en contenedor desplazable. Se restableció el tamaño normal. No es prueba en teléfono físico. |
+| Salud | Login, recuperación, salud de base y redirección de empresas pasan en staging y producción, ocho comprobaciones públicas. |
+
+Huella SHA-256 del CSV ficticio descargado:
+`8998ec6ca34f2fe1c88e648fa098aa1abcaa378a233b42a16489e6aeaabccea2`.
+Capturas, archivo descargado, identificadores de prueba y resultados HTTP quedan
+en la evidencia privada. La descarga previa a la publicación no se confunde con
+estas nuevas comprobaciones de `50e96d4`.
+
+## Hosting y límites
+
+Activa `50e96d4`, anterior compatible `b4377d3`, dependencias compartidas
+`b149bee`. El nuevo proceso de staging se comprobó. Producción conserva
+`3c0c412`, su proceso y la huella de su configuración web. El cambio de staging
+no tocó ese archivo ni requirió cerrar acceso. La compilación añadió 858 archivos
+a la candidata, sin copiar las dependencias compartidas.
+
+Quedaron identificadas como entregas adicionales `8d936f0`, `a8e1dd9`,
+`4293666`, `7472d42`, `685b5da`, `f29072d` y `6866a73`.
+No se borraron. Retirarlas requiere revisar contenido único y confirmar la lista
+exacta; esta publicación no equivale a completar la limpieza del hosting.
+
 Siguen abiertos el contraste visual con ADT actual, cartografía, el contrato
-multibyte y los ensayos operativos del proveedor. No están cerrados los 23 módulos.
+multibyte y los ensayos operativos del proveedor. La decisión sobre recorte de
+etiquetas sin partir letras está consultada al propietario, pendiente de respuesta.
+También se observó texto desactualizado en Dashboard («migración en curso»);
+queda identificado para corregirlo según la suspensión vigente.
+No están cerrados los 23 módulos ni los seis puntos.
