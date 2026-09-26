@@ -24,8 +24,8 @@ se conservan, sin copiar accesos globales del sistema anterior.
 | Precios | Historial y recálculo explícito probados; completar catálogo, costos y márgenes de ADT. |
 | Estimados web | Completar formulario, estados, avisos y relación con lead/diseño actuales. |
 | Estimados | Tres revisiones comerciales probadas; cerrar documentos, revisiones, aprobación y comunicaciones. |
-| Pérgola sin 3D | Cálculo básico y dos estimados independientes probados; faltan configuraciones, equipos y reglas completas. Inspección del 26 de septiembre identifica mínimo de permiso, varias estructuras, paredes, equipos y condiciones como diferencias por cerrar. |
-| Nuevo estimado 3D | Faltan geometría avanzada, equipos, despiece y planos; visor rectangular no acredita paridad. |
+| Pérgola sin 3D | Cálculo básico y dos estimados independientes probados; faltan configuraciones, equipos y reglas completas. Mínimo de permiso corregido en esquema 033 y comprobado hasta el estimado/documento guardado en staging (335 pruebas). Siguen pendientes varias estructuras, paredes, equipos y condiciones. |
+| Nuevo estimado 3D | Regla compartida de permiso probada localmente; rama por área comprobada hasta el documento guardado en staging con 033. Faltan geometría avanzada, equipos, despiece y planos; visor rectangular no acredita paridad. |
 | Facturas | Pago/reversión y control de importes probados; cerrar documento, anulación, recibo y recorrido completo. |
 | Proyectos | Relaciones financieras disponibles; completar estados y expediente con acciones actuales. |
 | Gastos | Alta, aprobación, corrección, adjuntos y consulta probados; faltan acciones de Campo y responsables. |
