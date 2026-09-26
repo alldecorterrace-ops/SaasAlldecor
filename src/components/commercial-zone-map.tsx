@@ -40,7 +40,7 @@ const colors: Record<ZoneCategory, string> = {
   terminado: "#1F6FB2",
   activo: "#C0392B",
   estimado: "#E67E22",
-  lead: "#927700",
+  lead: "#E8C13B",
 };
 const labels: Record<ZoneCategory, string> = {
   terminado: "Terminados",

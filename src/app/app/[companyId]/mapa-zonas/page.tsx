@@ -4,7 +4,7 @@ import { canAccess } from "@/lib/modules";
 import { missingZonePermissions } from "@/lib/commercial-zones";
 import { analyzeAdtZones, type ZoneSource } from "@/lib/zone-analysis";
 import { externalEffectsAllowed } from "@/lib/deployment-environment";
-import { usd } from "@/lib/finance";
+import { zoneTableMoney, zoneTableTicket } from "@/lib/zone-presentation";
 import { CommercialZoneMap } from "@/components/commercial-zone-map";
 import { LocatePostalCodes } from "@/components/locate-postal-codes";
 import { geocoderConfig } from "@/lib/postal-geocoder";
@@ -119,8 +119,8 @@ export default async function CommercialZones({
                 <td>{z.contactos}</td>
                 <td>{z.cerrados}</td>
                 <td>{z.cierre}%</td>
-                <td>{usd(z.ingresos)}</td>
-                <td>{z.ticket ? usd(z.ticket) : "—"}</td>
+                <td>{zoneTableMoney(z.ingresos)}</td>
+                <td>{zoneTableTicket(z.ticket)}</td>
               </tr>
             ))}
           </tbody>

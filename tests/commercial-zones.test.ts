@@ -4,6 +4,10 @@ import { randomUUID as id } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { fullDatabase } from "./helpers/full-database";
+import {
+  exportCommercialZones,
+  type ZoneExportClient,
+} from "../src/lib/zone-export";
 import { emptyItem } from "../src/lib/estimates";
 import { analyzeAdtZones, type ZoneSource } from "../src/lib/zone-analysis";
 import { commercialZonePermissions } from "../src/lib/commercial-zones";
@@ -33,7 +37,7 @@ test("commercial map reads a complete tenant snapshot and preserves source permi
     ]);
     await db.exec("set role authenticated");
   };
-  const source = async (target = company) =>
+  const source = async (target: string = company) =>
     (
       await db.query<{ result: ZoneSource }>(
         "select public.commercial_zone_source($1) result",
@@ -311,6 +315,72 @@ test("commercial map reads a complete tenant snapshot and preserves source permi
         await assert.rejects(source(), { code: "42501" });
         await db.exec("reset role;set role anon");
         await assert.rejects(source(), { code: "42501" });
+        await as(owner);
+      },
+    );
+    await t.test(
+      "CSV uses real RLS for tenant separation and immediate revocation",
+      async () => {
+        await as(owner);
+        await db.query(
+          "select public.set_member_access($1,$2,'member',true,$3)",
+          [company, reader, JSON.stringify(permissions)],
+        );
+        await as(reader);
+        const connect = async (): Promise<ZoneExportClient> => ({
+          auth: {
+            getUser: async () => ({
+              data: { user: { id: reader } },
+              error: null,
+            }),
+          },
+          rpc: async (_name, args) => {
+            try {
+              return { data: await source(args.p_company), error: null };
+            } catch (error) {
+              return {
+                data: null,
+                error: { code: (error as { code: string }).code },
+              };
+            }
+          },
+        });
+        const response = await exportCommercialZones(company, connect);
+        assert.equal(response.status, 200);
+        const csv = await response.text();
+        assert.ok(csv.includes('"40.25","40.25"'));
+        assert.ok(!csv.includes("Foreign private name"));
+        assert.equal(
+          (await exportCommercialZones(foreign, connect)).status,
+          403,
+        );
+        for (const [module] of commercialZonePermissions) {
+          await as(owner);
+          const restricted = { ...permissions };
+          delete restricted[module];
+          await db.query(
+            "select public.set_member_access($1,$2,'member',true,$3)",
+            [company, reader, JSON.stringify(restricted)],
+          );
+          await as(reader);
+          const denied = await exportCommercialZones(company, connect);
+          assert.equal(denied.status, 403, module);
+          assert.equal(denied.headers.get("Content-Disposition"), null);
+          assert.equal(
+            denied.headers.get("Cache-Control"),
+            "private, no-store",
+          );
+        }
+        await as(owner);
+        await db.query(
+          "select public.set_member_access($1,$2,'member',false,$3)",
+          [company, reader, JSON.stringify(permissions)],
+        );
+        await as(reader);
+        assert.equal(
+          (await exportCommercialZones(company, connect)).status,
+          403,
+        );
         await as(owner);
       },
     );
