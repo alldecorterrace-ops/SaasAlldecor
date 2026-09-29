@@ -1,16 +1,18 @@
 # Estado de implementación — 22 de septiembre de 2026
 
 
-**Última entrega de staging, 29 de septiembre: b8b2861, esquema 040.**
-Registro de gastos por lotes con pagador, transacción completa y recibo idempotente:
-403 pruebas locales y CI aprobados; error de fila, corrección, persistencia,
-permisos, CSV, móvil emulado y retorno compatible comprobados con datos sintéticos.
-[Evidencia y diferencias pendientes](AUDITORIA-LOTES-GASTOS-20260929.md).
-Continúan pendientes recibos dentro del lote, orígenes Campo/Workforce y otras
-acciones del [alcance activo de 21 módulos](CIERRE-FUNCIONAL.md). La consulta
-operativa de Gastos en ADT sigue devolviendo 403. El esquema aplicado no acredita
-paridad completa ni recuperación operativa. Producción, nuevas migraciones de
-datos ADT y traspaso siguen fuera de esta entrega.
+**Última entrega de staging, 29 de septiembre: 4a60de4, esquema 041.**
+Comprobantes dentro de los lotes: 413 pruebas y CI aprobados; imagen repetida
+rechazada sin filas parciales, corrección conservando archivos, carga/descarga
+binaria de 7 MiB, móvil emulado, permisos y retorno compatible comprobados.
+Diez huellas previas conservadas.
+[Evidencia y diferencias pendientes](AUDITORIA-COMPROBANTES-LOTES-20260929.md).
+Continúan pendientes unificar la carga individual/huellas, Campo/Workforce y
+otras acciones del [alcance activo de 21 módulos](CIERRE-FUNCIONAL.md).
+El contraste operativo completo de Gastos en ADT sigue pendiente por el 403
+documentado antes. No se acredita paridad completa ni recuperación operativa.
+Producción, nuevas migraciones de datos ADT y traspaso siguen fuera de esta entrega.
+
 
 Prioridad actualizada el 25 de septiembre: verificar y completar equivalencia
 funcional con ADT en staging. Nuevas migraciones de datos y traspaso aplazados

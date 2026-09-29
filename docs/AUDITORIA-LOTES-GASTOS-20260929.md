@@ -1,5 +1,10 @@
 # Gastos por lotes y pagador
 
+Actualización posterior: comprobantes dentro del lote publicados y comprobados
+en 4a60de4, esquema 041. La [auditoría de comprobantes](AUDITORIA-COMPROBANTES-LOTES-20260929.md)
+recoge la evidencia nueva y los límites restantes. El texto siguiente conserva
+el estado de la entrega inicial b8b2861.
+
 Fecha: 29 de septiembre de 2026. Alcance: esquema aditivo 040 y datos sintéticos
 en staging. No importa datos ADT ni autoriza producción, pagos o reembolsos reales.
 
