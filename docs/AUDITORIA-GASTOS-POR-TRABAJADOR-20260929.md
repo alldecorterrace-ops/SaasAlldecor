@@ -36,6 +36,46 @@ siendo de empresa; los filtrados corresponden a la selección.
 
 ## Publicación y límites
 
-Pendiente de registrar CI, despliegue y recorrido autenticado de esta entrega.
+Publicado en staging el 29 de septiembre de 2026:
+`3c567f99fee135e289be3f9f740d33b4f603f964`, esquema 046.
+[CI 36622311416](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36622311416):
+`check`, `queue-concurrency` y `backup-recovery` correctos. Compilación del hosting
+con Node 22, webpack y una CPU terminada; REVISION y proceso activo comprobados.
+Dependencias compartidas c66e4ec/b149bee sin copiar ni actualizar.
+
+Sesión autenticada de pruebas:
+
+- Dos gastos sintéticos previos (empresa 1,11 USD y efectivo 2,22 USD) guardados
+  nuevamente desde sus fichas. Conservan trabajador, aprobación, importe,
+  reembolso NO_APLICA y todos los campos de negocio. Cada versión pasó de 1 a 2.
+- Desde la ficha del trabajador se abre su registro por ID: tres gastos,
+  13,34 USD y 10,01 USD pendientes de reembolso. El resumen general conserva
+  93,19 USD activos y 10,01 USD de reembolsos.
+- CSV real descargado: 1.082 bytes, cabecera y tres filas; incluye las tres
+  modalidades de pagador y mantiene la asociación.
+- Móvil emulado a 390 px sin desbordamiento; combinar trabajador y bolsillo
+  propio devuelve un gasto por 10,01 USD. Emulación retirada al finalizar.
+- Sesión restringida en la segunda empresa: recurso no disponible, sin gastos
+  expuestos. Separación de nombres iguales, trabajador inactivo y revocación
+  específica de Trabajadores probadas localmente, no mediante cambio de roles vivo.
+- Once huellas idénticas tras aplicar 046. Tras las dos ediciones: diez tablas
+  completas iguales; los otros ocho gastos conservan su huella anterior y las
+  dos fichas de prueba conservan su huella sin campos de versión/actualización.
+- Cuatro rutas públicas de staging y salud de producción: HTTP 200 antes/después.
+  La configuración de producción conserva su SHA-256 anterior.
+
+La entrega anterior 604fbe5 queda disponible. **No se ensayó un retorno nuevo:**
+contiene el fallo de edición individual corregido aquí; no se considera válida
+para reabrir ese recorrido de escritura. Las consultas sin el nuevo filtro siguen
+cubiertas por las pruebas de compatibilidad. Esto no acredita recuperación completa.
+
+cPanel informó 596.549/600.000 archivos antes de compilar. El recuento del árbol
+sin seguir enlaces pasó de 596.451 en la guarda de construcción a 597.920 al final;
+son mediciones distintas del contador de cuota de cPanel. Margen limitado para
+las siguientes entregas. No se eliminó ninguna carpeta. aaf268c y su archivo
+comprimido permanecen por decisión expresa; versiones sobrantes pendientes de
+retención, sin usar esta nota como autorización de borrado.
+
+Capturas, CSV, huellas y registros de comprobación se conservan fuera de Git.
 No implica doble aprobación Workforce, revisión IA/humana, pago, reversión contable
-ni labor automática. Tampoco autoriza migración de datos ADT, producción o traspaso.
+ni labor automática. No se importaron datos ADT ni se publicó en producción.

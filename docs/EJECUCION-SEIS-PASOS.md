@@ -1,24 +1,27 @@
 # Ejecución y auditoría de los seis pasos
 
 
-**Última entrega de staging, 29 de septiembre: 604fbe5, esquema 045.**
-Trabajador asociado opcional con pago de empresa, sin generar reembolso;
-búsqueda por fecha, categoría y relaciones autorizadas. 425 pruebas y CI aprobados.
-Sesión real: rechazo sin filas parciales, corrección, reapertura, CSV, móvil emulado,
-usuario restringido y once huellas previas conservadas.
-[Evidencia y límites](AUDITORIA-RELACIONES-GASTOS-20260929.md).
-Mensaje de validación en español probado en la entrega final; retorno real a
-0545710 y regreso a 604fbe5 comprobados con los nuevos registros conservados.
+**Última entrega de staging, 29 de septiembre: 3c567f9, esquema 046.**
+Corregido el borrado involuntario del trabajador asociado al guardar una ficha
+individual pagada por empresa/efectivo. La ficha del trabajador enlaza a su registro
+filtrado por identidad, totales completos y CSV; incluidos inactivos para consulta.
+430 pruebas, lint, tipos, compilación y tres trabajos de CI correctos.
+Guardado/reapertura reales de dos gastos sintéticos, campos de negocio conservados,
+consulta de tres gastos, CSV, móvil emulado y acceso restringido comprobados.
+[Evidencia y límites](AUDITORIA-GASTOS-POR-TRABAJADOR-20260929.md).
 Versión/proceso verificados y cinco comprobaciones públicas HTTP 200.
 
-Se conserva la entrega anterior de recibos, indicadores y pagador 0545710.
-Siguen abiertos origen Labor automática, integración Campo/Workforce, reversión
+La anterior 604fbe5 permanece disponible, con la salvedad documentada del fallo de
+edición individual; no se afirma un nuevo retorno operativo validado.
+Siguen abiertos revisión/aprobación de Workforce, Labor automática, reversión
 contable y el resto del [alcance activo de 21 módulos](CIERRE-FUNCIONAL.md).
-El [contrato vigente de Workforce](PARIDAD-GASTOS-WORKFORCE-20260929.md) distingue
-revisión IA, confirmación humana, aprobación, reembolso y archivo recuperable.
+El [contrato de Workforce](PARIDAD-GASTOS-WORKFORCE-20260929.md) distingue IA,
+confirmación humana, aprobación, reembolso y archivo recuperable.
 No se acredita paridad completa ni recuperación operativa. Nuevas migraciones
 de datos ADT y traspaso siguen suspendidos. Producción SaaS no se ha desplegado.
-Se conservaron aaf268c y su archivo comprimido por decisión del propietario.
+Se conservaron aaf268c y su archivo comprimido; no se borró ninguna entrega.
+El hosting continúa próximo a su límite de archivos; capacidad y retención constan
+en la auditoría, sin ampliar planes ni contratar servicios.
 
 
 Fecha de inicio: 18 de septiembre de 2026. Seguimiento actualizado: 29 de septiembre de 2026. Destino: https://app.alldecorpatio.com.
