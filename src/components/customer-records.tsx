@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CustomerLedger } from "./customer-ledger";
 import { ListPagination } from "./list-pagination";
 import { estimateStatuses } from "@/lib/estimates";
 import { paymentStatuses, projectStatuses, usd } from "@/lib/finance";
@@ -13,7 +14,7 @@ export function CustomerRecords({
   customerId: string;
   records: Awaited<ReturnType<typeof loadCustomerRecords>>;
 }) {
-  const { sections, section, rows, count, page } = records;
+  const { sections, section, rows, count, page, ledger } = records;
   if (!section) return null;
   const path = `/app/${companyId}/clientes/${customerId}`;
   const financial = section.id !== "proyectos";
@@ -52,7 +53,13 @@ export function CustomerRecords({
         ))}
       </nav>
       <h3 className="font-semibold">{section.label}</h3>
-      {rows.length ? (
+      {ledger ? (
+        <CustomerLedger
+          companyId={companyId}
+          kind={section.id === "pagos" ? "pagos" : "gastos"}
+          ledger={ledger}
+        />
+      ) : rows.length ? (
         <div className="card overflow-x-auto p-0">
           <table aria-label={`${section.label} del cliente`}>
             <thead>

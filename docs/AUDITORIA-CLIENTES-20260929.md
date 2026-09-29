@@ -31,7 +31,8 @@ de estimados, facturas y proyectos. Huella SHA-256 de la copia inspeccionada:
 482eebd09a798ffe234eea96e8481e4776771e8f8d63552d4e96b867e9bda989.
 
 Esta es evidencia de código previamente obtenido, no una nueva comprobación de
-ADT en ejecución: el acceso actual solicita segundo factor del propietario.
+ADT en ejecución: en esa fase el acceso solicitaba segundo factor del propietario. La continuación
+de pagos/gastos de más abajo sí consulta una sesión ADT autenticada.
 Pagos, gastos, documentos, operaciones e historial unificado del expediente
 siguen pendientes de comparación e implementación completa. No se declara
 cerrado todo Clientes ni los 21 módulos.
@@ -64,9 +65,48 @@ Producción y datos de negocio no forman parte de esta publicación.
   de retención fuera de activa/retorno; su retirada exige comprobar contenido único,
   dependencias y confirmación de la lista exacta. Esto no certifica la limpieza total
   del hosting ni recuperación RPO/RTO.
-- Capturas y resultados detallados permanecen privados. No se registraron pagos,
-  se enviaron correos, se cambiaron permisos ni se importaron datos durante la auditoría.
+- Capturas y resultados detallados permanecen privados. No se registraron pagos ni se enviaron correos, cambiaron permisos o importaron
+  datos durante esa auditoría.
 
-Pendiente para continuar: contraste de Clientes con la sesión actual de ADT
-(solicita segundo factor), pagos/gastos, documentos, operaciones e historial
-unificado del expediente. Los demás pendientes permanecen en CIERRE-FUNCIONAL.md.
+Pendiente tras la primera entrega: pagos/gastos, documentos, operaciones e
+historial unificado del expediente. Los demás pendientes permanecen en CIERRE-FUNCIONAL.md.
+
+
+## Continuación: pagos y gastos del expediente
+
+El 29 de septiembre se pudo consultar Clientes en una sesión autenticada de ADT.
+Se comprobó su pestaña Pagos: total, método, importe, fecha y factura relacionada.
+La pestaña Gastos del cliente consultado devuelve «No se pudieron cargar los
+gastos»; el cero que presenta después no demuestra ausencia de gastos. No se
+ejecutaron altas, cambios financieros, envíos ni operaciones del portal en ADT.
+
+La copia de referencia de Clientes relaciona pagos por identificador de cliente
+y gastos por client_external_id, excluyendo los anulados. En el modelo SaaS,
+pagos pertenecen a facturas y gastos a proyectos. Se implementa la consulta de
+esas relaciones existentes, sin inferir vínculos por contacto y sin importaciones.
+
+| Acción | Implementación y condición |
+| --- | --- |
+| Consultar pagos | Fecha, método, referencia, notas, importe, estado y enlace a su factura. Total de pagos aplicados; anulados conservados sin sumarlos. |
+| Consultar gastos de proyectos | Categoría, descripción, proveedor, documento, importe, método, estado, reembolso y enlace al gasto/proyecto. La ficha de gasto conserva el acceso autorizado a su comprobante privado. |
+| Distinguir totales | Total registrado sin anulados, desglosado en aprobado/pendiente/rechazado; no equivale a pago, reembolso ni costo laboral calculado. |
+| Paginar | 20 filas, fecha descendente e ID estable. Total, cantidad y página limitada se obtienen en la misma consulta y abarcan todas las páginas. |
+| Autorizar | Clientes + Facturas para pagos; Clientes + Gastos + Proyectos para los gastos asociados. RLS continúa activa y la función no eleva privilegios. Una revocación rechaza la consulta. |
+| Vincular gasto directamente a cliente | Pendiente. El SaaS no tiene esa relación sin proyecto; el nombre «Gastos de proyectos» evita afirmar cobertura completa. |
+
+Esquema aditivo 035: función de lectura customer_ledger, security invoker,
+sin acceso anónimo, sin escritura de negocio y sin cambios de tablas/permisos
+existentes. La entrega anterior sigue siendo compatible. Errores de consulta
+o respuesta inválida no se presentan como cero ni como histórico vacío.
+
+Pruebas nuevas con PostgreSQL/PGlite: dos empresas, contactos coincidentes,
+24 pagos, 26 gastos (incluidos anulados, pendientes, rechazados, cliente distinto,
+empresa distinta y gasto sin proyecto), centavos, dos páginas, revocación,
+permiso incompleto, ausencia de lectura anónima, escape de HTML, inmutabilidad
+de registros al consultar y reaplicación del esquema. No sustituyen la prueba
+de Supabase/PostgREST y pantalla desplegada, que se registrará al publicar.
+
+Persisten pendientes en Clientes: asociación directa de gastos, documentos,
+operaciones e historial completo; no se declara cerrado el módulo.
+
+Validación local de la ampliación: lint, TypeScript, 364 pruebas y build aprobados.

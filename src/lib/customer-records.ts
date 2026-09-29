@@ -1,5 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { canAccess, type Membership } from "./modules";
+import {
+  customerLedgerSchema,
+  type CustomerLedgerResult,
+} from "./customer-ledger";
 
 export const customerRecordSections = [
   {
@@ -26,6 +30,8 @@ export const customerRecordSections = [
     date: "project_date",
     fields: "id,name,project_date,status,start_date,end_date",
   },
+  { id: "pagos", label: "Pagos", module: "fin-invoices" },
+  { id: "gastos", label: "Gastos de proyectos", module: "gastos" },
 ] as const;
 export type CustomerRecordSection = (typeof customerRecordSections)[number];
 export type CustomerRecord = {
@@ -51,10 +57,11 @@ export type CustomerRecordsResult = {
   page: number;
   count: number;
   rows: CustomerRecord[];
+  ledger?: CustomerLedgerResult;
 };
 
 export async function loadCustomerRecords(
-  db: Pick<SupabaseClient, "from">,
+  db: Pick<SupabaseClient, "from" | "rpc">,
   member: Membership,
   companyId: string,
   customerId: string,
@@ -63,8 +70,10 @@ export async function loadCustomerRecords(
 ): Promise<CustomerRecordsResult> {
   if (member.company_id !== companyId || !canAccess(member, "clientes"))
     throw new Error("No tienes acceso al expediente de este cliente.");
-  const sections = customerRecordSections.filter((s) =>
-    canAccess(member, s.module),
+  const sections = customerRecordSections.filter(
+    (s) =>
+      canAccess(member, s.module) &&
+      (s.id !== "gastos" || canAccess(member, "fin-proyectos")),
   );
   const section =
     sections.find((s) => s.id === requestedSection) ?? sections[0];
@@ -79,6 +88,27 @@ export async function loadCustomerRecords(
       count: 0,
       rows: [] as CustomerRecord[],
     };
+  if (section.id === "pagos" || section.id === "gastos") {
+    const result = await db.rpc("customer_ledger", {
+      p_company: companyId,
+      p_customer: customerId,
+      p_section: section.id,
+      p_page: page,
+    });
+    const parsed = customerLedgerSchema.safeParse(result.data);
+    if (result.error || !parsed.success)
+      throw new Error(
+        "No se pudo cargar el movimiento financiero del cliente. Inténtalo de nuevo.",
+      );
+    return {
+      sections,
+      section,
+      page: parsed.data.page,
+      count: parsed.data.count,
+      rows: [],
+      ledger: parsed.data,
+    };
+  }
   const query = (p: number) =>
     db
       .from(section.table)

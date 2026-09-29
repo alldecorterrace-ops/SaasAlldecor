@@ -111,7 +111,7 @@ test("customer dossier reads persisted, paged records under company and module R
       };
       return query;
     },
-  } as unknown as Pick<SupabaseClient, "from">;
+  } as unknown as Pick<SupabaseClient, "from" | "rpc">;
   const as = async (id: string) => {
     await db.exec("reset role");
     await db.query("select set_config('request.jwt.claim.sub',$1,false)", [id]);
@@ -391,7 +391,7 @@ test("customer dossier reads persisted, paged records under company and module R
             };
             return q;
           },
-        } as unknown as Pick<SupabaseClient, "from">;
+        } as unknown as Pick<SupabaseClient, "from" | "rpc">;
         await assert.rejects(
           loadCustomerRecords(failing, ownerMember, company, client),
           /No se pudieron cargar/,
