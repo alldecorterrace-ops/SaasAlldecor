@@ -1,13 +1,16 @@
 # Ejecución y auditoría de los seis pasos
 
 
-**Última entrega de staging, 29 de septiembre: 4c21da6, esquema 035.**
-El expediente incorpora pagos y gastos de proyectos, con totales completos y
-permisos comprobados en Supabase y navegador; 364 pruebas y CI aprobados.
-Consulta de ADT retomada; Gastos devuelve un error en el cliente inspeccionado.
-Asociación directa de gastos, documentos, operaciones e historial siguen
-pendientes. [Evidencia y límites](AUDITORIA-CLIENTES-20260929.md#resultado-publicado-de-la-ampliación).
-Producción, nuevas migraciones de datos y traspaso no forman parte de esta entrega.
+**Última entrega de staging, 29 de septiembre: b8b2861, esquema 040.**
+Registro de gastos por lotes con pagador, transacción completa y recibo idempotente:
+403 pruebas locales y CI aprobados; error de fila, corrección, persistencia,
+permisos, CSV, móvil emulado y retorno compatible comprobados con datos sintéticos.
+[Evidencia y diferencias pendientes](AUDITORIA-LOTES-GASTOS-20260929.md).
+Continúan pendientes recibos dentro del lote, orígenes Campo/Workforce y otras
+acciones del [alcance activo de 21 módulos](CIERRE-FUNCIONAL.md). La consulta
+operativa de Gastos en ADT sigue devolviendo 403. El esquema aplicado no acredita
+paridad completa ni recuperación operativa. Producción, nuevas migraciones de
+datos ADT y traspaso siguen fuera de esta entrega.
 
 Fecha de inicio: 18 de septiembre de 2026. Seguimiento actualizado: 29 de septiembre de 2026. Destino: https://app.alldecorpatio.com.
 
@@ -16,7 +19,7 @@ Ningún paso se cierra solamente porque una página responda o el código compil
 
 **Cambio de prioridad aprobado el 25 de septiembre:** nuevas migraciones de
 datos suspendidas hasta petición expresa del propietario. El trabajo activo
-se centra en paridad funcional y auditoría de los 23 módulos, con datos sintéticos
+se centra en paridad funcional y auditoría del alcance activo de 21 módulos, con datos sintéticos
 en staging. Las cargas reales y el traspaso quedan aplazados; los registros ya
 incorporados se conservan. Las mejoras propias de esta app se abordarán después
 de comprobar las reglas actuales de ADT. Los pendientes históricos de abajo no
