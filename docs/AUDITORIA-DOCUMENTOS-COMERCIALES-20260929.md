@@ -49,14 +49,55 @@ El instalador de staging verifica SHA-512, rechaza paquetes con scripts de
 instalación y rutas peligrosas, crea copias privadas de las adiciones y enlaza
 las dependencias anteriores sin modificarlas. Pruebas del instalador en Linux CI.
 
-Validación de CI, aplicación del esquema, publicación y recorrido real en staging:
-pendientes de completar en esta entrega. Evidencia privada en `.local/closure-20260929/`.
+## Publicación y recorrido autenticado
+
+- Código publicado y activo en staging: `c66e4ecb4fab720924d2ab5c208478107c3f6f45`.
+  [CI completo aprobado](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36601373006):
+  387 pruebas, lint, tipos, compilación, concurrencia PostgreSQL y recuperación
+  sintética. Dos pruebas adicionales del instalador pasaron en Linux CI y hosting;
+  la prueba de enlaces se omite en Windows por falta de privilegio de symlink.
+- Esquema 038 aplicado exclusivamente al proyecto de staging, con guardia de
+  empresa sintética y exclusión de la empresa productiva. Bucket privado,
+  políticas INSERT/SELECT; ninguna de UPDATE/DELETE para estos archivos.
+- Compilación del mismo commit en hosting aprobada. Versión de retorno `b89ae31`;
+  base compartida `b149bee` sin modificaciones. Nuevo proceso de staging
+  comprobado con raíz y REVISION; producción conservó raíz, proceso y huella de
+  configuración. Cuatro rutas públicas de staging y salud de producción: HTTP 200.
+- Propietario sintético: generar estimado aprobado, descargarlo, repetir generación,
+  generar factura y descargarla desde factura y desde Clientes. Quedaron dos
+  registros finalizados y dos archivos, sin duplicado del estimado.
+- SHA-256 y tamaño de los dos PDF descargados coinciden con el registro de
+  Supabase. Factura descargada desde ambas ubicaciones idéntica. Revisión 2,
+  total $200.50, pagado $100.25 y saldo $100.25, con marca de datos ficticios.
+  Texto extraído y renderizado revisados, incluidos acentos y centavos.
+- Borrador sin botón de generación. Miembro restringido de otra empresa sin
+  secciones ni datos de Facturas; expediente comercial vacío correctamente.
+  Descarga sin sesión: HTTP 401 y cache privada/no-store.
+- Reapertura del expediente y móvil emulado de 390 × 844 comprobados;
+  contenido de 375 px, sin desbordamiento horizontal. La prueba de teléfono
+  físico no se sustituye por esta emulación.
+- Las ocho tablas de negocio verificadas conservaron exactamente sus recuentos
+  y huellas: clientes, estimados, facturas, proyectos, pagos, gastos, registros
+  operativos y sus adjuntos. Solo se añadieron archivos/documentos y su auditoría.
+
+La navegación directa de una URL de descarga con otra empresa fue bloqueada por
+el navegador integrado; no se cuenta como respuesta HTTP del servidor. Aislamiento,
+revocaciones, cliente incorrecto y corrupción tienen evidencia automatizada; no se
+declara repetida aquí toda la matriz de roles en interfaz.
+
+Capacidad previa: 581 466 de 600 000 archivos. La nueva candidata usa dependencias
+aditivas aisladas; no instala otro árbol completo. El inventario de versiones fue
+renovado. La depuración de entregas sobrantes conserva su pendiente de revisión
+de contenido único y confirmación; no se ejecutó borrado permanente.
+
+Evidencia y PDFs sintéticos privados en `.local/closure-20260929/`.
 
 ## Límites de cierre
 
 Este PDF representa los campos comerciales actualmente guardados en el SaaS;
 no demuestra igualdad de todas las plantillas, condiciones contractuales, logos,
-firmas o calendarios de pago de ADT. Los documentos históricos conservan su
+firmas o calendarios de pago de ADT. También falta contrastar los disparadores
+automáticos de generación del origen frente a esta acción manual. Los documentos históricos conservan su
 acceso al original; no se regeneran con partidas supuestas. Acceso del portal,
 envíos, fotos y comunicación comercial se auditan por separado. Esta entrega
 no cierra por sí sola Clientes, Estimados, Facturas ni los 21 módulos.
