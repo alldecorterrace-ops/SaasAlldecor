@@ -61,6 +61,23 @@ export const expenseSchema = z
     (x) => x.reimbursement_status === "NO_APLICA" || !!x.worker_id,
     "Selecciona el trabajador para registrar un reembolso.",
   );
+// Shared by the individual server action and persistence regression tests.
+// Who paid controls reimbursement, not the optional associated worker.
+export function parseExpenseForm(form: FormData) {
+  const raw = Object.fromEntries(form);
+  return expenseSchema.safeParse({
+    ...raw,
+    project_id: raw.project_id || null,
+    worker_id: raw.worker_id || null,
+    reimbursement_status: ["EMPRESA", "EFECTIVO_EMPRESA"].includes(
+      String(raw.payer),
+    )
+      ? "NO_APLICA"
+      : raw.payer === "TRABAJADOR" && raw.reimbursement_status === "NO_APLICA"
+        ? "PENDIENTE"
+        : raw.reimbursement_status,
+  });
+}
 export type RecordField = {
   name: string;
   label: string;

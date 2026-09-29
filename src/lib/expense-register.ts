@@ -27,6 +27,7 @@ export const expenseFiltersSchema = z
     payer: z
       .enum(["", "EMPRESA", "EFECTIVO_EMPRESA", "TRABAJADOR", "SIN_REGISTRAR"])
       .default(""),
+    worker: idFilter,
     project: idFilter,
     customer: idFilter,
   })

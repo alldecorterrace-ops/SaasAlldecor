@@ -125,10 +125,18 @@ export async function OperationDetail({
               : `Gasto · ${record.expense_date}`}
         </h1>
       </div>
-      <div className="flex gap-5 mb-6">
+      <div className="flex flex-wrap gap-5 mb-6">
         <Link className="underline" href={`/app/${companyId}/${moduleId}`}>
           Volver al listado
         </Link>
+        {workers && !isNew && canAccess(member, "gastos") && (
+          <Link
+            className="underline"
+            href={`/app/${companyId}/gastos?worker=${id}&status=TODOS`}
+          >
+            Ver gastos del trabajador
+          </Link>
+        )}
         {!isNew && (
           <Link
             className="underline"

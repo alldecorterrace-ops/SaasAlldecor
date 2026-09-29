@@ -11,6 +11,7 @@ export function EntitySelect({
   initial,
   canSearch,
   onValueChange,
+  includeInactive = false,
   emptyLabel = "Sin asignar",
 }: {
   companyId: string;
@@ -19,6 +20,7 @@ export function EntitySelect({
   label: string;
   initial: { id: string; name: string } | null;
   canSearch: boolean;
+  includeInactive?: boolean;
   emptyLabel?: string;
   onValueChange?: (choice: { id: string; name: string } | null) => void;
 }) {
@@ -68,6 +70,7 @@ export function EntitySelect({
                     companyId,
                     kind,
                     q,
+                    includeInactive,
                   );
                   setError(result.error ?? "");
                   if (result.data)

@@ -55,9 +55,13 @@ export async function ExpenseRegister({
       </div>
     );
   const result = expenseRegisterSchema.parse(data);
-  const projects = canAccess(member, "fin-proyectos"),
+  const workers = canAccess(member, "trabajadores"),
+    projects = canAccess(member, "fin-proyectos"),
     customers = projects && canAccess(member, "clientes");
-  const selected = async (kind: "projects" | "customers", id: string) => {
+  const selected = async (
+    kind: "projects" | "customers" | "workers",
+    id: string,
+  ) => {
     if (!id) return null;
     const response = await db
       .from(kind)
@@ -69,9 +73,10 @@ export async function ExpenseRegister({
       throw new Error("No se pudo cargar el filtro seleccionado.");
     return response.data as unknown as { id: string; name: string };
   };
-  const [project, customer] = await Promise.all([
+  const [project, customer, worker] = await Promise.all([
     projects ? selected("projects", filters.project) : null,
     customers ? selected("customers", filters.customer) : null,
+    workers ? selected("workers", filters.worker) : null,
   ]);
   const query = new URLSearchParams(filters).toString();
   return (
@@ -104,6 +109,17 @@ export async function ExpenseRegister({
           )}
         </div>
       </div>
+      {worker && (
+        <p className="text-sm">
+          Gastos asociados a {worker.name}.{" "}
+          <Link
+            className="underline"
+            href={`/app/${companyId}/trabajadores/${worker.id}`}
+          >
+            Ver ficha del trabajador
+          </Link>
+        </p>
+      )}
       {result.overview && (
         <section
           aria-label="Resumen de gastos de la empresa"
@@ -189,6 +205,19 @@ export async function ExpenseRegister({
           Hasta
           <Input name="to" type="date" defaultValue={filters.to} />
         </label>
+        {workers && (
+          <EntitySelect
+            key={`worker-${filters.worker}`}
+            companyId={companyId}
+            kind="workers"
+            name="worker"
+            label="Trabajador asociado"
+            initial={worker}
+            canSearch
+            includeInactive
+            emptyLabel="Todos los trabajadores"
+          />
+        )}
         {projects && (
           <EntitySelect
             key={`project-${filters.project}`}
@@ -286,7 +315,18 @@ export async function ExpenseRegister({
                   {row.payer
                     ? expensePayers[row.payer]
                     : "Pagador sin registrar"}
-                  {row.worker_name && ` · ${row.worker_name}`}
+                  {row.worker_id && row.worker_name && (
+                    <>
+                      {" "}
+                      ·{" "}
+                      <Link
+                        className="underline break-words"
+                        href={`/app/${companyId}/trabajadores/${row.worker_id}`}
+                      >
+                        {row.worker_name}
+                      </Link>
+                    </>
+                  )}
                 </span>
                 <span>
                   {row.method} ·{" "}

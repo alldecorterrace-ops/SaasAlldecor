@@ -145,6 +145,28 @@ test("expense register: complete filtered totals, export, tenant isolation and r
       [worker, a],
     );
     await as(owner);
+    const sameName = randomUUID(),
+      foreignWorker = randomUUID();
+    for (const [company, id] of [
+      [a, sameName],
+      [b, foreignWorker],
+    ]) {
+      await db.query("select public.save_worker($1,$2,0,$3)", [
+        company,
+        id,
+        JSON.stringify({
+          name: "QA worker",
+          email: "",
+          phone: "",
+          job_title: "",
+          team: "",
+          hourly_rate: "0",
+          weekly_target: 40,
+          active: false,
+          notes: "Synthetic inactive history",
+        }),
+      ]);
+    }
     const fingerprint = async () =>
       (
         await db.query(
@@ -268,6 +290,44 @@ test("expense register: complete filtered totals, export, tenant isolation and r
           read({ q: "Proyecto QA" }, 1, true, b),
           /permission_denied/,
         );
+        await as(owner);
+        assert.deepEqual(await fingerprint(), before);
+      },
+    );
+    await t.test(
+      "worker selection keeps identity, totals, history, export and revocation scoped",
+      async () => {
+        const selected = await read({ worker, status: "TODOS" }, 1, true);
+        assert.equal(selected.count, 2);
+        assert.equal(selected.total, "2.02");
+        assert.equal(selected.active, "1.01");
+        assert.equal(selected.reimbursements, "1.01");
+        assert(selected.rows.every((r) => r.worker_id === worker));
+        assert.equal((expenseCsv(selected).match(/"1.01"/g) || []).length, 2);
+        assert.deepEqual(selected.overview, (await read()).overview);
+        assert.equal((await read({ worker, status: "ANULADO" })).count, 1);
+        assert.equal((await read({ worker, category: "Oficina" })).count, 0);
+        assert.equal(
+          (await read({ worker: sameName, status: "TODOS" })).count,
+          0,
+          "same name never merges identities; inactive history is addressable",
+        );
+        for (const denied of [foreignWorker, randomUUID()])
+          await assert.rejects(
+            read({ worker: denied }, 1, true),
+            /permission_denied/,
+          );
+        await assert.rejects(
+          read({ worker: "invalid" }),
+          /invalid_expense_filters/,
+        );
+        await grant({ gastos: ["read"], trabajadores: ["read"] });
+        assert.equal((await read({ worker })).count, 1);
+        await grant({ gastos: ["read"] });
+        await assert.rejects(read({ worker }), /permission_denied/);
+        await assert.rejects(read({ worker }, 1, true), /permission_denied/);
+        await grant({ trabajadores: ["read"] });
+        await assert.rejects(read({ worker }), /permission_denied/);
         await as(owner);
         assert.deepEqual(await fingerprint(), before);
       },

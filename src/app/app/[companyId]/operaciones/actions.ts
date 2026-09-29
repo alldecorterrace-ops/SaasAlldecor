@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireModule } from "@/lib/auth";
 import { uuid } from "@/lib/validation";
-import { workerSchema, expenseSchema } from "@/lib/operations";
+import { workerSchema, parseExpenseForm } from "@/lib/operations";
 import { financeError } from "@/lib/finance";
 export type OperationState = { error?: string; success?: string };
 export async function saveOperation(
@@ -30,23 +30,7 @@ export async function saveOperation(
             ...raw,
             active: form.get("active") === "on",
           })
-        : expenseSchema.safeParse({
-            ...raw,
-            project_id: raw.project_id || null,
-            worker_id: ["EMPRESA", "EFECTIVO_EMPRESA"].includes(
-              String(raw.payer),
-            )
-              ? null
-              : raw.worker_id || null,
-            reimbursement_status: ["EMPRESA", "EFECTIVO_EMPRESA"].includes(
-              String(raw.payer),
-            )
-              ? "NO_APLICA"
-              : raw.payer === "TRABAJADOR" &&
-                  raw.reimbursement_status === "NO_APLICA"
-                ? "PENDIENTE"
-                : raw.reimbursement_status,
-          });
+        : parseExpenseForm(form);
   if (!parsed.success)
     return { error: parsed.error.issues[0]?.message ?? "Revisa los campos." };
   const { error } = await db.rpc(
@@ -79,6 +63,7 @@ export async function searchOperationChoices(
   companyId: string,
   kind: "workers" | "projects" | "customers",
   q: string,
+  includeInactive = false,
 ): Promise<{ error?: string; data?: { id: string; name: string }[] }> {
   if (!["workers", "projects", "customers"].includes(kind))
     return { error: "Selección inválida." };
@@ -104,7 +89,8 @@ export async function searchOperationChoices(
     .order(kind === "customers" ? "full_name" : "name")
     .order("id")
     .limit(25);
-  if (kind === "workers") query = query.eq("active", true);
+  if (kind === "workers" && includeInactive !== true)
+    query = query.eq("active", true);
   const { data, error } = await query;
   return error ? { error: "No se pudieron buscar los registros." } : { data };
 }
