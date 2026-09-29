@@ -59,8 +59,56 @@ huellas antes/después de consultar y reaplicar el esquema.
 
 `npm run check` finalizó correctamente: lint, tipos, 373 pruebas y compilación.
 
-La validación de interfaz desplegada, acceso real de Supabase y versión del
-servidor se documentará al terminar la publicación.
+Entrega final publicada en staging: **19eafe1c72bd8d2c9b0fbb0c127c73f98376d9dd**,
+esquema aditivo **036**. [CI exacto aprobado](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36594550833).
+La entrega funcional anterior 301dcdb también pasó CI y la auditoría descrita;
+19eafe1 únicamente unifica el texto del enlace al historial de cada registro.
+Se comprobó de nuevo ese enlace después de la publicación final.
+
+Evidencia obtenida:
+
+- Supabase staging: antes/después de aplicar 036 coincidieron los recuentos y
+  huellas completas de clientes (9), estimados (11), facturas (4), proyectos (4),
+  pagos (5), gastos (2) y auditoría (202). El esquema no alteró datos de negocio.
+- Bajo rol authenticated y el identificador del auditor, la proyección devolvió
+  las seis entidades autorizadas, 12 eventos iniciales sin duplicados. Rechazó
+  empresa ajena y cliente de otra empresa. No admite ejecución anónima.
+  En la empresa restringida no devolvió entidades financieras sin permiso.
+  Estas pruebas SQL se complementaron con la sesión real de la aplicación.
+- En la pantalla de propietario se abrió el historial del expediente y el
+  historial individual de un gasto ficticio. Aparecen revisiones anteriores
+  (estimado borrador/aprobado y factura antes/después del pago), con centavos.
+- Se editó únicamente la nota de revisión del gasto sintético existente desde
+  su formulario. Guardado y reapertura mostraron revisión 2, pendiente y USD
+  25.10, con reembolso No aplica. El nuevo evento conserva el anterior. La
+  comparación de instantáneas confirmó solo nota y metadatos de revisión;
+  apareció exactamente un evento nuevo. Pagos y los demás gastos conservaron
+  sus huellas. No hubo cobros, nuevos pagos ni reembolsos reales.
+- El usuario restringido abrió el historial de su empresa: solo Clientes y
+  Estimados, con su zona horaria. No aparecieron pestañas ni eventos de Facturas,
+  Pagos, Proyectos o Gastos. Una URL que mezcla empresa y ficha ajena mostró
+  Página no disponible sin datos del cliente.
+- El cursor anterior al evento nuevo lo excluyó; Más recientes recuperó la
+  nueva revisión. La prueba de más de 30 eventos, precisión bigint y escritura
+  entre páginas está cubierta en PostgreSQL/PGlite; no se generaron decenas de
+  cambios artificiales en staging solo para llenar páginas.
+- En móvil emulado de 390 px, ancho de documento 375 px más barra y tarjetas
+  de 335 px, sin desbordamiento horizontal. Nota, fecha, importe y enlaces se
+  pueden leer. No equivale a ensayo en teléfono físico; se retiró la emulación.
+- La revisión del proceso activo coincidió con la entrega final. Las cuatro
+  rutas públicas de staging respondieron HTTP 200. Producción conserva 3c0c412,
+  el mismo proceso y huella de configuración, y salud HTTP 200.
+
+Se conservan 301dcdb como retorno compatible y las dependencias compartidas
+b149bee. Las versiones anteriores quedan identificadas como candidatas a la
+limpieza pendiente: se requiere revisar contenido único y confirmar destinos
+exactos antes de borrar. No se eliminaron entregas ni se declara cerrada la
+retención del hosting. La cuota observada antes de esta publicación era 577551
+de 600000 archivos; se reutilizaron dependencias para limitar el incremento.
+
+Capturas, consultas, huellas, scripts y comprobaciones HTTP quedan en el archivo
+privado de auditoría, fuera de GitHub. Las pruebas de recuperación y concurrencia
+de CI siguen siendo sintéticas; no certifican restauración operativa ni traspaso.
 
 ## Pendientes preservados
 

@@ -161,3 +161,10 @@ La comprobación móvil fue emulada, no en un teléfono físico. La consulta de
 gastos de ADT falló en el cliente inspeccionado, y la asociación directa de gasto
 a cliente sigue pendiente. Documentos, operaciones e historial unificado también
 siguen abiertos. Ninguna de estas pruebas cierra por sí sola los 21 módulos.
+
+
+## Continuación del expediente
+
+El historial unificado se publicó posteriormente en staging 19eafe1, con esquema
+036. Véanse [las pruebas y límites del historial](AUDITORIA-HISTORIAL-CLIENTES-20260929.md).
+Los pendientes de documentos, operaciones y gastos directos siguen abiertos.
