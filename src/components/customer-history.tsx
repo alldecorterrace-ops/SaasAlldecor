@@ -85,7 +85,7 @@ export function CustomerHistory({
               className="inline-block text-sm text-primary underline"
               href={`/app/${companyId}/historial/${e.entity}/${e.record_id}`}
             >
-              Ver cambios del {historyEntities[e.entity].toLowerCase()}
+              Ver historial del registro
             </Link>
           </li>
         ))}
