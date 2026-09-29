@@ -1,3 +1,4 @@
+import { CommercialDocumentPanel } from "@/components/commercial-document-panel";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -89,6 +90,7 @@ export default async function Invoice({
           />
         </div>
       )}
+      <CommercialDocumentPanel companyId={companyId} kind="invoice" record={invoiceId} version={i.version} canGenerate={i.status!=="VOID"&&!i.historical_invoice_id}/>
       <article className="space-y-6">
         <header className="card">
           <p className="eyebrow">{company.name} · USD</p>

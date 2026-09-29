@@ -297,7 +297,7 @@ test("customer ledger preserves financial totals, identity and permissions", asy
         assert.equal(result.ledger!.total, "210.21");
         assert.deepEqual(
           result.sections.map((s) => s.id),
-          ["facturas", "pagos", "historial"],
+          ["facturas", "pagos", "comerciales", "historial"],
         );
         await assert.rejects(raw("gastos"), /permission_denied/);
         await assert.rejects(raw("pagos", other, foreign), /permission_denied/);

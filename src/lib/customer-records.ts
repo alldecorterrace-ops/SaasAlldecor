@@ -1,4 +1,8 @@
 import {
+  commercialDocumentList,
+  type CommercialDocumentList,
+} from "./commercial-documents";
+import {
   customerPermitsSchema,
   type CustomerPermitsResult,
 } from "./customer-permits";
@@ -43,6 +47,7 @@ export const customerRecordSections = [
   { id: "gastos", label: "Gastos de proyectos", module: "gastos" },
   { id: "permisos", label: "Permisos de obra", module: "permisos" },
   { id: "documentos", label: "Documentos de permisos", module: "permisos" },
+  { id: "comerciales", label: "Documentos comerciales", module: "clientes" },
   { id: "historial", label: "Historial", module: "clientes" },
 ] as const;
 export type CustomerRecordSection = (typeof customerRecordSections)[number];
@@ -72,6 +77,7 @@ export type CustomerRecordsResult = {
   ledger?: CustomerLedgerResult;
   history?: CustomerHistoryResult;
   permits?: CustomerPermitsResult;
+  commercial?: CommercialDocumentList;
   before?: string | null;
 };
 
@@ -89,6 +95,9 @@ export async function loadCustomerRecords(
   const sections = customerRecordSections.filter(
     (s) =>
       canAccess(member, s.module) &&
+      (s.id !== "comerciales" ||
+        canAccess(member, "fin-estimados") ||
+        canAccess(member, "fin-invoices")) &&
       (!["gastos", "permisos", "documentos"].includes(s.id) ||
         canAccess(member, "fin-proyectos")),
   );
@@ -105,6 +114,24 @@ export async function loadCustomerRecords(
       count: 0,
       rows: [] as CustomerRecord[],
     };
+  if (section.id === "comerciales") {
+    const result = await db.rpc("customer_commercial_documents", {
+      p_company: companyId,
+      p_customer: customerId,
+      p_page: page,
+    });
+    const parsed = commercialDocumentList.safeParse(result.data);
+    if (result.error || !parsed.success)
+      throw new Error("No se pudieron cargar los PDF comerciales del cliente.");
+    return {
+      sections,
+      section,
+      page: parsed.data.page,
+      count: parsed.data.count,
+      rows: [],
+      commercial: parsed.data,
+    };
+  }
   if (section.id === "permisos" || section.id === "documentos") {
     const result = await db.rpc("customer_permits", {
       p_company: companyId,

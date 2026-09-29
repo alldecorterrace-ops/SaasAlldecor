@@ -17,6 +17,8 @@ jobs:
       - run: npm ci
       - name: Validate isolated ADT reference harness
         run: php -l scripts/zone-reference.php
+      - name: Immutable dependency overlay checks
+        run: python3 scripts/ops/test-dependency-overlay.py
       - run: npm run check
       - uses: denoland/setup-deno@v2
         with:
@@ -50,7 +52,9 @@ jobs:
       - name: Concurrent queue and transactional adapter tests
         env:
           QUEUE_TEST_DATABASE_URL: postgresql://postgres:synthetic-ci-only@127.0.0.1:5432/saas_queue_test
-        run: npx tsx scripts/test-queue-concurrency.ts
+        run: |
+          npx tsx scripts/test-queue-concurrency.ts
+          npx tsx scripts/test-commercial-concurrency.ts
   backup-recovery:
     runs-on: ubuntu-latest
     timeout-minutes: 15

@@ -3,6 +3,7 @@
 /** @type {import('next').NextConfig} */
 const config = {
   poweredByHeader: false,
+  outputFileTracingIncludes: { "/*": ["./assets/fonts/NotoSans-Regular.ttf"] },
   experimental: { cpus: 1, serverActions: { bodySizeLimit: "6mb" } },
   async headers() {
     return [

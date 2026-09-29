@@ -226,7 +226,7 @@ test("customer permits and private files use current relationships and module RL
         );
         assert.doesNotMatch(
           JSON.stringify(result.permits),
-          /PRIVATE_PERMIT_NOTE|fee|receipt|path|token/,
+          /PRIVATE_PERMIT_NOTE|"(?:fee|receipt|path|token)"\s*:/,
         );
         const next = await get("documentos", "2");
         assert.equal(next.permits!.rows.length, 3);

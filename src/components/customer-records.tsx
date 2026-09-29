@@ -1,3 +1,4 @@
+import { CustomerCommercialDocuments } from "./customer-commercial-documents";
 import { CustomerPermits } from "./customer-permits";
 import { CustomerHistory } from "./customer-history";
 import Link from "next/link";
@@ -28,6 +29,7 @@ export function CustomerRecords({
     history,
     before,
     permits,
+    commercial,
   } = records;
   if (!section) return null;
   const path = `/app/${companyId}/clientes/${customerId}`;
@@ -67,7 +69,14 @@ export function CustomerRecords({
         ))}
       </nav>
       <h3 className="font-semibold">{section.label}</h3>
-      {permits ? (
+      {commercial ? (
+        <CustomerCommercialDocuments
+          companyId={companyId}
+          customerId={customerId}
+          documents={commercial}
+          timezone={timezone}
+        />
+      ) : permits ? (
         <CustomerPermits
           companyId={companyId}
           customerId={customerId}

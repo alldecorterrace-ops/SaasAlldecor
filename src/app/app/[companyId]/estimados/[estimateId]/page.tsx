@@ -1,3 +1,4 @@
+import { CommercialDocumentPanel } from "@/components/commercial-document-panel";
 import { ImportedEstimateDetail } from "@/components/imported-estimate-detail";
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
@@ -164,6 +165,7 @@ export default async function EstimatePage({
           </div>
         )}
       </div>
+      {!isNew && <CommercialDocumentPanel companyId={companyId} kind="estimate" record={id} version={version} canGenerate={!search.revision && !["BORRADOR", "ANULADA"].includes(initial.status)}/>}
       {invoice && (
         <p className="card mb-6">
           Factura vinculada:{" "}
