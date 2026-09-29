@@ -51,7 +51,7 @@ El rótulo fijo de Dashboard se corrigió y volvió a verificarse tras publicar 
 Producción y datos de negocio no forman parte de esta publicación.
 
 
-## Publicación y límites operativos
+## Publicación inicial y límites operativos
 
 - Entorno verificado: staging.alldecorpatio.com. Compilación Webpack en carpeta
   independiente, con un CPU y dependencias compartidas sin modificarlas.
@@ -110,3 +110,54 @@ Persisten pendientes en Clientes: asociación directa de gastos, documentos,
 operaciones e historial completo; no se declara cerrado el módulo.
 
 Validación local de la ampliación: lint, TypeScript, 364 pruebas y build aprobados.
+
+
+## Resultado publicado de la ampliación
+
+Entrega activa de staging: **4c21da6516b7aae5e8979aa5f096368c10c9e4f0**,
+esquema **035**. Retorno compatible y previamente comprobado: 9598d35;
+dependencias compartidas conservadas en b149bee. No se desplegó a producción.
+[CI exacto aprobado](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36591240764):
+lint, tipos, 364 pruebas, build, concurrencia de cola y recuperación sintética.
+Estos dos últimos trabajos no certifican el traspaso ni RPO/RTO reales.
+
+Evidencia operativa obtenida:
+
+- La función quedó instalada en SaasAlldecor-Staging. Bajo el rol authenticated
+  del auditor devolvió pagos y gastos de la empresa autorizada. Rechazó pagos y
+  gastos de la empresa donde carece de esos permisos, y un cliente de otra
+  empresa. Se comprobó security invoker, stable y ausencia de ejecución anónima.
+- Las huellas completas de los cinco pagos y del gasto anteriores coincidieron
+  antes/después de aplicar el esquema. Después se creó desde la interfaz un único
+  gasto ficticio de USD 25.10, pendiente y sin reembolso, en la empresa QA. Al
+  terminar, las huellas de los registros anteriores seguían iguales.
+- El expediente muestra el pago sintético existente de USD 100.25 y abre su
+  factura. La factura conserva total USD 200.50, pagado USD 100.25 y saldo USD
+  100.25. No se registraron pagos nuevos ni se ejecutaron cobros o reembolsos.
+- El gasto nuevo aparece en su cliente mediante el proyecto correcto. Se abrió
+  su ficha y se reabrió el expediente, conservando importe, estado, proveedor,
+  documento y descripción. Aprobados/rechazados: USD 0.00; pendientes: USD 25.10.
+- El usuario restringido solicitó Pagos por URL y solo recibió Estimados; las
+  pestañas financieras, sus cantidades y sus importes no se mostraron.
+- En ancho emulado de 390 px, la página ocupa 375 px más barra de desplazamiento;
+  no desborda horizontalmente. La tabla de gastos se desplaza dentro de su
+  contenedor hasta mostrar método, estado, documento y reembolso. Pagos también
+  mantiene su total y ancho de página. Se retiró la emulación al terminar.
+- Se confirmó la revisión exacta y el proceso activo de staging; cuatro rutas
+  públicas respondieron HTTP 200. Producción conserva 3c0c412, el mismo proceso y
+  la misma huella de configuración, con salud HTTP 200.
+
+El primer intento de compilación no inició por finales de línea Windows en el
+script de ejecución. Se normalizó a LF y se recompiló antes de activar; ese
+intento no alteró la entrega activa. Los scripts corregidos y diagnósticos están
+en el archivo privado de auditoría.
+
+No se eliminaron entregas durante este bloque. 1ad4cbb queda ahora fuera de
+activa/retorno; su eliminación y la de candidatos anteriores requieren inventario
+de contenido único, dependencias y la confirmación de una lista exacta. No se
+declara completada la retención del hosting.
+
+La comprobación móvil fue emulada, no en un teléfono físico. La consulta de
+gastos de ADT falló en el cliente inspeccionado, y la asociación directa de gasto
+a cliente sigue pendiente. Documentos, operaciones e historial unificado también
+siguen abiertos. Ninguna de estas pruebas cierra por sí sola los 21 módulos.

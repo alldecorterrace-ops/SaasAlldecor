@@ -1,5 +1,14 @@
 # Ejecución y auditoría de los seis pasos
 
+
+**Última entrega de staging, 29 de septiembre: 4c21da6, esquema 035.**
+El expediente incorpora pagos y gastos de proyectos, con totales completos y
+permisos comprobados en Supabase y navegador; 364 pruebas y CI aprobados.
+Consulta de ADT retomada; Gastos devuelve un error en el cliente inspeccionado.
+Asociación directa de gastos, documentos, operaciones e historial siguen
+pendientes. [Evidencia y límites](AUDITORIA-CLIENTES-20260929.md#resultado-publicado-de-la-ampliación).
+Producción, nuevas migraciones de datos y traspaso no forman parte de esta entrega.
+
 Fecha de inicio: 18 de septiembre de 2026. Seguimiento actualizado: 29 de septiembre de 2026. Destino: https://app.alldecorpatio.com.
 
 Este documento distingue implementación, pruebas técnicas y recorridos reales.
