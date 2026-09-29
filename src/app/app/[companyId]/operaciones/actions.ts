@@ -33,7 +33,19 @@ export async function saveOperation(
         : expenseSchema.safeParse({
             ...raw,
             project_id: raw.project_id || null,
-            worker_id: raw.worker_id || null,
+            worker_id: ["EMPRESA", "EFECTIVO_EMPRESA"].includes(
+              String(raw.payer),
+            )
+              ? null
+              : raw.worker_id || null,
+            reimbursement_status: ["EMPRESA", "EFECTIVO_EMPRESA"].includes(
+              String(raw.payer),
+            )
+              ? "NO_APLICA"
+              : raw.payer === "TRABAJADOR" &&
+                  raw.reimbursement_status === "NO_APLICA"
+                ? "PENDIENTE"
+                : raw.reimbursement_status,
           });
   if (!parsed.success)
     return { error: parsed.error.issues[0]?.message ?? "Revisa los campos." };
@@ -48,9 +60,15 @@ export async function saveOperation(
   );
   if (error)
     return {
-      error: error.message.includes("manager_required")
-        ? "La aprobación, anulación y registro de reembolsos requieren un administrador."
-        : financeError(error),
+      error: error.message.includes("reimbursed_expense_locked")
+        ? "Este gasto ya fue reembolsado. El importe, trabajador y pagador requieren una reversión contable antes de modificarse."
+        : error.message.includes("invalid_payer")
+          ? "Selecciona quién pagó el gasto; un pagador registrado no puede borrarse."
+          : error.message.includes("worker_required")
+            ? "Selecciona el trabajador que pagó el gasto."
+            : error.message.includes("manager_required")
+              ? "La aprobación, anulación y registro de reembolsos requieren un administrador."
+              : financeError(error),
     };
   revalidatePath(`/app/${companyId}`, "layout");
   redirect(

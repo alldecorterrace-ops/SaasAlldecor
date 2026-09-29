@@ -48,6 +48,12 @@ export const expenseRegisterSchema = z.object({
         category: z.string(),
         description: z.string(),
         amount: money,
+        payer: z
+          .enum(["EMPRESA", "EFECTIVO_EMPRESA", "TRABAJADOR"])
+          .nullable()
+          .optional(),
+        worker_id: uuid.nullable().optional(),
+        worker_name: z.string().nullable().optional(),
         status: z.enum(["PENDIENTE", "APROBADO", "RECHAZADO", "ANULADO"]),
         method: z.string(),
         reimbursement_status: z.string(),
@@ -84,6 +90,8 @@ export function expenseCsv(data: ExpenseRegisterResult) {
       "Estado",
       "Método",
       "Reembolso",
+      "Pagado por",
+      "Trabajador",
       "Comprobante",
     ],
     ...data.rows.map((r) => [
@@ -99,6 +107,8 @@ export function expenseCsv(data: ExpenseRegisterResult) {
       r.status,
       r.method,
       r.reimbursement_status,
+      r.payer ?? "Sin registrar",
+      r.worker_name ?? "",
       r.has_receipt ? "Sí" : "No",
     ]),
   ];

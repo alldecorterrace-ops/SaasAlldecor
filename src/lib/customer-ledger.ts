@@ -26,6 +26,7 @@ export const customerLedgerSchema = z.object({
           "CHEQUE",
           "TRANSFERENCIA",
           "TARJETA_EXTERNA",
+          "ZELLE",
           "OTRO",
         ]),
         reference: z.string(),

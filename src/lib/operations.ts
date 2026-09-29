@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { decimal } from "./commercial";
 import { paymentMethods } from "./finance";
+export const expensePayers = {
+  EMPRESA: "Empresa",
+  EFECTIVO_EMPRESA: "Efectivo oficina",
+  TRABAJADOR: "Trabajador",
+} as const;
+export const expenseMethods = { ...paymentMethods, ZELLE: "Zelle" } as const;
 export const expenseStatuses = {
   PENDIENTE: "Pendiente",
   APROBADO: "Aprobado",
@@ -25,6 +31,12 @@ export const workerSchema = z.object({
 });
 export const expenseSchema = z
   .object({
+    payer: z
+      .union([
+        z.enum(["EMPRESA", "EFECTIVO_EMPRESA", "TRABAJADOR"]),
+        z.literal(""),
+      ])
+      .optional(),
     project_id: z.uuid().nullable(),
     worker_id: z.uuid().nullable(),
     expense_date: z.iso.date(),
@@ -36,9 +48,9 @@ export const expenseSchema = z
       message: "El importe del gasto debe ser mayor que cero.",
     }),
     method: z.enum(
-      Object.keys(paymentMethods) as [
-        keyof typeof paymentMethods,
-        ...(keyof typeof paymentMethods)[],
+      Object.keys(expenseMethods) as [
+        keyof typeof expenseMethods,
+        ...(keyof typeof expenseMethods)[],
       ],
     ),
     reimbursement_status: z.enum(["NO_APLICA", "PENDIENTE", "REEMBOLSADO"]),
@@ -94,6 +106,12 @@ export const workerFields: RecordField[] = [
 ];
 export const expenseFields: RecordField[] = [
   {
+    name: "payer",
+    label: "Pagado por",
+    type: "select",
+    options: { "": "Sin registrar (histórico)", ...expensePayers },
+  },
+  {
     name: "expense_date",
     label: "Fecha del gasto",
     type: "date",
@@ -111,7 +129,7 @@ export const expenseFields: RecordField[] = [
     name: "method",
     label: "Método de pago",
     type: "select",
-    options: paymentMethods,
+    options: expenseMethods,
   },
   {
     name: "description",

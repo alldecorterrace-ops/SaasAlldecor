@@ -44,6 +44,7 @@ export async function OperationDetail({
         notes: "",
       }
     : {
+        payer: "EMPRESA",
         project_id: null,
         worker_id: null,
         expense_date: todayInTimezone(company.timezone),

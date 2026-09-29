@@ -55,6 +55,7 @@ jobs:
         run: |
           npx tsx scripts/test-queue-concurrency.ts
           npx tsx scripts/test-commercial-concurrency.ts
+          npx tsx scripts/test-expense-batch-concurrency.ts
   backup-recovery:
     runs-on: ubuntu-latest
     timeout-minutes: 15
