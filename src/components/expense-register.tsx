@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireModule } from "@/lib/auth";
 import { canAccess } from "@/lib/modules";
+import { expensePayers } from "@/lib/operations";
 import { usd } from "@/lib/finance";
 import {
   expenseFiltersSchema,
@@ -89,6 +90,11 @@ export async function ExpenseRegister({
               <a href={`/api/expenses/${companyId}/export?${query}`}>
                 Exportar CSV
               </a>
+            </Button>
+          )}
+          {["owner", "admin"].includes(member.role) && (
+            <Button asChild variant="outline">
+              <Link href={`${base}/lote`}>Registrar varios gastos</Link>
             </Button>
           )}
           {canAccess(member, "gastos", "write") && (
@@ -231,6 +237,12 @@ export async function ExpenseRegister({
                     {row.project_name}
                   </Link>
                 )}
+                <span>
+                  {row.payer
+                    ? expensePayers[row.payer]
+                    : "Pagador sin registrar"}
+                  {row.worker_name && ` · ${row.worker_name}`}
+                </span>
                 <span>
                   {row.method} ·{" "}
                   {row.has_receipt ? "Con comprobante" : "Sin comprobante"}

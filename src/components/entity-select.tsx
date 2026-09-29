@@ -10,6 +10,7 @@ export function EntitySelect({
   label,
   initial,
   canSearch,
+  onValueChange,
   emptyLabel = "Sin asignar",
 }: {
   companyId: string;
@@ -19,6 +20,7 @@ export function EntitySelect({
   initial: { id: string; name: string } | null;
   canSearch: boolean;
   emptyLabel?: string;
+  onValueChange?: (choice: { id: string; name: string } | null) => void;
 }) {
   const [q, setQ] = useState(""),
     [value, setValue] = useState(initial?.id ?? ""),
@@ -32,7 +34,12 @@ export function EntitySelect({
         <select
           name={name}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => {
+            setValue(e.target.value);
+            onValueChange?.(
+              choices.find((c) => c.id === e.target.value) ?? null,
+            );
+          }}
         >
           <option value="">{emptyLabel}</option>
           {choices.map((c) => (
