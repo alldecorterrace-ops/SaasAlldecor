@@ -1,3 +1,8 @@
+import {
+  historyCursor,
+  customerHistorySchema,
+  type CustomerHistoryResult,
+} from "./customer-history";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { canAccess, type Membership } from "./modules";
 import {
@@ -32,6 +37,7 @@ export const customerRecordSections = [
   },
   { id: "pagos", label: "Pagos", module: "fin-invoices" },
   { id: "gastos", label: "Gastos de proyectos", module: "gastos" },
+  { id: "historial", label: "Historial", module: "clientes" },
 ] as const;
 export type CustomerRecordSection = (typeof customerRecordSections)[number];
 export type CustomerRecord = {
@@ -58,6 +64,8 @@ export type CustomerRecordsResult = {
   count: number;
   rows: CustomerRecord[];
   ledger?: CustomerLedgerResult;
+  history?: CustomerHistoryResult;
+  before?: string | null;
 };
 
 export async function loadCustomerRecords(
@@ -67,6 +75,7 @@ export async function loadCustomerRecords(
   customerId: string,
   requestedSection?: string,
   requestedPage?: string,
+  requestedBefore?: string,
 ): Promise<CustomerRecordsResult> {
   if (member.company_id !== companyId || !canAccess(member, "clientes"))
     throw new Error("No tienes acceso al expediente de este cliente.");
@@ -88,6 +97,28 @@ export async function loadCustomerRecords(
       count: 0,
       rows: [] as CustomerRecord[],
     };
+  if (section.id === "historial") {
+    const before = historyCursor(requestedBefore);
+    const result = await db.rpc("customer_history", {
+      p_company: companyId,
+      p_customer: customerId,
+      p_before: before,
+    });
+    const parsed = customerHistorySchema.safeParse(result.data);
+    if (result.error || !parsed.success)
+      throw new Error(
+        "No se pudo cargar el historial del cliente. Inténtalo de nuevo.",
+      );
+    return {
+      sections,
+      section,
+      page: 1,
+      count: 0,
+      rows: [],
+      history: parsed.data,
+      before,
+    };
+  }
   if (section.id === "pagos" || section.id === "gastos") {
     const result = await db.rpc("customer_ledger", {
       p_company: companyId,

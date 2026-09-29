@@ -1,3 +1,4 @@
+import { CustomerHistory } from "./customer-history";
 import Link from "next/link";
 import { CustomerLedger } from "./customer-ledger";
 import { ListPagination } from "./list-pagination";
@@ -9,12 +10,15 @@ export function CustomerRecords({
   companyId,
   customerId,
   records,
+  timezone = "UTC",
 }: {
   companyId: string;
   customerId: string;
+  timezone?: string;
   records: Awaited<ReturnType<typeof loadCustomerRecords>>;
 }) {
-  const { sections, section, rows, count, page, ledger } = records;
+  const { sections, section, rows, count, page, ledger, history, before } =
+    records;
   if (!section) return null;
   const path = `/app/${companyId}/clientes/${customerId}`;
   const financial = section.id !== "proyectos";
@@ -53,7 +57,15 @@ export function CustomerRecords({
         ))}
       </nav>
       <h3 className="font-semibold">{section.label}</h3>
-      {ledger ? (
+      {history ? (
+        <CustomerHistory
+          companyId={companyId}
+          customerId={customerId}
+          history={history}
+          before={before}
+          timezone={timezone}
+        />
+      ) : ledger ? (
         <CustomerLedger
           companyId={companyId}
           kind={section.id === "pagos" ? "pagos" : "gastos"}
@@ -116,12 +128,14 @@ export function CustomerRecords({
           No hay {section.label.toLowerCase()} vinculados a este cliente.
         </p>
       )}
-      <ListPagination
-        path={path}
-        page={page}
-        count={count}
-        query={{ section: section.id }}
-      />
+      {!history && (
+        <ListPagination
+          path={path}
+          page={page}
+          count={count}
+          query={{ section: section.id }}
+        />
+      )}
     </section>
   );
 }

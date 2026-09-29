@@ -35,6 +35,18 @@ test("customer ledger preserves financial totals, identity and permissions", asy
         p_page: number;
       },
     ) {
+      if (name === "customer_history") {
+        calls.push("historial");
+        return {
+          data: (
+            await db.query<{ data: unknown }>(
+              "select public.customer_history($1,$2,null) data",
+              [p.p_company, p.p_customer],
+            )
+          ).rows[0].data,
+          error: null,
+        };
+      }
       assert.equal(name, "customer_ledger");
       calls.push(p.p_section);
       try {
@@ -285,7 +297,7 @@ test("customer ledger preserves financial totals, identity and permissions", asy
         assert.equal(result.ledger!.total, "210.21");
         assert.deepEqual(
           result.sections.map((s) => s.id),
-          ["facturas", "pagos"],
+          ["facturas", "pagos", "historial"],
         );
         await assert.rejects(raw("gastos"), /permission_denied/);
         await assert.rejects(raw("pagos", other, foreign), /permission_denied/);
@@ -297,10 +309,10 @@ test("customer ledger preserves financial totals, identity and permissions", asy
         const who = await grant({ clientes: ["read"], gastos: ["read"] });
         calls.length = 0;
         assert.equal(
-          (await get("gastos", "1", client, who)).section,
-          undefined,
+          (await get("gastos", "1", client, who)).section?.id,
+          "historial",
         );
-        assert.equal(calls.length, 0);
+        assert.deepEqual(calls, ["historial"]);
         await assert.rejects(raw("gastos"), /permission_denied/);
         await grant({
           clientes: ["read"],

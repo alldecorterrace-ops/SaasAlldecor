@@ -67,6 +67,21 @@ test("customer dossier reads persisted, paged records under company and module R
   // Minimal read-only PostgREST adapter: execute the loader's actual projections,
   // filters and ordering against PostgreSQL with authenticated RLS enabled.
   const api = {
+    async rpc(
+      name: string,
+      p: { p_company: string; p_customer: string; p_before: string | null },
+    ) {
+      assert.equal(name, "customer_history");
+      return {
+        data: (
+          await db.query<{ data: unknown }>(
+            "select public.customer_history($1,$2,$3) data",
+            [p.p_company, p.p_customer, p.p_before],
+          )
+        ).rows[0].data,
+        error: null,
+      };
+    },
     from(table: string) {
       assert.ok(["estimates", "invoices", "projects"].includes(table));
       const call = { table, filters: {} as Record<string, string>, fields: "" };
@@ -317,8 +332,12 @@ test("customer dossier reads persisted, paged records under company and module R
           client,
           "facturas",
         );
-        assert.equal(r.section, undefined);
-        assert.equal(r.sections.length, 0);
+        assert.equal(r.section?.id, "historial");
+        assert.deepEqual(
+          r.sections.map((s) => s.id),
+          ["historial"],
+        );
+        assert.ok(r.history!.rows.every((e) => e.entity === "customers"));
         assert.equal(calls.length, 0);
       },
     );

@@ -11,11 +11,16 @@ export default async function CustomerDetail({
   searchParams,
 }: {
   params: Promise<{ companyId: string; customerId: string }>;
-  searchParams: Promise<{ saved?: string; section?: string; page?: string }>;
+  searchParams: Promise<{
+    saved?: string;
+    section?: string;
+    page?: string;
+    before?: string;
+  }>;
 }) {
   const { companyId, customerId } = await params;
   if (!uuid.safeParse(customerId).success) notFound();
-  const { db, member } = await requireModule(companyId, "clientes");
+  const { db, member, company } = await requireModule(companyId, "clientes");
   const { data, error } = await db
     .from("customers")
     .select("*")
@@ -40,6 +45,7 @@ export default async function CustomerDetail({
     customerId,
     search.section,
     search.page,
+    search.before,
   );
   const initial: CustomerInput = {
     full_name: data.full_name,
@@ -85,6 +91,7 @@ export default async function CustomerDetail({
         companyId={companyId}
         customerId={customerId}
         records={records}
+        timezone={company.timezone}
       />
     </>
   );
