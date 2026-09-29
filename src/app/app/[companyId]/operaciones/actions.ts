@@ -59,27 +59,31 @@ export async function saveOperation(
 }
 export async function searchOperationChoices(
   companyId: string,
-  kind: "workers" | "projects",
+  kind: "workers" | "projects" | "customers",
   q: string,
 ): Promise<{ error?: string; data?: { id: string; name: string }[] }> {
-  if (!["workers", "projects"].includes(kind))
+  if (!["workers", "projects", "customers"].includes(kind))
     return { error: "Selección inválida." };
   const { db } = await requireModule(
     companyId,
-    kind === "workers" ? "trabajadores" : "fin-proyectos",
+    kind === "workers"
+      ? "trabajadores"
+      : kind === "customers"
+        ? "clientes"
+        : "fin-proyectos",
   );
   let query = db
     .from(kind)
-    .select("id,name")
+    .select(kind === "customers" ? "id,name:full_name" : "id,name")
     .eq("company_id", companyId)
     .ilike(
-      "name",
+      kind === "customers" ? "full_name" : "name",
       `%${q
         .trim()
         .slice(0, 100)
         .replace(/[\\%_]/g, "\\$&")}%`,
     )
-    .order("name")
+    .order(kind === "customers" ? "full_name" : "name")
     .order("id")
     .limit(25);
   if (kind === "workers") query = query.eq("active", true);

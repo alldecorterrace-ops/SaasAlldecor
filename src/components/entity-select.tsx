@@ -10,13 +10,15 @@ export function EntitySelect({
   label,
   initial,
   canSearch,
+  emptyLabel = "Sin asignar",
 }: {
   companyId: string;
-  kind: "workers" | "projects";
+  kind: "workers" | "projects" | "customers";
   name: string;
   label: string;
   initial: { id: string; name: string } | null;
   canSearch: boolean;
+  emptyLabel?: string;
 }) {
   const [q, setQ] = useState(""),
     [value, setValue] = useState(initial?.id ?? ""),
@@ -32,7 +34,7 @@ export function EntitySelect({
           value={value}
           onChange={(e) => setValue(e.target.value)}
         >
-          <option value="">Sin asignar</option>
+          <option value="">{emptyLabel}</option>
           {choices.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}

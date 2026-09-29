@@ -1,15 +1,14 @@
-import { OperationList } from "@/components/operation-list";
+import { ExpenseRegister } from "@/components/expense-register";
 export default async function Expenses({
   params,
   searchParams,
 }: {
   params: Promise<{ companyId: string }>;
-  searchParams: Promise<{ q?: string; status?: string; page?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   return (
-    <OperationList
+    <ExpenseRegister
       companyId={(await params).companyId}
-      kind="expenses"
       search={await searchParams}
     />
   );

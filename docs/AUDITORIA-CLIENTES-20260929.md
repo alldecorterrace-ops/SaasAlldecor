@@ -92,7 +92,7 @@ esas relaciones existentes, sin inferir vínculos por contacto y sin importacion
 | Distinguir totales | Total registrado sin anulados, desglosado en aprobado/pendiente/rechazado; no equivale a pago, reembolso ni costo laboral calculado. |
 | Paginar | 20 filas, fecha descendente e ID estable. Total, cantidad y página limitada se obtienen en la misma consulta y abarcan todas las páginas. |
 | Autorizar | Clientes + Facturas para pagos; Clientes + Gastos + Proyectos para los gastos asociados. RLS continúa activa y la función no eleva privilegios. Una revocación rechaza la consulta. |
-| Vincular gasto directamente a cliente | Pendiente. El SaaS no tiene esa relación sin proyecto; el nombre «Gastos de proyectos» evita afirmar cobertura completa. |
+| Vincular gasto a cliente | Corrección posterior: `expensePrepareFields` en la fuente ADT exige proyecto si se indica un cliente y deriva el cliente de ese proyecto. El modelo SaaS coincide con esa regla de alta. La lectura actual del origen sigue fallando; no se infiere cobertura de posibles registros históricos. |
 
 Esquema aditivo 035: función de lectura customer_ledger, security invoker,
 sin acceso anónimo, sin escritura de negocio y sin cambios de tablas/permisos
@@ -106,7 +106,7 @@ permiso incompleto, ausencia de lectura anónima, escape de HTML, inmutabilidad
 de registros al consultar y reaplicación del esquema. No sustituyen la prueba
 de Supabase/PostgREST y pantalla desplegada, que se registrará al publicar.
 
-Persisten pendientes en Clientes: asociación directa de gastos, documentos,
+Persistían pendientes en Clientes: documentos,
 operaciones e historial completo; no se declara cerrado el módulo.
 
 Validación local de la ampliación: lint, TypeScript, 364 pruebas y build aprobados.
@@ -158,8 +158,9 @@ de contenido único, dependencias y la confirmación de una lista exacta. No se
 declara completada la retención del hosting.
 
 La comprobación móvil fue emulada, no en un teléfono físico. La consulta de
-gastos de ADT falló en el cliente inspeccionado, y la asociación directa de gasto
-a cliente sigue pendiente. Documentos, operaciones e historial unificado también
+gastos de ADT falló en el cliente inspeccionado. El supuesto pendiente de alta
+de gasto sin proyecto se corrigió al contrastar `expensePrepareFields`: esa
+operación se rechaza en el origen. Documentos, operaciones e historial unificado también
 siguen abiertos. Ninguna de estas pruebas cierra por sí sola los 21 módulos.
 
 
@@ -167,4 +168,5 @@ siguen abiertos. Ninguna de estas pruebas cierra por sí sola los 21 módulos.
 
 El historial unificado se publicó posteriormente en staging 19eafe1, con esquema
 036. Véanse [las pruebas y límites del historial](AUDITORIA-HISTORIAL-CLIENTES-20260929.md).
-Los pendientes de documentos, operaciones y gastos directos siguen abiertos.
+Las entregas posteriores de documentos y operaciones se documentan por separado.
+El supuesto pendiente de gastos directos se corrigió en la [auditoría del registro de gastos](AUDITORIA-REGISTRO-GASTOS-20260929.md).
