@@ -6,10 +6,15 @@ import {
   receiptLimit,
   expenseReceiptError,
 } from "./expense-batch-receipts";
-export async function uploadExpenseBatchReceipt(
+import {
+  prepareExpenseReceipt,
+  singleReceiptError,
+} from "./expense-single-receipts";
+
+async function receiveReceipt(
   request: Request,
   company: string,
-  batch: string,
+  context: { batch: string } | { version: number },
   expense: string,
   connect: () => Promise<SupabaseClient>,
   siteUrl: string | undefined,
@@ -22,8 +27,17 @@ export async function uploadExpenseBatchReceipt(
     Response.json({ error }, { status, headers });
   // This route receives a single raw file, not a multipart form containing all rows.
   if (!sameOriginRequest(request, siteUrl)) return fail(403);
-  if (![company, batch, expense].every((id) => uuid.safeParse(id).success))
+  if (
+    ![company, expense, ...("batch" in context ? [context.batch] : [])].every(
+      (id) => uuid.safeParse(id).success,
+    )
+  )
     return fail(404);
+  if (
+    "version" in context &&
+    (!Number.isSafeInteger(context.version) || context.version < 1)
+  )
+    return fail(400);
   try {
     const db = await connect();
     const auth = await db.auth.getUser();
@@ -49,13 +63,23 @@ export async function uploadExpenseBatchReceipt(
     } finally {
       reader.releaseLock();
     }
-    const receiptId = await prepareExpenseBatchReceipt(
-      db,
-      company,
-      batch,
-      expense,
-      Buffer.concat(chunks, size),
-    );
+    const bytes = Buffer.concat(chunks, size);
+    const receiptId =
+      "batch" in context
+        ? await prepareExpenseBatchReceipt(
+            db,
+            company,
+            context.batch,
+            expense,
+            bytes,
+          )
+        : await prepareExpenseReceipt(
+            db,
+            company,
+            expense,
+            context.version,
+            bytes,
+          );
     return Response.json({ receiptId }, { headers });
   } catch (error) {
     if (
@@ -65,6 +89,39 @@ export async function uploadExpenseBatchReceipt(
       error.code === "42501"
     )
       return fail(403);
-    return fail(400, expenseReceiptError(error));
+    return fail(
+      400,
+      "batch" in context
+        ? expenseReceiptError(error)
+        : singleReceiptError(error),
+    );
   }
+}
+
+export function uploadExpenseBatchReceipt(
+  request: Request,
+  company: string,
+  batch: string,
+  expense: string,
+  connect: () => Promise<SupabaseClient>,
+  siteUrl: string | undefined,
+) {
+  return receiveReceipt(request, company, { batch }, expense, connect, siteUrl);
+}
+export function uploadIndividualExpenseReceipt(
+  request: Request,
+  company: string,
+  expense: string,
+  version: number,
+  connect: () => Promise<SupabaseClient>,
+  siteUrl: string | undefined,
+) {
+  return receiveReceipt(
+    request,
+    company,
+    { version },
+    expense,
+    connect,
+    siteUrl,
+  );
 }

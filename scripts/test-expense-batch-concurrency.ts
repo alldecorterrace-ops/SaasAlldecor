@@ -199,8 +199,116 @@ async function main() {
       ).rows[0].n,
       2,
     );
+    // Two individual corrections compete with each other after preparation.
+    const singleHash = "b".repeat(64),
+      singleRows = [rows[0], rows[1]],
+      singleIds: string[] = [];
+    for (const r of singleRows) {
+      const q = await actor((c) =>
+        c.query(
+          "select (public.prepare_expense_receipt($1,$2,1,$3,600,'png')).*",
+          [company, r.id, singleHash],
+        ),
+      );
+      singleIds.push(q.rows[0].id);
+      await actor((c) =>
+        c.query(
+          "insert into storage.objects(bucket_id,name) values('expense-receipts',$1)",
+          [`${company}/${r.id}/${q.rows[0].id}.png`],
+        ),
+      );
+    }
+    const requests = [randomUUID(), randomUUID()];
+    const attach = (c: PoolClient, i: number) =>
+      c.query("select public.set_prepared_expense_receipt($1,$2,1,$3,$4) v", [
+        company,
+        singleRows[i].id,
+        requests[i],
+        singleIds[i],
+      ]);
+    const singleRace = await Promise.allSettled(
+      singleRows.map((_, i) => actor((c) => attach(c, i))),
+    );
+    assert.equal(singleRace.filter((x) => x.status === "fulfilled").length, 1);
+    assert.match(
+      String(singleRace.find((x) => x.status === "rejected")?.reason),
+      /duplicate_expense_receipt/,
+    );
+    const singleWinner = singleRace.findIndex((x) => x.status === "fulfilled");
+    const eventCount = await count("audit_events");
+    await Promise.all(
+      Array.from({ length: 8 }, () => actor((c) => attach(c, singleWinner))),
+    );
+    assert.equal(await count("audit_events"), eventCount);
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from public.expense_receipt_changes where company_id=$1",
+          [company],
+        )
+      ).rows[0].n,
+      1,
+    );
+    // A single correction and a new batch also share one duplicate boundary.
+    const mixedHash = "c".repeat(64),
+      mixedRow = row(),
+      mixedBatch = randomUUID(),
+      singleRow = rows[2];
+    const singlePrepared = await actor((c) =>
+      c.query(
+        "select (public.prepare_expense_receipt($1,$2,1,$3,600,'png')).*",
+        [company, singleRow.id, mixedHash],
+      ),
+    );
+    const batchPrepared = await actor((c) =>
+      c.query(
+        "select (public.prepare_expense_batch_receipt($1,$2,$3,$4,600,'png')).*",
+        [company, mixedBatch, mixedRow.id, mixedHash],
+      ),
+    );
+    for (const [r, u] of [
+      [singleRow.id, singlePrepared.rows[0].id],
+      [mixedRow.id, batchPrepared.rows[0].id],
+    ])
+      await actor((c) =>
+        c.query(
+          "insert into storage.objects(bucket_id,name) values('expense-receipts',$1)",
+          [`${company}/${r}/${u}.png`],
+        ),
+      );
+    const mixed = await Promise.allSettled([
+      actor((c) =>
+        c.query("select public.set_prepared_expense_receipt($1,$2,1,$3,$4)", [
+          company,
+          singleRow.id,
+          randomUUID(),
+          singlePrepared.rows[0].id,
+        ]),
+      ),
+      actor((c) =>
+        call(c, mixedBatch, [
+          { ...mixedRow, receipt_id: batchPrepared.rows[0].id } as ReturnType<
+            typeof row
+          >,
+        ]),
+      ),
+    ]);
+    assert.equal(mixed.filter((x) => x.status === "fulfilled").length, 1);
+    assert.match(
+      String(mixed.find((x) => x.status === "rejected")?.reason),
+      /duplicate_expense_receipt/,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from public.expenses where company_id=$1 and receipt_sha256=$2",
+          [company, mixedHash],
+        )
+      ).rows[0].n,
+      1,
+    );
     console.log(
-      "PASS expense batches: 8 concurrent replays, lost-response replay, conflicting payload, duplicate-document race aborted transaction, duplicate-image race and 8 image replays; no partial effects or duplicate receipts",
+      "PASS expense batches: 8 concurrent replays, lost-response replay, conflicting payload, duplicate-document race aborted transaction, duplicate-image race and 8 image replays; no partial effects or duplicate receipts; individual/individual and individual/batch races, 8 individual replays",
     );
   } finally {
     await pool.end();
