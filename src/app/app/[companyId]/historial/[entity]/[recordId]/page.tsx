@@ -12,6 +12,11 @@ const entities: Record<string, { module: string; label: string }> = {
   time_requests: { module: "horasfix", label: "Solicitud de horas" },
   time_periods: { module: "horasfix", label: "Cierre de semana" },
   workers: { module: "trabajadores", label: "Trabajador" },
+  workforce_profiles: { module: "trabajadores", label: "Equipo" },
+  workforce_assignments: {
+    module: "trabajadores",
+    label: "Asignación de obra",
+  },
   expenses: { module: "gastos", label: "Gasto" },
   customers: { module: "clientes", label: "Cliente" },
   leads: { module: "crm", label: "Lead" },

@@ -137,6 +137,14 @@ export async function OperationDetail({
             Ver gastos del trabajador
           </Link>
         )}
+        {workers && !isNew && manager && (
+          <Link
+            className="underline"
+            href={`/app/${companyId}/trabajadores/${id}/equipo`}
+          >
+            Equipo y asignaciones
+          </Link>
+        )}
         {!isNew && (
           <Link
             className="underline"

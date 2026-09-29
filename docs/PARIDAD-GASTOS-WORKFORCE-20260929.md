@@ -30,3 +30,9 @@ de prueba o una vista cuya lectura no dispare tareas.
 La regla de campos de búsqueda y trabajador asociado se implementa por separado
 en esquemas 044/045; no cierra este contrato. Las pruebas financieras se ejecutarán
 con registros sintéticos en staging y sin efectuar pagos ni envíos externos.
+
+## Base de equipo en preparación
+
+El esquema 047 y las pantallas de equipo/asignaciones se documentan en
+[AUDITORIA-EQUIPO-WORKFORCE-20260929.md](AUDITORIA-EQUIPO-WORKFORCE-20260929.md).
+Es una base previa; no cierra las aprobaciones, revisión ni reembolsos de esta tabla.

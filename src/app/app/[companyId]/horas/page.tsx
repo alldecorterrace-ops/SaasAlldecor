@@ -162,6 +162,9 @@ export default async function Hours({
         </section>
       )}
       <nav className="flex flex-wrap gap-5 mb-5">
+        <Link className="underline" href={`${base}/equipo`}>
+          Equipo y obras
+        </Link>
         <Link className="underline" href={base}>
           Marcaciones
         </Link>
