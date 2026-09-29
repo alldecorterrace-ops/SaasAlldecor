@@ -137,8 +137,70 @@ async function main() {
     assert.equal(await count("expenses"), 7);
     assert.equal(await count("expense_batches"), 3);
     assert.equal(await count("audit_events"), 7);
+    // Two independent batches carrying identical image bytes race after upload.
+    const imageHash = "a".repeat(64),
+      imageBatches = [randomUUID(), randomUUID()];
+    const imageRows = [row(), row()];
+    const receiptIds: string[] = [];
+    for (let i = 0; i < 2; i++) {
+      const prepared = await actor((c) =>
+        c.query(
+          "select (public.prepare_expense_batch_receipt($1,$2,$3,$4,600,'png')).*",
+          [company, imageBatches[i], imageRows[i].id, imageHash],
+        ),
+      );
+      const id = prepared.rows[0].id;
+      receiptIds.push(id);
+      await actor((c) =>
+        c.query(
+          "insert into storage.objects(bucket_id,name) values('expense-receipts',$1)",
+          [`${company}/${imageRows[i].id}/${id}.png`],
+        ),
+      );
+    }
+    const images = await Promise.allSettled(
+      imageRows.map((r, i) =>
+        actor((c) =>
+          call(c, imageBatches[i], [
+            { ...r, receipt_id: receiptIds[i] } as ReturnType<typeof row>,
+          ]),
+        ),
+      ),
+    );
+    assert.equal(images.filter((x) => x.status === "fulfilled").length, 1);
+    assert.match(
+      String(images.find((x) => x.status === "rejected")?.reason),
+      /duplicate_expense_receipt/,
+    );
+    assert.equal(await count("expenses"), 8);
+    assert.equal(await count("expense_batches"), 4);
+    const winner = images.findIndex((x) => x.status === "fulfilled");
+    const replay = await Promise.all(
+      Array.from({ length: 8 }, () =>
+        actor((c) =>
+          call(c, imageBatches[winner], [
+            {
+              ...imageRows[winner],
+              receipt_id: receiptIds[winner],
+            } as ReturnType<typeof row>,
+          ]),
+        ),
+      ),
+    );
+    assert.ok(replay.every((x) => x[0] === imageRows[winner].id));
+    assert.equal(await count("expenses"), 8);
+    assert.equal(await count("expense_batches"), 4);
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from public.expense_receipt_uploads where company_id=$1",
+          [company],
+        )
+      ).rows[0].n,
+      2,
+    );
     console.log(
-      "PASS expense batches: 8 concurrent replays, lost-response replay, conflicting payload, duplicate-document race and aborted transaction; no partial effects or duplicate receipts",
+      "PASS expense batches: 8 concurrent replays, lost-response replay, conflicting payload, duplicate-document race aborted transaction, duplicate-image race and 8 image replays; no partial effects or duplicate receipts",
     );
   } finally {
     await pool.end();

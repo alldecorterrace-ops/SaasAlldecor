@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import {
   saveExpenseBatch,
@@ -14,6 +14,8 @@ import { Button } from "./ui/button";
 import { Feedback } from "./feedback";
 type Draft = {
   id: string;
+  file: File | null;
+  receiptId: string | null;
   date: string;
   amount: string;
   category: string;
@@ -42,6 +44,8 @@ export function ExpenseBatchForm({
 }) {
   const empty = (id: string): Draft => ({
     id,
+    file: null,
+    receiptId: null,
     date,
     amount: "",
     category: "Materiales",
@@ -53,9 +57,53 @@ export function ExpenseBatchForm({
     project: null,
     worker: null,
   });
+  const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
   const [rows, setRows] = useState<Draft[]>([empty(firstId)]);
+  const [uploadStatus, setUploadStatus] = useState("");
   const [state, action, pending, onReset] = usePreservedActionState(
-    saveExpenseBatch.bind(null, companyId, batchId),
+    async (
+      _previous: ExpenseBatchState,
+      form: FormData,
+    ): Promise<ExpenseBatchState> => {
+      try {
+        for (const [index, row] of rows.entries()) {
+          if (!row.file) continue;
+          let receiptId = row.receiptId;
+          if (!receiptId) {
+            setUploadStatus(
+              `Preparando comprobante ${index + 1} de ${rows.length}…`,
+            );
+            const response = await fetch(
+              `/api/expenses/${companyId}/batches/${batchId}/receipts/${row.id}`,
+              {
+                method: "POST",
+                body: row.file,
+                credentials: "same-origin",
+              },
+            );
+            const data = await response.json();
+            if (!response.ok || typeof data.receiptId !== "string")
+              return {
+                error: `Fila ${index + 1}: ${typeof data.error === "string" ? data.error : "No se pudo preparar el comprobante."}`,
+              };
+            receiptId = data.receiptId;
+            setRows((old) =>
+              old.map((r) => (r.id === row.id ? { ...r, receiptId } : r)),
+            );
+          }
+          if (receiptId) form.set(`${row.id}.receipt_id`, receiptId);
+        }
+        setUploadStatus("Verificando comprobantes y registrando el lote…");
+        return await saveExpenseBatch(companyId, batchId, _previous, form);
+      } catch {
+        return {
+          error:
+            "No se pudo confirmar el lote. Conserva esta página y reintenta con los mismos datos; no se duplican gastos ni comprobantes preparados.",
+        };
+      } finally {
+        setUploadStatus("");
+      }
+    },
     {} as ExpenseBatchState,
   );
   const update = <K extends keyof Draft>(id: string, key: K, value: Draft[K]) =>
@@ -77,7 +125,7 @@ export function ExpenseBatchForm({
                 className="underline"
                 href={`/app/${companyId}/gastos/${id}`}
               >
-                Gasto {i + 1} · Ver ficha y adjuntar comprobante
+                Gasto {i + 1} · Ver ficha y comprobante
               </Link>
             </li>
           ))}
@@ -95,6 +143,7 @@ export function ExpenseBatchForm({
   return (
     <form action={action} onReset={onReset} className="space-y-5">
       <Feedback error={state.error} />
+      {uploadStatus && <p role="status">{uploadStatus}</p>}
       <input
         type="hidden"
         name="rows"
@@ -106,9 +155,10 @@ export function ExpenseBatchForm({
         reembolso queda pendiente.
       </p>
       <p className="text-sm text-muted-foreground">
-        Los comprobantes se adjuntan desde cada ficha después de registrar el
-        lote. Al duplicar una fila, el número de documento queda vacío para
-        evitar registrar el mismo comprobante dos veces.
+        Puedes adjuntar una imagen JPG, PNG o WebP por gasto (máximo 8 MiB). Si
+        falla una fila, conserva esta página: los comprobantes preparados se
+        reutilizan al reintentar. Duplicar una fila no copia su documento ni su
+        imagen.
       </p>
       <fieldset disabled={pending} className="space-y-5">
         {rows.map((row, index) => (
@@ -127,7 +177,13 @@ export function ExpenseBatchForm({
                   onClick={() =>
                     setRows((old) => [
                       ...old,
-                      { ...row, id: crypto.randomUUID(), document: "" },
+                      {
+                        ...row,
+                        id: crypto.randomUUID(),
+                        document: "",
+                        file: null,
+                        receiptId: null,
+                      },
                     ])
                   }
                 >
@@ -255,6 +311,53 @@ export function ExpenseBatchForm({
                   onChange={(e) => update(row.id, "document", e.target.value)}
                 />
               </label>
+              <label className="field md:col-span-2 lg:col-span-3">
+                Comprobante de la fila {index + 1}
+                <Input
+                  ref={(element) => {
+                    fileInputs.current[row.id] = element;
+                  }}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] ?? null;
+                    e.target.setCustomValidity(
+                      file && (file.size < 400 || file.size > 8388608)
+                        ? "Selecciona una imagen de entre 400 bytes y 8 MiB."
+                        : "",
+                    );
+                    setRows((old) =>
+                      old.map((r) =>
+                        r.id === row.id ? { ...r, file, receiptId: null } : r,
+                      ),
+                    );
+                  }}
+                />
+                <span className="text-sm text-muted-foreground">
+                  {row.receiptId
+                    ? "Comprobante preparado; se vinculará al guardar el lote."
+                    : "Opcional. La misma imagen no puede repetirse en gastos activos."}
+                </span>
+              </label>
+              {row.file && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    const input = fileInputs.current[row.id];
+                    if (input) input.value = "";
+                    setRows((old) =>
+                      old.map((r) =>
+                        r.id === row.id
+                          ? { ...r, file: null, receiptId: null }
+                          : r,
+                      ),
+                    );
+                  }}
+                >
+                  Quitar comprobante de la fila {index + 1}
+                </Button>
+              )}
               <label className="field md:col-span-2 lg:col-span-3">
                 Descripción
                 <textarea

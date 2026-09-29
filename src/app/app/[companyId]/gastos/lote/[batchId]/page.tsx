@@ -46,7 +46,7 @@ export default async function Batch({
                   className="underline"
                   href={`/app/${companyId}/gastos/${id}`}
                 >
-                  Gasto {i + 1} · Ver ficha y adjuntar comprobante
+                  Gasto {i + 1} · Ver ficha y comprobante
                 </Link>
               </li>
             ))}

@@ -3,6 +3,10 @@ import { revalidatePath } from "next/cache";
 import { requireModule } from "@/lib/auth";
 import { uuid } from "@/lib/validation";
 import { expenseBatchSchema, expenseBatchError } from "@/lib/expense-batch";
+import {
+  verifyExpenseBatchReceipt,
+  expenseReceiptError,
+} from "@/lib/expense-batch-receipts";
 export type ExpenseBatchState = {
   error?: string;
   success?: string;
@@ -43,6 +47,9 @@ export async function saveExpenseBatch(
     ];
     const rows = ids.map((id) => ({
       id,
+      ...(form.get(`${id}.receipt_id`)
+        ? { receipt_id: form.get(`${id}.receipt_id`) }
+        : {}),
       ...Object.fromEntries(
         fields.map((f) => [
           f,
@@ -58,6 +65,20 @@ export async function saveExpenseBatch(
       return {
         error: `Fila ${Number(issue.path[0] ?? 0) + 1}: revisa ${String(issue.path[1] ?? "los campos")}. No se guardó ninguna fila.`,
       };
+    }
+    for (const [index, row] of parsed.data.entries()) {
+      if (!row.receipt_id) continue;
+      try {
+        await verifyExpenseBatchReceipt(
+          db,
+          companyId,
+          batchId,
+          row.id,
+          row.receipt_id,
+        );
+      } catch (error) {
+        return { error: `Fila ${index + 1}: ${expenseReceiptError(error)}` };
+      }
     }
     const { data, error } = await db.rpc("save_expense_batch", {
       p_company: companyId,

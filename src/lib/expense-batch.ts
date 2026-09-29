@@ -3,6 +3,7 @@ import { expenseMethods } from "./operations";
 export const expenseBatchRowSchema = z
   .object({
     id: z.uuid(),
+    receipt_id: z.uuid().optional(),
     project_id: z.uuid().nullable(),
     worker_id: z.uuid().nullable(),
     expense_date: z.iso.date(),
@@ -50,6 +51,10 @@ export function expenseBatchError(message: string) {
   const reasons: Record<string, string> = {
     duplicate_expense_document:
       "El documento ya existe para ese proveedor o se repite dentro del lote.",
+    duplicate_expense_receipt:
+      "La imagen del comprobante ya existe en otro gasto activo o se repite dentro del lote.",
+    receipt_unavailable:
+      "El comprobante no está disponible para esta fila. Vuelve a prepararlo.",
     worker_required: "Selecciona el trabajador que pagó.",
     worker_unavailable: "El trabajador no está disponible en esta empresa.",
     project_unavailable: "El proyecto no está disponible en esta empresa.",
