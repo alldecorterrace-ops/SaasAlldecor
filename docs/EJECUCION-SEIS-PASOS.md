@@ -1,6 +1,6 @@
 # Ejecución y auditoría de los seis pasos
 
-Fecha de inicio: 18 de septiembre de 2026. Seguimiento actualizado: 26 de septiembre de 2026. Destino: https://app.alldecorpatio.com.
+Fecha de inicio: 18 de septiembre de 2026. Seguimiento actualizado: 29 de septiembre de 2026. Destino: https://app.alldecorpatio.com.
 
 Este documento distingue implementación, pruebas técnicas y recorridos reales.
 Ningún paso se cierra solamente porque una página responda o el código compile.
@@ -12,6 +12,12 @@ en staging. Las cargas reales y el traspaso quedan aplazados; los registros ya
 incorporados se conservan. Las mejoras propias de esta app se abordarán después
 de comprobar las reglas actuales de ADT. Los pendientes históricos de abajo no
 autorizan importaciones ni sincronizaciones nuevas.
+
+**Cambio del 29 de septiembre:** configuradores y 3D excluidos por el propietario.
+El desarrollo activo abarca 21 módulos; geometría, despiece y planos automáticos
+del configurador ya no son condiciones de cierre. Se conservan datos y evidencia
+histórica. El expediente comercial del cliente es el siguiente bloque. Las
+referencias anteriores a 23 módulos describen el alcance histórico.
 
 El trabajo vigente se organiza en [Cierre funcional](CIERRE-FUNCIONAL.md).
 El [contrato del Mapa de zonas](PARIDAD-MAPA-20260925.md) compara 15 conjuntos
@@ -61,7 +67,7 @@ conserva la operación principal. Los trabajos locales no equivalen a despliegue
 | --- | --- | --- |
 | 1. Versiones del servidor | Política publicada; planificador conservador probado que protege aplicación activa, retorno, procesos y dependencias transitivas. cPanel renovado e inventario inicial de 16 carpetas el 24 de septiembre. | Completar inventario de procesos y contenido, validar retorno, comprobar archivos únicos, confirmar lista exacta de eliminación y medir antes/después. Se retiraron cuatro entregas antiguas de staging y sus cuatro archivos fuente con autorización expresa: 930,8 MiB liberados. Resto del hosting pendiente. |
 | 2. Migración conciliada | Histórico publicado y lotes operativos de clientes, proyectos, estimados, facturas y pagos documentados por separado. Se conserva procedencia, originales y excepciones. | Delta contra ADT actual, entidades restantes, archivos faltantes y diferencias financieras. Mantener fichas separadas aprobadas y el cliente de correo inválido solo en histórico. Nuevas cargas reales esperan recuperación y staging. |
-| 3. Paridad de 23 módulos | Primeras implementaciones y pruebas de persistencia/permisos; inventario actualizado de definiciones de ruta del origen el 22 de septiembre. | Cerrar acciones, cálculos, diseño avanzado, documentos, Workforce, portal e IA contra ADT vivo. Ningún módulo se declara todavía con paridad completa. |
+| 3. Paridad del alcance activo (21 módulos) | Primeras implementaciones y pruebas de persistencia/permisos; inventario actualizado de definiciones de ruta del origen el 22 de septiembre. | Cerrar acciones comerciales, cálculos, documentos, Workforce, portal e IA contra ADT vivo; configuradores y 3D excluidos. Ningún módulo se declara todavía con paridad completa. |
 | 4. Auditoría completa | 346 pruebas en CI; dos cuentas autenticadas y empresas ficticias. Invitación aceptada, restricciones por módulo/empresa, perfiles por fases, revocación con formulario abierto y suspensión verificadas. Edición de clientes, pago/reversión y jornada/solicitud de corrección persistidos. Corregidos en staging conflictos, pérdida de campos al rechazar pagos y lectura de horas ajenas. Ventas recorrió lead, conversión a cliente y tres revisiones de estimado con catálogo. Precios conserva campos rechazados; diseño básico, cambio explícito de tarifas y dos estimados independientes conciliados. Inventario probó entradas, salidas, reversos, referencias repetidas y archivos; corregido el cambio de unidad con historial y saldo cero. Permisos probó validaciones, aprobación, adjunto, anulación y búsqueda restringida; Instalaciones probó horario, superposición, estados y revocación durante edición. | Completar recorridos de los cinco perfiles, escritorio/móvil real, editor visual de permisos, delegación de encargados, aislamiento exhaustivo y concurrencia de todas las operaciones. La salud HTTP no sustituye esos recorridos. |
 | 5. Recuperación y operación | Staging publicado con 34 migraciones y entrega 2a1e325; registro público cerrado, Email con receptor privado, dos cuentas autenticadas e invitación sintética capturada. Corrección de arranque verificada. Carpeta privada de Drive y herramientas de copia/recuperación preparadas; ensayos sintéticos y job PostgreSQL aprobados. | Recuperación de cuenta y recorridos restantes de staging, acceso real/ETag/cuotas/custodia de clave/OAuth, captura completa, calendario y retención, alertas, restauración y carga. No hay todavía respaldo cifrado del destino verificado en Drive ni RPO/RTO acreditados. |
 | 6. Traspaso | Migraciones 026–027 y API desactivadas; corte para drenar solicitudes anteriores y retener las nuevas. Primer adaptador transaccional de cliente SaaS y ensayo concurrente PostgreSQL aprobado. Receptor independiente en Supabase preparado. | Desplegar y ensayar en staging; adaptadores ADT y resto de acciones SaaS, integrar todas las entradas con el receptor, fencing real en ADT y cierre de 1–5. Las atestaciones sintéticas no autorizan traspaso; 026–027 no se han aplicado a producción. |

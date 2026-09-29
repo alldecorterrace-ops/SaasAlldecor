@@ -73,6 +73,11 @@ export const modules = [
     ready: true,
   },
 ] as const;
+// Excluded by the owner on 2026-09-29. Keep the legacy catalog and grants
+// for existing records; new workspace navigation uses only the active scope.
+export const workspaceModules = modules.filter(
+  (m) => m.id !== "nuevo3d" && m.id !== "pergolamotor",
+);
 export type ModuleId = (typeof modules)[number]["id"];
 export type Membership = {
   company_id: string;
@@ -129,6 +134,6 @@ export function moduleHref(company: string, module: string) {
         : `${base}/modulos/${module}`;
 }
 export function companyHomeHref(company: string, member: Membership) {
-  const first = modules.find((m) => canAccess(member, m.id));
+  const first = workspaceModules.find((m) => canAccess(member, m.id));
   return first ? moduleHref(company, first.id) : `/app/${company}/sin-acceso`;
 }

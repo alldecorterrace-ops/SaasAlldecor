@@ -5,7 +5,12 @@ funcional con ADT en staging. Nuevas migraciones de datos y traspaso aplazados
 hasta petición expresa. El contenido siguiente conserva evidencia histórica;
 las auditorías recientes y su estado están en [el seguimiento](EJECUCION-SEIS-PASOS.md).
 
-## Los 23 módulos tienen una primera implementación
+**Alcance vigente desde el 29 de septiembre:** 21 módulos; configuradores y 3D
+excluidos por decisión del propietario. Geometría, despiece y planos automáticos
+no bloquean el cierre. Este documento conserva la evidencia histórica; consultar
+[el alcance activo](CIERRE-FUNCIONAL.md).
+
+## Los 23 módulos originales tienen una primera implementación
 
 Cada entrada del catálogo abre una pantalla con operaciones y persistencia. **Esto no acredita paridad completa con ADT Admin ni una migración terminada.** El alcance y las diferencias están documentados para auditar cada flujo.
 

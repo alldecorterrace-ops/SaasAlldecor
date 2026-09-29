@@ -4,6 +4,14 @@ Fecha inicial: 17 de septiembre de 2026. Inventario de rutas renovado el 22 de s
 
 ## Resultado requerido por el propietario
 
+**Decisión vigente del 29 de septiembre de 2026:** el proyecto no necesita
+configuradores ni 3D. Pérgola sin 3D y Nuevo estimado 3D quedan excluidos del
+cierre, así como geometría, despiece y planos automáticos derivados del diseño.
+El alcance activo es de 21 módulos. Se conservan los datos y documentos ya
+guardados; Clientes, Productos, Precios, Estimados, Manual de fabricación y los
+demás módulos comerciales y operativos continúan incluidos.
+
+
 **Prioridad actual, 25 de septiembre de 2026:** completar y comprobar la paridad
 funcional exacta antes de los cambios específicos que el propietario quiere
 introducir en esta aplicación. Toda nueva migración de datos queda suspendida
@@ -13,13 +21,13 @@ importaciones, deltas, sincronizaciones ni traspaso operativo por un «continuar
 El alcance histórico siguiente se conserva como objetivo posterior, no como
 autorización vigente para trasladar datos.
 
-El orden actual y los criterios pendientes de los 23 módulos se mantienen en
+El orden actual y los criterios pendientes de los 21 módulos activos se mantienen en
 [Cierre funcional](CIERRE-FUNCIONAL.md). El primer contrato comparado de cálculo
 es el [Mapa de zonas](PARIDAD-MAPA-20260925.md).
 
-Aplicación nueva para varias empresas, migración de los datos existentes y todos los módulos de ADT Admin activos y funcionales. La organización del trabajo en etapas sirve para respetar dependencias; no entrega una versión final con módulos omitidos.
+Objetivo original: aplicación para varias empresas y sustitución de ADT. El alcance vigente mantiene las funciones comerciales y operativas con las exclusiones expresas anteriores. La migración de datos continúa pausada.
 
-Todos los módulos forman parte del alcance. Que un módulo esté implementado y disponible no concede acceso a todos los usuarios: cada administrador conserva la selección de permisos dentro de su empresa.
+Los 21 módulos activos forman parte del alcance. Que un módulo esté implementado y disponible no concede acceso a todos los usuarios: cada administrador conserva la selección de permisos dentro de su empresa.
 
 ## Evidencia y límites
 
@@ -36,16 +44,16 @@ controladores, formularios, tareas o aplicaciones PHP externas a Drupal.
 
 Las pruebas siguientes son criterios iniciales por completar contra la interfaz actual. El SaaS dispone de una primera implementación de los 23 módulos. **Ningún módulo se declara todavía con paridad completa**; véase el [estado de implementación](ESTADO-IMPLEMENTACION.md) para distinguir funciones disponibles y pruebas pendientes.
 
-## Matriz inicial
+## Matriz de referencia: 21 módulos activos y dos excluidos
 
 | ID de origen    | Módulo                | Criterio inicial de paridad                                                                                  |
 | --------------- | --------------------- | ------------------------------------------------------------------------------------------------------------ |
 | `dashboard`     | Dashboard             | Comparar indicadores, filtros y enlaces con ADT para la misma empresa y periodo.                             |
 | `crm`           | Leads                 | Crear y editar leads; conservar estados, datos, historial y relaciones vigentes.                             |
 | `clientes`      | Clientes              | Abrir el expediente completo; editar sus campos y conservar documentos y relaciones.                         |
-| `nuevo3d`       | Nuevo estimado 3D     | Crear, guardar, reabrir y modificar un estimado 3D conservando geometría, medidas y cálculo.                 |
+| `nuevo3d`       | Nuevo estimado 3D     | **Fuera de alcance desde 2026-09-29.** Conservar registros existentes.                 |
 | `productos`     | Productos             | Consultar y modificar el catálogo según permisos; mantener referencias históricas.                           |
-| `pergolamotor`  | Pérgola sin 3D        | Reproducir configuración, equipos de cocina, precios y guardado del estimado.                                |
+| `pergolamotor`  | Pérgola sin 3D        | **Fuera de alcance desde 2026-09-29.** Conservar registros existentes.                                |
 | `estimadosweb`  | Estimados web         | Conservar entradas web, consulta, estados y acciones disponibles en ADT.                                     |
 | `adm-precios`   | Precios               | Reproducir catálogo de precios y reglas de cálculo sin cambiar importes históricos.                          |
 | `fin-estimados` | Estimados             | Conservar revisiones, documentos y transiciones vigentes del estimado.                                       |
@@ -62,7 +70,7 @@ Las pruebas siguientes son criterios iniciales por completar contra la interfaz 
 | `portal`        | Portal del cliente    | Un cliente autorizado ve y realiza solo las operaciones de su expediente y empresa.                          |
 | `ia`            | IA Assistant          | Inventariar tareas y proveedores actuales; probar autorización, errores y coste por empresa.                 |
 | `activity`      | Actividad             | Conservar eventos anteriores y registrar acciones nuevas sin reescribir el historial.                        |
-| `config`        | Configuración         | Cada administrador gestiona ajustes y permisos de su empresa; los 23 módulos siguen seleccionables.          |
+| `config`        | Configuración         | Cada administrador gestiona ajustes y permisos de su empresa; los módulos del alcance conservan permisos por empresa.          |
 
 ## Dependencias complementarias incluidas en el análisis
 

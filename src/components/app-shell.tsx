@@ -14,7 +14,12 @@ import {
   PanelTop,
   ChevronRight,
 } from "lucide-react";
-import { modules, canAccess, moduleHref, type Membership } from "@/lib/modules";
+import {
+  workspaceModules as modules,
+  canAccess,
+  moduleHref,
+  type Membership,
+} from "@/lib/modules";
 import { signOut } from "@/app/auth/actions";
 export function AppShell({
   company,

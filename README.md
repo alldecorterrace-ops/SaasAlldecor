@@ -1,28 +1,29 @@
 # SaasAlldecor
 
-Nueva aplicación SaaS para varias empresas, con migración de datos y paridad funcional completa con ADT Admin.
+Aplicación SaaS para varias empresas. Prioridad vigente: completar la paridad comercial y operativa con ADT Admin; configuradores y 3D quedan fuera del proyecto por decisión del 29 de septiembre de 2026.
 
 ## Decisiones confirmadas
 
 - Una base de código común para varias empresas, cada una con sus usuarios, permisos, datos y archivos.
-- Migrar los datos de ADT Admin a una aplicación nueva.
-- Incluir todos los módulos actuales de ADT Admin con sus funciones; el trabajo por dependencias no reduce el alcance final.
+- Migración de ADT pausada hasta petición expresa del propietario. Conservar los datos ya incorporados.
+- Alcance activo: 21 módulos. Excluye Pérgola sin 3D, Nuevo estimado 3D y geometría, despiece y planos automáticos derivados. Se preservan los datos y enlaces anteriores.
 - Stack: TypeScript, Next.js, Supabase/PostgreSQL, Tailwind CSS y componentes basados en shadcn/ui. Código e historial en GitHub; aplicación alojada en el hosting existente.
 - Versionar en GitHub. El servidor conserva la entrega activa, una anterior validada para retorno y sus dependencias necesarias, según la [política de retención](docs/VERSIONADO-Y-RETENCION.md).
 - All Decor Terrace será la empresa inicial para el traslado de sus datos.
 
 ## Estado real
 
-Los 23 módulos tienen una primera implementación con operaciones y persistencia. Incluye precios versionados, diseños, propuestas y solicitudes web, portal del cliente, IA con permisos y límites, y los módulos financieros y operativos. **No equivale todavía a paridad completa con ADT Admin ni a una migración terminada.** Consulta las funciones y diferencias en el [estado de implementación](docs/ESTADO-IMPLEMENTACION.md).
+El catálogo técnico original conserva 23 módulos; 21 siguen en el alcance activo. La navegación de la entrega del 29 de septiembre excluye los dos configuradores. El catálogo tiene una primera implementación con operaciones y persistencia. Incluye precios versionados, diseños, propuestas y solicitudes web, portal del cliente, IA con permisos y límites, y los módulos financieros y operativos. **No equivale todavía a paridad completa con ADT Admin ni a una migración terminada.** Consulta las funciones y diferencias en el [estado de implementación](docs/ESTADO-IMPLEMENTACION.md).
 
 Se contrastó el catálogo de 23 módulos y la presencia de siete módulos propios de Drupal mediante lectura del servidor el 17 de septiembre de 2026. Esa lectura no demuestra que todas sus acciones funcionen: falta completar la matriz con pruebas de navegador y datos de prueba.
 
 La estructura inicial y las ampliaciones comerciales están versionadas en Supabase SQL. La aplicación usa la clave pública y el usuario autenticado. El propietario confirmó el acceso remoto y creó empresas. Las pruebas PostgreSQL verifican aislamiento, permisos y conversión; los módulos comerciales nuevos aún requieren el recorrido autenticado completo de navegador.
 
-La aplicación está publicada en [app.alldecorpatio.com](https://app.alldecorpatio.com/login), en el segundo hosting del propietario. La instalación anterior se conserva como opción de retorno. No depende de un túnel local. La separación de entornos sigue pendiente. Se copiaron diez tarifas de venta a All Decor Terrace; los registros y archivos operativos siguen pendientes de migración. No se modificaron los registros de ADT.
+La aplicación está publicada en [app.alldecorpatio.com](https://app.alldecorpatio.com/login), en el segundo hosting del propietario. La instalación anterior se conserva como opción de retorno. No depende de un túnel local. Existe un entorno separado en [staging.alldecorpatio.com](https://staging.alldecorpatio.com/login), con Supabase independiente y datos sintéticos. Su existencia no acredita todavía recuperación ni cierre de las pruebas de todos los módulos. Se han incorporado lotes históricos documentados; cualquier nueva carga, sincronización o traspaso permanece pausado. No se modificaron los registros de ADT.
 
 ## Documentación
 
+- [Expediente de Clientes y alcance vigente, 29 de septiembre](docs/AUDITORIA-CLIENTES-20260929.md)
 - [Estado, evidencia y próximos pasos](docs/ESTADO-IMPLEMENTACION.md)
 - [Ejecución y cierre de los seis pasos](docs/EJECUCION-SEIS-PASOS.md)
 - [Leads, Productos y Actividad](docs/COMERCIAL.md)

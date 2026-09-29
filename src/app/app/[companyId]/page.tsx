@@ -2,7 +2,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Users, ArrowUpRight, Building2, Settings2 } from "lucide-react";
 import { companyContext } from "@/lib/auth";
-import { canAccess, modules, moduleHref, companyHomeHref } from "@/lib/modules";
+import {
+  canAccess,
+  workspaceModules as modules,
+  moduleHref,
+  companyHomeHref,
+} from "@/lib/modules";
 import { Button } from "@/components/ui/button";
 export default async function Dashboard({
   params,
@@ -111,9 +116,10 @@ export default async function Dashboard({
           </span>
         </div>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          La importación de nuevos datos está pausada. Puedes consultar los registros
-          incorporados y su histórico. Las funciones siguen en revisión y ADT
-          continúa como sistema principal hasta completar el traspaso.
+          La importación de nuevos datos está pausada. Puedes consultar los
+          registros incorporados y su histórico. Las funciones siguen en
+          revisión y ADT continúa como sistema principal hasta completar el
+          traspaso.
         </p>
         <div className="mt-6 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
           {modules

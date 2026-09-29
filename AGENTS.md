@@ -6,8 +6,13 @@
   migración de datos de ADT hasta que la solicite expresamente. No ejecutar
   importaciones, deltas, sincronizaciones ni cargas de archivos reales por una
   instrucción genérica de continuar. Conservar intactos los datos ya incorporados.
-- Centrar el trabajo en verificar y completar las funciones de los 23 módulos
-  contra ADT actual. Usar lectura del origen y datos sintéticos en staging.
+- Decisión del propietario del 29 de septiembre de 2026: configuradores y 3D
+  quedan fuera del proyecto. El alcance activo pasa a 21 módulos: excluye
+  Pérgola sin 3D y Nuevo estimado 3D, junto con geometría, despiece y planos
+  automáticos dependientes del configurador. Conservar datos, documentos, código
+  histórico y permisos existentes; no implica borrar registros ni módulos operativos.
+- Centrar el trabajo en verificar y completar los 21 módulos restantes contra
+  ADT actual. Usar lectura del origen y datos sintéticos en staging.
   Las migraciones aditivas de esquema para implementar funciones no son una
   autorización para trasladar datos de negocio.
 - Registrar por acción la regla del origen, equivalencia, prueba y diferencia.

@@ -4,12 +4,14 @@ import { canAccess } from "@/lib/modules";
 import { uuid, type CustomerInput } from "@/lib/validation";
 import { CustomerForm } from "@/components/customer-form";
 import Link from "next/link";
+import { loadCustomerRecords } from "@/lib/customer-records";
+import { CustomerRecords } from "@/components/customer-records";
 export default async function CustomerDetail({
   params,
   searchParams,
 }: {
   params: Promise<{ companyId: string; customerId: string }>;
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; section?: string; page?: string }>;
 }) {
   const { companyId, customerId } = await params;
   if (!uuid.safeParse(customerId).success) notFound();
@@ -30,6 +32,15 @@ export default async function CustomerDetail({
     .maybeSingle();
   if (originError)
     throw new Error("No se pudo comprobar el origen del cliente.");
+  const search = await searchParams;
+  const records = await loadCustomerRecords(
+    db,
+    member,
+    companyId,
+    customerId,
+    search.section,
+    search.page,
+  );
   const initial: CustomerInput = {
     full_name: data.full_name,
     email: data.email ?? "",
@@ -68,7 +79,12 @@ export default async function CustomerDetail({
         version={data.version}
         initial={initial}
         readOnly={!canAccess(member, "clientes", "write")}
-        saved={(await searchParams).saved === "1"}
+        saved={search.saved === "1"}
+      />
+      <CustomerRecords
+        companyId={companyId}
+        customerId={customerId}
+        records={records}
       />
     </>
   );

@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { companyContext } from "@/lib/auth";
-import { modules, canAccess, companyHomeHref } from "@/lib/modules";
+import {
+  workspaceModules as modules,
+  canAccess,
+  companyHomeHref,
+} from "@/lib/modules";
 export default async function NoModules({
   params,
 }: {
