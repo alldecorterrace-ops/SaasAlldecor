@@ -10,6 +10,7 @@ las fichas existentes ni las reglas actuales de Horas.
 
 Referencia local de ADT: `adt-workforce/drupal/adt_workforce/src/Service/ScopeService.php`
 (SHA-256 `6a674ca3a98bf9949e5c26a20db8ee8f4d81541f37adefe644bdac780b777087`)
+`AdminService.php` (alta/finalización, sin reabrir asignaciones)
 y `ExpenseService.php`
 (`3fa8194fbfc4ccf430a7f5cbf02200ca771a2cd7c16c08b02a4b907227858c6e`).
 El código local distingue trabajador propio, encargado de equipo directo y oficina;
@@ -28,15 +29,17 @@ automática. No se ejecutaron importaciones, deltas, cambios ni pagos del origen
   mutaciones registran actor, motivo, fecha de servidor y versión. Repetir exactamente
   una solicitud devuelve su recibo, sin una segunda actualización o evento.
 - El encargado debe existir activo en la misma empresa y tener perfil Encargado activo.
-  Se rechazan autoasignación y ciclos. Antes de retirar o cambiar el rol de un encargado
-  debe reasignarse su equipo activo.
+  Se rechaza la autoasignación. Retirar un perfil o cambiar su rol modifica el ámbito
+  de consulta al instante; no reasigna automáticamente su equipo.
 - El ámbito de consulta requiere membresía vigente y permiso Horas, cuenta vinculada,
   trabajador activo y perfil habilitado. Trabajador ve su propio perfil; Encargado,
   su equipo directo y él mismo; Oficina ve los perfiles activos de la empresa.
 - La respuesta acotada incluye identificadores, nombres y rol. No entrega correos,
   teléfonos, tarifas, notas laborales, credenciales, facturas ni saldos.
 - Una asignación conserva trabajador y obra. Para reasignar, se retira la anterior y
-  se crea otra. Un trabajador puede trabajar en varias obras; se rechazan periodos
+  se crea otra. Una asignación finalizada no se reabre ni reescribe su inicio.
+  Al finalizar sin fecha explícita se registra el instante del servidor.
+  Un trabajador puede trabajar en varias obras; se rechazan periodos
   superpuestos para el mismo par trabajador/obra. Inicio inclusivo, final exclusivo.
 - El formulario usa días completos en la zona horaria de la empresa. La función
   base admite instantes precisos. Las obras COMPLETADO/CANCELADO no admiten nuevas

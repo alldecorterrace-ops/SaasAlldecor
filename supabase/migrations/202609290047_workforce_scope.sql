@@ -79,12 +79,6 @@ begin
  if (p_version=0 and found) or (p_version>0 and (not found or old.version<>p_version)) then raise exception 'record_conflict' using errcode='PT409';end if;
  if not exists(select 1 from public.workers where company_id=p_company and id=p_worker and (active or not p_enabled)) then raise exception 'worker_unavailable';end if;
  if p_supervisor is not null and (p_supervisor=p_worker or not exists(select 1 from public.workforce_profiles f join public.workers w on w.company_id=f.company_id and w.id=f.id where f.company_id=p_company and f.id=p_supervisor and f.role='FOREMAN' and f.enabled and w.active)) then raise exception 'supervisor_unavailable';end if;
- -- Prevent supervisor cycles, including a foreman supervising another foreman.
- if p_supervisor is not null and exists(with recursive chain(id,supervisor_id,path) as (
-  select f.id,f.supervisor_id,array[f.id] from public.workforce_profiles f where f.company_id=p_company and f.id=p_supervisor
-  union all select f.id,f.supervisor_id,c.path||f.id from public.workforce_profiles f join chain c on f.id=c.supervisor_id where f.company_id=p_company and not f.id=any(c.path)
- ) select 1 from chain where id=p_worker or supervisor_id=p_worker) then raise exception 'supervisor_cycle';end if;
- if (p_role<>'FOREMAN' or not p_enabled) and exists(select 1 from public.workforce_profiles where company_id=p_company and supervisor_id=p_worker and enabled) then raise exception 'supervisor_has_team';end if;
  if p_version=0 then
   insert into public.workforce_profiles(id,company_id,role,supervisor_id,enabled,reason,created_by,updated_by) values(p_worker,p_company,p_role,p_supervisor,p_enabled,trim(p_reason),auth.uid(),auth.uid());
  else
@@ -99,6 +93,7 @@ declare old public.workforce_assignments;receipt app_private.workforce_admin_req
 begin
  if not app_private.is_manager(p_company) then raise exception 'manager_required' using errcode='42501';end if;
  if p_request is null or p_id is null or p_version is null or p_version<0 or p_worker is null or p_project is null or p_start is null or not isfinite(p_start) or (p_end is not null and (not isfinite(p_end) or p_end<=p_start)) or p_active is null or p_reason is null or length(trim(p_reason)) not between 5 and 1000 then raise exception 'invalid_assignment';end if;
+ if p_version=0 and not p_active then raise exception 'invalid_assignment';end if;
  payload:=jsonb_build_object('operation','assignment','id',p_id,'version',p_version,'worker',p_worker,'project',p_project,'start',p_start,'end',p_end,'active',p_active,'reason',trim(p_reason));
  perform pg_advisory_xact_lock(hashtextextended(p_company::text||':workforce-admin',0));
  select * into receipt from app_private.workforce_admin_requests where company_id=p_company and actor_id=auth.uid() and request_id=p_request;
@@ -106,7 +101,12 @@ begin
  select * into old from public.workforce_assignments where company_id=p_company and id=p_id for update;
  if (p_version=0 and found) or (p_version>0 and (not found or old.version<>p_version)) then raise exception 'record_conflict' using errcode='PT409';end if;
  -- An existing assignment's identity is immutable. End/revoke it and create another.
- if p_version>0 and (p_worker,p_project) is distinct from (old.worker_id,old.project_id) then raise exception 'assignment_identity_locked';end if;
+ if p_version>0 then
+  if (p_worker,p_project,p_start) is distinct from (old.worker_id,old.project_id,old.starts_at) then raise exception 'assignment_identity_locked';end if;
+  if p_active or not old.active then raise exception 'assignment_closed';end if;
+  p_end:=coalesce(p_end,now());
+  if p_end<=old.starts_at then raise exception 'invalid_assignment';end if;
+ end if;
  if not exists(select 1 from public.workers where company_id=p_company and id=p_worker) or not exists(select 1 from public.projects where company_id=p_company and id=p_project) then raise exception 'assignment_unavailable';end if;
  if p_active and (not exists(select 1 from public.workers w join public.workforce_profiles f on f.company_id=w.company_id and f.id=w.id where w.company_id=p_company and w.id=p_worker and w.active and f.enabled) or not exists(select 1 from public.projects where company_id=p_company and id=p_project and status not in ('COMPLETADO','CANCELADO'))) then raise exception 'assignment_unavailable';end if;
  if p_active and exists(select 1 from public.workforce_assignments where company_id=p_company and worker_id=p_worker and project_id=p_project and id<>p_id and active and starts_at<coalesce(p_end,'infinity') and coalesce(ends_at,'infinity')>p_start) then raise exception 'assignment_overlap';end if;
@@ -150,12 +150,17 @@ $$;
 -- Calendar-day form uses the company's timezone; the core also supports exact instants.
 create function public.save_workforce_assignment_days(p_company uuid,p_request uuid,p_id uuid,p_version integer,p_worker uuid,p_project uuid,p_start date,p_end date,p_active boolean,p_reason text) returns uuid
 language plpgsql security definer set search_path='' as $$
-declare tz text;
+declare tz text;exact_start timestamptz;
 begin
  if not app_private.is_manager(p_company) then raise exception 'manager_required' using errcode='42501';end if;
  select timezone into tz from public.companies where id=p_company;
  if p_start is null or not isfinite(p_start) or (p_end is not null and (not isfinite(p_end) or p_end<=p_start)) then raise exception 'invalid_assignment';end if;
- return public.save_workforce_assignment(p_company,p_request,p_id,p_version,p_worker,p_project,p_start::timestamp at time zone tz,p_end::timestamp at time zone tz,p_active,p_reason);
+ exact_start:=p_start::timestamp at time zone tz;
+ if p_version>0 then
+  select starts_at into exact_start from public.workforce_assignments where company_id=p_company and id=p_id;
+  if exact_start is null then raise exception 'record_conflict' using errcode='PT409';end if;
+ end if;
+ return public.save_workforce_assignment(p_company,p_request,p_id,p_version,p_worker,p_project,exact_start,p_end::timestamp at time zone tz,p_active,p_reason);
 end;$$;
 revoke all on function public.save_workforce_assignment_days(uuid,uuid,uuid,integer,uuid,uuid,date,date,boolean,text) from public,anon;
 grant execute on function public.save_workforce_assignment_days(uuid,uuid,uuid,integer,uuid,uuid,date,date,boolean,text) to authenticated;

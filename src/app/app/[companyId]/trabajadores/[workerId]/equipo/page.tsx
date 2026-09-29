@@ -236,47 +236,42 @@ export default async function WorkerTeam({
               {row.active ? "Activa" : "Retirada"} · {date(row.starts_at)} →{" "}
               {row.ends_at ? date(row.ends_at) : "Sin fecha final"}
             </p>
-            <WorkforceForm
-              key={`${row.id}:${row.version}`}
-              companyId={companyId}
-              operation="assignment"
-              label="Guardar cambios de asignación"
-            >
-              <input type="hidden" name="id" value={row.id} />
-              <input type="hidden" name="request" value={randomUUID()} />
-              <input type="hidden" name="version" value={row.version} />
-              <input type="hidden" name="worker_id" value={workerId} />
-              <input type="hidden" name="project_id" value={row.project_id} />
-              <label className="field">
-                Desde
-                <Input
-                  type="date"
-                  name="starts_at"
-                  defaultValue={date(row.starts_at)}
-                  required
-                />
-              </label>
-              <label className="field">
-                Hasta (sin incluir)
-                <Input
-                  type="date"
-                  name="ends_at"
-                  defaultValue={date(row.ends_at)}
-                />
-              </label>
-              <label className="flex items-center gap-2">
+            {row.active && (
+              <WorkforceForm
+                key={`${row.id}:${row.version}`}
+                companyId={companyId}
+                operation="assignment"
+                label="Finalizar asignación"
+              >
+                <input type="hidden" name="id" value={row.id} />
+                <input type="hidden" name="request" value={randomUUID()} />
+                <input type="hidden" name="version" value={row.version} />
+                <input type="hidden" name="worker_id" value={workerId} />
+                <input type="hidden" name="project_id" value={row.project_id} />
                 <input
-                  type="checkbox"
-                  name="active"
-                  defaultChecked={row.active}
+                  type="hidden"
+                  name="starts_at"
+                  value={date(row.starts_at)}
                 />
-                Asignación activa
-              </label>
-              <label className="field">
-                Motivo del cambio
-                <Input name="reason" minLength={5} maxLength={1000} required />
-              </label>
-            </WorkforceForm>
+                <label className="field">
+                  Fecha final (vacío: ahora)
+                  <Input type="date" name="ends_at" />
+                </label>
+                <label className="field">
+                  Motivo de finalización
+                  <Input
+                    name="reason"
+                    minLength={5}
+                    maxLength={1000}
+                    required
+                  />
+                </label>
+                <p className="text-sm md:col-span-2">
+                  Finalizar retira la asignación. Su inicio e historial se
+                  conservan; para otro periodo crea una nueva.
+                </p>
+              </WorkforceForm>
+            )}
             <Link
               className="underline text-sm inline-block mt-4"
               href={`${base}/historial/workforce_assignments/${row.id}`}

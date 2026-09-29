@@ -57,15 +57,13 @@ export function workforceError(error: { message: string }) {
       "Solo un administrador puede cambiar el equipo y las asignaciones.",
     supervisor_unavailable:
       "Elige un encargado activo de esta empresa. Nadie puede ser su propio encargado.",
-    supervisor_cycle:
-      "La relación de encargados forma un ciclo. Revisa el equipo.",
-    supervisor_has_team:
-      "Reasigna primero el equipo de este encargado antes de retirarlo o cambiar su rol.",
     worker_unavailable: "El trabajador ya no está disponible. Reabre la ficha.",
     assignment_unavailable:
       "Comprueba que trabajador, perfil de equipo y obra estén activos y pertenezcan a esta empresa.",
     assignment_identity_locked:
-      "Conserva el trabajador y la obra. Para cambiarlos, retira esta asignación y crea otra.",
+      "Conserva trabajador, obra e inicio. Para un nuevo periodo, finaliza esta asignación y crea otra.",
+    assignment_closed:
+      "Esta asignación ya terminó o requiere finalizarse. Crea otra para un nuevo periodo.",
     assignment_overlap:
       "Ya existe una asignación activa de este trabajador a esta obra durante esas fechas.",
     record_conflict:

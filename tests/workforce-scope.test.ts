@@ -249,16 +249,18 @@ test("Workforce profiles and assignments: explicit scope, dates, retries, confli
         await assert.rejects(configure(worker.worker, 0), /record_conflict/);
         await configure(other.worker, 0, "WORKER", foreman2.worker);
         await configure(office.worker, 0, "OFFICE");
-        await assert.rejects(
-          configure(foreman.worker, 1, "WORKER"),
-          /supervisor_has_team/,
+        await configure(foreman.worker, 1, "WORKER");
+        await as(foreman.user);
+        assert.deepEqual(
+          (await scope()).team.map((w) => w.id),
+          [foreman.worker],
         );
-        await configure(foreman2.worker, 1, "FOREMAN", foreman.worker);
+        await as(owner);
         await assert.rejects(
-          configure(foreman.worker, 1, "FOREMAN", foreman2.worker),
-          /supervisor_cycle/,
+          configure(office.worker, 1, "OFFICE", foreman.worker),
+          /supervisor_unavailable/,
         );
-        await configure(foreman2.worker, 2, "FOREMAN");
+        await configure(foreman.worker, 2, "FOREMAN");
       },
     );
     await t.test(
@@ -350,7 +352,11 @@ test("Workforce profiles and assignments: explicit scope, dates, retries, confli
         await as(worker.user);
         assert.deepEqual((await scope()).projects, []);
         await as(owner);
-        await assign(id, worker.worker, projects[0], 2, true);
+        await assert.rejects(
+          assign(id, worker.worker, projects[0], 2, true),
+          /assignment_closed/,
+        );
+        await assign(randomUUID(), worker.worker, projects[0]);
         await as(worker.user);
         assert.equal((await scope()).projects.length, 1);
       },
