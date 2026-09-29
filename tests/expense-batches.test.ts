@@ -95,7 +95,7 @@ test("atomic expense batches preserve payer semantics and are replay safe", asyn
       [a],
     );
     const rows = [
-        { ...row(), worker_id: foreign },
+        row(),
         { ...row("EFECTIVO_EMPRESA"), method: "EFECTIVO" },
         { ...row("TRABAJADOR"), worker_id: worker },
       ],
@@ -368,6 +368,128 @@ test("atomic expense batches preserve payer semantics and are replay safe", asyn
           rows.map((r) => r.id),
         );
         assert.equal(await count(), 3);
+      },
+    );
+    await t.test(
+      "company-paid expenses preserve optional worker without a reimbursement and reject foreign or unavailable workers",
+      async () => {
+        await as(owner);
+        const optionalRows = [
+            { ...row(), worker_id: worker },
+            { ...row("EFECTIVO_EMPRESA"), worker_id: worker },
+          ],
+          optionalBatch = randomUUID();
+        await save(optionalRows, optionalBatch);
+        const selected = await db.query<{
+          worker_id: string;
+          reimbursement_status: string;
+        }>(
+          "select worker_id,reimbursement_status from public.expenses where id=any($1::uuid[]) order by id",
+          [optionalRows.map((r) => r.id)],
+        );
+        assert.equal(selected.rows.length, 2);
+        for (const saved of selected.rows)
+          assert.deepEqual(saved, {
+            worker_id: worker,
+            reimbursement_status: "NO_APLICA",
+          });
+        const beforeReplay = await footprint();
+        await save(optionalRows, optionalBatch);
+        assert.equal(await footprint(), beforeReplay);
+        await assert.rejects(
+          save([row(), { ...row(), worker_id: foreign }]),
+          /worker_unavailable/,
+        );
+        assert.equal(
+          await footprint(),
+          beforeReplay,
+          "invalid second row must not persist the first row",
+        );
+        const single = optionalRows[0];
+        await db.query("select public.save_expense($1,$2,1,$3)", [
+          a,
+          single.id,
+          JSON.stringify({
+            ...single,
+            payer: "TRABAJADOR",
+            status: "APROBADO",
+            reimbursement_status: "NO_APLICA",
+            decision_note: "",
+          }),
+        ]);
+        assert.deepEqual(
+          (
+            await db.query(
+              "select worker_id,payer,reimbursement_status,status,amount::text from public.expenses where id=$1",
+              [single.id],
+            )
+          ).rows[0],
+          {
+            worker_id: worker,
+            payer: "TRABAJADOR",
+            reimbursement_status: "PENDIENTE",
+            status: "PENDIENTE",
+            amount: "10.01",
+          },
+        );
+        await db.query("select public.save_expense($1,$2,2,$3)", [
+          a,
+          single.id,
+          JSON.stringify({
+            ...single,
+            status: "PENDIENTE",
+            reimbursement_status: "PENDIENTE",
+            decision_note: "",
+          }),
+        ]);
+        assert.deepEqual(
+          (
+            await db.query(
+              "select worker_id,payer,reimbursement_status,amount::text from public.expenses where id=$1",
+              [single.id],
+            )
+          ).rows[0],
+          {
+            worker_id: worker,
+            payer: "EMPRESA",
+            reimbursement_status: "NO_APLICA",
+            amount: "10.01",
+          },
+        );
+        await db.exec("reset role");
+        await db.query("update public.workers set active=false where id=$1", [
+          worker,
+        ]);
+        await as(owner);
+        await assert.rejects(
+          save([{ ...row("EFECTIVO_EMPRESA"), worker_id: worker }]),
+          /worker_unavailable/,
+        );
+        await db.exec("reset role");
+        await db.query("update public.workers set active=true where id=$1", [
+          worker,
+        ]);
+        await db.query(
+          "update public.memberships set permissions=$1 where company_id=$2 and user_id=$3",
+          [JSON.stringify({ gastos: ["read", "write"] }), a, staff],
+        );
+        await as(staff);
+        const denied = {
+          ...row(),
+          worker_id: worker,
+          status: "PENDIENTE",
+          reimbursement_status: "NO_APLICA",
+          decision_note: "",
+        };
+        await assert.rejects(
+          db.query("select public.save_expense($1,$2,0,$3)", [
+            a,
+            denied.id,
+            JSON.stringify(denied),
+          ]),
+          /worker_unavailable/,
+        );
+        await as(owner);
       },
     );
   } finally {

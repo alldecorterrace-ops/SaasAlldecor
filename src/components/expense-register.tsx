@@ -139,8 +139,16 @@ export async function ExpenseRegister({
             name="q"
             defaultValue={filters.q}
             maxLength={100}
-            placeholder="Proveedor, descripción o documento"
+            placeholder="Fecha, categoría, documento o relación"
+            aria-describedby="expense-search-help"
           />
+          <span
+            id="expense-search-help"
+            className="text-xs text-muted-foreground"
+          >
+            Busca también por proveedor, descripción, cliente, proyecto y
+            trabajador según tus permisos.
+          </span>
         </label>
         <label className="field">
           Estado

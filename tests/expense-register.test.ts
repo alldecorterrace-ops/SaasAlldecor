@@ -211,6 +211,68 @@ test("expense register: complete filtered totals, export, tenant isolation and r
       },
     );
     await t.test(
+      "ADT search covers date/category and permission-scoped related names without changing overview",
+      async () => {
+        const overview = (await read()).overview;
+        for (const [q, count] of [
+          ["2026-09-30", 1],
+          ["2026-09-29 Materiales", 21],
+          ["Oficina", 1],
+          ['Peña, "QA"', 22],
+          ["Proyecto QA", 22],
+          ["QA WORKER", 1],
+        ] as const) {
+          const result = await read({ q }, 1, true);
+          assert.equal(result.count, count, q);
+          assert.equal(result.rows.length, count, q);
+          assert.deepEqual(result.overview, overview);
+          assert.equal(
+            (expenseCsv(result).match(/"1.01"/g) || []).length,
+            count,
+          );
+        }
+        assert.equal(
+          (await read({ q: "QA worker", status: "TODOS" })).count,
+          2,
+        );
+        assert.equal(
+          (await read({ q: "QA worker", category: "Oficina" })).count,
+          0,
+        );
+        await grant({ gastos: ["read"] });
+        for (const q of ['Peña, "QA"', "Proyecto QA", "QA worker"])
+          assert.equal(
+            (await read({ q }, 1, true)).count,
+            0,
+            "hidden identity must not be searchable: " + q,
+          );
+        assert.equal((await read({ q: "Oficina" })).count, 1);
+        await grant({ gastos: ["read"], "fin-proyectos": ["read"] });
+        assert.equal((await read({ q: "Proyecto QA" })).count, 22);
+        assert.equal((await read({ q: 'Peña, "QA"' })).count, 0);
+        await grant({
+          gastos: ["read"],
+          "fin-proyectos": ["read"],
+          clientes: ["read"],
+          trabajadores: ["read"],
+        });
+        assert.equal((await read({ q: 'Peña, "QA"' })).count, 22);
+        assert.equal((await read({ q: "QA worker" })).count, 1);
+        await grant({ gastos: ["read"] });
+        assert.equal(
+          (await read({ q: "QA worker" }, 1, true)).count,
+          0,
+          "revocation must immediately apply to export",
+        );
+        await assert.rejects(
+          read({ q: "Proyecto QA" }, 1, true, b),
+          /permission_denied/,
+        );
+        await as(owner);
+        assert.deepEqual(await fingerprint(), before);
+      },
+    );
+    await t.test(
       "CSV exports whole selection with cents, Unicode, quotes, line breaks and formula defense",
       async () => {
         const result = await read({}, 1, true);

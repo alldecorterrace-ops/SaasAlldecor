@@ -151,7 +151,8 @@ export function ExpenseBatchForm({
       />
       <p>
         Si una fila tiene un error, no se guarda ninguna. El cliente se obtiene
-        del proyecto. El pagador trabajador requiere una ficha de trabajador; su
+        del proyecto. Puedes asociar un trabajador aunque pague la empresa, sin
+        generar reembolso. Si paga el trabajador, su ficha es obligatoria y el
         reembolso queda pendiente.
       </p>
       <p className="text-sm text-muted-foreground">
@@ -250,14 +251,7 @@ export function ExpenseBatchForm({
                 <select
                   name={`${row.id}.payer`}
                   value={row.payer}
-                  onChange={(e) => {
-                    const payer = e.target.value;
-                    setRows((old) =>
-                      old.map((r) =>
-                        r.id === row.id ? { ...r, payer, worker: null } : r,
-                      ),
-                    );
-                  }}
+                  onChange={(e) => update(row.id, "payer", e.target.value)}
                 >
                   {Object.entries(expensePayers).map(([v, label]) => (
                     <option key={v} value={v}>
@@ -266,19 +260,20 @@ export function ExpenseBatchForm({
                   ))}
                 </select>
               </label>
-              {row.payer === "TRABAJADOR" ? (
-                <EntitySelect
-                  companyId={companyId}
-                  kind="workers"
-                  name={`${row.id}.worker_id`}
-                  label="Trabajador"
-                  initial={row.worker}
-                  onValueChange={(choice) => update(row.id, "worker", choice)}
-                  canSearch={workers}
-                />
-              ) : (
-                <input type="hidden" name={`${row.id}.worker_id`} value="" />
-              )}
+              <EntitySelect
+                companyId={companyId}
+                kind="workers"
+                name={`${row.id}.worker_id`}
+                label="Trabajador"
+                initial={row.worker}
+                onValueChange={(choice) => update(row.id, "worker", choice)}
+                canSearch={workers}
+                emptyLabel={
+                  row.payer === "TRABAJADOR"
+                    ? "Selecciona el trabajador que pagó"
+                    : "Sin trabajador (opcional)"
+                }
+              />
               <label className="field">
                 Método
                 <select
