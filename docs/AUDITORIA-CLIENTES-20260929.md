@@ -44,6 +44,7 @@ revocación, suspensión, módulos restringidos, documentos vinculados y decimal
 Prueba de HTML para enlaces autorizados, escape de nombres y centavos.
 Todo usa datos sintéticos; no requiere una migración nueva de esquema. `npm run check` completo: lint, TypeScript, 356 pruebas y compilación aprobados en local.
 
-La publicación y el recorrido autenticado en staging están pendientes al preparar
-este documento. Los resultados finales se añadirán tras verificar la entrega.
+Entrega inicial 1ad4cbb publicada y recorrida en staging. CI de aplicación, concurrencia y recuperación sintética aprobados. Se comprobaron cinco estimados, una factura de USD 200.50 con saldo USD 100.25 y su proyecto, apertura desde el expediente y reapertura. En ancho emulado de 390 px, la página no desborda; la tabla permite desplazar las columnas hasta Saldo. El usuario restringido solo ve Estimados incluso solicitando la sección Facturas por URL. Un cliente de otra empresa devuelve HTTP 404. No se cambiaron roles ni registros en estas verificaciones.
+
+Se detectó un rótulo fijo de 23 en Dashboard; la corrección usa la longitud del catálogo activo y requiere publicación final. Menú y tarjetas ya excluyen los dos configuradores.
 Producción y datos de negocio no forman parte de esta publicación.

@@ -112,7 +112,7 @@ export default async function Dashboard({
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-semibold">Avance de la nueva plataforma</h2>
           <span className="text-xs text-muted-foreground">
-            23 módulos en alcance
+            {modules.length} módulos en alcance
           </span>
         </div>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
