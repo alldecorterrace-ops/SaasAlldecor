@@ -127,12 +127,12 @@ export function expenseReceiptError(error: unknown) {
       ? String(error.message)
       : "";
   if (message.includes("duplicate_expense_receipt"))
-    return "Esta imagen ya estÃ¡ adjunta a otro gasto activo.";
+    return "Esta imagen ya está adjunta a otro gasto activo.";
   if (message.includes("invalid_receipt"))
     return "El comprobante debe ser una imagen JPG, PNG o WebP de entre 400 bytes y 8 MiB.";
   if (message.includes("expense_batch_conflict"))
-    return "Este lote ya se guardÃ³. Abre de nuevo su resultado.";
+    return "Este lote ya se guardó. Abre de nuevo su resultado.";
   if (message.includes("receipt_upload_limit"))
-    return "Este lote alcanzÃ³ el lÃ­mite de correcciones de comprobantes. Revisa los archivos preparados antes de continuar.";
-  return "No se pudo verificar el comprobante. Conserva el archivo y reintenta; no se guardÃ³ el lote.";
+    return "Este lote alcanzó el límite de correcciones de comprobantes. Revisa los archivos preparados antes de continuar.";
+  return "No se pudo verificar el comprobante. Conserva el archivo y reintenta; no se guardó el lote.";
 }

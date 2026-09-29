@@ -95,11 +95,11 @@ export function expenseCsv(data: ExpenseRegisterResult) {
       "Proyecto",
       "Proveedor",
       "Documento",
-      "CategorÃ­a",
-      "DescripciÃ³n",
+      "Categoría",
+      "Descripción",
       "Importe USD",
       "Estado",
-      "MÃ©todo",
+      "Método",
       "Reembolso",
       "Pagado por",
       "Trabajador",
@@ -120,7 +120,7 @@ export function expenseCsv(data: ExpenseRegisterResult) {
       r.reimbursement_status,
       r.payer ?? "Sin registrar",
       r.worker_name ?? "",
-      r.has_receipt ? "SÃ­" : "No",
+      r.has_receipt ? "Sí" : "No",
     ]),
   ];
   return (
@@ -150,7 +150,7 @@ export async function exportExpenses(
     "Cache-Control": "private, no-store",
     "X-Content-Type-Options": "nosniff",
   };
-  const fail = (status: number, error = "ExportaciÃ³n no disponible.") =>
+  const fail = (status: number, error = "Exportación no disponible.") =>
     Response.json({ error }, { status, headers });
   if (!uuid.safeParse(companyId).success) return fail(404);
   try {
@@ -170,7 +170,7 @@ export async function exportExpenses(
       return error.code === "54000"
         ? fail(
             422,
-            "Hay mÃ¡s de 5.000 gastos. Reduce el intervalo o aÃ±ade filtros para exportar.",
+            "Hay más de 5.000 gastos. Reduce el intervalo o añade filtros para exportar.",
           )
         : fail(
             error.code === "42501" ? 403 : error.code === "22023" ? 400 : 503,
