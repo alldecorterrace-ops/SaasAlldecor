@@ -139,7 +139,7 @@ export async function ExpenseRegister({
             name="q"
             defaultValue={filters.q}
             maxLength={100}
-            placeholder="Proveedor, descripciÃ³n o documento"
+            placeholder="Proveedor, descripción o documento"
           />
         </label>
         <label className="field">
@@ -153,13 +153,25 @@ export async function ExpenseRegister({
           </select>
         </label>
         <label className="field">
-          CategorÃ­a exacta
+          Categoría exacta
           <Input
             name="category"
             defaultValue={filters.category}
             maxLength={64}
-            placeholder="Todas las categorÃ­as"
+            placeholder="Todas las categorías"
           />
+        </label>
+        <label className="field">
+          Pagado por
+          <select name="payer" defaultValue={filters.payer}>
+            <option value="">Todos los pagadores</option>
+            {Object.entries(expensePayers).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+            <option value="SIN_REGISTRAR">Sin registrar</option>
+          </select>
         </label>
         <label className="field">
           Desde
@@ -219,7 +231,7 @@ export async function ExpenseRegister({
         anulados; no equivale a gastos aprobados ni pagados. El CSV conserva los
         centavos.
         {result.count > 5000 &&
-          " Hay mÃ¡s de 5.000 resultados: reduce el intervalo o aÃ±ade filtros para exportar."}
+          " Hay más de 5.000 resultados: reduce el intervalo o añade filtros para exportar."}
       </p>
       <div className="space-y-3">
         {result.rows.length === 0 ? (
@@ -236,14 +248,14 @@ export async function ExpenseRegister({
                     {row.vendor || "Gasto sin proveedor"}
                   </Link>
                   <p className="text-sm">
-                    {row.date} Â· {row.category} Â· {registerStates[row.status]}
+                    {row.date} · {row.category} · {registerStates[row.status]}
                   </p>
                 </div>
                 <strong className="tabular-nums">{usd(row.amount)}</strong>
               </div>
               <p className="mt-2 break-words text-sm">
-                {row.description || "Sin descripciÃ³n"}
-                {row.document_number && ` Â· Documento: ${row.document_number}`}
+                {row.description || "Sin descripción"}
+                {row.document_number && ` · Documento: ${row.document_number}`}
               </p>
               <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
                 {row.customer_id && (
@@ -266,10 +278,10 @@ export async function ExpenseRegister({
                   {row.payer
                     ? expensePayers[row.payer]
                     : "Pagador sin registrar"}
-                  {row.worker_name && ` Â· ${row.worker_name}`}
+                  {row.worker_name && ` · ${row.worker_name}`}
                 </span>
                 <span>
-                  {row.method} Â·{" "}
+                  {row.method} ·{" "}
                   {row.has_receipt ? "Con comprobante" : "Sin comprobante"}
                 </span>
               </div>
