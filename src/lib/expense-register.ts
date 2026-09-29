@@ -24,6 +24,9 @@ export const expenseFiltersSchema = z
     from: dateFilter,
     to: dateFilter,
     category: z.string().trim().max(64).default(""),
+    payer: z
+      .enum(["", "EMPRESA", "EFECTIVO_EMPRESA", "TRABAJADOR", "SIN_REGISTRAR"])
+      .default(""),
     project: idFilter,
     customer: idFilter,
   })
@@ -33,6 +36,14 @@ export const expenseFiltersSchema = z
 export type ExpenseFilters = z.infer<typeof expenseFiltersSchema>;
 const money = z.string().regex(/^\d+\.\d{2}$/);
 export const expenseRegisterSchema = z.object({
+  overview: z
+    .object({
+      month: z.string().regex(/^\d{4}-\d{2}$/),
+      monthly: money,
+      active: money,
+      reimbursements: money,
+    })
+    .optional(),
   count: z.number().int().nonnegative(),
   page: z.number().int().positive(),
   total: money,
@@ -84,11 +95,11 @@ export function expenseCsv(data: ExpenseRegisterResult) {
       "Proyecto",
       "Proveedor",
       "Documento",
-      "Categoría",
-      "Descripción",
+      "CategorÃ­a",
+      "DescripciÃ³n",
       "Importe USD",
       "Estado",
-      "Método",
+      "MÃ©todo",
       "Reembolso",
       "Pagado por",
       "Trabajador",
@@ -109,7 +120,7 @@ export function expenseCsv(data: ExpenseRegisterResult) {
       r.reimbursement_status,
       r.payer ?? "Sin registrar",
       r.worker_name ?? "",
-      r.has_receipt ? "Sí" : "No",
+      r.has_receipt ? "SÃ­" : "No",
     ]),
   ];
   return (
@@ -139,7 +150,7 @@ export async function exportExpenses(
     "Cache-Control": "private, no-store",
     "X-Content-Type-Options": "nosniff",
   };
-  const fail = (status: number, error = "Exportación no disponible.") =>
+  const fail = (status: number, error = "ExportaciÃ³n no disponible.") =>
     Response.json({ error }, { status, headers });
   if (!uuid.safeParse(companyId).success) return fail(404);
   try {
@@ -159,7 +170,7 @@ export async function exportExpenses(
       return error.code === "54000"
         ? fail(
             422,
-            "Hay más de 5.000 gastos. Reduce el intervalo o añade filtros para exportar.",
+            "Hay mÃ¡s de 5.000 gastos. Reduce el intervalo o aÃ±ade filtros para exportar.",
           )
         : fail(
             error.code === "42501" ? 403 : error.code === "22023" ? 400 : 503,
