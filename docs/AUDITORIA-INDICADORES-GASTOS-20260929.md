@@ -47,11 +47,12 @@ la carga. La fuente publicada observada el 29 de septiembre tiene SHA-256
 Mantiene las definiciones de indicadores y pagador. Incorpora además Labor automática
 como origen, costo pendiente de conciliar separado del pago, elección directa de proyecto
 y trabajador opcional cuando paga la empresa. La restricción anterior del SaaS que
-borra esa relación es una diferencia abierta que debe corregirse.
+borraba esa relación se corrigió en el esquema 044 y se comprobó en staging;
+la búsqueda ampliada corresponde al esquema 045. [Evidencia posterior](AUDITORIA-RELACIONES-GASTOS-20260929.md).
 No se realizaron escrituras, envíos ni importaciones desde ADT.
 
 Sigue pendiente integrar Campo/Workforce y labor automática, filtro de origen,
-reversión contable, trabajador asociado opcional y búsqueda por fecha/categoría/relaciones,
+reversión contable,
 además del contraste completo de acciones operativas de ADT.
 No se presenta esta entrega como cierre de todo Gastos ni de los 21 módulos.
 Producción, importaciones y traspaso operativo no se activan.

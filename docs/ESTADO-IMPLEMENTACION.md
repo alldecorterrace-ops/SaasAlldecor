@@ -1,19 +1,24 @@
 # Estado de implementación — 22 de septiembre de 2026
 
 
-**Última entrega de staging, 29 de septiembre: 0545710, esquema 043.**
-Recibos individuales hasta 8 MiB con huellas compartidas con los lotes, confirmación
-idempotente, PDF conservado y reintento sin otra modificación financiera. Indicadores
-mensuales/globales y filtro de pagador publicados. 423 pruebas y CI aprobados;
-interfaz, descarga binaria, CSV, móvil emulado, restricciones, diez huellas previas
-y retorno compatible comprobados.
-[Evidencia de recibos](AUDITORIA-RECIBOS-INDIVIDUALES-20260929.md) e
-[indicadores y diferencias](AUDITORIA-INDICADORES-GASTOS-20260929.md).
-La sesión de ADT ya permite contrastar Gastos. Se identificaron diferencias vigentes
-en asociación opcional de trabajador, búsqueda, origen Labor automática y Workforce.
-El resto del [alcance activo de 21 módulos](CIERRE-FUNCIONAL.md) sigue abierto.
-No se acredita paridad completa ni recuperación operativa. Producción, nuevas
-migraciones de datos ADT y traspaso siguen fuera de esta entrega.
+**Última entrega de staging, 29 de septiembre: 604fbe5, esquema 045.**
+Trabajador asociado opcional con pago de empresa, sin generar reembolso;
+búsqueda por fecha, categoría y relaciones autorizadas. 425 pruebas y CI aprobados.
+Sesión real: rechazo sin filas parciales, corrección, reapertura, CSV, móvil emulado,
+usuario restringido y once huellas previas conservadas.
+[Evidencia y límites](AUDITORIA-RELACIONES-GASTOS-20260929.md).
+Mensaje de validación en español probado en la entrega final; retorno real a
+0545710 y regreso a 604fbe5 comprobados con los nuevos registros conservados.
+Versión/proceso verificados y cinco comprobaciones públicas HTTP 200.
+
+Se conserva la entrega anterior de recibos, indicadores y pagador 0545710.
+Siguen abiertos origen Labor automática, integración Campo/Workforce, reversión
+contable y el resto del [alcance activo de 21 módulos](CIERRE-FUNCIONAL.md).
+El [contrato vigente de Workforce](PARIDAD-GASTOS-WORKFORCE-20260929.md) distingue
+revisión IA, confirmación humana, aprobación, reembolso y archivo recuperable.
+No se acredita paridad completa ni recuperación operativa. Nuevas migraciones
+de datos ADT y traspaso siguen suspendidos. Producción SaaS no se ha desplegado.
+Se conservaron aaf268c y su archivo comprimido por decisión del propietario.
 
 
 Prioridad actualizada el 25 de septiembre: verificar y completar equivalencia
