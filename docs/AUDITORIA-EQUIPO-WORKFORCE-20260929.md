@@ -68,13 +68,66 @@ respuesta perdida, carrera de periodos solapados y ocho retiradas repetidas.
 El resultado debe conservar un efecto y evento por comando aceptado.
 
 Comprobación local: lint, tipos, 440 pruebas y compilación completos sin errores.
-Estado de publicación: pendiente de CI y capacidad del hosting.
-No considerar el esquema aplicado ni las pantallas verificadas en staging por este documento.
-La versión activa comprobada sigue siendo `3c567f9`, esquema 046.
+Publicado en staging desde `80adf3d942d9fb51ae890a710dcd7ceefc30e59d`, esquema 047.
+[CI 36626056153](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36626056153)
+completó los tres trabajos: comprobación de aplicación, concurrencia PostgreSQL 17
+(incluido `test-workforce-concurrency.ts`) y recuperación sintética de CI.
+Esta última prueba no acredita la recuperación operativa de producción.
+
+## Evidencia de staging
+
+- Esquema 047 aplicado únicamente a SaasAlldecor-Staging, con comprobación de empresa
+  sintética y rechazo de la empresa de producción en la transacción. Se verificaron
+  RLS en las dos tablas públicas, denegación de lectura anónima y ausencia de permisos
+  INSERT/UPDATE/DELETE directos del rol authenticated. Los recibos privados carecen
+  de esos privilegios; la aplicación los usa exclusivamente mediante funciones.
+- Sesión real del auditor, propietario de una empresa sintética: navegación desde
+  Trabajadores, configuración de un perfil Trabajador sin cuenta vinculada,
+  creación de asignación, recarga, rechazo de un periodo superpuesto conservando
+  campos, finalización sin fecha explícita e historial con autor/motivo/revisiones.
+- Finalización desde móvil emulado de 390 px; anchura de documento y ventana de
+  390 px, sin desbordamiento horizontal. No equivale a un ensayo en teléfono físico.
+- Consulta de equipo y obras como propietario comprobada. Las rutas de configuración
+  ajena y consulta de equipo en la empresa donde el auditor está restringido devuelven
+  «Página no disponible». No se cambiaron membresías ni se vinculó una cuenta nueva.
+- Estado conciliado: un perfil, una asignación finalizada, tres recibos de comandos,
+  un evento de perfil y dos de asignación. El intento superpuesto no creó efectos.
+- Once tablas anteriores conservaron exactamente recuentos y huellas antes del
+  esquema y después de las pruebas/retorno: clientes, estimados, facturas, proyectos,
+  pagos, gastos, trabajadores, registros y adjuntos operativos, lotes y recibos.
+- Compilación independiente con dependencias compartidas sin reinstalarlas, paquete
+  exacto de GitHub verificado y proceso activo apuntando a `80adf3d`.
+- Retorno real `80adf3d → 3c567f9 → 80adf3d`: consulta autenticada de gastos y totales
+  existente, cuatro controles públicos y reapertura de la asignación finalizada.
+  El ensayo de retorno fue de lectura; no afirma cobertura de cada escritura antigua.
+  `3c567f9` queda como retorno para los recorridos comprobados. El esquema 047 permanece.
+- La configuración de producción conservó su huella en cada cambio de staging.
+  No se publicaron cambios en SaaS producción ni se ejecutaron acciones en ADT.
+
+Las sesiones reales de Trabajador, Encargado y Oficina para esta nueva consulta
+siguen pendientes. Sus reglas, revocación e aislamiento están probados en SQL local;
+no se presentan como recorridos de navegador completados.
+
+## Retención autorizada
+
+Se eliminaron únicamente `b69a5c5` y `source-b69a5c5.tar.gz` de
+`/home/alldeco1/saas-staging-releases`, tras la confirmación expresa del propietario.
+Los 449 archivos de código coincidían con GitHub; sin procesos, enlaces entrantes
+ni archivos únicos. Configuración privada idéntica a la activa y diagnósticos vacíos.
+Se liberaron 296.699.792 bytes (283 MiB) y 1.464 entradas: inventario del home
+597.920 → 596.456 antes de construir la nueva entrega. No se creó otro archivo
+permanente por la versión eliminada. Se conservaron `aaf268c`, su comprimido,
+las dependencias `c66e4ec`/`b149bee`, versiones necesarias, datos y producción.
+Después de construir la candidata, el inventario independiente fue de 597.955
+entradas; no es una lectura nueva del contador de cuota de cPanel. No se autorizó
+ni realizó ninguna eliminación adicional. La retención general sigue pendiente.
+
+Capturas, huellas, consultas y resultados detallados permanecen en el archivo
+privado; no se incorporan al repositorio registros privados ni credenciales.
 
 ## Próximo cierre
 
-Verificar las pantallas con perfiles reales de prueba, publicar sin agotar la cuota
-de archivos, y continuar con recibos privados de Campo, revisión humana/IA,
+Completar las sesiones de Trabajador, Encargado y Oficina y continuar con
+recibos privados de Campo, revisión humana/IA,
 doble aprobación, reembolso e incorporación contable sin duplicados. Todo ello
 permanece pendiente; esta base no cierra la paridad de Trabajadores.

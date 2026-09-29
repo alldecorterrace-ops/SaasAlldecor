@@ -1,27 +1,27 @@
 # Estado de implementación — 22 de septiembre de 2026
 
 
-**Última entrega de staging, 29 de septiembre: 3c567f9, esquema 046.**
-Corregido el borrado involuntario del trabajador asociado al guardar una ficha
-individual pagada por empresa/efectivo. La ficha del trabajador enlaza a su registro
-filtrado por identidad, totales completos y CSV; incluidos inactivos para consulta.
-430 pruebas, lint, tipos, compilación y tres trabajos de CI correctos.
-Guardado/reapertura reales de dos gastos sintéticos, campos de negocio conservados,
-consulta de tres gastos, CSV, móvil emulado y acceso restringido comprobados.
-[Evidencia y límites](AUDITORIA-GASTOS-POR-TRABAJADOR-20260929.md).
-Versión/proceso verificados y cinco comprobaciones públicas HTTP 200.
+**Última entrega de staging, 29 de septiembre: 80adf3d, esquema 047.**
+Base de equipo de Workforce publicada: perfiles, encargado directo, asignaciones
+con periodo, finalización e historial. 440 pruebas, lint, tipos, compilación y
+los tres trabajos de CI correctos, incluida concurrencia en PostgreSQL 17.
+Interfaz de propietario probada con datos sintéticos: guardar/reabrir, rechazo de
+solapamiento, finalizar en móvil emulado, historial, consulta y acceso restringido.
+Once tablas previas conservaron recuentos y huellas exactos.
+[Evidencia y límites](AUDITORIA-EQUIPO-WORKFORCE-20260929.md).
 
-La anterior 604fbe5 permanece disponible, con la salvedad documentada del fallo de
-edición individual; no se afirma un nuevo retorno operativo validado.
-Siguen abiertos revisión/aprobación de Workforce, Labor automática, reversión
-contable y el resto del [alcance activo de 21 módulos](CIERRE-FUNCIONAL.md).
-El [contrato de Workforce](PARIDAD-GASTOS-WORKFORCE-20260929.md) distingue IA,
-confirmación humana, aprobación, reembolso y archivo recuperable.
-No se acredita paridad completa ni recuperación operativa. Nuevas migraciones
-de datos ADT y traspaso siguen suspendidos. Producción SaaS no se ha desplegado.
-Se conservaron aaf268c y su archivo comprimido; no se borró ninguna entrega.
-El hosting continúa próximo a su límite de archivos; capacidad y retención constan
-en la auditoría, sin ampliar planes ni contratar servicios.
+Retorno real a 3c567f9 y vuelta a 80adf3d: gastos/totales, disponibilidad y nueva
+asignación preservados. Ensayo de lectura, sin afirmar todas las escrituras.
+Se eliminaron solo b69a5c5 y su comprimido, autorizados expresamente: 283 MiB y
+1.464 entradas liberadas. Se conservaron aaf268c y su archivo, las dependencias
+y las versiones necesarias; no hubo otra eliminación ni contratación.
+
+Siguen pendientes sesiones reales de Trabajador/Encargado/Oficina para esta base,
+recibos y revisión/aprobación de Workforce, reembolso, Labor automática y reversión
+contable, junto al resto del [alcance activo de 21 módulos](CIERRE-FUNCIONAL.md).
+La base nueva no cambia las acciones existentes de Horas/Gastos ni cierra la paridad.
+Nuevas migraciones de datos ADT y traspaso siguen suspendidos. ADT y producción SaaS
+no se modificaron. Recuperación operativa y retención general conservan sus pendientes.
 
 
 Prioridad actualizada el 25 de septiembre: verificar y completar equivalencia
