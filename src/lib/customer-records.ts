@@ -1,4 +1,8 @@
 import {
+  customerPermitsSchema,
+  type CustomerPermitsResult,
+} from "./customer-permits";
+import {
   historyCursor,
   customerHistorySchema,
   type CustomerHistoryResult,
@@ -37,6 +41,8 @@ export const customerRecordSections = [
   },
   { id: "pagos", label: "Pagos", module: "fin-invoices" },
   { id: "gastos", label: "Gastos de proyectos", module: "gastos" },
+  { id: "permisos", label: "Permisos de obra", module: "permisos" },
+  { id: "documentos", label: "Documentos de permisos", module: "permisos" },
   { id: "historial", label: "Historial", module: "clientes" },
 ] as const;
 export type CustomerRecordSection = (typeof customerRecordSections)[number];
@@ -65,6 +71,7 @@ export type CustomerRecordsResult = {
   rows: CustomerRecord[];
   ledger?: CustomerLedgerResult;
   history?: CustomerHistoryResult;
+  permits?: CustomerPermitsResult;
   before?: string | null;
 };
 
@@ -82,7 +89,8 @@ export async function loadCustomerRecords(
   const sections = customerRecordSections.filter(
     (s) =>
       canAccess(member, s.module) &&
-      (s.id !== "gastos" || canAccess(member, "fin-proyectos")),
+      (!["gastos", "permisos", "documentos"].includes(s.id) ||
+        canAccess(member, "fin-proyectos")),
   );
   const section =
     sections.find((s) => s.id === requestedSection) ?? sections[0];
@@ -97,6 +105,33 @@ export async function loadCustomerRecords(
       count: 0,
       rows: [] as CustomerRecord[],
     };
+  if (section.id === "permisos" || section.id === "documentos") {
+    const result = await db.rpc("customer_permits", {
+      p_company: companyId,
+      p_customer: customerId,
+      p_section: section.id,
+      p_page: page,
+    });
+    const parsed = customerPermitsSchema.safeParse(result.data);
+    if (
+      result.error ||
+      !parsed.success ||
+      parsed.data.rows.some(
+        (r) => r.kind !== (section.id === "permisos" ? "permit" : "document"),
+      )
+    )
+      throw new Error(
+        "No se pudieron cargar los permisos o documentos del cliente. Inténtalo de nuevo.",
+      );
+    return {
+      sections,
+      section,
+      page: parsed.data.page,
+      count: parsed.data.count,
+      rows: [],
+      permits: parsed.data,
+    };
+  }
   if (section.id === "historial") {
     const before = historyCursor(requestedBefore);
     const result = await db.rpc("customer_history", {

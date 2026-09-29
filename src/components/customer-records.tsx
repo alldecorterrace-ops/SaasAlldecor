@@ -1,3 +1,4 @@
+import { CustomerPermits } from "./customer-permits";
 import { CustomerHistory } from "./customer-history";
 import Link from "next/link";
 import { CustomerLedger } from "./customer-ledger";
@@ -17,8 +18,17 @@ export function CustomerRecords({
   timezone?: string;
   records: Awaited<ReturnType<typeof loadCustomerRecords>>;
 }) {
-  const { sections, section, rows, count, page, ledger, history, before } =
-    records;
+  const {
+    sections,
+    section,
+    rows,
+    count,
+    page,
+    ledger,
+    history,
+    before,
+    permits,
+  } = records;
   if (!section) return null;
   const path = `/app/${companyId}/clientes/${customerId}`;
   const financial = section.id !== "proyectos";
@@ -57,7 +67,15 @@ export function CustomerRecords({
         ))}
       </nav>
       <h3 className="font-semibold">{section.label}</h3>
-      {history ? (
+      {permits ? (
+        <CustomerPermits
+          companyId={companyId}
+          customerId={customerId}
+          records={permits}
+          documents={section.id === "documentos"}
+          timezone={timezone}
+        />
+      ) : history ? (
         <CustomerHistory
           companyId={companyId}
           customerId={customerId}
