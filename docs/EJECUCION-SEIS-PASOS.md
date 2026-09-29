@@ -1,17 +1,19 @@
 # Ejecución y auditoría de los seis pasos
 
 
-**Última entrega de staging, 29 de septiembre: 4a60de4, esquema 041.**
-Comprobantes dentro de los lotes: 413 pruebas y CI aprobados; imagen repetida
-rechazada sin filas parciales, corrección conservando archivos, carga/descarga
-binaria de 7 MiB, móvil emulado, permisos y retorno compatible comprobados.
-Diez huellas previas conservadas.
-[Evidencia y diferencias pendientes](AUDITORIA-COMPROBANTES-LOTES-20260929.md).
-Continúan pendientes unificar la carga individual/huellas, Campo/Workforce y
-otras acciones del [alcance activo de 21 módulos](CIERRE-FUNCIONAL.md).
-El contraste operativo completo de Gastos en ADT sigue pendiente por el 403
-documentado antes. No se acredita paridad completa ni recuperación operativa.
-Producción, nuevas migraciones de datos ADT y traspaso siguen fuera de esta entrega.
+**Última entrega de staging, 29 de septiembre: 0545710, esquema 043.**
+Recibos individuales hasta 8 MiB con huellas compartidas con los lotes, confirmación
+idempotente, PDF conservado y reintento sin otra modificación financiera. Indicadores
+mensuales/globales y filtro de pagador publicados. 423 pruebas y CI aprobados;
+interfaz, descarga binaria, CSV, móvil emulado, restricciones, diez huellas previas
+y retorno compatible comprobados.
+[Evidencia de recibos](AUDITORIA-RECIBOS-INDIVIDUALES-20260929.md) e
+[indicadores y diferencias](AUDITORIA-INDICADORES-GASTOS-20260929.md).
+La sesión de ADT ya permite contrastar Gastos. Se identificaron diferencias vigentes
+en asociación opcional de trabajador, búsqueda, origen Labor automática y Workforce.
+El resto del [alcance activo de 21 módulos](CIERRE-FUNCIONAL.md) sigue abierto.
+No se acredita paridad completa ni recuperación operativa. Producción, nuevas
+migraciones de datos ADT y traspaso siguen fuera de esta entrega.
 
 
 Fecha de inicio: 18 de septiembre de 2026. Seguimiento actualizado: 29 de septiembre de 2026. Destino: https://app.alldecorpatio.com.
