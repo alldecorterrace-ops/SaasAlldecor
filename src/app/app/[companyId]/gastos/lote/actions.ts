@@ -62,8 +62,22 @@ export async function saveExpenseBatch(
     const parsed = expenseBatchSchema.safeParse(rows);
     if (!parsed.success) {
       const issue = parsed.error.issues[0];
+      const fields: Record<string, string> = {
+        project_id: "el proyecto seleccionado",
+        worker_id:
+          "el trabajador seleccionado; es obligatorio si pagó de su bolsillo",
+        expense_date: "la fecha",
+        category: "la categoría",
+        description: "la descripción",
+        vendor: "el proveedor",
+        document_number: "el número de documento",
+        amount: "el importe (mayor que cero y con hasta dos decimales)",
+        method: "el método de pago",
+        payer: "quién pagó",
+        receipt_id: "el comprobante",
+      };
       return {
-        error: `Fila ${Number(issue.path[0] ?? 0) + 1}: revisa ${String(issue.path[1] ?? "los campos")}. No se guardó ninguna fila.`,
+        error: `Fila ${Number(issue.path[0] ?? 0) + 1}: revisa ${fields[String(issue.path[1])] ?? "los campos de esta fila"}. No se guardó ninguna fila.`,
       };
     }
     for (const [index, row] of parsed.data.entries()) {
