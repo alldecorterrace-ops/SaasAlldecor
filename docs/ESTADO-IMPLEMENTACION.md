@@ -8,7 +8,7 @@ las auditorías recientes y su estado están en [el seguimiento](EJECUCION-SEIS-
 **Alcance vigente desde el 29 de septiembre:** 21 módulos; configuradores y 3D
 excluidos por decisión del propietario. Geometría, despiece y planos automáticos
 no bloquean el cierre. Este documento conserva la evidencia histórica; consultar
-[el alcance activo](CIERRE-FUNCIONAL.md).
+[el alcance activo](CIERRE-FUNCIONAL.md). El expediente comercial de Clientes está publicado en staging 9598d35: [resultados del 29 de septiembre](AUDITORIA-CLIENTES-20260929.md), con 356 pruebas y recorridos autenticados de consulta y permisos.
 
 ## Los 23 módulos originales tienen una primera implementación
 

@@ -27,7 +27,7 @@ se conservan, sin copiar accesos globales del sistema anterior.
 | Actividad | Hay evidencia de restricción de horas; falta matriz de eventos y permisos completa. |
 | Configuración | Invitación y roles por fases probados; falta editor visual, cambios y revocaciones desde UI. |
 | Leads | Alta/conversión sintéticas probadas; completar estados, origen web/manual y comunicaciones actuales. |
-| Clientes | Edición y aislamiento probados; expediente con estimados, facturas y proyectos por cliente en preparación. Consulta por identificador y permisos por módulo. Pendientes documentos, operaciones e historial completo del origen. |
+| Clientes | Edición y aislamiento probados; expediente de estimados, facturas y proyectos publicado y comprobado en staging 9598d35. Consulta por identificador, centavos, enlaces, reapertura, móvil emulado y permisos por módulo/empresa verificados; 356 pruebas. Pendientes pagos/gastos, documentos, operaciones e historial completo del origen. [Evidencia y límites](AUDITORIA-CLIENTES-20260929.md). |
 | Productos | Alta, edición y captura de precio probadas; cerrar opciones, especificaciones e integración con estimados comerciales. |
 | Precios | Historial y recálculo explícito probados; completar catálogo, costos y márgenes de ADT. |
 | Estimados web | Completar formulario, estados, avisos y relación con lead/diseño actuales. |
