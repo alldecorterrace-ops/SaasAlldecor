@@ -28,8 +28,9 @@ por bloqueos. Un reintento no repite efectos. No se escribe un pago ni copia con
 ## Diferencias y pendientes abiertos
 
 Esta entrega no reemplaza la foto, no implementa IA ni su confirmación humana
-posterior y no habilita reembolsos. La corrección de DEVUELTO/NEEDS_CORRECTION sigue
-pendiente: el estado REJECTED existente no se equipara automáticamente con ellos.
+posterior y no habilita reembolsos. La ampliación posterior 053/054 cubre
+DEVUELTO/NEEDS_CORRECTION con evidencia en [REENVIO-WORKFORCE-20260930.md](REENVIO-WORKFORCE-20260930.md);
+REJECTED no se equipara con ellos. La IA y su productor de devoluciones siguen pendientes.
 La interfaz conserva las categorías de Workforce; queda el contraste de etiquetas
 libres administrativas. Obra general conserva la referencia original para
 trazabilidad. La comprobación de versión vigente es estricta; futuras actualizaciones

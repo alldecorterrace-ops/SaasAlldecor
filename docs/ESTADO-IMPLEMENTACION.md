@@ -1,6 +1,18 @@
 # Estado de implementación — 30 de septiembre de 2026
 
-**Entrega del 30 de septiembre: 6a2d9be, esquema 052, solo staging.**
+**Entrega del 30 de septiembre: 28efb2a, esquemas 053/054, solo staging.**
+Reenvío único del gasto propio devuelto y corrección de oficina publicados y
+probados. Fecha inválida conserva campos; asignación terminada no impide corregir
+la obra original, conforme a Campo. Guardado/reapertura, recibos idénticos,
+historial, reintentos, conflictos, segunda devolución sintética y revocación
+comprobados. 476 pruebas, lint, tipos, compilación local/hosting y tres trabajos
+CI correctos. Consulta móvil emulada, ocho controles públicos y dieciséis
+conjuntos anteriores preservados. Permisos/perfil originales restituidos y
+asignación temporal finalizada. Sin IA real, pago, migración ni copia contable.
+Activa 28efb2a; anterior 4ee9424 y dependencias conservadas. Limpieza de sobrantes
+pendiente; no se realizaron borrados. [Evidencia y diferencias abiertas](REENVIO-WORKFORCE-20260930.md).
+
+**Entrega anterior del 30 de septiembre: 6a2d9be, esquema 052, solo staging.**
 Corrección manual de Workforce publicada y probada: motivo, fecha de empresa,
 importe, categoría, obra/general y pagador; revisión vinculada al recibo original,
 que conserva bytes/huella. Fecha futura rechazada sin perder campos, guardado,

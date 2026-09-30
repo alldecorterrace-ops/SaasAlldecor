@@ -62,6 +62,17 @@ Ver [PAGADOR-WORKFORCE-20260930.md](PAGADOR-WORKFORCE-20260930.md).
 con motivo, versión e idempotencia, conservación del recibo y snapshot manual.
 Reinicia decisiones vigentes; conserva las anteriores en historial. Sesión real,
 concurrencia PostgreSQL, revocación y conservación de datos comprobadas.
-Reemplazo de foto, DEVUELTO/NEEDS_CORRECTION, etiquetas administrativas libres y
-revisión posterior a IA siguen abiertos. No se declara cerrada la fila Editar ni
+Reemplazo de foto, etiquetas administrativas libres y revisión posterior a IA
+siguen abiertos. DEVUELTO/NEEDS_CORRECTION y un reenvío propio se cubren parcialmente
+en 053/054; no implementan la IA ni el productor automático de devoluciones. No se declara cerrada la fila Editar ni
 la confirmación humana posterior a IA. [Evidencia y límites](CORRECCION-MANUAL-WORKFORCE-20260930.md).
+
+## Reenvío del trabajador y oficina en devueltos
+
+28efb2a, esquemas 053/054, cubre un reenvío propio con recibo original, versión,
+autorización e idempotencia. Obra existente de la misma empresa, incluso después
+de terminar asignación. Segundo devuelto requiere oficina; no se sustituye
+REJECTED por DEVUELTO. Oficina corrige y revisa conservando el contador. Sesión
+real por fases con fixtures sintéticos, concurrencia PostgreSQL, revocación y
+conservación comprobadas. IA, fotos nuevas/anteriores, segundo resultado IA y
+copia contable siguen abiertos. [Evidencia y límites](REENVIO-WORKFORCE-20260930.md).
