@@ -12,6 +12,7 @@ const entities: Record<string, { module: string; label: string }> = {
   time_requests: { module: "horasfix", label: "Solicitud de horas" },
   time_periods: { module: "horasfix", label: "Cierre de semana" },
   workers: { module: "trabajadores", label: "Trabajador" },
+  workforce_expenses: { module: "horasfix", label: "Gasto de Workforce" },
   workforce_profiles: { module: "trabajadores", label: "Equipo" },
   workforce_assignments: {
     module: "trabajadores",
@@ -27,6 +28,13 @@ const entities: Record<string, { module: string; label: string }> = {
   projects: { module: "fin-proyectos", label: "Proyecto" },
 };
 const labels: Record<string, string> = {
+  expense_at: "Fecha del gasto",
+  foreman_at: "Fecha de decisión del encargado",
+  foreman_by: "Encargado",
+  foreman_reason: "Motivo del encargado",
+  office_at: "Fecha de decisión de oficina",
+  office_by: "Oficina",
+  office_reason: "Motivo de oficina",
   name: "Nombre",
   status: "Estado",
   full_name: "Nombre",
