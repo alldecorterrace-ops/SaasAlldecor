@@ -86,3 +86,14 @@ inmutabilidad de los originales y revisión ligada al actual. Preparar no sustit
 ni publica un borrador. Sesión real, binarios, reintentos, concurrencia, móvil
 emulado, revocación y conservación comprobados. No cierra IA, la fila Editar,
 reembolso ni copia contable. [Evidencia y límites](RECIBOS-ANTERIORES-WORKFORCE-20260930.md).
+
+
+## Archivo recuperable de Workforce
+
+be3b23d, esquema 056, cubre el archivo/restauración del registro Workforce con
+motivo, cinco estados recuperables, solicitudes idempotentes, versión, revisión
+conservada e historial privado. Solo administrador; trabajadores/oficina no
+pueden ver recibos, metadata o historial de archivados. Sesión web, binarios,
+concurrencia, móvil emulado y revocación comprobados. La fila Eliminar/restaurar
+no queda completamente cerrada: la copia contable, deuda y reembolso del origen
+siguen sin adaptador coordinado. [Evidencia y límites](ARCHIVO-WORKFORCE-20260930.md).

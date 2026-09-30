@@ -76,3 +76,20 @@ terminar procesos de producción ni otras aplicaciones. Verificar raíz, grupo,
 revisión, dependencia compartida, configuración privada conservada y una marca
 del HTML de la entrega. Registrar el resultado fuera de GitHub; el ajuste de
 configuración debe quedar descrito en el procedimiento versionado.
+
+
+## Entrega de archivo de Workforce del 30 de septiembre
+
+Activa be3b23d89d590181d6991d02b4d0322507ea899d, esquema aditivo 056 solo en staging.
+Retorno previsto 32f31af2cd6b087a920ffbd38d6939b4129e4ee7, con el mismo esquema y
+recorrido funcional comprobado antes del ajuste de etiquetas. No se ejecutó una
+vuelta posterior desde la revisión final. Dependencias c66e4ec/b149bee conservadas.
+Raíz, grupo propio por revisión, proceso real y HTML comprobados; configuración
+privada idéntica y producción sin cambios de configuración.
+
+Inventario privado final: veinte carpetas de entregas y 103.889 entradas en la
+cuenta. No se eliminó ningún elemento. La depuración de versiones anteriores
+permanece pendiente; este inventario no cumple todavía el límite de dos entregas
+estables. Mantener código en GitHub, comprobar contenido único y dependencias y
+obtener la confirmación aplicable antes de cualquier borrado permanente.
+[Evidencia de publicación](ARCHIVO-WORKFORCE-20260930.md).

@@ -1,6 +1,23 @@
 # Estado de implementación — 30 de septiembre de 2026
 
-**Entrega vigente del 30 de septiembre: 6b72cfe, esquema 055, solo staging.**
+**Entrega vigente del 30 de septiembre: be3b23d, esquema 056, solo staging.**
+
+Archivo recuperable y restauración de gastos de Workforce comprobados en sesión
+real: motivo, estado previo, revisión, dos fotos intactas, historial en español,
+reintentos sin duplicados y acceso restringido tras revocación. Restauración
+móvil emulada a 390 px sin desbordamiento; no es prueba en dispositivo físico.
+491 pruebas en CI; lint, tipos y compilación aprobados. Dieciséis conjuntos y
+ficha empresarial conservados; membresía original restituida y perfil desactivado.
+Proceso real be3b23d y diez controles HTTP verificados. Retorno previsto 32f31af;
+dependencias c66e4ec/b149bee conservadas. Sin borrados en esta entrega.
+[Evidencia y límites](ARCHIVO-WORKFORCE-20260930.md).
+
+La coordinación del archivo con copia contable/deuda sigue pendiente, junto con
+IA y productor de devoluciones, confirmación posterior, reembolso y restantes
+recorridos. ADT continúa principal, no se migra ni activa producción. Alcance de
+21 módulos sin configuradores/3D. Las entregas siguientes son antecedentes.
+
+**Entrega anterior del 30 de septiembre: 6b72cfe, esquema 055, solo staging.**
 
 Sustitución opcional y recibos anteriores de Workforce implementados y comprobados:
 trabajador y oficina, rechazo sin pérdida del formulario, tres binarios intactos,
