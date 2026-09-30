@@ -6,7 +6,7 @@ import {
   decideWorkforceExpense,
   type WorkforceExpenseState,
 } from "@/app/app/[companyId]/horas/gastos/actions";
-import { workforceExpenseCategories } from "@/lib/workforce-expenses";
+import { workforceExpenseCategories, workforceUtcDateTime } from "@/lib/workforce-expenses";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Feedback } from "./feedback";
@@ -28,6 +28,8 @@ export function WorkforceExpenseForm({
   const [file, setFile] = useState<File | null>(null);
   const [state, action, pending, onReset] = usePreservedActionState(
     async (prev: WorkforceExpenseState, form: FormData) => {
+      const at = workforceUtcDateTime(String(form.get("expense_at") ?? ""));
+      if (!at) return { error: "Indica una fecha y hora válidas en UTC." };
       if (!file) return { error: "Adjunta el recibo antes de enviar." };
       if (!receipt.current) {
         try {
@@ -58,7 +60,7 @@ export function WorkforceExpenseForm({
         }
       }
       form.set("receipt_id", receipt.current!);
-      form.set("expense_at", `${form.get("expense_at")}Z`);
+      form.set("expense_at", at);
       return submitWorkforceExpense(company, prev, form);
     },
     {} as WorkforceExpenseState,

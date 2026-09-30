@@ -10,6 +10,7 @@ import {
 import {
   workforceExpenseSchema,
   workforceDecisionSchema,
+  workforceUtcDateTime,
 } from "../src/lib/workforce-expenses";
 test("Workforce expenses enforce receipts, assignments, tenant isolation and two decisions", async (t) => {
   const { db } = await fullDatabase(),
@@ -553,4 +554,13 @@ test("Workforce receipts check dimensions/brands, reject PDF and unsafe inputs, 
     }).success,
     false,
   );
+});
+
+test("Workforce edited UTC dates accept minute precision and reject rollover or offsets", () => {
+  assert.equal(workforceUtcDateTime("2026-09-30T12:00"), "2026-09-30T12:00:00Z");
+  assert.equal(workforceUtcDateTime("2026-09-30T12:00:31"), "2026-09-30T12:00:31Z");
+  assert.equal(workforceUtcDateTime("2026-09-30T12:00:31.123"), "2026-09-30T12:00:31.123Z");
+  for (const value of ["", "2026-02-30T12:00", "2026-09-30T25:00", "2026-09-30", "2026-09-30T12:00Z", "2026-09-30T12:00-04:00"]) {
+    assert.equal(workforceUtcDateTime(value), null);
+  }
 });

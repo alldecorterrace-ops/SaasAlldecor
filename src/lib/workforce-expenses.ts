@@ -13,11 +13,20 @@ export const workforceExpenseStatuses = {
   OFFICE_APPROVED: "Aprobado por oficina",
   REJECTED: "Rechazado",
 } as const;
+// datetime-local may omit zero seconds after the user edits the control.
+// This form explicitly labels UTC; never reinterpret it in the device timezone.
+export function workforceUtcDateTime(value: string): string | null {
+  const seconds = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)
+    ? `${value}:00`
+    : value;
+  const parsed = z.iso.datetime().safeParse(`${seconds}Z`);
+  return parsed.success ? parsed.data : null;
+}
 export const workforceExpenseSchema = z.object({
   id: z.uuid(),
   request: z.uuid(),
   project_id: z.uuid("Selecciona una obra."),
-  expense_at: z.iso.datetime({ offset: true }),
+  expense_at: z.iso.datetime({ offset: true, error: "Indica una fecha y hora válidas en UTC." }),
   amount: z
     .string()
     .regex(
