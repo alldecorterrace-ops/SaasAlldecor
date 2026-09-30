@@ -45,3 +45,13 @@ ver [GASTO-GENERAL-WORKFORCE-20260930.md](GASTO-GENERAL-WORKFORCE-20260930.md).
 No cierra los requisitos de IA/reembolso de la interfaz administrativa ni la copia
 contable. Las dos aprobaciones y recibos de 048 ya tienen evidencia de staging en
 [GASTOS-WORKFORCE-20260930.md](GASTOS-WORKFORCE-20260930.md).
+
+## Declaración de pagador
+
+La entrega 4174887 y esquema 051 cubren declarar al enviar, persistir procedencia,
+consultar, filtrar, historial y reintentos vinculados al pagador. Tres medios
+comprobados con sesión real, sin efecto de pago/reembolso/copia contable.
+Los gastos anteriores sin evidencia siguen Sin declarar, diferencia explícita
+respecto al supuesto de bolsillo propio del origen. Corrección manual, revisión
+IA/humana, deuda y reembolso siguen pendientes.
+Ver [PAGADOR-WORKFORCE-20260930.md](PAGADOR-WORKFORCE-20260930.md).

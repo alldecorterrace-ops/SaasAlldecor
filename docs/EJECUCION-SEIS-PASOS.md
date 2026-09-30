@@ -1,6 +1,16 @@
 # Ejecución y auditoría de los seis pasos
 
-**Entrega del 30 de septiembre: 9e8b2c7, esquema 050, solo staging.**
+**Entrega del 30 de septiembre: 4174887, esquema 051, solo staging.**
+Pagador explícito de Workforce publicado: bolsillo propio, tarjeta de empresa y
+efectivo de oficina, con autor y fecha. Los anteriores siguen Sin declarar.
+Tres envíos sintéticos reales, recibos binarios, filtros, historial, seis reintentos
+sin duplicados, conflicto de pagador y revocación comprobados. 455 pruebas, lint,
+tipos, compilación local/hosting y los tres trabajos de CI correctos. Móvil emulado,
+ocho controles públicos y dieciséis conjuntos previos preservados. Permisos y perfil
+originales restaurados; asignación temporal finalizada. Sin pago ni copia contable.
+[Evidencia, diferencias históricas y compatibilidad](PAGADOR-WORKFORCE-20260930.md).
+
+**Entrega anterior del 30 de septiembre: 9e8b2c7, esquema 050, solo staging.**
 Reclasificación de Workforce a gasto general y actualización del motivo publicadas
 y probadas con sesión real por fases. Importe, recibo, obra original y decisiones
 conservados; historial, filtros, móvil emulado, reintentos y revocación comprobados.
@@ -17,7 +27,7 @@ real en PostgreSQL 17 y suite completa. Catorce conjuntos previos preservados;
 permisos temporales restaurados. Un gasto ficticio aprobado, sin pago ni copia
 contable. [Evidencia y límites](GASTOS-WORKFORCE-20260930.md).
 
-Quedan revisión IA/humana, reembolso y origen del pago, copia contable sin duplicar,
+Quedan revisión IA/humana, reembolso y corrección del pagador, copia contable sin duplicar,
 edición/archivo, Labor automática y demás recorridos de Workforce. La consulta
 por fases y esta entrega no cierran la paridad de Trabajadores/Horas ni los
 [21 módulos activos](CIERRE-FUNCIONAL.md). ADT sigue principal; migración y traspaso
