@@ -276,7 +276,7 @@ test("Returned expenses allow one worker resubmission and retain history", async
         );
         await assert.rejects(
           resubmit(e, 2, randomUUID(), { project: foreignProject }),
-          /project_not_assigned/,
+          /project_unavailable/,
         );
         assert.deepEqual(await row(e.id), before);
       },
@@ -427,6 +427,27 @@ test("Returned expenses allow one worker resubmission and retain history", async
       await assert.rejects(resubmit(e), /receipt_unavailable/);
       assert.deepEqual(await row(e.id), before);
     });
+    await t.test(
+      "an ended assignment does not prevent correction of the original project",
+      async () => {
+        const e = await returned();
+        await db.exec("reset role");
+        await db.query(
+          "update workforce_assignments set active=false where company_id=$1 and worker_id=$2",
+          [a, worker.id],
+        );
+        await as(worker.user);
+        await resubmit(e);
+        const saved = await row(e.id);
+        assert.equal(saved.project_id, project);
+        assert.equal(saved.status, "SUBMITTED");
+        await db.exec("reset role");
+        await db.query(
+          "update workforce_assignments set active=true where company_id=$1 and worker_id=$2",
+          [a, worker.id],
+        );
+      },
+    );
     await t.test(
       "revoked profiles cannot replay the previously successful request",
       async () => {

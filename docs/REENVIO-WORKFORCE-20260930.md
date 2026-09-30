@@ -10,14 +10,16 @@ se reemplaza. Reinicia decisiones y revisión, conserva identidad/creación y
 audita EXPENSE_RESUBMITTED. Administración puede corregir NEEDS_CORRECTION.
 Esta copia local no certifica por sí sola el PHP actualmente desplegado.
 
-## Alcance del esquema 053
+## Alcance de los esquemas 053/054
 
 Estado Devuelto para corregir, motivo/fecha de devolución, contador y actor/fecha
 del único reenvío. El trabajador activo corrige exclusivamente su gasto propio,
 con versión, recibo original verificado, fecha de empresa, importe, categoría,
 pagador y obra/general. Fecha no futura y límite de corrección Campo USD 20.000;
-el envío nuevo Workforce conserva USD 10.000. Obra requiere asignación en la
-fecha corregida. General conserva referencia original y procedencia.
+el envío nuevo Workforce conserva USD 10.000. Obra se valida por existencia en la misma empresa, como Campo; una asignación
+finalizada no bloquea corregir el gasto propio. El selector conserva la obra
+original y el ámbito disponible de Workforce. General conserva referencia original
+y procedencia. El envío nuevo sigue exigiendo asignación.
 
 Un reintento idéntico devuelve el resultado registrado; no incrementa nuevamente
 el contador. Otro payload/versión se rechaza. Reenvío vuelve a SUBMITTED, elimina
