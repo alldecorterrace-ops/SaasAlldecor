@@ -426,9 +426,11 @@ test("Workforce expenses enforce receipts, assignments, tenant isolation and two
           decide(id, 3, "RECLASSIFY_GENERAL", "Synthetic general"),
           /record_conflict/,
         );
-        await assert.rejects(
-          decide(id, 4, "RECLASSIFY_GENERAL", "Synthetic general"),
-          /expense_state_invalid/,
+        await decide(
+          id,
+          4,
+          "RECLASSIFY_GENERAL",
+          "Updated synthetic general reason",
         );
         const after = (
           await db.query<Record<string, unknown>>(
@@ -452,10 +454,10 @@ test("Workforce expenses enforce receipts, assignments, tenant isolation and two
         ])
           assert.deepEqual(after[key], beforeRow[key], key);
         assert.equal(after.allocation, "GENERAL");
-        assert.equal(after.version, 4);
+        assert.equal(after.version, 5);
         assert.equal(after.general_by, office.user);
         assert.equal(after.general_worker_id, office.worker);
-        assert.equal(after.general_reason, "Synthetic general");
+        assert.equal(after.general_reason, "Updated synthetic general reason");
         assert(after.general_at);
         // A new expense may be reclassified after the first decision, without granting the second.
         await as(worker.user);
@@ -563,7 +565,7 @@ test("Workforce expenses enforce receipts, assignments, tenant isolation and two
               [a, ids[0]],
             )
           ).rows.length,
-          4,
+          5,
         );
         await as(other.user);
         assert.equal(

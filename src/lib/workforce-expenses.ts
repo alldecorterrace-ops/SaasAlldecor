@@ -82,7 +82,7 @@ export function workforceExpenseError(error: unknown) {
     expense_forbidden:
       "Tu rol no puede decidir este gasto. El encargado no puede aprobar sus propios gastos.",
     expense_state_invalid:
-      "Comprueba el estado: encargado primero, oficina después. Solo oficina puede reclasificar un gasto ya aprobado por el encargado; un gasto general no se reclasifica otra vez.",
+      "Comprueba el estado: encargado primero, oficina después. Solo oficina puede reclasificar un gasto ya aprobado por el encargado.",
     record_conflict:
       "Este gasto cambió en otra sesión. Recarga antes de decidir.",
     request_conflict:

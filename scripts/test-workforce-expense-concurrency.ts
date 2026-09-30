@@ -352,6 +352,47 @@ async function main() {
       ).rows[0].n,
       0,
     );
+    const reasonRace = await Promise.allSettled(
+      ["Corrected synthetic reason A", "Corrected synthetic reason B"].map(
+        (reason) =>
+          as(office.user, (c) =>
+            c.query(
+              "select decide_workforce_expense($1,$2,$3,4,'RECLASSIFY_GENERAL',$4) data",
+              [company, randomUUID(), generalId, reason],
+            ),
+          ),
+      ),
+    );
+    assert.equal(reasonRace.filter((x) => x.status === "fulfilled").length, 1);
+    const reasonFailed = reasonRace.find(
+      (x) => x.status === "rejected",
+    ) as PromiseRejectedResult;
+    assert.equal(reasonFailed.reason.code, "PT409");
+    assert.match(reasonFailed.reason.message, /record_conflict/);
+    const reasonSaved = (
+      await pool.query("select * from workforce_expenses where id=$1", [
+        generalId,
+      ])
+    ).rows[0];
+    assert.equal(reasonSaved.version, 5);
+    assert.equal(reasonSaved.status, "OFFICE_APPROVED");
+    assert.equal(reasonSaved.amount, "12.34");
+    assert.equal(reasonSaved.receipt_id, generalReceipt);
+    assert.equal(reasonSaved.project_id, project);
+    assert(
+      ["Corrected synthetic reason A", "Corrected synthetic reason B"].includes(
+        reasonSaved.general_reason,
+      ),
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from audit_events where entity='workforce_expenses' and entity_id=$1",
+          [generalId],
+        )
+      ).rows[0].n,
+      5,
+    );
     await as(owner, (c) =>
       c.query(
         "select configure_workforce($1,$2,$3,1,'FOREMAN',null,true,'Synthetic revocation')",
@@ -384,7 +425,8 @@ async function main() {
         auditEffects: 3,
         parallelGeneralRetries: 8,
         generalApprovalRaceWinners: 1,
-        generalAuditEffects: 4,
+        generalAuditEffects: 5,
+        concurrentReasonUpdateWinners: 1,
         noPayment: true,
       }),
     );

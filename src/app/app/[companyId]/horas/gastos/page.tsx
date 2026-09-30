@@ -214,14 +214,14 @@ export default async function WorkforceExpenses({
               )}
               {write &&
                 ["ADMIN", "OFFICE"].includes(scope.role ?? "") &&
-                ["FOREMAN_APPROVED", "OFFICE_APPROVED"].includes(e.status) &&
-                e.allocation === "PROJECT" && (
+                ["FOREMAN_APPROVED", "OFFICE_APPROVED"].includes(e.status) && (
                   <WorkforceGeneralForm
                     key={`general:${e.id}:${e.version}`}
                     company={companyId}
                     id={e.id}
                     version={e.version}
                     request={randomUUID()}
+                    alreadyGeneral={e.allocation === "GENERAL"}
                   />
                 )}
               {stage && (

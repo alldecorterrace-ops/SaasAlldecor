@@ -198,11 +198,13 @@ export function WorkforceGeneralForm({
   id,
   version,
   request,
+  alreadyGeneral,
 }: {
   company: string;
   id: string;
   version: number;
   request: string;
+  alreadyGeneral: boolean;
 }) {
   const [state, action, pending, onReset] = usePreservedActionState(
     decideWorkforceExpense.bind(null, company),
@@ -214,11 +216,14 @@ export function WorkforceGeneralForm({
       action={action}
       className="space-y-3 mt-4 border-t pt-4"
     >
-      <h3 className="font-semibold">Reclasificar a gasto general</h3>
+      <h3 className="font-semibold">
+        {alreadyGeneral
+          ? "Actualizar motivo de gasto general"
+          : "Reclasificar a gasto general"}
+      </h3>
       <p className="text-sm">
-        El costo dejará de corresponder a la obra. Se conservarán la obra
-        original, el recibo y las decisiones. La aprobación pendiente de oficina
-        sigue siendo necesaria.
+        Se conserva la obra original del envío, el recibo y las decisiones. La
+        reclasificación no cambia las aprobaciones.
       </p>
       <Feedback error={state.error} success={state.success} />
       <fieldset disabled={pending} className="grid gap-3">
@@ -232,7 +237,11 @@ export function WorkforceGeneralForm({
         </label>
       </fieldset>
       <Button type="submit" disabled={pending}>
-        {pending ? "Procesando…" : "Registrar como gasto general"}
+        {pending
+          ? "Procesando…"
+          : alreadyGeneral
+            ? "Actualizar motivo general"
+            : "Registrar como gasto general"}
       </Button>
     </form>
   );
