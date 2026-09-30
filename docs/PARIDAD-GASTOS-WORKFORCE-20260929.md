@@ -13,6 +13,7 @@ No implica implementación ni validación del SaaS. Fuente publicada privada:
 | Aprobar / rechazar | Precondiciones de IA y revisión administrativa; efectos y auditoría transaccionales. Las entradas de Workforce con prefijo wf_ siguen su doble aprobación. No sustituirla por un cambio de estado genérico. |
 | Editar | En la interfaz vigente, pendiente/devuelto y sin reembolso; conservar versiones y recibos anteriores. Contrastar además el servidor y roles. |
 | Eliminar recuperable / restaurar | Motivo de al menos cinco caracteres, identificador de solicitud y auditoría. Preservar recibo, evidencia e historial de pago. Estado previo recuperable; coordinación con copia contable y deuda. |
+| Reclasificar a general | Oficina/administración después del encargado; motivo, versión, auditoría, recibo y aprobaciones conservados. Un nuevo motivo sigue permitido en estado aprobado; reintentar no duplica. Validado en staging según la copia del servicio, ver GASTO-GENERAL-WORKFORCE-20260930.md. |
 | Confirmar reembolso | Solo gasto aprobado de bolsillo propio; recibos revisados. Es una constancia de pago ya realizado, no ejecuta transferencia. Controlar cambios concurrentes, versión e idempotencia. |
 | Registro unificado de Gastos | Mostrar gastos administrativos, copias aprobadas de trabajadores y labor automática sin duplicar costo ni confundirlo con pago. Gestionar las copias de Workforce en su origen. |
 | Labor automática | Costo por jornada y pendientes de revisión separados de pagos. Conservar falta de tarifa/obra/conciliación como incidencias, sin convertirlos en cero ni inventar pagos. |
@@ -39,7 +40,7 @@ Es una base previa; no cierra las aprobaciones, revisión ni reembolsos de esta 
 
 ## Reclasificación general
 
-La regla de servicio Workforce RECLASSIFY_GENERAL se desarrolla en el esquema 049;
+La regla de servicio Workforce RECLASSIFY_GENERAL se publica y prueba en los esquemas 049/050;
 ver [GASTO-GENERAL-WORKFORCE-20260930.md](GASTO-GENERAL-WORKFORCE-20260930.md).
 No cierra los requisitos de IA/reembolso de la interfaz administrativa ni la copia
 contable. Las dos aprobaciones y recibos de 048 ya tienen evidencia de staging en

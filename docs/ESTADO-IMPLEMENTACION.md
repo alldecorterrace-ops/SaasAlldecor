@@ -1,6 +1,14 @@
-# Estado de implementación — 22 de septiembre de 2026
+# Estado de implementación — 30 de septiembre de 2026
 
-**Entrega del 30 de septiembre: c75cfdc, esquema 048, solo staging.**
+**Entrega del 30 de septiembre: 9e8b2c7, esquema 050, solo staging.**
+Reclasificación de Workforce a gasto general y actualización del motivo publicadas
+y probadas con sesión real por fases. Importe, recibo, obra original y decisiones
+conservados; historial, filtros, móvil emulado, reintentos y revocación comprobados.
+452 pruebas, lint, tipos, compilación y los tres trabajos de CI correctos. Dieciséis
+conjuntos previos preservados y permisos originales restaurados. Sin nuevo pago o
+copia contable. [Evidencia y límites](GASTO-GENERAL-WORKFORCE-20260930.md).
+
+**Entrega anterior del 30 de septiembre: c75cfdc, esquema 048, solo staging.**
 Gastos de Workforce con recibo privado, primera decisión de encargado y segunda
 de oficina publicados y comprobados. Envío/descarga idéntica, reapertura,
 historial, errores con borrador conservado, móvil emulado y revocación verificados.
