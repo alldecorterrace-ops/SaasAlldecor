@@ -50,5 +50,13 @@ certificados y respaldos de negocio quedan fuera de la limpieza de entregas.
    acumulación que esta política busca evitar.
 
 Esta política es operativa y está incluida en `AGENTS.md`; no instala un cron
-ni activa un borrado automático. La acumulación existente requiere su propia
-limpieza con inventario y comprobación de dependencias.
+ni activa un borrado automático. Antes de preparar cada candidata, comprobar
+espacio y cantidad de archivos disponibles; registrar y retirar las entregas
+sobrantes tras la validación y la autorización aplicable.
+
+GitHub sigue siendo la ubicación del historial; no volver a acumular archivos
+comprimidos o carpetas por cada versión publicada.
+
+Los inventarios del hosting, rutas privadas, diagnósticos y resultados operativos
+se conservan fuera del repositorio. En GitHub registrar el código, su SHA y las
+reglas de retención sin publicar información privada de la cuenta.
