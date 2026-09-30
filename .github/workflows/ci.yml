@@ -57,6 +57,7 @@ jobs:
           npx tsx scripts/test-commercial-concurrency.ts
           npx tsx scripts/test-expense-batch-concurrency.ts
           npx tsx scripts/test-workforce-concurrency.ts
+          npx tsx scripts/test-workforce-expense-concurrency.ts
   backup-recovery:
     runs-on: ubuntu-latest
     timeout-minutes: 15
