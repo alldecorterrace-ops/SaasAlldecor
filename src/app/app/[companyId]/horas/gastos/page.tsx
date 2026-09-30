@@ -274,7 +274,7 @@ export default async function WorkforceExpenses({
                             rel="noopener noreferrer"
                             href={`/api/workforce/${companyId}/expenses/${e.id}/receipt?version=${receipt.id}`}
                           >
-                            Abrir recibo anterior � {receipt.original_name} �{" "}
+                            Abrir recibo anterior · {receipt.original_name} ·{" "}
                             {format.format(new Date(receipt.created_at))}
                           </a>
                         </li>

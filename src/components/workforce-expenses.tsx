@@ -342,7 +342,7 @@ export function WorkforceCorrectionForm({
         } catch {
           return {
             error:
-              "Se perdi� la conexi�n. Conserva la foto y reintenta este formulario.",
+              "Se perdió la conexión. Conserva la foto y reintenta este formulario.",
           };
         }
       }
