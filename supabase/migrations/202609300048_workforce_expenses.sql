@@ -29,6 +29,7 @@ create table app_private.workforce_expense_requests (
  company_id uuid not null references public.companies(id),actor_id uuid not null references auth.users(id),request_id uuid not null,
  payload jsonb not null,result jsonb not null,created_at timestamptz not null default now(), primary key(company_id,actor_id,request_id)
 );
+alter table app_private.workforce_expense_requests enable row level security;
 revoke all on app_private.workforce_expense_requests from public,anon,authenticated;
 alter table public.workforce_receipt_uploads enable row level security;
 alter table public.workforce_expenses enable row level security;
