@@ -150,10 +150,10 @@ async function main() {
         [`${company}/${id}/${receipt}.png`],
       ),
     );
-    const submit = (c: PoolClient, amount = "12.34") =>
+    const submit = (c: PoolClient, amount = "12.34", payer = "propio") =>
       c.query(
-        "select submit_workforce_expense($1,$2,$3,$4,$5,$6,'MATERIALS','Synthetic expense',$7) data",
-        [company, request, id, project, at, amount, receipt],
+        "select submit_workforce_expense($1,$2,$3,$4,$5,$6,'MATERIALS','Synthetic expense',$7,$8) data",
+        [company, request, id, project, at, amount, receipt, payer],
       );
     const submitted = await Promise.all(
       Array.from({ length: 8 }, () => as(worker.user, (c) => submit(c))),
@@ -163,6 +163,19 @@ async function main() {
       as(worker.user, (c) => submit(c, "99")),
       /request_conflict/,
     );
+    await assert.rejects(
+      as(worker.user, (c) => submit(c, "12.34", "empresa")),
+      /request_conflict/,
+    );
+    const payerSaved = (
+      await pool.query(
+        "select pay_method,pay_method_set_by,pay_method_set_at from workforce_expenses where id=$1",
+        [id],
+      )
+    ).rows[0];
+    assert.equal(payerSaved.pay_method, "propio");
+    assert.equal(payerSaved.pay_method_set_by, worker.user);
+    assert(payerSaved.pay_method_set_at);
     const decide = (
       c: PoolClient,
       whoRequest: string,
@@ -260,7 +273,7 @@ async function main() {
         [`${company}/${generalId}/${receipt}.png`],
       );
       await c.query(
-        "select submit_workforce_expense($1,$2,$3,$4,now(),12.34,'MATERIALS','Synthetic general allocation',$5)",
+        "select submit_workforce_expense($1,$2,$3,$4,now(),12.34,'MATERIALS','Synthetic general allocation',$5,'propio')",
         [company, randomUUID(), generalId, project, receipt],
       );
       return receipt;
@@ -420,6 +433,7 @@ async function main() {
         workforceExpenseConcurrency: true,
         parallelReceiptRetries: 8,
         parallelSubmitRetries: 8,
+        payerBoundToIdempotentPayload: true,
         parallelFirstDecisionRetries: 8,
         secondDecisionWinners: 1,
         auditEffects: 3,

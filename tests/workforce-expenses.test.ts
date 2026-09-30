@@ -11,6 +11,7 @@ import {
   workforceExpenseSchema,
   workforceDecisionSchema,
   workforceUtcDateTime,
+  workforcePayerLabel,
 } from "../src/lib/workforce-expenses";
 test("Workforce expenses enforce receipts, assignments, tenant isolation and two decisions", async (t) => {
   const { db } = await fullDatabase(),
@@ -64,10 +65,11 @@ test("Workforce expenses enforce receipts, assignments, tenant isolation and two
     amount = "12.34",
     at = now,
     company = a,
+    payer: string | null = "propio",
   ) =>
     db.query(
-      "select submit_workforce_expense($1,$2,$3,$4,$5,$6,'MATERIALS','Synthetic expense',$7) data",
-      [company, request, id, p, at, amount, receipt],
+      "select submit_workforce_expense($1,$2,$3,$4,$5,$6,'MATERIALS','Synthetic expense',$7,$8) data",
+      [company, request, id, p, at, amount, receipt, payer],
     );
   const decide = (
     id: string,
@@ -288,6 +290,162 @@ test("Workforce expenses enforce receipts, assignments, tenant isolation and two
           ).rows.length,
           0,
         );
+      },
+    );
+    await t.test(
+      "payer is mandatory, all three methods persist, retry payload includes payer",
+      async () => {
+        await as(worker.user);
+        for (const payer of [null, "", "cash", "propio "]) {
+          const id = randomUUID(),
+            receipt = await prepare(id);
+          await assert.rejects(
+            submit(id, receipt, randomUUID(), project, "12.34", now, a, payer),
+            /invalid_workforce_payer/,
+          );
+          assert.equal(
+            (
+              await db.query("select * from workforce_expenses where id=$1", [
+                id,
+              ])
+            ).rows.length,
+            0,
+          );
+        }
+        for (const payer of ["propio", "empresa", "efectivo_empresa"]) {
+          const id = randomUUID(),
+            receipt = await prepare(id),
+            request = randomUUID();
+          const first = await submit(
+            id,
+            receipt,
+            request,
+            project,
+            "12.34",
+            now,
+            a,
+            payer,
+          );
+          assert.deepEqual(
+            (
+              await submit(
+                id,
+                receipt,
+                request,
+                project,
+                "12.34",
+                now,
+                a,
+                payer,
+              )
+            ).rows,
+            first.rows,
+          );
+          await assert.rejects(
+            submit(
+              id,
+              receipt,
+              request,
+              project,
+              "12.34",
+              now,
+              a,
+              payer === "propio" ? "empresa" : "propio",
+            ),
+            /request_conflict/,
+          );
+          const row = (
+            await db.query<{
+              pay_method: string;
+              pay_method_set_by: string;
+              pay_method_set_at: string;
+              status: string;
+              version: number;
+              receipt_id: string;
+              worker_id: string;
+            }>("select * from workforce_expenses where id=$1", [id])
+          ).rows[0];
+          assert.equal(row.pay_method, payer);
+          assert.equal(row.pay_method_set_by, worker.user);
+          assert(row.pay_method_set_at);
+          assert.equal(row.status, "SUBMITTED");
+          assert.equal(row.version, 1);
+          assert.equal(row.receipt_id, receipt);
+          assert.equal(row.worker_id, worker.worker);
+          await db.exec("reset role");
+          assert.equal(
+            (
+              await db.query<{ n: number }>(
+                "select count(*)::int n from audit_events where entity='workforce_expenses' and entity_id=$1",
+                [id],
+              )
+            ).rows[0].n,
+            1,
+          );
+          await as(worker.user);
+        }
+        assert.deepEqual(
+          await counts(),
+          before,
+          "declaring the payer never creates debts, administrative expenses or payments",
+        );
+      },
+    );
+    await t.test(
+      "legacy signature only replays prior requests; unknown payer is never invented",
+      async () => {
+        await as(worker.user);
+        const id = randomUUID(),
+          receipt = await prepare(id),
+          request = randomUUID();
+        await assert.rejects(
+          db.query(
+            "select submit_workforce_expense($1,$2,$3,$4,$5,12.34,'MATERIALS','Synthetic expense',$6)",
+            [a, request, id, project, now, receipt],
+          ),
+          /invalid_workforce_payer/,
+        );
+        await submit(id, receipt, request);
+        await db.exec("reset role");
+        await db.query(
+          "update workforce_expenses set pay_method=null,pay_method_set_by=null,pay_method_set_at=null where id=$1",
+          [id],
+        );
+        await db.query(
+          "update app_private.workforce_expense_requests set payload=payload-'pay_method',result=result-'pay_method' where company_id=$1 and actor_id=$2 and request_id=$3",
+          [a, worker.user, request],
+        );
+        await as(worker.user);
+        const prior = (
+          await db.query("select * from workforce_expenses where id=$1", [id])
+        ).rows;
+        const legacy = () =>
+          db.query(
+            "select submit_workforce_expense($1,$2,$3,$4,$5,12.34,'MATERIALS','Synthetic expense',$6)",
+            [a, request, id, project, now, receipt],
+          );
+        await legacy();
+        await legacy();
+        assert.deepEqual(
+          (await db.query("select * from workforce_expenses where id=$1", [id]))
+            .rows,
+          prior,
+        );
+        await assert.rejects(submit(id, receipt, request), /request_conflict/);
+        await as(owner);
+        await db.query("select set_member_access($1,$2,'member',false,$3)", [
+          a,
+          worker.user,
+          JSON.stringify({ horasfix: ["write"], activity: ["read"] }),
+        ]);
+        await as(worker.user);
+        await assert.rejects(legacy(), /worker_login_required/);
+        await as(owner);
+        await db.query("select set_member_access($1,$2,'member',true,$3)", [
+          a,
+          worker.user,
+          JSON.stringify({ horasfix: ["write"], activity: ["read"] }),
+        ]);
       },
     );
     await t.test(
@@ -747,4 +905,31 @@ test("general allocation needs a reason and remains a decision distinct from rei
     }).success,
     false,
   );
+});
+
+test("payer selection validates before upload and unknown values remain visibly unknown", () => {
+  const base = {
+    id: randomUUID(),
+    request: randomUUID(),
+    project_id: randomUUID(),
+    expense_at: new Date().toISOString(),
+    amount: "12.34",
+    category: "OTHER",
+    description: "",
+    receipt_id: randomUUID(),
+  };
+  assert.equal(workforceExpenseSchema.safeParse(base).success, false);
+  for (const method of ["propio", "empresa", "efectivo_empresa"])
+    assert.equal(
+      workforceExpenseSchema.safeParse({ ...base, pay_method: method }).success,
+      true,
+    );
+  for (const method of [null, "", "cash", "propio "])
+    assert.equal(
+      workforceExpenseSchema.safeParse({ ...base, pay_method: method }).success,
+      false,
+    );
+  assert.equal(workforcePayerLabel(null), "Sin declarar");
+  assert.equal(workforcePayerLabel("unexpected"), "Sin declarar");
+  assert.notEqual(workforcePayerLabel(null), workforcePayerLabel("propio"));
 });

@@ -6,6 +6,8 @@ import { canAccess } from "@/lib/modules";
 import { workforceScopeSchema } from "@/lib/workforce";
 import {
   workforceExpenseCategories,
+  workforceExpensePayers,
+  workforcePayerLabel,
   workforceExpenseStatuses,
 } from "@/lib/workforce-expenses";
 import {
@@ -23,6 +25,7 @@ export default async function WorkforceExpenses({
     page?: string;
     status?: string;
     allocation?: string;
+    payer?: string;
     saved?: string;
   }>;
 }) {
@@ -39,7 +42,12 @@ export default async function WorkforceExpenses({
       : "",
     allocation = ["PROJECT", "GENERAL"].includes(search.allocation ?? "")
       ? search.allocation!
-      : "";
+      : "",
+    payer =
+      search.payer === "UNKNOWN" ||
+      Object.hasOwn(workforceExpensePayers, search.payer ?? "")
+        ? search.payer!
+        : "";
   let query = db
     .from("workforce_expenses")
     .select("*", { count: "exact" })
@@ -48,6 +56,8 @@ export default async function WorkforceExpenses({
     .order("id");
   if (status) query = query.eq("status", status);
   if (allocation) query = query.eq("allocation", allocation);
+  if (payer === "UNKNOWN") query = query.is("pay_method", null);
+  else if (payer) query = query.eq("pay_method", payer);
   const { data, error, count } = await query.range(
     (page - 1) * 20,
     page * 20 - 1,
@@ -135,6 +145,18 @@ export default async function WorkforceExpenses({
             <option value="GENERAL">Gasto general</option>
           </select>
         </label>
+        <label className="field">
+          Con qué se pagó
+          <select name="payer" defaultValue={payer}>
+            <option value="">Todos</option>
+            {Object.entries(workforceExpensePayers).map(([k, v]) => (
+              <option key={k} value={k}>
+                {v}
+              </option>
+            ))}
+            <option value="UNKNOWN">Sin declarar</option>
+          </select>
+        </label>
         <button className="underline">Filtrar</button>
       </form>
       <div className="grid gap-5">
@@ -174,6 +196,16 @@ export default async function WorkforceExpenses({
                 ·{" "}
                 {names.find((n) => n.id === e.id)?.project_name ??
                   "Obra del gasto"}
+              </p>
+              <p className="font-medium">
+                Con qué se pagó: {workforcePayerLabel(e.pay_method)}
+              </p>
+              <p className="text-sm">
+                {e.pay_method === "propio"
+                  ? "Pago declarado de su bolsillo. Su reembolso requiere aprobación y revisión; no se ha registrado aqué."
+                  : e.pay_method
+                    ? "Pago declarado de la empresa. No genera deuda de reembolso al trabajador."
+                    : "El pagador no está declarado. No se presume una deuda ni un pago."}
               </p>
               <p className="font-medium">
                 Destino del costo:{" "}
@@ -245,7 +277,7 @@ export default async function WorkforceExpenses({
         path={base}
         page={page}
         count={count ?? 0}
-        query={{ status, allocation }}
+        query={{ status, allocation, payer }}
       />
     </>
   );

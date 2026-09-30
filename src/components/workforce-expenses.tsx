@@ -8,6 +8,8 @@ import {
 } from "@/app/app/[companyId]/horas/gastos/actions";
 import {
   workforceExpenseCategories,
+  workforceExpensePayers,
+  workforceExpenseSchema,
   workforceUtcDateTime,
 } from "@/lib/workforce-expenses";
 import { Input } from "./ui/input";
@@ -33,6 +35,13 @@ export function WorkforceExpenseForm({
     async (prev: WorkforceExpenseState, form: FormData) => {
       const at = workforceUtcDateTime(String(form.get("expense_at") ?? ""));
       if (!at) return { error: "Indica una fecha y hora válidas en UTC." };
+      const candidate = workforceExpenseSchema.safeParse({
+        ...Object.fromEntries(form),
+        expense_at: at,
+        receipt_id: receipt.current ?? id,
+      });
+      if (!candidate.success)
+        return { error: candidate.error.issues[0].message };
       if (!file) return { error: "Adjunta el recibo antes de enviar." };
       if (!receipt.current) {
         try {
@@ -103,6 +112,23 @@ export function WorkforceExpenseForm({
             required
           />
         </label>
+        <label className="field">
+          Con qué se pagó
+          <select name="pay_method" required defaultValue="">
+            <option value="" disabled>
+              Selecciona cómo se pagó
+            </option>
+            {Object.entries(workforceExpensePayers).map(([k, v]) => (
+              <option key={k} value={k}>
+                {v}
+              </option>
+            ))}
+          </select>
+        </label>
+        <p className="text-sm self-center">
+          Tarjeta de empresa y efectivo de oficina no generan reembolso al
+          trabajador. Declarar el pagador no registra un pago ni un reembolso.
+        </p>
         <label className="field">
           Categoría
           <select name="category">

@@ -45,6 +45,7 @@ export async function submitWorkforceExpense(
       p_category: v.category,
       p_description: v.description,
       p_receipt: v.receipt_id,
+      p_pay_method: v.pay_method,
     });
     if (result.error) throw result.error;
   } catch (error) {

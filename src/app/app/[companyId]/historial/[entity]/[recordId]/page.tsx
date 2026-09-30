@@ -28,6 +28,9 @@ const entities: Record<string, { module: string; label: string }> = {
   projects: { module: "fin-proyectos", label: "Proyecto" },
 };
 const labels: Record<string, string> = {
+  pay_method: "Con qué se pagó",
+  pay_method_set_by: "Usuario que declaró el pagador",
+  pay_method_set_at: "Fecha de declaración del pagador",
   allocation: "Destino del costo",
   general_by: "Usuario que reclasificó",
   general_worker_id: "Perfil que reclasificó",

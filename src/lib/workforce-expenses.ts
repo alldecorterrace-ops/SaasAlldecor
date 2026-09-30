@@ -7,6 +7,16 @@ export const workforceExpenseCategories = {
   TOLLS: "Peajes",
   OTHER: "Otros",
 } as const;
+export const workforceExpensePayers = {
+  propio: "De su bolsillo",
+  empresa: "Tarjeta de la empresa",
+  efectivo_empresa: "Efectivo de la oficina",
+} as const;
+export function workforcePayerLabel(method: string | null | undefined) {
+  return method && Object.hasOwn(workforceExpensePayers, method)
+    ? workforceExpensePayers[method as keyof typeof workforceExpensePayers]
+    : "Sin declarar";
+}
 export const workforceExpenseStatuses = {
   SUBMITTED: "Pendiente del encargado",
   FOREMAN_APPROVED: "Pendiente de oficina",
@@ -42,6 +52,9 @@ export const workforceExpenseSchema = z.object({
     ),
   category: z.enum(["FUEL", "MATERIALS", "TOOLS", "PARKING", "TOLLS", "OTHER"]),
   description: z.string().trim().max(1000),
+  pay_method: z.enum(["propio", "empresa", "efectivo_empresa"], {
+    error: "Elige con qué se pagó.",
+  }),
   receipt_id: z.uuid("Adjunta el recibo."),
 });
 export const workforceDecisionSchema = z
@@ -67,6 +80,8 @@ export function workforceExpenseError(error: unknown) {
       "Necesitas una ficha activa vinculada a tu cuenta y permiso para registrar en Horas.",
     project_not_assigned:
       "La obra no está disponible para ti en la fecha del gasto. Comprueba la asignación.",
+    invalid_workforce_payer:
+      "Elige con qué se pagó. Si usas una página anterior, recárgala antes de enviar.",
     invalid_workforce_expense:
       "Revisa importe, categoría y fecha: hasta 90 días atrás y cinco minutos hacia adelante.",
     invalid_workforce_receipt:
