@@ -28,6 +28,11 @@ const entities: Record<string, { module: string; label: string }> = {
   projects: { module: "fin-proyectos", label: "Proyecto" },
 };
 const labels: Record<string, string> = {
+  correction_note: "Motivo de devolución",
+  returned_at: "Fecha de devolución",
+  resubmission_count: "Reenvíos utilizados",
+  resubmitted_by: "Usuario que reenvió",
+  resubmitted_at: "Fecha de reenvío",
   admin_review_status: "Estado de revisión humana",
   admin_reviewed_by: "Usuario que revisó manualmente",
   admin_reviewed_at: "Fecha de revisión manual",

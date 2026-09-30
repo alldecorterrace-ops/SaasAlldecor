@@ -505,6 +505,60 @@ async function main() {
         ).rows[0].n,
         0,
       );
+    // A returned-state fixture isolates resubmission from the pending AI producer.
+    const returnedId = randomUUID();
+    const returnedReceipt = await as(worker.user, async (c) => {
+      const receipt = (
+        await c.query(
+          "select (prepare_workforce_receipt($1,$2,$3,33,'png','Return-QA.png')).id",
+          [company, returnedId, "d".repeat(64)],
+        )
+      ).rows[0].id;
+      await c.query(
+        "insert into storage.objects(bucket_id,name) values('workforce-receipts',$1)",
+        [`${company}/${returnedId}/${receipt}.png`],
+      );
+      await c.query(
+        "select submit_workforce_expense($1,$2,$3,$4,now(),12.34,'MATERIALS','Returned fixture',$5,'propio')",
+        [company, randomUUID(), returnedId, project, receipt],
+      );
+      return receipt;
+    });
+    await pool.query(
+      "update workforce_expenses set status='NEEDS_CORRECTION',correction_note='Synthetic returned fixture, no AI call',returned_at=now(),version=version+1 where id=$1",
+      [returnedId],
+    );
+    const resubmitRequest = randomUUID();
+    const resubmit = (c: PoolClient, request = resubmitRequest) =>
+      c.query(
+        "select resubmit_workforce_expense($1,$2,$3,2,$4,false,$5,12.50,'MATERIALS','Worker resubmitted','propio',$6) data",
+        [company, request, returnedId, project, correctionDay, returnedReceipt],
+      );
+    const repeats = await Promise.all(
+      Array.from({ length: 8 }, () => as(worker.user, (c) => resubmit(c))),
+    );
+    assert(repeats.every((x) => x.rows[0].data.version === 3));
+    const returnedSaved = (
+      await pool.query("select * from workforce_expenses where id=$1", [
+        returnedId,
+      ])
+    ).rows[0];
+    assert.equal(returnedSaved.resubmission_count, 1);
+    assert.equal(returnedSaved.receipt_id, returnedReceipt);
+    assert.equal(returnedSaved.admin_review_status, "PENDING");
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from audit_events where entity='workforce_expenses' and entity_id=$1",
+          [returnedId],
+        )
+      ).rows[0].n,
+      3,
+    );
+    await assert.rejects(
+      as(worker.user, (c) => resubmit(c, randomUUID())),
+      /record_conflict/,
+    );
     await as(owner, (c) =>
       c.query(
         "select configure_workforce($1,$2,$3,1,'FOREMAN',null,true,'Synthetic revocation')",
@@ -547,6 +601,8 @@ async function main() {
         parallelManualCorrectionRetries: 8,
         manualCorrectionRaceWinners: 1,
         manualReviewNoPayment: true,
+        parallelWorkerResubmissionRetries: 8,
+        workerResubmissionEffects: 1,
         noPayment: true,
       }),
     );

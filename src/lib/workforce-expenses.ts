@@ -22,6 +22,7 @@ export const workforceExpenseStatuses = {
   FOREMAN_APPROVED: "Pendiente de oficina",
   OFFICE_APPROVED: "Aprobado por oficina",
   REJECTED: "Rechazado",
+  NEEDS_CORRECTION: "Devuelto para corregir",
 } as const;
 // datetime-local may omit zero seconds after the user edits the control.
 // This form explicitly labels UTC; never reinterpret it in the device timezone.
@@ -76,10 +77,18 @@ export function workforceExpenseError(error: unknown) {
       ? String(error.message)
       : "";
   const messages: Record<string, string> = {
+    invalid_workforce_resubmission:
+      "Revisa fecha, importe, categoría y pagador. La fecha no puede ser futura.",
+    expense_resubmit_forbidden:
+      "Solo puedes reenviar un gasto propio con tu perfil activo.",
+    expense_resubmit_state:
+      "Este gasto ya no está devuelto para corregir. Recarga la página.",
+    expense_resubmit_limit:
+      "Ya corregiste este gasto una vez. Solicita revisión de administración.",
     invalid_workforce_correction:
       "Revisa fecha, importe, categoría, pagador y motivo. La fecha no puede ser futura.",
     expense_correction_state:
-      "Solo se corrigen gastos pendientes del encargado o de oficina. Un gasto ya decidido no admite esta corrección.",
+      "Solo se corrigen gastos pendientes o devueltos. Un gasto ya aprobado o rechazado no admite esta corrección.",
     project_unavailable: "La obra no está disponible en esta empresa.",
     worker_login_required:
       "Necesitas una ficha activa vinculada a tu cuenta y permiso para registrar en Horas.",
@@ -136,4 +145,8 @@ export const workforceCorrectionSchema = z.object({
     .trim()
     .min(5, "Explica la corrección con al menos cinco caracteres.")
     .max(500),
+});
+
+export const workforceResubmissionSchema = workforceCorrectionSchema.omit({
+  reason: true,
 });

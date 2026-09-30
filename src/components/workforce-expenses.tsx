@@ -4,6 +4,7 @@ import { usePreservedActionState } from "./use-preserved-action-state";
 import {
   submitWorkforceExpense,
   correctWorkforceExpense,
+  resubmitWorkforceExpense,
   decideWorkforceExpense,
   type WorkforceExpenseState,
 } from "@/app/app/[companyId]/horas/gastos/actions";
@@ -281,12 +282,14 @@ export function WorkforceCorrectionForm({
   request,
   projects,
   values,
+  mode = "admin",
 }: {
   company: string;
   id: string;
   version: number;
   request: string;
   projects: { id: string; name: string }[];
+  mode?: "admin" | "worker";
   values: {
     project_id: string;
     expense_date: string;
@@ -298,19 +301,24 @@ export function WorkforceCorrectionForm({
   };
 }) {
   const [state, action, pending, onReset] = usePreservedActionState(
-    correctWorkforceExpense.bind(null, company),
+    (mode === "worker"
+      ? resubmitWorkforceExpense
+      : correctWorkforceExpense
+    ).bind(null, company),
     {} as WorkforceExpenseState,
   );
   return (
     <details className="mt-4 border-t pt-4">
       <summary className="cursor-pointer font-semibold">
-        Corregir y revisar manualmente
+        {mode === "worker"
+          ? "Corregir y reenviar mi gasto"
+          : "Corregir y revisar manualmente"}
       </summary>
       <form action={action} onReset={onReset} className="space-y-3 mt-3">
         <p className="text-sm">
-          Comprueba el recibo original antes de guardar. La corrección conserva
-          ese archivo y reinicia las decisiones de encargado y oficina. No
-          registra un pago.
+          {mode === "worker"
+            ? "Puedes corregir y reenviar este gasto una vez. Se conserva el recibo original y vuelve al encargado y a oficina. No registra un pago."
+            : "Comprueba el recibo original antes de guardar. La corrección conserva ese archivo y reinicia las decisiones de encargado y oficina. No registra un pago."}
         </p>
         <Feedback error={state.error} success={state.success} />
         <fieldset disabled={pending} className="grid gap-3 sm:grid-cols-2">
@@ -385,13 +393,19 @@ export function WorkforceCorrectionForm({
               defaultValue={values.description}
             />
           </label>
-          <label className="field sm:col-span-2">
-            Motivo de corrección manual
-            <Input name="reason" required minLength={5} maxLength={500} />
-          </label>
+          {mode === "admin" && (
+            <label className="field sm:col-span-2">
+              Motivo de corrección manual
+              <Input name="reason" required minLength={5} maxLength={500} />
+            </label>
+          )}
         </fieldset>
         <Button type="submit" disabled={pending}>
-          {pending ? "Procesando…" : "Guardar corrección y revisión"}
+          {pending
+            ? "Procesando…"
+            : mode === "worker"
+              ? "Reenviar gasto corregido"
+              : "Guardar corrección y revisión"}
         </Button>
       </form>
     </details>

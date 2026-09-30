@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import {
   workforceExpenseSchema,
   workforceCorrectionSchema,
+  workforceResubmissionSchema,
   workforceDecisionSchema,
   workforceExpenseError,
 } from "@/lib/workforce-expenses";
@@ -128,5 +129,55 @@ export async function correctWorkforceExpense(
   return {
     success:
       "Gasto corregido y revisado manualmente. Vuelve al encargado y después a oficina; no registra un pago.",
+  };
+}
+
+export async function resubmitWorkforceExpense(
+  company: string,
+  _: WorkforceExpenseState,
+  form: FormData,
+): Promise<WorkforceExpenseState> {
+  const { db } = await requireModule(company, "horasfix", "write");
+  const parsed = workforceResubmissionSchema.safeParse(
+    Object.fromEntries(form),
+  );
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  const v = parsed.data;
+  try {
+    const locator = await db.rpc("workforce_expense_receipt", {
+      p_company: company,
+      p_id: v.id,
+    });
+    if (locator.error) throw locator.error;
+    const receipt = workforceReceiptSchema.parse(locator.data);
+    if (
+      receipt.id !== v.receipt_id ||
+      receipt.company_id !== company ||
+      receipt.expense_id !== v.id
+    )
+      throw new Error("record_conflict");
+    await verifyWorkforceReceipt(db, receipt);
+    const result = await db.rpc("resubmit_workforce_expense", {
+      p_company: company,
+      p_request: v.request,
+      p_id: v.id,
+      p_version: v.version,
+      p_project: v.project_id === "GENERAL" ? null : v.project_id,
+      p_general: v.project_id === "GENERAL",
+      p_date: v.expense_date,
+      p_amount: v.amount,
+      p_category: v.category,
+      p_description: v.description,
+      p_pay_method: v.pay_method,
+      p_receipt: v.receipt_id,
+    });
+    if (result.error) throw result.error;
+  } catch (error) {
+    return { error: workforceExpenseError(error) };
+  }
+  revalidatePath(`/app/${company}/horas/gastos`);
+  return {
+    success:
+      "Gasto corregido y reenviado. Vuelve al encargado y después a oficina; no registra un pago.",
   };
 }

@@ -240,11 +240,41 @@ export default async function WorkforceExpenses({
                   {e.admin_review_note}
                 </p>
               )}
+              {e.correction_note && (
+                <p className="text-sm">
+                  Motivo de devolución: {e.correction_note}
+                </p>
+              )}
+              {e.resubmitted_at && (
+                <p className="text-sm">
+                  Reenviado por el trabajador:{" "}
+                  {format.format(new Date(e.resubmitted_at))}. Una corrección
+                  utilizada.
+                </p>
+              )}
+              {e.status === "NEEDS_CORRECTION" && e.resubmission_count >= 1 && (
+                <p className="text-sm">
+                  Ya se utilizó el reenvío del trabajador. Administración debe
+                  revisar este gasto.
+                </p>
+              )}
               {write &&
-                ["ADMIN", "OFFICE"].includes(scope.role ?? "") &&
-                ["SUBMITTED", "FOREMAN_APPROVED"].includes(e.status) && (
+                ((["ADMIN", "OFFICE"].includes(scope.role ?? "") &&
+                  [
+                    "SUBMITTED",
+                    "FOREMAN_APPROVED",
+                    "NEEDS_CORRECTION",
+                  ].includes(e.status)) ||
+                  (scope.actor_id === e.worker_id &&
+                    e.status === "NEEDS_CORRECTION" &&
+                    e.resubmission_count === 0)) && (
                   <WorkforceCorrectionForm
                     key={`correction:${e.id}:${e.version}`}
+                    mode={
+                      ["ADMIN", "OFFICE"].includes(scope.role ?? "")
+                        ? "admin"
+                        : "worker"
+                    }
                     company={companyId}
                     id={e.id}
                     version={e.version}
