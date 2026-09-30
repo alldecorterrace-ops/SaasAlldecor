@@ -62,8 +62,9 @@ Ver [PAGADOR-WORKFORCE-20260930.md](PAGADOR-WORKFORCE-20260930.md).
 con motivo, versión e idempotencia, conservación del recibo y snapshot manual.
 Reinicia decisiones vigentes; conserva las anteriores en historial. Sesión real,
 concurrencia PostgreSQL, revocación y conservación de datos comprobadas.
-Reemplazo de foto, etiquetas administrativas libres y revisión posterior a IA
-siguen abiertos. DEVUELTO/NEEDS_CORRECTION y un reenvío propio se cubren parcialmente
+Reemplazo e historial de fotos se cubren en 055 con evidencia separada. Etiquetas
+administrativas libres y revisión posterior a IA siguen abiertos.
+DEVUELTO/NEEDS_CORRECTION y un reenvío propio se cubren parcialmente
 en 053/054; no implementan la IA ni el productor automático de devoluciones. No se declara cerrada la fila Editar ni
 la confirmación humana posterior a IA. [Evidencia y límites](CORRECCION-MANUAL-WORKFORCE-20260930.md).
 
@@ -74,5 +75,14 @@ autorización e idempotencia. Obra existente de la misma empresa, incluso despu�
 de terminar asignación. Segundo devuelto requiere oficina; no se sustituye
 REJECTED por DEVUELTO. Oficina corrige y revisa conservando el contador. Sesión
 real por fases con fixtures sintéticos, concurrencia PostgreSQL, revocación y
-conservación comprobadas. IA, fotos nuevas/anteriores, segundo resultado IA y
-copia contable siguen abiertos. [Evidencia y límites](REENVIO-WORKFORCE-20260930.md).
+conservación comprobadas. La ampliación 055 cubre fotos nuevas/anteriores. IA,
+segundo resultado IA y copia contable siguen abiertos. [Evidencia y límites](REENVIO-WORKFORCE-20260930.md).
+
+
+## Sustitución e historial de recibos
+
+6b72cfe y esquema 055 cubren foto opcional en corrección/reenvío, histórico privado,
+inmutabilidad de los originales y revisión ligada al actual. Preparar no sustituye
+ni publica un borrador. Sesión real, binarios, reintentos, concurrencia, móvil
+emulado, revocación y conservación comprobados. No cierra IA, la fila Editar,
+reembolso ni copia contable. [Evidencia y límites](RECIBOS-ANTERIORES-WORKFORCE-20260930.md).

@@ -33,8 +33,9 @@ No se crea un botón administrativo para devolver sin la regla del origen.
 La IA y su productor de devoluciones siguen pendientes; los estados usados en
 pruebas se preparan explícitamente como fixtures sintéticos, sin atribuirlos a
 un proveedor real. No se generan pagos, reembolsos, copias contables ni envíos.
-Sustituir foto, conservación y apertura de fotos anteriores, etiquetas libres
-administrativas y segundo resultado IA/NEEDS_EDIT siguen pendientes.
+Sustitución y apertura de fotos anteriores se cubren después en 055; véase
+[RECIBOS-ANTERIORES-WORKFORCE-20260930.md](RECIBOS-ANTERIORES-WORKFORCE-20260930.md).
+Etiquetas libres administrativas y segundo resultado IA/NEEDS_EDIT siguen pendientes.
 No cierra paridad de Campo/Workforce ni los 21 módulos.
 
 ## Evidencia
@@ -98,4 +99,5 @@ conservada por decisión del propietario. No hubo borrados en este bloque.
 Datos, SQL, huellas detalladas y capturas permanecen fuera de GitHub. No hubo
 migración de ADT, pago, reembolso, copia contable ni envío externo. No cierra
 Campo/Workforce: IA y productor de devoluciones, segundo resultado IA,
-sustitución/fotos anteriores y restantes recorridos siguen abiertos.
+etiquetas libres y restantes recorridos siguen abiertos. Sustitución/fotos
+anteriores tienen evidencia posterior en el esquema 055.

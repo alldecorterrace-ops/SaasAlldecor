@@ -27,7 +27,9 @@ por bloqueos. Un reintento no repite efectos. No se escribe un pago ni copia con
 
 ## Diferencias y pendientes abiertos
 
-Esta entrega no reemplaza la foto, no implementa IA ni su confirmación humana
+Esta entrega inicial 052 no reemplaza la foto; la ampliación 055 permite sustitución
+y conserva recibos anteriores con [evidencia independiente](RECIBOS-ANTERIORES-WORKFORCE-20260930.md).
+No implementa IA ni su confirmación humana
 posterior y no habilita reembolsos. La ampliación posterior 053/054 cubre
 DEVUELTO/NEEDS_CORRECTION con evidencia en [REENVIO-WORKFORCE-20260930.md](REENVIO-WORKFORCE-20260930.md);
 REJECTED no se equipara con ellos. La IA y su productor de devoluciones siguen pendientes.

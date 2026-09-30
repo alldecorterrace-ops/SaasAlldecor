@@ -1,5 +1,22 @@
 # Ejecución y auditoría de los seis pasos
 
+**Entrega vigente del 30 de septiembre: 6b72cfe, esquema 055, solo staging.**
+
+Sustitución opcional y recibos anteriores de Workforce implementados y comprobados:
+trabajador y oficina, rechazo sin pérdida del formulario, tres binarios intactos,
+cuatro reintentos sin duplicados, revisión vinculada a la foto actual y revocación.
+482 pruebas, CI y compilación aprobados; formulario/historial a 390 px sin
+desbordamiento. Dieciséis conjuntos anteriores, ficha empresarial y membresía
+preservados; perfil temporal restaurado. Proceso/HTML final verificados después
+de separar el grupo de ejecución por revisión. Activa 6b72cfe; retorno 1abd9bf y
+dependencias c66e4ec/b149bee. Depuración de sobrantes pendiente, sin borrados.
+[Evidencia y límites](RECIBOS-ANTERIORES-WORKFORCE-20260930.md).
+
+IA y productor de devoluciones, confirmación posterior, archivo/restauración,
+reembolso, copia contable y restantes recorridos siguen abiertos. No se migra ADT
+ni se activa producción; ADT sigue principal. Alcance de 21 módulos, sin
+configuradores/3D. Las notas de entregas que siguen son históricas.
+
 **Entrega del 30 de septiembre: 28efb2a, esquemas 053/054, solo staging.**
 Reenvío único del gasto propio devuelto y corrección de oficina publicados y
 probados. Fecha inválida conserva campos; asignación terminada no impide corregir

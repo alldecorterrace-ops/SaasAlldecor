@@ -60,3 +60,19 @@ comprimidos o carpetas por cada versión publicada.
 Los inventarios del hosting, rutas privadas, diagnósticos y resultados operativos
 se conservan fuera del repositorio. En GitHub registrar el código, su SHA y las
 reglas de retención sin publicar información privada de la cuenta.
+
+
+## Comprobar la entrega servida en staging
+
+En cada cambio de revisión actualizar también PassengerAppGroupName a un nombre
+propio de la revisión de staging, registrar el grupo que se usará para el retorno
+y comprobar el proceso y el HTML realmente servido. Cambiar PassengerAppRoot
+o tocar restart.txt por sí solos no acredita que el proceso nuevo atienda las
+solicitudes. Passenger conserva configuración de inicio por grupo; véase la
+[referencia oficial](https://www.phusionpassenger.com/docs/references/config_reference/apache/#passengerappgroupname).
+
+Detectar procesos por su directorio y nombre real (incluidos lsnode/next), sin
+terminar procesos de producción ni otras aplicaciones. Verificar raíz, grupo,
+revisión, dependencia compartida, configuración privada conservada y una marca
+del HTML de la entrega. Registrar el resultado fuera de GitHub; el ajuste de
+configuración debe quedar descrito en el procedimiento versionado.
