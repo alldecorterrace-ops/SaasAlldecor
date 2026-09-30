@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import { usePreservedActionState } from "./use-preserved-action-state";
 import {
   submitWorkforceExpense,
+  archiveWorkforceExpense,
   correctWorkforceExpense,
   resubmitWorkforceExpense,
   decideWorkforceExpense,
@@ -473,5 +474,62 @@ export function WorkforceCorrectionForm({
         </Button>
       </form>
     </details>
+  );
+}
+
+export function WorkforceArchiveForm({
+  company,
+  id,
+  request,
+  version,
+  archived,
+}: {
+  company: string;
+  id: string;
+  request: string;
+  version: number;
+  archived: boolean;
+}) {
+  const [state, action, pending, onReset] = usePreservedActionState(
+    archiveWorkforceExpense.bind(null, company),
+    {} as WorkforceExpenseState,
+  );
+  return (
+    <form
+      action={action}
+      onReset={onReset}
+      className="space-y-3 mt-4 border-t pt-4"
+    >
+      <h3 className="font-semibold">
+        {archived ? "Restaurar gasto" : "Archivar gasto"}
+      </h3>
+      <p className="text-sm">
+        {archived
+          ? "Recupera el estado anterior y conserva sus decisiones y recibos."
+          : "Retira el gasto de las vistas activas. Sus recibos e historial se conservan y un administrador puede restaurarlo."}
+      </p>
+      <Feedback error={state.error} />
+      <fieldset disabled={pending} className="min-w-0 space-y-3">
+        <input type="hidden" name="id" value={id} />
+        <input type="hidden" name="request" value={request} />
+        <input type="hidden" name="version" value={version} />
+        <input
+          type="hidden"
+          name="operation"
+          value={archived ? "restore" : "archive"}
+        />
+        <label className="field">
+          Motivo de {archived ? "restauración" : "archivo"}
+          <Input name="reason" minLength={5} maxLength={500} required />
+        </label>
+        <Button type="submit" disabled={pending}>
+          {pending
+            ? "Procesando…"
+            : archived
+              ? "Restaurar gasto"
+              : "Archivar recuperable"}
+        </Button>
+      </fieldset>
+    </form>
   );
 }

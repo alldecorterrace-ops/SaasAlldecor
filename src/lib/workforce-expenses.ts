@@ -23,6 +23,7 @@ export const workforceExpenseStatuses = {
   OFFICE_APPROVED: "Aprobado por oficina",
   REJECTED: "Rechazado",
   NEEDS_CORRECTION: "Devuelto para corregir",
+  ARCHIVED: "Archivado recuperable",
 } as const;
 // datetime-local may omit zero seconds after the user edits the control.
 // This form explicitly labels UTC; never reinterpret it in the device timezone.
@@ -77,6 +78,12 @@ export function workforceExpenseError(error: unknown) {
       ? String(error.message)
       : "";
   const messages: Record<string, string> = {
+    expense_archive_forbidden:
+      "Solo un administrador con permiso de escritura puede archivar o restaurar este gasto.",
+    invalid_workforce_archive:
+      "Explica el motivo con entre cinco y 500 caracteres.",
+    expense_archive_state:
+      "El estado del archivo cambió. Recarga antes de continuar.",
     invalid_workforce_receipt_replacement:
       "Usa una foto JPG, PNG o WebP de 400 bytes a 8 MiB para sustituir el recibo.",
     invalid_workforce_resubmission:
@@ -155,4 +162,16 @@ export const workforceCorrectionSchema = z.object({
 
 export const workforceResubmissionSchema = workforceCorrectionSchema.omit({
   reason: true,
+});
+
+export const workforceArchiveSchema = z.object({
+  id: z.uuid(),
+  request: z.uuid(),
+  version: z.coerce.number().int().positive(),
+  operation: z.enum(["archive", "restore"]),
+  reason: z
+    .string()
+    .trim()
+    .min(5, "Explica el motivo con al menos cinco caracteres.")
+    .max(500),
 });

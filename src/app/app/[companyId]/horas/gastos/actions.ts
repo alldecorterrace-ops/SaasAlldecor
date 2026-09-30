@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {
   workforceExpenseSchema,
+  workforceArchiveSchema,
   workforceCorrectionSchema,
   workforceResubmissionSchema,
   workforceDecisionSchema,
@@ -224,4 +225,29 @@ export async function resubmitWorkforceExpense(
     success:
       "Gasto corregido y reenviado. Vuelve al encargado y después a oficina; no registra un pago.",
   };
+}
+
+export async function archiveWorkforceExpense(
+  company: string,
+  _: WorkforceExpenseState,
+  form: FormData,
+): Promise<WorkforceExpenseState> {
+  const { db } = await requireModule(company, "horasfix", "write");
+  const parsed = workforceArchiveSchema.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  const v = parsed.data;
+  const result = await db.rpc("archive_workforce_expense", {
+    p_company: company,
+    p_request: v.request,
+    p_id: v.id,
+    p_version: v.version,
+    p_restore: v.operation === "restore",
+    p_reason: v.reason,
+  });
+  if (result.error) return { error: workforceExpenseError(result.error) };
+  revalidatePath(`/app/${company}/horas/gastos`);
+  revalidatePath(`/app/${company}/historial/workforce_expenses/${v.id}`);
+  redirect(
+    `/app/${company}/horas/gastos?${v.operation === "archive" ? "status=ARCHIVED&" : ""}changed=${v.operation}`,
+  );
 }

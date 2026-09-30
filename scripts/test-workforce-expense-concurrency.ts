@@ -598,6 +598,76 @@ async function main() {
       as(worker.user, (c) => resubmit(c, randomUUID())),
       /record_conflict/,
     );
+    const archivedRequest = randomUUID(),
+      restoredRequest = randomUUID();
+    const archive = (
+      c: PoolClient,
+      req: string,
+      version: number,
+      restore: boolean,
+      reason = "Synthetic concurrent archive",
+    ) =>
+      c.query("select archive_workforce_expense($1,$2,$3,$4,$5,$6) data", [
+        company,
+        req,
+        manualId,
+        version,
+        restore,
+        reason,
+      ]);
+    const archiveRace = await Promise.allSettled([
+      as(owner, (c) => archive(c, archivedRequest, 4, false)),
+      as(office.user, (c) => manualCorrect(c, randomUUID(), 4, "20.33")),
+    ]);
+    assert.equal(archiveRace.filter((x) => x.status === "fulfilled").length, 1);
+    const archiveLoser = archiveRace.find(
+      (x) => x.status === "rejected",
+    ) as PromiseRejectedResult;
+    assert.equal(archiveLoser.reason.code, "PT409");
+    assert.match(archiveLoser.reason.message, /record_conflict/);
+    const archiveWon = archiveRace[0].status === "fulfilled";
+    const archiveVersion = archiveWon ? 4 : 5;
+    const archiveRepeats = await Promise.all(
+      Array.from({ length: 8 }, () =>
+        as(owner, (c) => archive(c, archivedRequest, archiveVersion, false)),
+      ),
+    );
+    assert(archiveRepeats.every((x) => x.rows[0].data.status === "ARCHIVED"));
+    const archived = (
+      await pool.query("select * from workforce_expenses where id=$1", [
+        manualId,
+      ])
+    ).rows[0];
+    const restoreRepeats = await Promise.all(
+      Array.from({ length: 8 }, () =>
+        as(owner, (c) => archive(c, restoredRequest, archived.version, true)),
+      ),
+    );
+    assert(restoreRepeats.every((x) => x.rows[0].data.status === "SUBMITTED"));
+    const restored = (
+      await pool.query("select * from workforce_expenses where id=$1", [
+        manualId,
+      ])
+    ).rows[0];
+    assert.equal(restored.version, archived.version + 1);
+    assert.equal(restored.receipt_id, archived.receipt_id);
+    assert.deepEqual(restored.review_snapshot, archived.review_snapshot);
+    assert.equal(restored.amount, archived.amount);
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from audit_events where entity='workforce_expenses' and entity_id=$1 and after_data->>'status'='ARCHIVED'",
+          [manualId],
+        )
+      ).rows[0].n,
+      1,
+    );
+    await assert.rejects(
+      as(owner, (c) =>
+        archive(c, restoredRequest, archived.version, true, "Changed reason"),
+      ),
+      /request_conflict/,
+    );
     await as(owner, (c) =>
       c.query(
         "select configure_workforce($1,$2,$3,1,'FOREMAN',null,true,'Synthetic revocation')",
@@ -642,6 +712,9 @@ async function main() {
         manualReviewNoPayment: true,
         parallelWorkerResubmissionRetries: 8,
         workerResubmissionEffects: 1,
+        parallelArchiveRetries: 8,
+        parallelRestoreRetries: 8,
+        archiveCorrectionRaceWinners: 1,
         noPayment: true,
       }),
     );

@@ -12,6 +12,7 @@ import {
 } from "@/lib/workforce-expenses";
 import {
   WorkforceExpenseForm,
+  WorkforceArchiveForm,
   WorkforceCorrectionForm,
   WorkforceDecisionForm,
   WorkforceGeneralForm,
@@ -28,6 +29,7 @@ export default async function WorkforceExpenses({
     allocation?: string;
     payer?: string;
     saved?: string;
+    changed?: string;
   }>;
 }) {
   const { companyId } = await params,
@@ -56,6 +58,7 @@ export default async function WorkforceExpenses({
     .order("expense_at", { ascending: false })
     .order("id");
   if (status) query = query.eq("status", status);
+  else query = query.neq("status", "ARCHIVED");
   if (allocation) query = query.eq("allocation", allocation);
   if (payer === "UNKNOWN") query = query.is("pay_method", null);
   else if (payer) query = query.eq("pay_method", payer);
@@ -127,6 +130,13 @@ export default async function WorkforceExpenses({
         Las decisiones se conservan por separado: encargado y oficina. Aprobar
         no confirma un reembolso ni registra un pago.
       </p>
+      {["archive", "restore"].includes(search.changed ?? "") && (
+        <p role="status" className="card mb-5">
+          {search.changed === "archive"
+            ? "Gasto archivado. Sus recibos e historial se conservan; puedes restaurarlo desde esta vista."
+            : "Gasto restaurado con su estado anterior. No se registró ningún pago."}
+        </p>
+      )}
       {search.saved && (
         <p role="status" className="card mb-5">
           Gasto enviado. Puedes reabrir su recibo y consultar el estado.
@@ -151,12 +161,14 @@ export default async function WorkforceExpenses({
         <label className="field">
           Estado
           <select name="status" defaultValue={status}>
-            <option value="">Todos</option>
-            {Object.entries(workforceExpenseStatuses).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            ))}
+            <option value="">Todos los activos</option>
+            {Object.entries(workforceExpenseStatuses)
+              .filter(([k]) => k !== "ARCHIVED" || scope.role === "ADMIN")
+              .map(([k, v]) => (
+                <option key={k} value={k}>
+                  {v}
+                </option>
+              ))}
           </select>
         </label>
         <label className="field">
@@ -208,6 +220,24 @@ export default async function WorkforceExpenses({
                   ]
                 }
               </p>
+              {e.status === "ARCHIVED" && (
+                <p className="text-sm my-2">
+                  Archivado el {format.format(new Date(e.archived_at))} ·{" "}
+                  {e.archive_reason}. Estado que se recuperará:{" "}
+                  {
+                    workforceExpenseStatuses[
+                      e.archived_from_status as keyof typeof workforceExpenseStatuses
+                    ]
+                  }
+                  .
+                </p>
+              )}
+              {e.restored_at && (
+                <p className="text-sm my-2">
+                  Restaurado el {format.format(new Date(e.restored_at))} ·{" "}
+                  {e.restore_reason}
+                </p>
+              )}
               <p className="text-sm my-2">
                 {format.format(new Date(e.expense_at))} ·{" "}
                 {
@@ -382,6 +412,16 @@ export default async function WorkforceExpenses({
                     alreadyGeneral={e.allocation === "GENERAL"}
                   />
                 )}
+              {write && scope.role === "ADMIN" && (
+                <WorkforceArchiveForm
+                  key={`archive:${e.id}:${e.version}`}
+                  company={companyId}
+                  id={e.id}
+                  version={e.version}
+                  request={randomUUID()}
+                  archived={e.status === "ARCHIVED"}
+                />
+              )}
               {stage && (
                 <WorkforceDecisionForm
                   key={`${e.id}:${e.version}`}
