@@ -97,3 +97,14 @@ pueden ver recibos, metadata o historial de archivados. Sesión web, binarios,
 concurrencia, móvil emulado y revocación comprobados. La fila Eliminar/restaurar
 no queda completamente cerrada: la copia contable, deuda y reembolso del origen
 siguen sin adaptador coordinado. [Evidencia y límites](ARCHIVO-WORKFORCE-20260930.md).
+
+
+## Registro unificado parcial
+
+518447a, esquema 057, suma Administración y proyecciones de Workforce con ambas
+aprobaciones en el registro de Gastos. Archivo/restauración y general coordinan
+la consulta mediante el estado actual del origen, sin otra fila administrativa.
+Origen, CSV, UI, móvil, restricciones y dieciocho conjuntos protegidos comprobados.
+No cierra la copia contable, deuda/reembolso ni Labor; el bolsillo propio queda
+SIN_CONFIRMACION. Los otros consumidores de costos siguen pendientes.
+[Evidencia, diferencias y retorno](REGISTRO-UNIFICADO-WORKFORCE-20260930.md).

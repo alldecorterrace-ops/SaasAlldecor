@@ -1,6 +1,28 @@
 # Estado de implementación — 30 de septiembre de 2026
 
-**Entrega vigente del 30 de septiembre: be3b23d, esquema 056, solo staging.**
+**Entrega vigente del 30 de septiembre: 518447a, esquema 057, solo staging.**
+
+Registro unificado de Gastos publicado y comprobado: Administración y costos de
+Workforce con ambas aprobaciones, origen, filtros, sumas y CSV con centavos.
+Consulta vinculada al registro original; archivo retira el costo activo,
+restauración lo recupera y general deja de asociarlo al proyecto. No se crea un
+segundo gasto ni se interpreta un costo como pago o deuda conciliada.
+496 pruebas, lint, tipos, compilación y los tres trabajos de CI correctos. Sesión
+web, CSV, acceso restringido, separación entre dos empresas y móvil emulado
+390 px comprobados. Dieciocho conjuntos previos y ficha empresarial intactos;
+membresía original restituida, perfil desactivado y asignación temporal cerrada.
+Once controles públicos correctos. Activa 518447a; retorno be3b23d requiere
+restituir primero el RPC de consulta 046 (ensayo local sin cambios de datos,
+no retorno real). Dependencias c66e4ec/b149bee conservadas. Sin borrados.
+[Evidencia, diferencias y retorno](REGISTRO-UNIFICADO-WORKFORCE-20260930.md).
+
+IA, confirmación humana posterior, deuda/reembolso, Labor automática, coordinación
+contable completa y restantes recorridos siguen abiertos. La consulta exige los
+permisos actuales de Gastos y Workforce; no replica accesos globales de ADT. No
+se migra ni activa producción. ADT continúa principal; alcance de 21 módulos sin
+configuradores/3D. La retención del servidor continúa pendiente.
+
+**Entrega anterior del 30 de septiembre: be3b23d, esquema 056, solo staging.**
 
 Archivo recuperable y restauración de gastos de Workforce comprobados en sesión
 real: motivo, estado previo, revisión, dos fotos intactas, historial en español,

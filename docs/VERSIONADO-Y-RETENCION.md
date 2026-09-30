@@ -78,7 +78,7 @@ del HTML de la entrega. Registrar el resultado fuera de GitHub; el ajuste de
 configuración debe quedar descrito en el procedimiento versionado.
 
 
-## Entrega de archivo de Workforce del 30 de septiembre
+## Entrega anterior de archivo de Workforce del 30 de septiembre
 
 Activa be3b23d89d590181d6991d02b4d0322507ea899d, esquema aditivo 056 solo en staging.
 Retorno previsto 32f31af2cd6b087a920ffbd38d6939b4129e4ee7, con el mismo esquema y
@@ -93,3 +93,19 @@ permanece pendiente; este inventario no cumple todavía el límite de dos entreg
 estables. Mantener código en GitHub, comprobar contenido único y dependencias y
 obtener la confirmación aplicable antes de cualquier borrado permanente.
 [Evidencia de publicación](ARCHIVO-WORKFORCE-20260930.md).
+
+
+## Entrega vigente de registro unificado, 30 de septiembre
+
+Activa 518447adea3dd4db1be1ccba5e16f2d23a5ac70d, esquema 057 solo staging.
+Retorno be3b23d requiere restituir antes el RPC de consulta 046; no cambiar solo
+la raíz. Conservación de datos al restituir el contrato ensayada localmente,
+sin retorno real del hosting. Dependencias c66e4ec/b149bee, entorno privado y
+producción conservados; proceso, grupo y recorrido de la activa comprobados.
+
+Inventario: 21 carpetas de entregas, 105.457 entradas. Sin eliminaciones; retención
+limitada todavía pendiente. Las entregas distintas de activa/retorno/dependencias
+son candidatas de revisión, no autorización de borrado. Conservar aaf268c por
+la decisión explícita vigente del propietario. Eliminar sobrantes exige inventario
+de contenido único, enlaces/procesos y la confirmación aplicable.
+[Evidencia y procedimiento de retorno](REGISTRO-UNIFICADO-WORKFORCE-20260930.md).
