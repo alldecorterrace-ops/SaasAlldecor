@@ -6,7 +6,10 @@ import {
   decideWorkforceExpense,
   type WorkforceExpenseState,
 } from "@/app/app/[companyId]/horas/gastos/actions";
-import { workforceExpenseCategories, workforceUtcDateTime } from "@/lib/workforce-expenses";
+import {
+  workforceExpenseCategories,
+  workforceUtcDateTime,
+} from "@/lib/workforce-expenses";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Feedback } from "./feedback";
@@ -185,6 +188,51 @@ export function WorkforceDecisionForm({
       </fieldset>
       <Button type="submit" disabled={pending}>
         {pending ? "Procesando…" : `Registrar decisión de ${stage}`}
+      </Button>
+    </form>
+  );
+}
+
+export function WorkforceGeneralForm({
+  company,
+  id,
+  version,
+  request,
+}: {
+  company: string;
+  id: string;
+  version: number;
+  request: string;
+}) {
+  const [state, action, pending, onReset] = usePreservedActionState(
+    decideWorkforceExpense.bind(null, company),
+    {} as WorkforceExpenseState,
+  );
+  return (
+    <form
+      onReset={onReset}
+      action={action}
+      className="space-y-3 mt-4 border-t pt-4"
+    >
+      <h3 className="font-semibold">Reclasificar a gasto general</h3>
+      <p className="text-sm">
+        El costo dejará de corresponder a la obra. Se conservarán la obra
+        original, el recibo y las decisiones. La aprobación pendiente de oficina
+        sigue siendo necesaria.
+      </p>
+      <Feedback error={state.error} success={state.success} />
+      <fieldset disabled={pending} className="grid gap-3">
+        <input name="id" type="hidden" value={id} />
+        <input name="version" type="hidden" value={version} />
+        <input name="request" type="hidden" value={request} />
+        <input name="decision" type="hidden" value="RECLASSIFY_GENERAL" />
+        <label className="field">
+          Motivo para gasto general
+          <Input name="reason" required minLength={5} maxLength={1000} />
+        </label>
+      </fieldset>
+      <Button type="submit" disabled={pending}>
+        {pending ? "Procesando…" : "Registrar como gasto general"}
       </Button>
     </form>
   );

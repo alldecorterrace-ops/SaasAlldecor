@@ -72,5 +72,10 @@ export async function decideWorkforceExpense(
     });
   if (result.error) return { error: workforceExpenseError(result.error) };
   revalidatePath(`/app/${company}/horas/gastos`);
-  return { success: "Decisión registrada. La aprobación no registra un pago." };
+  return {
+    success:
+      v.decision === "RECLASSIFY_GENERAL"
+        ? "Reclasificado a gasto general. Se conservan importe, recibo y aprobaciones; no se registra un pago."
+        : "Decisión registrada. La aprobación no registra un pago.",
+  };
 }

@@ -246,6 +246,124 @@ async function main() {
       ).rows[0].n,
       0,
     );
+    // Race cost allocation with the office approval on one version. Neither may overwrite the other.
+    const generalId = randomUUID();
+    const generalReceipt = await as(worker.user, async (c) => {
+      const receipt = (
+        await c.query(
+          "select (prepare_workforce_receipt($1,$2,$3,33,'png','General-QA.png')).id",
+          [company, generalId, "b".repeat(64)],
+        )
+      ).rows[0].id as string;
+      await c.query(
+        "insert into storage.objects(bucket_id,name) values('workforce-receipts',$1)",
+        [`${company}/${generalId}/${receipt}.png`],
+      );
+      await c.query(
+        "select submit_workforce_expense($1,$2,$3,$4,now(),12.34,'MATERIALS','Synthetic general allocation',$5)",
+        [company, randomUUID(), generalId, project, receipt],
+      );
+      return receipt;
+    });
+    const generalDecision = (
+      c: PoolClient,
+      req: string,
+      version: number,
+      decision: string,
+    ) =>
+      c.query(
+        "select decide_workforce_expense($1,$2,$3,$4,$5,'Synthetic general allocation') data",
+        [company, req, generalId, version, decision],
+      );
+    await as(foreman.user, (c) =>
+      generalDecision(c, randomUUID(), 1, "APPROVE"),
+    );
+    const generalRequest = randomUUID();
+    const generalRace = await Promise.allSettled([
+      as(office.user, (c) =>
+        generalDecision(c, generalRequest, 2, "RECLASSIFY_GENERAL"),
+      ),
+      as(office.user, (c) => generalDecision(c, randomUUID(), 2, "APPROVE")),
+    ]);
+    assert.equal(generalRace.filter((x) => x.status === "fulfilled").length, 1);
+    const generalFailed = generalRace.find(
+      (x) => x.status === "rejected",
+    ) as PromiseRejectedResult;
+    assert.equal(generalFailed.reason.code, "PT409");
+    assert.match(generalFailed.reason.message, /record_conflict/);
+    const generalWon = generalRace[0].status === "fulfilled";
+    const repeatVersion = generalWon ? 2 : 3;
+    const generalRetries = await Promise.all(
+      Array.from({ length: 8 }, () =>
+        as(office.user, (c) =>
+          generalDecision(
+            c,
+            generalRequest,
+            repeatVersion,
+            "RECLASSIFY_GENERAL",
+          ),
+        ),
+      ),
+    );
+    assert(
+      generalRetries.every((x) => x.rows[0].data.allocation === "GENERAL"),
+    );
+    if (generalWon)
+      await as(office.user, (c) =>
+        generalDecision(c, randomUUID(), 3, "APPROVE"),
+      );
+    const generalSaved = (
+      await pool.query("select * from workforce_expenses where id=$1", [
+        generalId,
+      ])
+    ).rows[0];
+    assert.equal(generalSaved.version, 4);
+    assert.equal(generalSaved.status, "OFFICE_APPROVED");
+    assert.equal(generalSaved.allocation, "GENERAL");
+    assert.equal(generalSaved.project_id, project);
+    assert.equal(generalSaved.receipt_id, generalReceipt);
+    assert.equal(generalSaved.amount, "12.34");
+    assert.equal(generalSaved.foreman_by, foreman.user);
+    assert.equal(generalSaved.office_by, office.user);
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from audit_events where entity='workforce_expenses' and entity_id=$1",
+          [generalId],
+        )
+      ).rows[0].n,
+      4,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from expenses where company_id=$1",
+          [company],
+        )
+      ).rows[0].n,
+      0,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from payments where company_id=$1",
+          [company],
+        )
+      ).rows[0].n,
+      0,
+    );
+    await as(owner, (c) =>
+      c.query(
+        "select configure_workforce($1,$2,$3,1,'FOREMAN',null,true,'Synthetic revocation')",
+        [company, randomUUID(), office.id],
+      ),
+    );
+    await assert.rejects(
+      as(office.user, (c) =>
+        generalDecision(c, generalRequest, repeatVersion, "RECLASSIFY_GENERAL"),
+      ),
+      /expense_forbidden/,
+    );
     await as(owner, (c) =>
       c.query("select set_member_access($1,$2,'member',false,'{}')", [
         company,
@@ -264,6 +382,9 @@ async function main() {
         parallelFirstDecisionRetries: 8,
         secondDecisionWinners: 1,
         auditEffects: 3,
+        parallelGeneralRetries: 8,
+        generalApprovalRaceWinners: 1,
+        generalAuditEffects: 4,
         noPayment: true,
       }),
     );

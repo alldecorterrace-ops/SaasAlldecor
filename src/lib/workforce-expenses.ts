@@ -26,7 +26,10 @@ export const workforceExpenseSchema = z.object({
   id: z.uuid(),
   request: z.uuid(),
   project_id: z.uuid("Selecciona una obra."),
-  expense_at: z.iso.datetime({ offset: true, error: "Indica una fecha y hora válidas en UTC." }),
+  expense_at: z.iso.datetime({
+    offset: true,
+    error: "Indica una fecha y hora válidas en UTC.",
+  }),
   amount: z
     .string()
     .regex(
@@ -46,12 +49,13 @@ export const workforceDecisionSchema = z
     id: z.uuid(),
     request: z.uuid(),
     version: z.coerce.number().int().positive(),
-    decision: z.enum(["APPROVE", "REJECT"]),
+    decision: z.enum(["APPROVE", "REJECT", "RECLASSIFY_GENERAL"]),
     reason: z.string().trim().max(1000),
   })
-  .refine((v) => v.decision !== "REJECT" || v.reason.length >= 5, {
+  .refine((v) => v.decision === "APPROVE" || v.reason.length >= 5, {
     path: ["reason"],
-    message: "Explica el rechazo con al menos cinco caracteres.",
+    message:
+      "Explica el rechazo o la reclasificación con al menos cinco caracteres.",
   });
 export function workforceExpenseError(error: unknown) {
   const message =
@@ -68,7 +72,7 @@ export function workforceExpenseError(error: unknown) {
     invalid_workforce_receipt:
       "Adjunta una imagen JPG, PNG, WebP, HEIC o HEIF válida de hasta 8 MiB.",
     invalid_workforce_decision:
-      "Revisa la decisión y el motivo; un rechazo necesita al menos cinco caracteres.",
+      "Revisa la decisión y el motivo; un rechazo o reclasificación necesita al menos cinco caracteres.",
     receipt_upload_limit:
       "Se alcanzó el límite de recibos preparados. Conserva el archivo y solicita revisión.",
     receipt_unavailable:
@@ -78,7 +82,7 @@ export function workforceExpenseError(error: unknown) {
     expense_forbidden:
       "Tu rol no puede decidir este gasto. El encargado no puede aprobar sus propios gastos.",
     expense_state_invalid:
-      "La decisión requiere el estado anterior: encargado primero y oficina después.",
+      "Comprueba el estado: encargado primero, oficina después. Solo oficina puede reclasificar un gasto ya aprobado por el encargado; un gasto general no se reclasifica otra vez.",
     record_conflict:
       "Este gasto cambió en otra sesión. Recarga antes de decidir.",
     request_conflict:

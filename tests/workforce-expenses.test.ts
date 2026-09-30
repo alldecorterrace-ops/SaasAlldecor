@@ -373,6 +373,136 @@ test("Workforce expenses enforce receipts, assignments, tenant isolation and two
       },
     );
     await t.test(
+      "general allocation preserves original evidence and approvals, requires office authority and cannot bypass stages",
+      async () => {
+        const id = ids[0],
+          request = randomUUID();
+        await as(office.user);
+        const beforeRow = (
+          await db.query<Record<string, unknown>>(
+            "select * from workforce_expenses where id=$1",
+            [id],
+          )
+        ).rows[0];
+        await assert.rejects(
+          decide(id, 3, "RECLASSIFY_GENERAL", "no"),
+          /invalid_workforce_decision/,
+        );
+        await as(worker.user);
+        await assert.rejects(
+          decide(id, 3, "RECLASSIFY_GENERAL", "Synthetic general"),
+          /expense_forbidden/,
+        );
+        await as(foreman.user);
+        await assert.rejects(
+          decide(id, 3, "RECLASSIFY_GENERAL", "Synthetic general"),
+          /expense_forbidden/,
+        );
+        await as(office.user);
+        const first = await decide(
+          id,
+          3,
+          "RECLASSIFY_GENERAL",
+          "Synthetic general",
+          request,
+        );
+        assert.deepEqual(
+          (
+            await decide(
+              id,
+              3,
+              "RECLASSIFY_GENERAL",
+              "Synthetic general",
+              request,
+            )
+          ).rows,
+          first.rows,
+        );
+        await assert.rejects(
+          decide(id, 3, "RECLASSIFY_GENERAL", "Changed general", request),
+          /request_conflict/,
+        );
+        await assert.rejects(
+          decide(id, 3, "RECLASSIFY_GENERAL", "Synthetic general"),
+          /record_conflict/,
+        );
+        await assert.rejects(
+          decide(id, 4, "RECLASSIFY_GENERAL", "Synthetic general"),
+          /expense_state_invalid/,
+        );
+        const after = (
+          await db.query<Record<string, unknown>>(
+            "select * from workforce_expenses where id=$1",
+            [id],
+          )
+        ).rows[0];
+        for (const key of [
+          "project_id",
+          "worker_id",
+          "receipt_id",
+          "expense_at",
+          "amount",
+          "category",
+          "description",
+          "status",
+          "foreman_by",
+          "foreman_at",
+          "office_by",
+          "office_at",
+        ])
+          assert.deepEqual(after[key], beforeRow[key], key);
+        assert.equal(after.allocation, "GENERAL");
+        assert.equal(after.version, 4);
+        assert.equal(after.general_by, office.user);
+        assert.equal(after.general_worker_id, office.worker);
+        assert.equal(after.general_reason, "Synthetic general");
+        assert(after.general_at);
+        // A new expense may be reclassified after the first decision, without granting the second.
+        await as(worker.user);
+        const pending = randomUUID(),
+          receipt = await prepare(pending);
+        await submit(pending, receipt);
+        await as(office.user);
+        await assert.rejects(
+          decide(pending, 1, "RECLASSIFY_GENERAL", "Synthetic general"),
+          /expense_state_invalid/,
+        );
+        await as(foreman.user);
+        await decide(pending, 1);
+        await as(office.user);
+        await decide(pending, 2, "RECLASSIFY_GENERAL", "Synthetic general");
+        assert.equal(
+          (
+            await db.query<{ status: string }>(
+              "select status from workforce_expenses where id=$1",
+              [pending],
+            )
+          ).rows[0].status,
+          "FOREMAN_APPROVED",
+        );
+        await decide(pending, 3);
+        assert.equal(
+          (
+            await db.query<{ status: string }>(
+              "select status from workforce_expenses where id=$1",
+              [pending],
+            )
+          ).rows[0].status,
+          "OFFICE_APPROVED",
+        );
+        // Losing the office role must deny even a previously accepted idempotent retry.
+        await as(owner);
+        await configure(office, "FOREMAN", null, 1);
+        await as(office.user);
+        await assert.rejects(
+          decide(id, 3, "RECLASSIFY_GENERAL", "Synthetic general", request),
+          /expense_forbidden/,
+        );
+        await as(owner);
+        await configure(office, "OFFICE", null, 2);
+      },
+    );
+    await t.test(
       "rejection at either stage is final and requires a reason",
       async () => {
         for (const secondStage of [false, true]) {
@@ -405,6 +535,16 @@ test("Workforce expenses enforce receipts, assignments, tenant isolation and two
             ).rows[0].status,
             "REJECTED",
           );
+          await as(office.user);
+          await assert.rejects(
+            decide(
+              id,
+              secondStage ? 3 : 2,
+              "RECLASSIFY_GENERAL",
+              "Synthetic general",
+            ),
+            /expense_state_invalid/,
+          );
           await assert.rejects(
             decide(id, secondStage ? 3 : 2),
             /expense_state_invalid/,
@@ -423,7 +563,7 @@ test("Workforce expenses enforce receipts, assignments, tenant isolation and two
               [a, ids[0]],
             )
           ).rows.length,
-          3,
+          4,
         );
         await as(other.user);
         assert.equal(
@@ -557,10 +697,52 @@ test("Workforce receipts check dimensions/brands, reject PDF and unsafe inputs, 
 });
 
 test("Workforce edited UTC dates accept minute precision and reject rollover or offsets", () => {
-  assert.equal(workforceUtcDateTime("2026-09-30T12:00"), "2026-09-30T12:00:00Z");
-  assert.equal(workforceUtcDateTime("2026-09-30T12:00:31"), "2026-09-30T12:00:31Z");
-  assert.equal(workforceUtcDateTime("2026-09-30T12:00:31.123"), "2026-09-30T12:00:31.123Z");
-  for (const value of ["", "2026-02-30T12:00", "2026-09-30T25:00", "2026-09-30", "2026-09-30T12:00Z", "2026-09-30T12:00-04:00"]) {
+  assert.equal(
+    workforceUtcDateTime("2026-09-30T12:00"),
+    "2026-09-30T12:00:00Z",
+  );
+  assert.equal(
+    workforceUtcDateTime("2026-09-30T12:00:31"),
+    "2026-09-30T12:00:31Z",
+  );
+  assert.equal(
+    workforceUtcDateTime("2026-09-30T12:00:31.123"),
+    "2026-09-30T12:00:31.123Z",
+  );
+  for (const value of [
+    "",
+    "2026-02-30T12:00",
+    "2026-09-30T25:00",
+    "2026-09-30",
+    "2026-09-30T12:00Z",
+    "2026-09-30T12:00-04:00",
+  ]) {
     assert.equal(workforceUtcDateTime(value), null);
   }
+});
+
+test("general allocation needs a reason and remains a decision distinct from reimbursement", () => {
+  const base = {
+    id: randomUUID(),
+    request: randomUUID(),
+    version: 2,
+    decision: "RECLASSIFY_GENERAL",
+    reason: "  no  ",
+  };
+  assert.equal(workforceDecisionSchema.safeParse(base).success, false);
+  assert.equal(
+    workforceDecisionSchema.safeParse({
+      ...base,
+      reason: "Correction to general cost",
+    }).success,
+    true,
+  );
+  assert.equal(
+    workforceDecisionSchema.safeParse({
+      ...base,
+      decision: "REIMBURSE",
+      reason: "Paid",
+    }).success,
+    false,
+  );
 });

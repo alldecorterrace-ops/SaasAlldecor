@@ -31,8 +31,16 @@ La regla de campos de búsqueda y trabajador asociado se implementa por separado
 en esquemas 044/045; no cierra este contrato. Las pruebas financieras se ejecutarán
 con registros sintéticos en staging y sin efectuar pagos ni envíos externos.
 
-## Base de equipo en preparación
+## Entregas parciales de equipo
 
 El esquema 047 y las pantallas de equipo/asignaciones se documentan en
 [AUDITORIA-EQUIPO-WORKFORCE-20260929.md](AUDITORIA-EQUIPO-WORKFORCE-20260929.md).
 Es una base previa; no cierra las aprobaciones, revisión ni reembolsos de esta tabla.
+
+## Reclasificación general
+
+La regla de servicio Workforce RECLASSIFY_GENERAL se desarrolla en el esquema 049;
+ver [GASTO-GENERAL-WORKFORCE-20260930.md](GASTO-GENERAL-WORKFORCE-20260930.md).
+No cierra los requisitos de IA/reembolso de la interfaz administrativa ni la copia
+contable. Las dos aprobaciones y recibos de 048 ya tienen evidencia de staging en
+[GASTOS-WORKFORCE-20260930.md](GASTOS-WORKFORCE-20260930.md).

@@ -28,6 +28,13 @@ const entities: Record<string, { module: string; label: string }> = {
   projects: { module: "fin-proyectos", label: "Proyecto" },
 };
 const labels: Record<string, string> = {
+  allocation: "Destino del costo",
+  general_by: "Usuario que reclasificó",
+  general_worker_id: "Perfil que reclasificó",
+  general_at: "Fecha de reclasificación",
+  general_reason: "Motivo de gasto general",
+  foreman_worker_id: "Perfil del encargado",
+  office_worker_id: "Perfil de oficina",
   expense_at: "Fecha del gasto",
   foreman_at: "Fecha de decisión del encargado",
   foreman_by: "Encargado",

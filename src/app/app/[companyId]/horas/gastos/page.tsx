@@ -11,6 +11,7 @@ import {
 import {
   WorkforceExpenseForm,
   WorkforceDecisionForm,
+  WorkforceGeneralForm,
 } from "@/components/workforce-expenses";
 import { ListPagination } from "@/components/list-pagination";
 export default async function WorkforceExpenses({
@@ -18,7 +19,12 @@ export default async function WorkforceExpenses({
   searchParams,
 }: {
   params: Promise<{ companyId: string }>;
-  searchParams: Promise<{ page?: string; status?: string; saved?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    status?: string;
+    allocation?: string;
+    saved?: string;
+  }>;
 }) {
   const { companyId } = await params,
     { db, member, company } = await requireModule(companyId, "horasfix"),
@@ -30,6 +36,9 @@ export default async function WorkforceExpenses({
   const page = Math.max(1, Math.min(100000, parseInt(search.page ?? "1") || 1)),
     status = Object.hasOwn(workforceExpenseStatuses, search.status ?? "")
       ? search.status!
+      : "",
+    allocation = ["PROJECT", "GENERAL"].includes(search.allocation ?? "")
+      ? search.allocation!
       : "";
   let query = db
     .from("workforce_expenses")
@@ -38,6 +47,7 @@ export default async function WorkforceExpenses({
     .order("expense_at", { ascending: false })
     .order("id");
   if (status) query = query.eq("status", status);
+  if (allocation) query = query.eq("allocation", allocation);
   const { data, error, count } = await query.range(
     (page - 1) * 20,
     page * 20 - 1,
@@ -117,6 +127,14 @@ export default async function WorkforceExpenses({
             ))}
           </select>
         </label>
+        <label className="field">
+          Destino del costo
+          <select name="allocation" defaultValue={allocation}>
+            <option value="">Todos</option>
+            <option value="PROJECT">Obra</option>
+            <option value="GENERAL">Gasto general</option>
+          </select>
+        </label>
         <button className="underline">Filtrar</button>
       </form>
       <div className="grid gap-5">
@@ -157,6 +175,16 @@ export default async function WorkforceExpenses({
                 {names.find((n) => n.id === e.id)?.project_name ??
                   "Obra del gasto"}
               </p>
+              <p className="font-medium">
+                Destino del costo:{" "}
+                {e.allocation === "GENERAL" ? "Gasto general" : "Obra"}
+              </p>
+              {e.allocation === "GENERAL" && (
+                <p className="text-sm">
+                  La obra indicada es la original del envío. Reclasificado el{" "}
+                  {format.format(new Date(e.general_at))} · {e.general_reason}
+                </p>
+              )}
               <p className="whitespace-pre-wrap">{e.description}</p>
               <a
                 className="underline inline-block my-3"
@@ -184,6 +212,18 @@ export default async function WorkforceExpenses({
                   {e.office_reason ? ` · ${e.office_reason}` : ""}
                 </p>
               )}
+              {write &&
+                ["ADMIN", "OFFICE"].includes(scope.role ?? "") &&
+                ["FOREMAN_APPROVED", "OFFICE_APPROVED"].includes(e.status) &&
+                e.allocation === "PROJECT" && (
+                  <WorkforceGeneralForm
+                    key={`general:${e.id}:${e.version}`}
+                    company={companyId}
+                    id={e.id}
+                    version={e.version}
+                    request={randomUUID()}
+                  />
+                )}
               {stage && (
                 <WorkforceDecisionForm
                   key={`${e.id}:${e.version}`}
@@ -205,7 +245,7 @@ export default async function WorkforceExpenses({
         path={base}
         page={page}
         count={count ?? 0}
-        query={{ status }}
+        query={{ status, allocation }}
       />
     </>
   );
