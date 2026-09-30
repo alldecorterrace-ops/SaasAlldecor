@@ -195,7 +195,7 @@ export default async function WorkforceExpenses({
                 ? "oficina"
                 : null;
           return (
-            <article className="card break-words" key={e.id}>
+            <article className="card min-w-0 break-words" key={e.id}>
               <h2 className="text-lg font-semibold">
                 {names.find((n) => n.id === e.id)?.worker_name ??
                   "Trabajador del equipo"}{" "}

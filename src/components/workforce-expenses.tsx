@@ -440,10 +440,11 @@ export function WorkforceCorrectionForm({
               defaultValue={values.description}
             />
           </label>
-          <label className="field sm:col-span-2">
+          <label className="field min-w-0 sm:col-span-2">
             Nueva foto del recibo (opcional)
             <input
               aria-label="Nueva foto del recibo (opcional)"
+              className="w-full min-w-0 max-w-full"
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(event) => {
