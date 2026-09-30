@@ -4,6 +4,7 @@ import { canAccess } from "@/lib/modules";
 import { expensePayers } from "@/lib/operations";
 import { usd } from "@/lib/finance";
 import {
+  expenseSources,
   expenseFiltersSchema,
   expenseRegisterSchema,
   registerStates,
@@ -86,7 +87,8 @@ export async function ExpenseRegister({
           <p className="eyebrow">Finanzas</p>
           <h1 className="page-title mt-2">Gastos</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Registro de gastos de la empresa y sus proyectos.
+            Gastos de administración y costos aprobados de Workforce, según tus
+            permisos.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -165,6 +167,17 @@ export async function ExpenseRegister({
             Busca también por proveedor, descripción, cliente, proyecto y
             trabajador según tus permisos.
           </span>
+        </label>
+        <label className="field">
+          Origen
+          <select name="source" defaultValue={filters.source}>
+            <option value="">Todos los orígenes disponibles</option>
+            {Object.entries(expenseSources).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
         </label>
         <label className="field">
           Estado
@@ -270,19 +283,43 @@ export async function ExpenseRegister({
         {result.count > 5000 &&
           " Hay más de 5.000 resultados: reduce el intervalo o añade filtros para exportar."}
       </p>
+      {!!result.workforce_unconfirmed &&
+        Number(result.workforce_unconfirmed) > 0 && (
+          <p className="panel p-4 text-sm">
+            Costos filtrados de Workforce declarados de bolsillo propio:{" "}
+            {usd(result.workforce_unconfirmed)}. El reembolso no tiene
+            confirmación en este sistema; este importe no acredita una deuda
+            conciliada ni un pago.
+          </p>
+        )}
+      <p className="text-sm text-muted-foreground">
+        Los costos de Workforce requieren ambas aprobaciones y se gestionan en
+        su origen. No se crea una segunda ficha. Labor automática y confirmación
+        de reembolsos siguen pendientes.
+      </p>
       <div className="space-y-3">
         {result.rows.length === 0 ? (
           <div className="panel p-6">No hay gastos con estos filtros.</div>
         ) : (
           result.rows.map((row) => (
-            <article className="panel min-w-0 p-4" key={row.id}>
+            <article
+              className="panel min-w-0 p-4"
+              key={`${row.source}:${row.id}`}
+            >
               <div className="flex flex-wrap justify-between gap-3">
                 <div className="min-w-0">
                   <Link
-                    href={`${base}/${row.id}`}
+                    href={
+                      row.source === "WORKFORCE"
+                        ? `/app/${companyId}/horas/gastos?expense=${row.id}#expense-${row.id}`
+                        : `${base}/${row.id}`
+                    }
                     className="font-semibold underline break-words"
                   >
-                    {row.vendor || "Gasto sin proveedor"}
+                    {row.vendor ||
+                      (row.source === "WORKFORCE"
+                        ? "Costo de Workforce"
+                        : "Gasto sin proveedor")}
                   </Link>
                   <p className="text-sm">
                     {row.date} · {row.category} · {registerStates[row.status]}
@@ -290,6 +327,10 @@ export async function ExpenseRegister({
                 </div>
                 <strong className="tabular-nums">{usd(row.amount)}</strong>
               </div>
+              <p className="text-sm font-medium mt-2">
+                Origen: {expenseSources[row.source]}
+                {row.source === "WORKFORCE" && " · Gestionar en Workforce"}
+              </p>
               <p className="mt-2 break-words text-sm">
                 {row.description || "Sin descripción"}
                 {row.document_number && ` · Documento: ${row.document_number}`}
@@ -329,8 +370,10 @@ export async function ExpenseRegister({
                   )}
                 </span>
                 <span>
-                  {row.method} ·{" "}
-                  {row.has_receipt ? "Con comprobante" : "Sin comprobante"}
+                  {row.method === "SIN_CONFIRMAR"
+                    ? "Método sin confirmar"
+                    : row.method}{" "}
+                  · {row.has_receipt ? "Con comprobante" : "Sin comprobante"}
                 </span>
               </div>
             </article>

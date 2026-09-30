@@ -24,6 +24,7 @@ export default async function WorkforceExpenses({
 }: {
   params: Promise<{ companyId: string }>;
   searchParams: Promise<{
+    expense?: string;
     page?: string;
     status?: string;
     allocation?: string;
@@ -62,9 +63,21 @@ export default async function WorkforceExpenses({
   if (allocation) query = query.eq("allocation", allocation);
   if (payer === "UNKNOWN") query = query.is("pay_method", null);
   else if (payer) query = query.eq("pay_method", payer);
+  const target = search.expense ? z.uuid().safeParse(search.expense) : null;
+  if (search.expense && !target?.success)
+    throw new Error("El gasto no es válido.");
+  if (target?.success) {
+    query = db
+      .from("workforce_expenses")
+      .select("*", { count: "exact" })
+      .eq("company_id", companyId)
+      .eq("id", target.data)
+      .order("expense_at", { ascending: false })
+      .order("id");
+  }
   const { data, error, count } = await query.range(
-    (page - 1) * 20,
-    page * 20 - 1,
+    target?.success ? 0 : (page - 1) * 20,
+    target?.success ? 19 : page * 20 - 1,
   );
   if (error) throw new Error("No se pudieron cargar los gastos del equipo.");
   const context = await db.rpc("workforce_expense_names", {
@@ -157,6 +170,13 @@ export default async function WorkforceExpenses({
           Solicita vincular tu cuenta a una ficha activa con perfil de equipo.
         </p>
       )}
+      {target?.success && (
+        <p className="my-4">
+          <Link className="underline" href={base}>
+            Ver todos los gastos de Workforce
+          </Link>
+        </p>
+      )}
       <form className="card flex flex-wrap gap-4 items-end my-5">
         <label className="field">
           Estado
@@ -207,7 +227,11 @@ export default async function WorkforceExpenses({
                 ? "oficina"
                 : null;
           return (
-            <article className="card min-w-0 break-words" key={e.id}>
+            <article
+              id={`expense-${e.id}`}
+              className="card min-w-0 break-words scroll-mt-5"
+              key={e.id}
+            >
               <h2 className="text-lg font-semibold">
                 {names.find((n) => n.id === e.id)?.worker_name ??
                   "Trabajador del equipo"}{" "}

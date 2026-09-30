@@ -1,5 +1,9 @@
 import { z } from "zod";
 import { uuid } from "./validation";
+export const expenseSources = {
+  ADMINISTRATIVE: "Administración",
+  WORKFORCE: "Trabajador · Workforce",
+} as const;
 export const registerStates = {
   ACTIVOS: "Activos",
   TODOS: "Todos",
@@ -27,6 +31,7 @@ export const expenseFiltersSchema = z
     payer: z
       .enum(["", "EMPRESA", "EFECTIVO_EMPRESA", "TRABAJADOR", "SIN_REGISTRAR"])
       .default(""),
+    source: z.enum(["", "ADMINISTRATIVE", "WORKFORCE"]).default(""),
     worker: idFilter,
     project: idFilter,
     customer: idFilter,
@@ -45,6 +50,7 @@ export const expenseRegisterSchema = z.object({
       reimbursements: money,
     })
     .optional(),
+  workforce_unconfirmed: money.optional(),
   count: z.number().int().nonnegative(),
   page: z.number().int().positive(),
   total: money,
@@ -54,6 +60,9 @@ export const expenseRegisterSchema = z.object({
     .array(
       z.object({
         id: uuid,
+        source: z
+          .enum(["ADMINISTRATIVE", "WORKFORCE"])
+          .default("ADMINISTRATIVE"),
         date: z.iso.date(),
         vendor: z.string(),
         document_number: z.string(),
@@ -105,6 +114,7 @@ export function expenseCsv(data: ExpenseRegisterResult) {
       "Pagado por",
       "Trabajador",
       "Comprobante",
+      "Origen",
     ],
     ...data.rows.map((r) => [
       r.id,
@@ -122,6 +132,7 @@ export function expenseCsv(data: ExpenseRegisterResult) {
       r.payer ?? "Sin registrar",
       r.worker_name ?? "",
       r.has_receipt ? "Sí" : "No",
+      expenseSources[r.source],
     ]),
   ];
   return (
