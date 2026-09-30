@@ -223,7 +223,7 @@ export default async function WorkforceExpenses({
               {e.status === "ARCHIVED" && (
                 <p className="text-sm my-2">
                   Archivado el {format.format(new Date(e.archived_at))} ·{" "}
-                  {e.archive_reason}. Estado que se recuperará:{" "}
+                  {e.archive_reason} · Estado que se recuperará:{" "}
                   {
                     workforceExpenseStatuses[
                       e.archived_from_status as keyof typeof workforceExpenseStatuses

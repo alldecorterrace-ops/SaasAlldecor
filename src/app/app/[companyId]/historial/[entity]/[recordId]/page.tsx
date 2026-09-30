@@ -28,6 +28,13 @@ const entities: Record<string, { module: string; label: string }> = {
   projects: { module: "fin-proyectos", label: "Proyecto" },
 };
 const labels: Record<string, string> = {
+  archived_from_status: "Estado anterior al archivo",
+  archived_by: "Administrador que archivó",
+  archived_at: "Fecha de archivo",
+  archive_reason: "Motivo de archivo",
+  restored_by: "Administrador que restauró",
+  restored_at: "Fecha de restauración",
+  restore_reason: "Motivo de restauración",
   correction_note: "Motivo de devolución",
   returned_at: "Fecha de devolución",
   resubmission_count: "Reenvíos utilizados",

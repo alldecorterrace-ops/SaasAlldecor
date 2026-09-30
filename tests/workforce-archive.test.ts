@@ -317,6 +317,22 @@ test("Workforce recoverable archive preserves evidence and enforces tenant and r
           );
           assert.equal(
             (
+              await db.query(
+                "select * from record_history($1,'workforce_expenses',$2)",
+                [a, e.id],
+              )
+            ).rows.length,
+            0,
+          );
+          await assert.rejects(
+            db.query(
+              "select prepare_workforce_receipt($1,$2,$3,500,'png','Synthetic.png')",
+              [a, e.id, "a".repeat(64)],
+            ),
+            /expense_forbidden/,
+          );
+          assert.equal(
+            (
               await db.query("select * from storage.objects where name=$1", [
                 `${a}/${e.id}/${e.receipt}.png`,
               ])
