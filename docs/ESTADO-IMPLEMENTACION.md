@@ -1,5 +1,14 @@
 # Estado de implementación — 22 de septiembre de 2026
 
+**Continuación del 30 de septiembre:** la consulta de equipo y obras de
+Trabajador, Encargado y Oficina se comprobó con una sesión real por fases,
+escritorio y móvil emulado. Revocación de perfil, asignación y módulo, aislamiento
+y conservación de catorce conjuntos previos comprobados; 10 pruebas locales
+específicas y ocho controles públicos correctos. Los permisos temporales se
+restauraron. No hubo nueva entrega de aplicación ni cambios de producción.
+Recibos, revisión/aprobación, reembolso, Labor automática y delegación de horas
+siguen pendientes. [Evidencia y límites](AUDITORIA-ROLES-WORKFORCE-20260930.md).
+
 
 **Última entrega de staging, 29 de septiembre: 80adf3d, esquema 047.**
 Base de equipo de Workforce publicada: perfiles, encargado directo, asignaciones

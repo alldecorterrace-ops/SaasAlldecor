@@ -131,3 +131,11 @@ Completar las sesiones de Trabajador, Encargado y Oficina y continuar con
 recibos privados de Campo, revisión humana/IA,
 doble aprobación, reembolso e incorporación contable sin duplicados. Todo ello
 permanece pendiente; esta base no cierra la paridad de Trabajadores.
+## Continuación del 30 de septiembre
+
+La consulta de equipo y obras de los tres perfiles se repitió por fases con una
+cuenta autenticada en escritorio y móvil emulado; se verificaron revocaciones y
+preservación de registros. El pendiente de sesiones de consulta descrito arriba
+queda resuelto en [la auditoría nueva](AUDITORIA-ROLES-WORKFORCE-20260930.md).
+Las escrituras de esos roles, recibos, revisión, doble aprobación, reembolsos y
+contabilidad siguen pendientes. Esta continuación no publicó otra aplicación.
