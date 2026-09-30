@@ -10,7 +10,7 @@ El contrato se contrasta con esa fuente y la copia local del controlador; no
 acredita por si solo la version PHP actualmente desplegada.
 
 Esta entrega implementa declarar el pagador al enviar un gasto, persistir su
-proveniencia, consultarlo, filtrarlo y conservarlo en el historial. No confirma
+procedencia, consultarlo, filtrarlo y conservarlo en el historial. No confirma
 revision IA/humana, reembolso, deuda calculada, transferencia ni copia contable.
 La doble decision de encargado/oficina sigue separada del pago.
 

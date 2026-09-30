@@ -202,7 +202,7 @@ export default async function WorkforceExpenses({
               </p>
               <p className="text-sm">
                 {e.pay_method === "propio"
-                  ? "Pago declarado de su bolsillo. Su reembolso requiere aprobación y revisión; no se ha registrado aqué."
+                  ? "Pago declarado de su bolsillo. Su reembolso requiere aprobación y revisión; este registro no confirma un reembolso."
                   : e.pay_method
                     ? "Pago declarado de la empresa. No genera deuda de reembolso al trabajador."
                     : "El pagador no está declarado. No se presume una deuda ni un pago."}
