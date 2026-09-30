@@ -1,5 +1,6 @@
 "use client";
-import { useActionState, useState, useRef } from "react";
+import { useState, useRef } from "react";
+import { usePreservedActionState } from "./use-preserved-action-state";
 import {
   submitWorkforceExpense,
   decideWorkforceExpense,
@@ -25,7 +26,7 @@ export function WorkforceExpenseForm({
 }) {
   const receipt = useRef<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [state, action, pending] = useActionState(
+  const [state, action, pending, onReset] = usePreservedActionState(
     async (prev: WorkforceExpenseState, form: FormData) => {
       if (!file) return { error: "Adjunta el recibo antes de enviar." };
       if (!receipt.current) {
@@ -63,7 +64,7 @@ export function WorkforceExpenseForm({
     {} as WorkforceExpenseState,
   );
   return (
-    <form action={action} className="card space-y-4">
+    <form onReset={onReset} action={action} className="card space-y-4">
       <h2 className="font-semibold text-xl">Enviar mi gasto</h2>
       <p className="text-sm">
         Adjunta un recibo de hasta 8 MiB. El gasto pasará primero por tu
@@ -157,12 +158,12 @@ export function WorkforceDecisionForm({
   request: string;
   stage: "encargado" | "oficina";
 }) {
-  const [state, action, pending] = useActionState(
+  const [state, action, pending, onReset] = usePreservedActionState(
     decideWorkforceExpense.bind(null, company),
     {} as WorkforceExpenseState,
   );
   return (
-    <form action={action} className="space-y-3 mt-4">
+    <form onReset={onReset} action={action} className="space-y-3 mt-4">
       <Feedback error={state.error} success={state.success} />
       <fieldset disabled={pending} className="grid gap-3 sm:grid-cols-2">
         <input name="id" type="hidden" value={id} />
