@@ -12,6 +12,8 @@ import {
   workforceExpenseCategories,
   workforceExpensePayers,
   workforceExpenseSchema,
+  workforceCorrectionSchema,
+  workforceResubmissionSchema,
   workforceUtcDateTime,
 } from "@/lib/workforce-expenses";
 import { Input } from "./ui/input";
@@ -300,11 +302,56 @@ export function WorkforceCorrectionForm({
     receipt_id: string;
   };
 }) {
+  const replacement = useRef<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [state, action, pending, onReset] = usePreservedActionState(
-    (mode === "worker"
-      ? resubmitWorkforceExpense
-      : correctWorkforceExpense
-    ).bind(null, company),
+    async (
+      previous: WorkforceExpenseState,
+      form: FormData,
+    ): Promise<WorkforceExpenseState> => {
+      const schema =
+        mode === "worker"
+          ? workforceResubmissionSchema
+          : workforceCorrectionSchema;
+      const valid = schema.safeParse({
+        ...Object.fromEntries(form),
+        replacement_receipt_id: replacement.current ?? undefined,
+      });
+      if (!valid.success) return { error: valid.error.issues[0].message };
+      if (file && !replacement.current) {
+        try {
+          const response = await fetch(
+            `/api/workforce/${company}/expenses/${id}/receipt`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/octet-stream",
+                "X-Receipt-Name": encodeURIComponent(file.name),
+              },
+              body: file,
+            },
+          );
+          const result = await response.json();
+          if (!response.ok || !result.receiptId)
+            return {
+              error:
+                result.error ??
+                "No se pudo preparar la foto. Conserva el archivo y reintenta.",
+            };
+          replacement.current = result.receiptId;
+        } catch {
+          return {
+            error:
+              "Se perdi� la conexi�n. Conserva la foto y reintenta este formulario.",
+          };
+        }
+      }
+      if (replacement.current)
+        form.set("replacement_receipt_id", replacement.current);
+      return (
+        mode === "worker" ? resubmitWorkforceExpense : correctWorkforceExpense
+      )(company, previous, form);
+    },
     {} as WorkforceExpenseState,
   );
   return (
@@ -317,7 +364,7 @@ export function WorkforceCorrectionForm({
       <form action={action} onReset={onReset} className="space-y-3 mt-3">
         <p className="text-sm">
           {mode === "worker"
-            ? "Puedes corregir y reenviar este gasto una vez. Se conserva el recibo original y vuelve al encargado y a oficina. No registra un pago."
+            ? "Puedes corregir y reenviar este gasto una vez. Puedes conservar el recibo o sustituir la foto; el anterior queda en el historial. Vuelve al encargado y a oficina. No registra un pago."
             : "Comprueba el recibo original antes de guardar. La corrección conserva ese archivo y reinicia las decisiones de encargado y oficina. No registra un pago."}
         </p>
         <Feedback error={state.error} success={state.success} />
@@ -392,6 +439,22 @@ export function WorkforceCorrectionForm({
               maxLength={500}
               defaultValue={values.description}
             />
+          </label>
+          <label className="field sm:col-span-2">
+            Nueva foto del recibo (opcional)
+            <input
+              aria-label="Nueva foto del recibo (opcional)"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(event) => {
+                setFile(event.target.files?.[0] ?? null);
+                replacement.current = null;
+              }}
+            />
+            <span className="text-sm font-normal">
+              JPG, PNG o WebP, hasta 8 MiB. Si no eliges una foto, se conserva
+              la actual.
+            </span>
           </label>
           {mode === "admin" && (
             <label className="field sm:col-span-2">

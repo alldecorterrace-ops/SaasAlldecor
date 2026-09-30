@@ -93,9 +93,10 @@ export async function correctWorkforceExpense(
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const v = parsed.data;
   try {
-    const locator = await db.rpc("workforce_expense_receipt", {
+    const locator = await db.rpc("workforce_expense_receipt_version", {
       p_company: company,
       p_id: v.id,
+      p_receipt: v.receipt_id,
     });
     if (locator.error) throw locator.error;
     const receipt = workforceReceiptSchema.parse(locator.data);
@@ -106,6 +107,24 @@ export async function correctWorkforceExpense(
     )
       throw new Error("record_conflict");
     await verifyWorkforceReceipt(db, receipt);
+    if (v.replacement_receipt_id) {
+      const replacement = await db.rpc("workforce_expense_receipt_version", {
+        p_company: company,
+        p_id: v.id,
+        p_receipt: v.replacement_receipt_id,
+      });
+      if (replacement.error) throw replacement.error;
+      const next = workforceReceiptSchema.parse(replacement.data);
+      if (
+        next.company_id !== company ||
+        next.expense_id !== v.id ||
+        next.id !== v.replacement_receipt_id ||
+        next.bytes < 400 ||
+        !["jpg", "png", "webp"].includes(next.extension)
+      )
+        throw new Error("invalid_workforce_receipt_replacement");
+      await verifyWorkforceReceipt(db, next);
+    }
     const result = await db.rpc("correct_workforce_expense", {
       p_company: company,
       p_request: v.request,
@@ -119,6 +138,9 @@ export async function correctWorkforceExpense(
       p_description: v.description,
       p_pay_method: v.pay_method,
       p_receipt: v.receipt_id,
+      ...(v.replacement_receipt_id
+        ? { p_new_receipt: v.replacement_receipt_id }
+        : {}),
       p_reason: v.reason,
     });
     if (result.error) throw result.error;
@@ -144,9 +166,10 @@ export async function resubmitWorkforceExpense(
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const v = parsed.data;
   try {
-    const locator = await db.rpc("workforce_expense_receipt", {
+    const locator = await db.rpc("workforce_expense_receipt_version", {
       p_company: company,
       p_id: v.id,
+      p_receipt: v.receipt_id,
     });
     if (locator.error) throw locator.error;
     const receipt = workforceReceiptSchema.parse(locator.data);
@@ -157,6 +180,24 @@ export async function resubmitWorkforceExpense(
     )
       throw new Error("record_conflict");
     await verifyWorkforceReceipt(db, receipt);
+    if (v.replacement_receipt_id) {
+      const replacement = await db.rpc("workforce_expense_receipt_version", {
+        p_company: company,
+        p_id: v.id,
+        p_receipt: v.replacement_receipt_id,
+      });
+      if (replacement.error) throw replacement.error;
+      const next = workforceReceiptSchema.parse(replacement.data);
+      if (
+        next.company_id !== company ||
+        next.expense_id !== v.id ||
+        next.id !== v.replacement_receipt_id ||
+        next.bytes < 400 ||
+        !["jpg", "png", "webp"].includes(next.extension)
+      )
+        throw new Error("invalid_workforce_receipt_replacement");
+      await verifyWorkforceReceipt(db, next);
+    }
     const result = await db.rpc("resubmit_workforce_expense", {
       p_company: company,
       p_request: v.request,
@@ -170,6 +211,9 @@ export async function resubmitWorkforceExpense(
       p_description: v.description,
       p_pay_method: v.pay_method,
       p_receipt: v.receipt_id,
+      ...(v.replacement_receipt_id
+        ? { p_new_receipt: v.replacement_receipt_id }
+        : {}),
     });
     if (result.error) throw result.error;
   } catch (error) {

@@ -448,6 +448,323 @@ test("Returned expenses allow one worker resubmission and retain history", async
         );
       },
     );
+    // Metadata/object fixtures exercise SQL authorization; binary checks are covered separately.
+    const preparePhoto = async (
+      e: { id: string },
+      user: string,
+      hash = "b",
+      store = true,
+    ) => {
+      await as(user);
+      const receipt = (
+        await db.query<{ id: string }>(
+          "select (prepare_workforce_receipt($1,$2,$3,400,'png','Replacement.png')).id",
+          [a, e.id, hash.repeat(64)],
+        )
+      ).rows[0].id;
+      if (store)
+        await db.query(
+          "insert into storage.objects(bucket_id,name) values('workforce-receipts',$1)",
+          [`${a}/${e.id}/${receipt}.png`],
+        );
+      return receipt;
+    };
+    const photoResubmit = (
+      e: { id: string; receipt: string },
+      next: string,
+      request = randomUUID(),
+      version = 2,
+    ) =>
+      db.query<{ data: Record<string, unknown> }>(
+        "select resubmit_workforce_expense($1,$2,$3,$4,$5,false,$6,21.01,'TOOLS','Synthetic new photo','empresa',$7,$8) data",
+        [a, request, e.id, version, project, day, e.receipt, next],
+      );
+    const photoCorrect = (
+      e: { id: string; receipt: string },
+      next: string,
+      request = randomUUID(),
+    ) =>
+      db.query<{ data: Record<string, unknown> }>(
+        "select correct_workforce_expense($1,$2,$3,2,$4,false,$5,21.01,'TOOLS','Synthetic new photo','empresa',$6,'Synthetic review of new photo',$7) data",
+        [a, request, e.id, project, day, e.receipt, next],
+      );
+    await t.test(
+      "a worker replaces once, replays once and can read consumed old receipts only",
+      async () => {
+        const e = await returned();
+        const next = await preparePhoto(e, worker.user);
+        let list = (
+          await db.query<{
+            data: { receipts: { id: string; current: boolean }[] }[];
+          }>("select workforce_receipt_versions($1,$2) data", [a, [e.id]])
+        ).rows[0].data;
+        assert.equal(list[0].receipts.length, 1); // Prepared drafts are not historical evidence.
+        const request = randomUUID();
+        const result = await photoResubmit(e, next, request);
+        assert.deepEqual(
+          (await photoResubmit(e, next, request)).rows,
+          result.rows,
+        );
+        const saved = await row(e.id);
+        assert.equal(saved.receipt_id, next);
+        assert.equal(saved.version, 3);
+        assert.equal(saved.resubmission_count, 1);
+        assert.equal(saved.admin_review_status, "PENDING");
+        await as(worker.user);
+        list = (
+          await db.query<{
+            data: { receipts: { id: string; current: boolean }[] }[];
+          }>("select workforce_receipt_versions($1,$2) data", [a, [e.id]])
+        ).rows[0].data;
+        assert.equal(list[0].receipts.length, 2);
+        assert.equal(
+          list[0].receipts.find((r) => r.id === e.receipt)?.current,
+          false,
+        );
+        for (const receipt of [e.receipt, next]) {
+          assert.equal(
+            (
+              await db.query<{ data: { id: string } }>(
+                "select workforce_expense_receipt_version($1,$2,$3) data",
+                [a, e.id, receipt],
+              )
+            ).rows[0].data.id,
+            receipt,
+          );
+          assert.equal(
+            (
+              await db.query<{ ok: boolean }>(
+                "select app_private.workforce_receipt_access($1,'read') ok",
+                [`${a}/${e.id}/${receipt}.png`],
+              )
+            ).rows[0].ok,
+            true,
+          );
+          assert.equal(
+            (
+              await db.query<{ ok: boolean }>(
+                "select app_private.workforce_receipt_access($1,'write') ok",
+                [`${a}/${e.id}/${receipt}.png`],
+              )
+            ).rows[0].ok,
+            false,
+          );
+        }
+        assert.equal(
+          (
+            await db.query<{ id: string }>(
+              "select (prepare_workforce_receipt($1,$2,$3,400,'png','Replacement.png')).id",
+              [a, e.id, "b".repeat(64)],
+            )
+          ).rows[0].id,
+          next,
+        );
+        await assert.rejects(
+          preparePhoto(e, worker.user, "c"),
+          /expense_forbidden/,
+        );
+        await db.exec("reset role");
+        assert.equal(
+          (
+            await db.query<{ n: number }>(
+              "select count(*)::int n from workforce_receipt_changes where expense_id=$1",
+              [e.id],
+            )
+          ).rows[0].n,
+          1,
+        );
+        assert.equal(
+          (
+            await db.query<{ n: number }>(
+              "select count(*)::int n from audit_events where entity='workforce_expenses' and entity_id=$1",
+              [e.id],
+            )
+          ).rows[0].n,
+          3,
+        );
+      },
+    );
+    await t.test(
+      "an administrator without a worker profile replaces atomically and reviews the new hash",
+      async () => {
+        const e = await returned();
+        const next = await preparePhoto(e, owner, "c");
+        const request = randomUUID();
+        const result = await photoCorrect(e, next, request);
+        assert.deepEqual(
+          (await photoCorrect(e, next, request)).rows,
+          result.rows,
+        );
+        const saved = await row(e.id);
+        assert.equal(saved.receipt_id, next);
+        assert.equal(saved.version, 3);
+        assert.equal(saved.resubmission_count, 0);
+        assert.equal(saved.admin_review_status, "REVIEWED");
+        const review = saved.review_snapshot as Record<string, unknown>;
+        assert.equal(review.receipt, next);
+        assert.equal(review.receipt_sha256, "c".repeat(64));
+        const change = (
+          await db.query<{
+            old_receipt_id: string;
+            new_receipt_id: string;
+            actor_id: string;
+            operation: string;
+          }>("select * from workforce_receipt_changes where expense_id=$1", [
+            e.id,
+          ])
+        ).rows;
+        assert.equal(change.length, 1);
+        assert.equal(change[0].old_receipt_id, e.receipt);
+        assert.equal(change[0].new_receipt_id, next);
+        assert.equal(change[0].actor_id, owner);
+        assert.equal(change[0].operation, "manual_correction");
+      },
+    );
+    await t.test(
+      "missing or borrowed replacements cannot change the expense or history",
+      async () => {
+        const e = await returned();
+        const missing = await preparePhoto(e, worker.user, "b", false);
+        const before = await row(e.id);
+        await as(worker.user);
+        await assert.rejects(photoResubmit(e, missing), /receipt_unavailable/);
+        const other = await returned();
+        const borrowed = await preparePhoto(other, worker.user, "c");
+        await as(worker.user);
+        await assert.rejects(photoResubmit(e, borrowed), /receipt_unavailable/);
+        const someoneElse = await preparePhoto(e, office.user, "d");
+        await as(worker.user);
+        await assert.rejects(
+          photoResubmit(e, someoneElse),
+          /receipt_unavailable/,
+        );
+        assert.deepEqual(await row(e.id), before);
+        assert.equal(
+          (
+            await db.query<{ n: number }>(
+              "select count(*)::int n from workforce_receipt_changes where expense_id=$1",
+              [e.id],
+            )
+          ).rows[0].n,
+          0,
+        );
+      },
+    );
+    await t.test(
+      "worker and foreman cannot prepare pending corrections; final states and foreign queries remain closed",
+      async () => {
+        const e = await create();
+        for (const user of [worker.user, foreman.user])
+          await assert.rejects(preparePhoto(e, user), /expense_forbidden/);
+        for (const status of ["OFFICE_APPROVED", "REJECTED"]) {
+          await db.exec("reset role");
+          await db.query(
+            "update workforce_expenses set status=$2 where id=$1",
+            [e.id, status],
+          );
+          await assert.rejects(preparePhoto(e, owner), /expense_forbidden/);
+        }
+        await as(worker.user);
+        await assert.rejects(
+          db.query("select workforce_expense_receipt_version($1,$2,$3)", [
+            b,
+            e.id,
+            e.receipt,
+          ]),
+          /expense_forbidden/,
+        );
+        await as(owner);
+        assert.deepEqual(
+          (
+            await db.query<{ data: unknown[] }>(
+              "select workforce_receipt_versions($1,$2) data",
+              [b, [e.id]],
+            )
+          ).rows[0].data,
+          [],
+        );
+      },
+    );
+    await t.test(
+      "replacement formats and stale versions preserve prepared files and reject changes",
+      async () => {
+        const e = await returned();
+        await as(worker.user);
+        for (const [bytes, extension] of [
+          [399, "png"],
+          [400, "heic"],
+        ])
+          await assert.rejects(
+            db.query(
+              "select prepare_workforce_receipt($1,$2,$3,$4,$5,'Photo')",
+              [a, e.id, "f".repeat(64), bytes, extension],
+            ),
+            /invalid_workforce_receipt_replacement/,
+          );
+        const next = await preparePhoto(e, worker.user);
+        const before = await row(e.id);
+        await as(worker.user);
+        await assert.rejects(
+          photoResubmit(e, next, randomUUID(), 1),
+          /record_conflict/,
+        );
+        assert.deepEqual(await row(e.id), before);
+        assert.equal(
+          (
+            await db.query<{ n: number }>(
+              "select count(*)::int n from storage.objects where name=$1",
+              [`${a}/${e.id}/${next}.png`],
+            )
+          ).rows[0].n,
+          1,
+        );
+      },
+    );
+    await t.test(
+      "revoking membership hides used photos and refuses a successful replacement replay",
+      async () => {
+        const e = await returned();
+        const next = await preparePhoto(e, worker.user);
+        const request = randomUUID();
+        await photoResubmit(e, next, request);
+        const before = await row(e.id);
+        await as(owner);
+        await db.query("select set_member_access($1,$2,'member',false,$3)", [
+          a,
+          worker.user,
+          JSON.stringify({ horasfix: ["write"] }),
+        ]);
+        await as(worker.user);
+        await assert.rejects(
+          photoResubmit(e, next, request),
+          /worker_login_required|expense_resubmit_forbidden/,
+        );
+        await assert.rejects(
+          db.query("select workforce_expense_receipt_version($1,$2,$3)", [
+            a,
+            e.id,
+            e.receipt,
+          ]),
+          /expense_forbidden/,
+        );
+        assert.equal(
+          (
+            await db.query<{ ok: boolean }>(
+              "select app_private.workforce_receipt_access($1,'read') ok",
+              [`${a}/${e.id}/${e.receipt}.png`],
+            )
+          ).rows[0].ok,
+          false,
+        );
+        assert.deepEqual(await row(e.id), before);
+        await as(owner);
+        await db.query("select set_member_access($1,$2,'member',true,$3)", [
+          a,
+          worker.user,
+          JSON.stringify({ horasfix: ["write"] }),
+        ]);
+      },
+    );
     await t.test(
       "revoked profiles cannot replay the previously successful request",
       async () => {

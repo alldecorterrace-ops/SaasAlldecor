@@ -77,6 +77,8 @@ export function workforceExpenseError(error: unknown) {
       ? String(error.message)
       : "";
   const messages: Record<string, string> = {
+    invalid_workforce_receipt_replacement:
+      "Usa una foto JPG, PNG o WebP de 400 bytes a 8 MiB para sustituir el recibo.",
     invalid_workforce_resubmission:
       "Revisa fecha, importe, categoría y pagador. La fecha no puede ser futura.",
     expense_resubmit_forbidden:
@@ -140,6 +142,10 @@ export const workforceCorrectionSchema = z.object({
   description: z.string().trim().max(500),
   pay_method: z.enum(["propio", "empresa", "efectivo_empresa"]),
   receipt_id: z.uuid(),
+  replacement_receipt_id: z.preprocess(
+    (v) => (v === "" ? undefined : v),
+    z.uuid().optional(),
+  ),
   reason: z
     .string()
     .trim()

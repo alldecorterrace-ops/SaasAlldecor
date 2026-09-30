@@ -79,6 +79,27 @@ export default async function WorkforceExpenses({
       }),
     )
     .parse(context.data);
+  const versionsResult = await db.rpc("workforce_receipt_versions", {
+    p_company: companyId,
+    p_ids: (data ?? []).map((e) => e.id),
+  });
+  if (versionsResult.error)
+    throw new Error("No se pudieron cargar las versiones de los recibos.");
+  const receiptVersions = z
+    .array(
+      z.object({
+        expense_id: z.uuid(),
+        receipts: z.array(
+          z.object({
+            id: z.uuid(),
+            original_name: z.string(),
+            created_at: z.iso.datetime({ offset: true }),
+            current: z.boolean(),
+          }),
+        ),
+      }),
+    )
+    .parse(versionsResult.data);
   const format = new Intl.DateTimeFormat("es", {
     timeZone: company.timezone,
     dateStyle: "medium",
@@ -233,6 +254,34 @@ export default async function WorkforceExpenses({
               >
                 Historial del gasto
               </Link>
+              {(receiptVersions
+                .find((item) => item.expense_id === e.id)
+                ?.receipts.filter((receipt) => !receipt.current).length ?? 0) >
+                0 && (
+                <details className="mb-3">
+                  <summary className="cursor-pointer font-semibold">
+                    Recibos anteriores
+                  </summary>
+                  <ul className="space-y-2 mt-2">
+                    {receiptVersions
+                      .find((item) => item.expense_id === e.id)
+                      ?.receipts.filter((receipt) => !receipt.current)
+                      .map((receipt) => (
+                        <li key={receipt.id}>
+                          <a
+                            className="underline break-all"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href={`/api/workforce/${companyId}/expenses/${e.id}/receipt?version=${receipt.id}`}
+                          >
+                            Abrir recibo anterior � {receipt.original_name} �{" "}
+                            {format.format(new Date(receipt.created_at))}
+                          </a>
+                        </li>
+                      ))}
+                  </ul>
+                </details>
+              )}
               {e.admin_review_status === "REVIEWED" && (
                 <p className="text-sm">
                   Revisado manualmente:{" "}

@@ -528,11 +528,32 @@ async function main() {
       "update workforce_expenses set status='NEEDS_CORRECTION',correction_note='Synthetic returned fixture, no AI call',returned_at=now(),version=version+1 where id=$1",
       [returnedId],
     );
+    const replacement = await as(worker.user, async (c) => {
+      const next = (
+        await c.query<{ id: string }>(
+          "select (prepare_workforce_receipt($1,$2,$3,400,'png','Replacement.png')).id",
+          [company, returnedId, "e".repeat(64)],
+        )
+      ).rows[0].id;
+      await c.query(
+        "insert into storage.objects(bucket_id,name) values('workforce-receipts',$1)",
+        [`${company}/${returnedId}/${next}.png`],
+      );
+      return next;
+    });
     const resubmitRequest = randomUUID();
     const resubmit = (c: PoolClient, request = resubmitRequest) =>
       c.query(
-        "select resubmit_workforce_expense($1,$2,$3,2,$4,false,$5,12.50,'MATERIALS','Worker resubmitted','propio',$6) data",
-        [company, request, returnedId, project, correctionDay, returnedReceipt],
+        "select resubmit_workforce_expense($1,$2,$3,2,$4,false,$5,12.50,'MATERIALS','Worker resubmitted','propio',$6,$7) data",
+        [
+          company,
+          request,
+          returnedId,
+          project,
+          correctionDay,
+          returnedReceipt,
+          replacement,
+        ],
       );
     const repeats = await Promise.all(
       Array.from({ length: 8 }, () => as(worker.user, (c) => resubmit(c))),
@@ -544,7 +565,25 @@ async function main() {
       ])
     ).rows[0];
     assert.equal(returnedSaved.resubmission_count, 1);
-    assert.equal(returnedSaved.receipt_id, returnedReceipt);
+    assert.equal(returnedSaved.receipt_id, replacement);
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from workforce_receipt_changes where expense_id=$1",
+          [returnedId],
+        )
+      ).rows[0].n,
+      1,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from storage.objects where name=$1",
+          [`${company}/${returnedId}/${returnedReceipt}.png`],
+        )
+      ).rows[0].n,
+      1,
+    );
     assert.equal(returnedSaved.admin_review_status, "PENDING");
     assert.equal(
       (
