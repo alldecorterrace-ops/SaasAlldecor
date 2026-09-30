@@ -52,6 +52,16 @@ La entrega 4174887 y esquema 051 cubren declarar al enviar, persistir procedenci
 consultar, filtrar, historial y reintentos vinculados al pagador. Tres medios
 comprobados con sesión real, sin efecto de pago/reembolso/copia contable.
 Los gastos anteriores sin evidencia siguen Sin declarar, diferencia explícita
-respecto al supuesto de bolsillo propio del origen. Corrección manual, revisión
-IA/humana, deuda y reembolso siguen pendientes.
+respecto al supuesto de bolsillo propio del origen. Corrección manual parcial cubierta en 052; revisión
+IA y confirmación posterior, deuda y reembolso siguen pendientes.
 Ver [PAGADOR-WORKFORCE-20260930.md](PAGADOR-WORKFORCE-20260930.md).
+
+## Corrección y revisión manual
+
+6a2d9be y esquema 052 cubren oficina/administración en SUBMITTED/FOREMAN_APPROVED,
+con motivo, versión e idempotencia, conservación del recibo y snapshot manual.
+Reinicia decisiones vigentes; conserva las anteriores en historial. Sesión real,
+concurrencia PostgreSQL, revocación y conservación de datos comprobadas.
+Reemplazo de foto, DEVUELTO/NEEDS_CORRECTION, etiquetas administrativas libres y
+revisión posterior a IA siguen abiertos. No se declara cerrada la fila Editar ni
+la confirmación humana posterior a IA. [Evidencia y límites](CORRECCION-MANUAL-WORKFORCE-20260930.md).

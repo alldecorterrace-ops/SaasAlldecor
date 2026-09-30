@@ -38,5 +38,48 @@ No se declara paridad completa de editar/revisar ni de los 21 módulos.
 
 ## Validación
 
-Resultados de código, concurrencia y sesión real pendientes de documentar tras
-verificarlos. Datos y evidencia detallada se mantienen fuera de GitHub.
+Entrega **6a2d9be34974400dc0a7f04e0ab5f1ef4a48c225**, publicada solo en staging,
+esquema 052 aplicado. Activa 6a2d9be; anterior compatible 4174887. Ambas conservan
+configuración privada idéntica y dependencias compartidas verificadas. Proceso
+activo y raíz Passenger comprobados; configuración de producción intacta.
+No se ejecutó retorno real en esta entrega. El inventario se renovó; quedan
+entregas sobrantes cuya limpieza requiere comprobar contenido único y las
+confirmaciones correspondientes. No se borró ninguna carpeta en esta fase.
+
+- Nueve pruebas específicas correctas: roles, empresa, datos inválidos, fecha,
+  recibo, revisión, reset de decisiones, general, límite, versión, reintento y revocación.
+- Suite completa: **464 pruebas**, sin fallos ni omitidas. Lint, tipos y
+  compilación local/hosting correctos.
+- [CI de la entrega](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36762094727):
+  check, backup-recovery y queue-concurrency correctos. PostgreSQL 17 comprobó
+  ocho solicitudes concurrentes iguales con un solo efecto, dos correcciones
+  competidoras con un solo ganador, decisiones reiniciadas y revocación antes del reintento.
+  El trabajo de recovery valida código de recuperación; no acredita restauración
+  remota ni objetivos RTO/RPO.
+- Sesión real sintética: formulario expandido, fecha futura rechazada por servidor
+  con todos los campos conservados, fecha corregida y guardado, reapertura con
+  importe/categoría/obra/pagador vigentes, revisión y motivo visibles.
+- Recibo sintético inspeccionado y descargado después: mismos 23.483 bytes y
+  SHA-256. El cambio de importe/categoría fue un ensayo explícito con motivo;
+  no representa una conciliación real del recibo ni un pago.
+- Historial real: creación y una actualización, autor, versión, antes/después,
+  fecha local de empresa y snapshot de datos/recibo. Dos reintentos directos
+  devolvieron el mismo resultado; payload modificado y versión antigua rechazados.
+  Final: versión 2, una solicitud manual, dos eventos totales.
+- Móvil emulado a 390 px: tarjeta y formulario reabiertos sin desbordamiento
+  horizontal. No constituye prueba en dispositivo físico ni guardado móvil.
+- Permisos y perfil temporales restaurados. Pantalla ya no disponible y
+  reintento autenticado rechazado después de revocar. Otros roles/empresa y
+  estados finales se verifican mediante pruebas de base, sin atribuirles UI real.
+- Dieciséis conjuntos previos conservaron recuentos/huellas: incluye finanzas,
+  relaciones, horas, solicitudes, recibos, otros trabajadores y gastos Workforce.
+  Los cinco campos aditivos de revisión se excluyeron solo de la huella de
+  Workforce previo; los demás campos, incluidos pagador y aprobaciones, coinciden.
+  Trabajador intacto y permisos exactos restituidos; versión/historial de perfil
+  reflejan las dos transiciones temporales del ensayo.
+- Ocho controles públicos correctos en staging/producción: salud, login,
+  recuperación y redirección de actualización sin sesión.
+
+Los resultados detallados, SQL, capturas y datos sintéticos identificables se
+mantienen fuera del repositorio. No hubo migración ADT, pago, reembolso,
+copia contable ni activación de producción.
