@@ -12,6 +12,7 @@ import {
 } from "@/lib/workforce-expenses";
 import {
   WorkforceExpenseForm,
+  WorkforceCorrectionForm,
   WorkforceDecisionForm,
   WorkforceGeneralForm,
 } from "@/components/workforce-expenses";
@@ -232,6 +233,52 @@ export default async function WorkforceExpenses({
               >
                 Historial del gasto
               </Link>
+              {e.admin_review_status === "REVIEWED" && (
+                <p className="text-sm">
+                  Revisado manualmente:{" "}
+                  {format.format(new Date(e.admin_reviewed_at))} ·{" "}
+                  {e.admin_review_note}
+                </p>
+              )}
+              {write &&
+                ["ADMIN", "OFFICE"].includes(scope.role ?? "") &&
+                ["SUBMITTED", "FOREMAN_APPROVED"].includes(e.status) && (
+                  <WorkforceCorrectionForm
+                    key={`correction:${e.id}:${e.version}`}
+                    company={companyId}
+                    id={e.id}
+                    version={e.version}
+                    request={randomUUID()}
+                    projects={
+                      scope.projects.some((p) => p.id === e.project_id)
+                        ? scope.projects
+                        : [
+                            ...scope.projects,
+                            {
+                              id: e.project_id,
+                              name:
+                                names.find((n) => n.id === e.id)
+                                  ?.project_name ?? "Obra original",
+                            },
+                          ]
+                    }
+                    values={{
+                      project_id:
+                        e.allocation === "GENERAL" ? "GENERAL" : e.project_id,
+                      expense_date: new Intl.DateTimeFormat("en-CA", {
+                        timeZone: company.timezone,
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      }).format(new Date(e.expense_at)),
+                      amount: String(e.amount),
+                      category: e.category,
+                      description: e.description,
+                      pay_method: e.pay_method,
+                      receipt_id: e.receipt_id,
+                    }}
+                  />
+                )}
               {e.foreman_at && (
                 <p className="text-sm">
                   Decisión de encargado: {format.format(new Date(e.foreman_at))}

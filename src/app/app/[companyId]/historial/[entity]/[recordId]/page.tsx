@@ -28,6 +28,11 @@ const entities: Record<string, { module: string; label: string }> = {
   projects: { module: "fin-proyectos", label: "Proyecto" },
 };
 const labels: Record<string, string> = {
+  admin_review_status: "Estado de revisión humana",
+  admin_reviewed_by: "Usuario que revisó manualmente",
+  admin_reviewed_at: "Fecha de revisión manual",
+  admin_review_note: "Motivo de corrección y revisión",
+  review_snapshot: "Datos y recibo revisados",
   pay_method: "Con qué se pagó",
   pay_method_set_by: "Usuario que declaró el pagador",
   pay_method_set_at: "Fecha de declaración del pagador",

@@ -406,6 +406,105 @@ async function main() {
       ).rows[0].n,
       5,
     );
+    const manualId = randomUUID();
+    const manualReceipt = await as(worker.user, async (c) => {
+      const receipt = (
+        await c.query(
+          "select (prepare_workforce_receipt($1,$2,$3,33,'png','Manual-QA.png')).id",
+          [company, manualId, "c".repeat(64)],
+        )
+      ).rows[0].id;
+      await c.query(
+        "insert into storage.objects(bucket_id,name) values('workforce-receipts',$1)",
+        [`${company}/${manualId}/${receipt}.png`],
+      );
+      await c.query(
+        "select submit_workforce_expense($1,$2,$3,$4,now(),12.34,'MATERIALS','Manual synthetic',$5,'propio')",
+        [company, randomUUID(), manualId, project, receipt],
+      );
+      return receipt;
+    });
+    await as(foreman.user, (c) =>
+      c.query(
+        "select decide_workforce_expense($1,$2,$3,1,'APPROVE','Before correction')",
+        [company, randomUUID(), manualId],
+      ),
+    );
+    const correctionDay = (
+      await pool.query(
+        "select (now() at time zone timezone)::date::text as local_day from companies where id=$1",
+        [company],
+      )
+    ).rows[0].local_day;
+    const manualRequest = randomUUID();
+    const manualCorrect = (
+      c: PoolClient,
+      request = manualRequest,
+      version = 2,
+      amount = "20.01",
+    ) =>
+      c.query(
+        "select correct_workforce_expense($1,$2,$3,$4,$5,false,$6,$7,'TOOLS','Corrected synthetic','empresa',$8,'Synthetic visual review') data",
+        [
+          company,
+          request,
+          manualId,
+          version,
+          project,
+          correctionDay,
+          amount,
+          manualReceipt,
+        ],
+      );
+    const manualRetries = await Promise.all(
+      Array.from({ length: 8 }, () => as(office.user, (c) => manualCorrect(c))),
+    );
+    assert(manualRetries.every((x) => x.rows[0].data.version === 3));
+    const manualRace = await Promise.allSettled(
+      ["20.11", "20.22"].map((amount) =>
+        as(office.user, (c) => manualCorrect(c, randomUUID(), 3, amount)),
+      ),
+    );
+    assert.equal(manualRace.filter((x) => x.status === "fulfilled").length, 1);
+    const manualLoser = manualRace.find(
+      (x) => x.status === "rejected",
+    ) as PromiseRejectedResult;
+    assert.equal(manualLoser.reason.code, "PT409");
+    assert.match(manualLoser.reason.message, /record_conflict/);
+    const manualSaved = (
+      await pool.query("select * from workforce_expenses where id=$1", [
+        manualId,
+      ])
+    ).rows[0];
+    assert.equal(manualSaved.version, 4);
+    assert.equal(manualSaved.status, "SUBMITTED");
+    assert.equal(manualSaved.receipt_id, manualReceipt);
+    assert.equal(manualSaved.project_id, project);
+    assert.equal(manualSaved.worker_id, worker.id);
+    assert.equal(manualSaved.admin_reviewed_by, office.user);
+    assert.equal(manualSaved.admin_review_status, "REVIEWED");
+    assert.equal(manualSaved.foreman_by, null);
+    assert.equal(manualSaved.office_by, null);
+    assert(["20.11", "20.22"].includes(manualSaved.amount));
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from audit_events where entity='workforce_expenses' and entity_id=$1",
+          [manualId],
+        )
+      ).rows[0].n,
+      4,
+    );
+    for (const table of ["expenses", "payments"])
+      assert.equal(
+        (
+          await pool.query(
+            `select count(*)::int n from ${table} where company_id=$1`,
+            [company],
+          )
+        ).rows[0].n,
+        0,
+      );
     await as(owner, (c) =>
       c.query(
         "select configure_workforce($1,$2,$3,1,'FOREMAN',null,true,'Synthetic revocation')",
@@ -416,6 +515,10 @@ async function main() {
       as(office.user, (c) =>
         generalDecision(c, generalRequest, repeatVersion, "RECLASSIFY_GENERAL"),
       ),
+      /expense_forbidden/,
+    );
+    await assert.rejects(
+      as(office.user, (c) => manualCorrect(c)),
       /expense_forbidden/,
     );
     await as(owner, (c) =>
@@ -441,6 +544,9 @@ async function main() {
         generalApprovalRaceWinners: 1,
         generalAuditEffects: 5,
         concurrentReasonUpdateWinners: 1,
+        parallelManualCorrectionRetries: 8,
+        manualCorrectionRaceWinners: 1,
+        manualReviewNoPayment: true,
         noPayment: true,
       }),
     );

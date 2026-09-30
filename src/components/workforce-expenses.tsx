@@ -3,6 +3,7 @@ import { useState, useRef } from "react";
 import { usePreservedActionState } from "./use-preserved-action-state";
 import {
   submitWorkforceExpense,
+  correctWorkforceExpense,
   decideWorkforceExpense,
   type WorkforceExpenseState,
 } from "@/app/app/[companyId]/horas/gastos/actions";
@@ -270,5 +271,129 @@ export function WorkforceGeneralForm({
             : "Registrar como gasto general"}
       </Button>
     </form>
+  );
+}
+
+export function WorkforceCorrectionForm({
+  company,
+  id,
+  version,
+  request,
+  projects,
+  values,
+}: {
+  company: string;
+  id: string;
+  version: number;
+  request: string;
+  projects: { id: string; name: string }[];
+  values: {
+    project_id: string;
+    expense_date: string;
+    amount: string;
+    category: string;
+    description: string;
+    pay_method: string | null;
+    receipt_id: string;
+  };
+}) {
+  const [state, action, pending, onReset] = usePreservedActionState(
+    correctWorkforceExpense.bind(null, company),
+    {} as WorkforceExpenseState,
+  );
+  return (
+    <details className="mt-4 border-t pt-4">
+      <summary className="cursor-pointer font-semibold">
+        Corregir y revisar manualmente
+      </summary>
+      <form action={action} onReset={onReset} className="space-y-3 mt-3">
+        <p className="text-sm">
+          Comprueba el recibo original antes de guardar. La corrección conserva
+          ese archivo y reinicia las decisiones de encargado y oficina. No
+          registra un pago.
+        </p>
+        <Feedback error={state.error} success={state.success} />
+        <fieldset disabled={pending} className="grid gap-3 sm:grid-cols-2">
+          <input type="hidden" name="id" value={id} />
+          <input type="hidden" name="version" value={version} />
+          <input type="hidden" name="request" value={request} />
+          <input type="hidden" name="receipt_id" value={values.receipt_id} />
+          <label className="field">
+            Obra o gasto general
+            <select name="project_id" required defaultValue={values.project_id}>
+              <option value="GENERAL">Gasto general</option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            Fecha del gasto (empresa)
+            <Input
+              type="date"
+              name="expense_date"
+              required
+              defaultValue={values.expense_date}
+            />
+          </label>
+          <label className="field">
+            Importe corregido
+            <Input
+              type="number"
+              name="amount"
+              min="0.01"
+              max="20000"
+              step="0.01"
+              required
+              defaultValue={values.amount}
+            />
+          </label>
+          <label className="field">
+            Categoría corregida
+            <select name="category" defaultValue={values.category}>
+              {Object.entries(workforceExpenseCategories).map(([k, v]) => (
+                <option key={k} value={k}>
+                  {v}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            Pagador corregido
+            <select
+              name="pay_method"
+              required
+              defaultValue={values.pay_method ?? ""}
+            >
+              <option value="" disabled>
+                Selecciona cómo se pagó
+              </option>
+              {Object.entries(workforceExpensePayers).map(([k, v]) => (
+                <option key={k} value={k}>
+                  {v}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            Descripción corregida
+            <Input
+              name="description"
+              maxLength={500}
+              defaultValue={values.description}
+            />
+          </label>
+          <label className="field sm:col-span-2">
+            Motivo de corrección manual
+            <Input name="reason" required minLength={5} maxLength={500} />
+          </label>
+        </fieldset>
+        <Button type="submit" disabled={pending}>
+          {pending ? "Procesando…" : "Guardar corrección y revisión"}
+        </Button>
+      </form>
+    </details>
   );
 }

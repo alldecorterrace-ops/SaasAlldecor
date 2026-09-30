@@ -76,6 +76,11 @@ export function workforceExpenseError(error: unknown) {
       ? String(error.message)
       : "";
   const messages: Record<string, string> = {
+    invalid_workforce_correction:
+      "Revisa fecha, importe, categoría, pagador y motivo. La fecha no puede ser futura.",
+    expense_correction_state:
+      "Solo se corrigen gastos pendientes del encargado o de oficina. Un gasto ya decidido no admite esta corrección.",
+    project_unavailable: "La obra no está disponible en esta empresa.",
     worker_login_required:
       "Necesitas una ficha activa vinculada a tu cuenta y permiso para registrar en Horas.",
     project_not_assigned:
@@ -108,3 +113,27 @@ export function workforceExpenseError(error: unknown) {
     "No se pudo completar. Comprueba tu sesión y vuelve a intentarlo."
   );
 }
+
+export const workforceCorrectionSchema = z.object({
+  id: z.uuid(),
+  request: z.uuid(),
+  version: z.coerce.number().int().positive(),
+  project_id: z.union([z.uuid(), z.literal("GENERAL")]),
+  expense_date: z.iso.date("Indica una fecha válida."),
+  amount: z
+    .string()
+    .regex(/^\d{1,5}(\.\d{1,2})?$/, "Usa hasta dos decimales.")
+    .refine(
+      (v) => Number(v) > 0 && Number(v) <= 20000,
+      "El importe debe ser mayor que cero y no superar 20.000.",
+    ),
+  category: z.enum(["FUEL", "MATERIALS", "TOOLS", "PARKING", "TOLLS", "OTHER"]),
+  description: z.string().trim().max(500),
+  pay_method: z.enum(["propio", "empresa", "efectivo_empresa"]),
+  receipt_id: z.uuid(),
+  reason: z
+    .string()
+    .trim()
+    .min(5, "Explica la corrección con al menos cinco caracteres.")
+    .max(500),
+});
