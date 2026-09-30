@@ -32,7 +32,52 @@ El contrato mínimo simula Auth y Storage; no prueba sus servicios reales ni
 concurrencia entre conexiones. Las comprobaciones de imágenes identifican
 formato y dimensiones/marcas, sin afirmar decodificación completa de píxeles.
 
-Pendiente de agregar aquí la evidencia de publicación y recorrido autenticado.
+### Publicación y recorrido del 30 de septiembre
+
+Aplicación `c75cfdce57cf105db54c3e39c886c10509c0145d` publicada únicamente en
+staging; esquema 048 aplicado al proyecto aislado. Compilación del hosting,
+proceso activo, lint, tipos y diez pruebas específicas correctos.
+[CI de la entrega](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36740061050):
+suite completa, compilación, concurrencia y recuperación sintética aprobadas.
+
+- Sesión real del auditor, por fases Trabajador → Encargado → Oficina. Se envió
+  un gasto ficticio con una imagen, se descargó el archivo idéntico al original,
+  se registraron ambas decisiones y se reabrió el resultado. Son fases de una
+  cuenta, no tres personas distintas actuando simultáneamente en staging.
+- Un envío, dos decisiones, tres recibos de ejecución y tres eventos de auditoría.
+  El importe permanece intacto; no se crean gastos administrativos ni pagos.
+- Corregidos dos errores encontrados en pantalla: un rechazo inválido conservaba
+  mal la selección/motivo, y una fecha editada sin segundos mostraba un error
+  técnico. Ahora se conservan la decisión, los campos y el archivo; UTC admite
+  minutos y segundos sin cambiar la zona por la configuración del dispositivo.
+- Borrador fuera del periodo permitido rechazado dos veces sin nuevo gasto ni
+  segunda carga del mismo recibo. Los dos borradores ensayados dejaron dos objetos
+  privados sin gasto asociado; se conservan, sin borrar pruebas ni contabilidad.
+  La retención general de estos objetos pendientes sigue por definir.
+- Escritorio y móvil emulado a 390 px, con documento también de 390 px; historial
+  desplegado, consulta y error/reintento comprobados. No acredita dispositivo físico.
+- Se retiraron los permisos temporales, se restauró el vínculo original del auditor,
+  se desactivaron los perfiles de ensayo y se cerró la asignación. Catorce conjuntos
+  previos mantienen recuentos y huellas exactos. Los datos de negocio de la ficha
+  original permanecen iguales; sus versiones y eventos reflejan el ensayo.
+- Tras la revocación, la pantalla de Horas muestra «Página no disponible»; RLS y
+  el localizador de recibos deniegan la consulta en la base real. HTTP anónimo del
+  recibo devuelve 401. El navegador bloqueó la navegación al recibo revocado:
+  no se presenta ese intento como prueba de un código HTTP autenticado.
+- Ocho comprobaciones públicas correctas entre staging y producción. Configuración
+  de producción preservada; esta entrega no publica ni migra datos allí.
+
+### Concurrencia entre conexiones
+
+El job de PostgreSQL 17 utiliza identidades sintéticas distintas y Auth/Storage
+mínimos simulados. Ocho reintentos paralelos de preparación, ocho de envío y ocho
+primeras decisiones conservan un solo efecto por solicitud. Dos decisiones de
+oficina opuestas sobre la misma versión producen un ganador y un conflicto;
+permanecen tres eventos y ningún pago. La revocación bloquea incluso el reintento
+privilegiado. No sustituye una prueba simultánea de dispositivos en Supabase.
+
+### Alcance que sigue abierto
+
 No considerar terminado Trabajadores/Horas ni la paridad completa de gastos:
 quedan revisión IA y humana, edición, archivo/restauración, reembolso, copia
 contable sin duplicación, notificaciones y labor por jornada. La revisión IA

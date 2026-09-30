@@ -1,16 +1,31 @@
 # Estado de implementación — 22 de septiembre de 2026
 
-**Continuación del 30 de septiembre:** la consulta de equipo y obras de
+**Entrega del 30 de septiembre: c75cfdc, esquema 048, solo staging.**
+Gastos de Workforce con recibo privado, primera decisión de encargado y segunda
+de oficina publicados y comprobados. Envío/descarga idéntica, reapertura,
+historial, errores con borrador conservado, móvil emulado y revocación verificados.
+Diez pruebas específicas y los tres trabajos de CI correctos, con concurrencia
+real en PostgreSQL 17 y suite completa. Catorce conjuntos previos preservados;
+permisos temporales restaurados. Un gasto ficticio aprobado, sin pago ni copia
+contable. [Evidencia y límites](GASTOS-WORKFORCE-20260930.md).
+
+Quedan revisión IA/humana, reembolso y origen del pago, copia contable sin duplicar,
+edición/archivo, Labor automática y demás recorridos de Workforce. La consulta
+por fases y esta entrega no cierran la paridad de Trabajadores/Horas ni los
+[21 módulos activos](CIERRE-FUNCIONAL.md). ADT sigue principal; migración y traspaso
+suspendidos, configuradores y 3D excluidos. Recuperación real conserva sus pendientes.
+
+**Auditoría previa del 30 de septiembre:** la consulta de equipo y obras de
 Trabajador, Encargado y Oficina se comprobó con una sesión real por fases,
 escritorio y móvil emulado. Revocación de perfil, asignación y módulo, aislamiento
 y conservación de catorce conjuntos previos comprobados; 10 pruebas locales
 específicas y ocho controles públicos correctos. Los permisos temporales se
 restauraron. No hubo nueva entrega de aplicación ni cambios de producción.
-Recibos, revisión/aprobación, reembolso, Labor automática y delegación de horas
-siguen pendientes. [Evidencia y límites](AUDITORIA-ROLES-WORKFORCE-20260930.md).
+En esa fase quedaban pendientes recibos, decisiones y demás escrituras.
+La entrega posterior descrita arriba cierra únicamente recibos y doble decisión. [Evidencia y límites](AUDITORIA-ROLES-WORKFORCE-20260930.md).
 
 
-**Última entrega de staging, 29 de septiembre: 80adf3d, esquema 047.**
+**Entrega anterior de staging, 29 de septiembre: 80adf3d, esquema 047.**
 Base de equipo de Workforce publicada: perfiles, encargado directo, asignaciones
 con periodo, finalización e historial. 440 pruebas, lint, tipos, compilación y
 los tres trabajos de CI correctos, incluida concurrencia en PostgreSQL 17.
@@ -25,9 +40,9 @@ Se eliminaron solo b69a5c5 y su comprimido, autorizados expresamente: 283 MiB y
 1.464 entradas liberadas. Se conservaron aaf268c y su archivo, las dependencias
 y las versiones necesarias; no hubo otra eliminación ni contratación.
 
-Siguen pendientes sesiones reales de Trabajador/Encargado/Oficina para esta base,
-recibos y revisión/aprobación de Workforce, reembolso, Labor automática y reversión
-contable, junto al resto del [alcance activo de 21 módulos](CIERRE-FUNCIONAL.md).
+Tras esa entrega quedaban pendientes los recorridos reales y recibos/decisiones,
+parcialmente cubiertos por las auditorías del 30 de septiembre. Reembolso, Labor
+automática, reversión contable y el resto del alcance activo siguen abiertos.
 La base nueva no cambia las acciones existentes de Horas/Gastos ni cierra la paridad.
 Nuevas migraciones de datos ADT y traspaso siguen suspendidos. ADT y producción SaaS
 no se modificaron. Recuperación operativa y retención general conservan sus pendientes.
