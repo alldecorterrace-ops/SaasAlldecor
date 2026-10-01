@@ -28,7 +28,9 @@ Solicitudes financieras 05c1bda / esquema 058 publicadas y comprobadas: 504 prue
 CI verde, concurrencia PostgreSQL, recorrido sintético y 50 reenvíos sin duplicados.
 [Evidencia y límites](AUDITORIA-SOLICITUDES-FINANCIERAS-20261001.md). C15 cerrada;
 1 / 65 obligaciones agrupadas de la matriz provisional. Calendario y condiciones
-comerciales del esquema 059 implementados, con publicación/auditoría pendientes.
+comerciales del esquema 059 publicados y comprobados en d34c358: 511 pruebas,
+revisiones, factura sin pagos, PDF históricos y aislamiento. C16 sigue abierto;
+[evidencia y límites](CALENDARIO-COMERCIAL-20261001.md).
 Los tres bloques permanecen abiertos.
 
 ## Cola de verificación

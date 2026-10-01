@@ -48,7 +48,7 @@ las filas Comprobada; el denominador se declara provisional hasta completar inve
 | C13 | Estimado: estados y aprobación vigente | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | C14 | Aprobación: factura y proyecto únicos | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | C15 | Solicitud financiera: reintento y respuesta perdida | Comprobada | 05c1bda / 058: 504 pruebas, CI verde, PostgreSQL concurrente, recorrido UI, 50 reenvíos sin duplicados y empresa restringida. [Evidencia y límites](AUDITORIA-SOLICITUDES-FINANCIERAS-20261001.md). |
-| C16 | Estimado: plantilla y comunicaciones | Pendiente | ADT actual confirma calendario 10/50/30/10, condiciones particulares y entrega. Implementación aditiva 059 con siete pruebas específicas; publicación y prueba UI pendientes. Restan plantilla y comunicaciones. |
+| C16 | Estimado: plantilla y comunicaciones | Pendiente | ADT actual confirma calendario 10/50/30/10, condiciones particulares y entrega. d34c358 / 059 publicada: 511 pruebas, calendario, revisiones, factura, PDF privado, móvil emulado y aislamiento comprobados. [Evidencia y límites](CALENDARIO-COMERCIAL-20261001.md). Restan plantilla completa y comunicaciones; la fila permanece abierta. |
 | C17 | Factura: plantilla, numeración y documentos | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | C18 | Pago: anticipo, parcial y saldo completo | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | C19 | Pago: recibo y consulta del registro | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
@@ -134,3 +134,15 @@ $47,937.34 produce $4,793.73 / $23,968.67 / $14,381.20 / $4,793.74.
 El esquema 059 conserva calendario, condiciones y entrega en revisión/factura;
 no asigna condiciones desconocidas a documentos anteriores ni recrea abonos.
 No se declara cerrado C16 ni el requisito completo de inicio de producción.
+
+## Calendario comercial publicado
+
+Entrega d34c358 / esquema 059, CI completo aprobado, activa en staging y con
+retorno 05c1bda compatible. Cuatro revisiones sintéticas, calendarios inicial y
+personalizado, copia exacta a factura sin pagos, PDF históricos preservados,
+escritorio/móvil emulado y empresa restringida comprobados. Datos privados fuera
+de GitHub. [Evidencia y límites](CALENDARIO-COMERCIAL-20261001.md).
+
+El conteo permanece **1 / 65 obligaciones agrupadas comprobadas**. C16 incluye
+plantilla y comunicaciones pendientes; estos subresultados no cierran su fila.
+Ninguno de los tres bloques se considera terminado.
