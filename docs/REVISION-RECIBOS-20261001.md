@@ -59,7 +59,7 @@ perdida, expiración, contexto obsoleto, duplicados y separación financiera.
 
 Se añadió un ensayo PostgreSQL nativo de ocho preparaciones, ocho finalizaciones
 y ocho confirmaciones simultáneas, duplicados por huella/número y carrera con
-corrección. Su ejecución queda pendiente de CI; no se presenta como ya realizada.
+corrección. El ensayo pasó en PostgreSQL nativo en CI 36942598398: un solo efecto por ocho reintentos, un único ganador por duplicado y corrección simultánea preservada. La comprobación general del mismo run falló al faltar la carpeta temporal de casos; el generador la crea ahora y se repetirá CI antes del despliegue.
 
 Pendientes antes del cierre:
 1. CI del commit exacto y despliegue/esquema 060 comprobados en staging.

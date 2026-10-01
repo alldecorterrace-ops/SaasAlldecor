@@ -1,4 +1,4 @@
-import { writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import {
   compareReceipt,
   type ReceiptExtraction,
@@ -125,6 +125,7 @@ add("unicode", {
   direccion_comercio: "Calle Ñ, Miami",
   numero_factura: "Peña-123",
 });
+mkdirSync(".local", { recursive: true });
 writeFileSync(".local/receipt-reference-input.json", JSON.stringify(cases));
 console.log(
   "Prepared independent PHP comparison for " +
