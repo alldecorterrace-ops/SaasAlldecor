@@ -24,7 +24,7 @@ async function diagnosticTool(
   const wrapper = path.join(directory, `${name}.cjs`);
   await writeFile(
     wrapper,
-    `#!/usr/bin/env node\nconst fs=require('node:fs');\nconst {spawnSync}=require('node:child_process');\nconst log=fs.openSync(${JSON.stringify(stderr)},'a',0o600);\nconst result=spawnSync(${JSON.stringify(executable)},process.argv.slice(2),{stdio:['inherit','inherit',log]});\nfs.closeSync(log);\nprocess.exit(result.status??1);\n`,
+    `#!/usr/bin/env node\nconst fs=require('node:fs');\nconst {spawnSync}=require('node:child_process');\nconst log=fs.openSync(${JSON.stringify(stderr)},'a',0o600);\nconst result=spawnSync(${JSON.stringify(executable)},process.argv.slice(2),{stdio:['inherit','inherit',log]});\nif(result.error)fs.writeSync(log,JSON.stringify({spawnError:result.error.code??'unknown',tool:${JSON.stringify(path.basename(executable))}})+'\\n');\nfs.closeSync(log);\nprocess.exit(result.status??1);\n`,
     { flag: "wx", mode: 0o700 },
   );
   diagnosticFiles.push(stderr);
@@ -89,7 +89,15 @@ async function main() {
       throw new Error(
         "Verified encryption tools required for the database recovery rehearsal",
       );
-    const tools = { age, rclone, tar: "tar" },
+    const tools = {
+        age: await diagnosticTool(config.directory, "age", path.resolve(age)),
+        rclone: await diagnosticTool(
+          config.directory,
+          "rclone",
+          path.resolve(rclone),
+        ),
+        tar: await diagnosticTool(config.directory, "tar", "tar"),
+      },
       scratch = path.join(
         config.directory,
         "..",
@@ -98,8 +106,13 @@ async function main() {
     await mkdir(scratch, { mode: 0o700 });
     const identity = path.join(scratch, "synthetic-identity.txt"),
       recipient = path.join(scratch, "recipient.txt");
-    await commandFile(keygen, [], identity);
-    await commandFile(keygen, ["-y", identity], recipient);
+    const diagnosedKeygen = await diagnosticTool(
+      config.directory,
+      "age-keygen",
+      path.resolve(keygen),
+    );
+    await commandFile(diagnosedKeygen, [], identity);
+    await commandFile(diagnosedKeygen, ["-y", identity], recipient);
     await mkdir(path.join(config.directory, "storage"), { mode: 0o700 });
     await writeFile(
       path.join(config.directory, "storage/manifest.json"),
@@ -131,7 +144,7 @@ async function main() {
       tools,
     });
     const transferred = path.join(scratch, "local-transfer.age");
-    await commandText(rclone, [
+    await commandText(tools.rclone, [
       "copyto",
       path.join(encrypted.directory, encrypted.receipt.ciphertext.path),
       transferred,
