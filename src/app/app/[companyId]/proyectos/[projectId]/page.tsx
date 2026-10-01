@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireModule } from "@/lib/auth";
@@ -112,6 +113,7 @@ export default async function Project({
       )}
       <section className="card">
         <FinanceForm
+          requestId={randomUUID()}
           key={p.version}
           companyId={companyId}
           id={projectId}

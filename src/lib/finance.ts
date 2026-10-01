@@ -55,6 +55,10 @@ export const projectSchema = z
     "La fecha final debe ser posterior o igual al inicio.",
   );
 export function financeError(error: { code?: string; message: string }) {
+  if (error.message.includes("request_conflict"))
+    return "La solicitud ya se usó con otros datos. Reabre la ficha antes de continuar.";
+  if (error.message.includes("invalid_finance_request"))
+    return "Vuelve a abrir la ficha para preparar una solicitud válida.";
   if (isRecordConflict(error.code))
     return "El registro cambió. Recarga la página antes de guardar de nuevo.";
   if (error.code === "23505")

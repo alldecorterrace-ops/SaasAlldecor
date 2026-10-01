@@ -198,6 +198,7 @@ export default async function Invoice({
                               Revertir registro
                             </summary>
                             <FinanceForm
+                              requestId={randomUUID()}
                               key={`${p.id}:${p.version}`}
                               companyId={companyId}
                               id={p.id}
@@ -247,6 +248,7 @@ export default async function Invoice({
               <section className="card">
                 <h2 className="font-semibold mb-5">Registrar pago recibido</h2>
                 <FinanceForm
+                  requestId={randomUUID()}
                   key={`payment:${i.version}`}
                   {...base}
                   operation="payment"
@@ -295,6 +297,7 @@ export default async function Invoice({
             <section className="card">
               <h2 className="font-semibold mb-5">Fechas y notas</h2>
               <FinanceForm
+                requestId={randomUUID()}
                 key={`invoice:${i.version}`}
                 {...base}
                 operation="invoice"
@@ -338,6 +341,7 @@ export default async function Invoice({
                   motivo correspondiente.
                 </p>
                 <FinanceForm
+                  requestId={randomUUID()}
                   key={`void:${i.version}`}
                   {...base}
                   operation="void-invoice"

@@ -204,6 +204,7 @@ export default async function EstimatePage({
             estimado quedará cerrado para edición. No se registra ningún pago.
           </p>
           <FinanceForm
+            requestId={randomUUID()}
             companyId={companyId}
             id={id}
             version={version}

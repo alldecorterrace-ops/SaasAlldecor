@@ -12,6 +12,7 @@ export function FinanceForm({
   id,
   version,
   operation,
+  requestId,
   label,
   children,
   readOnly = false,
@@ -20,6 +21,7 @@ export function FinanceForm({
   id: string;
   version: number;
   operation: string;
+  requestId: string;
   label: string;
   children: ReactNode;
   readOnly?: boolean;
@@ -33,6 +35,7 @@ export function FinanceForm({
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="version" value={version} />
       <input type="hidden" name="operation" value={operation} />
+      <input type="hidden" name="request" value={requestId} />
       <Feedback error={state.error} success={state.success} />
       <fieldset disabled={pending || readOnly} className="space-y-4">
         {children}

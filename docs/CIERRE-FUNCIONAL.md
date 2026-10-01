@@ -19,6 +19,14 @@ una pantalla, un cálculo aislado o un build no cierran un módulo. Los pilotos 
 ADT se distinguen de funciones operativas. La condición multitenant y la seguridad
 se conservan, sin copiar accesos globales del sistema anterior.
 
+## Entrega concentrada: puntos 1, 2 y 3
+
+El plan del 1 de octubre se ejecuta con una [matriz única de obligaciones](CIERRE-PUNTOS-1-2-3-20261001.md).
+La meta de hoy mantiene paridad completa; las comprobaciones no terminadas siguen
+abiertas. Fuente pública del panel renovada y con huella igual al 29 de septiembre.
+Solicitudes financieras del esquema 058 implementadas y ocho pruebas locales
+aprobadas; publicación, concurrencia y auditoría de staging aún pendientes.
+
 ## Cola de verificación
 
 | Módulo | Evidencia existente / próximo cierre funcional |
