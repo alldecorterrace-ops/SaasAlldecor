@@ -175,3 +175,28 @@ export const workforceArchiveSchema = z.object({
     .min(5, "Explica el motivo con al menos cinco caracteres.")
     .max(500),
 });
+
+export function receiptReviewError(error: unknown) {
+  const message =
+    error && typeof error === "object" && "message" in error
+      ? String(error.message)
+      : "";
+  const messages: Record<string, string> = {
+    receipt_review_not_configured:
+      "No hay un proveedor de IA habilitado para esta empresa.",
+    receipt_review_forbidden:
+      "Solo el propietario o un administrador con permiso puede analizar y confirmar el recibo.",
+    receipt_review_stale:
+      "La revisión perdió vigencia. Comprueba el gasto y abre de nuevo el formulario.",
+    receipt_review_state:
+      "El estado del gasto no permite esta revisión. Comprueba su estado actual.",
+    receipt_review_result_uncertain:
+      "No se pudo confirmar el resultado. Consulta el historial antes de iniciar otro intento.",
+    invalid_receipt_confirmation:
+      "Escribe una nota de revisión de entre cinco y 500 caracteres.",
+  };
+  return (
+    Object.entries(messages).find(([key]) => message.includes(key))?.[1] ??
+    workforceExpenseError(error)
+  );
+}

@@ -1,4 +1,10 @@
 "use server";
+import {
+  receiptReviewFormSchema,
+  receiptConfirmationSchema,
+} from "@/lib/receipt-review";
+import { receiptReviewError } from "@/lib/workforce-expenses";
+import { runWorkforceReceiptReview } from "@/lib/receipt-review-server";
 import { requireModule } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -250,4 +256,70 @@ export async function archiveWorkforceExpense(
   redirect(
     `/app/${company}/horas/gastos?${v.operation === "archive" ? "status=ARCHIVED&" : ""}changed=${v.operation}`,
   );
+}
+
+export async function analyzeWorkforceReceipt(
+  company: string,
+  _: WorkforceExpenseState,
+  form: FormData,
+): Promise<WorkforceExpenseState> {
+  const { db } = await requireModule(company, "horasfix", "write");
+  const parsed = receiptReviewFormSchema.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  const v = parsed.data;
+  try {
+    const result = await runWorkforceReceiptReview(
+      db,
+      company,
+      v.request,
+      v.id,
+      v.version,
+    );
+    revalidatePath(`/app/${company}/horas/gastos`);
+    revalidatePath(`/app/${company}/historial/workforce_expenses/${v.id}`);
+    return result.status === "DONE"
+      ? {
+          success:
+            "Análisis registrado. Comprueba el resultado y el recibo; la revisión humana sigue pendiente.",
+        }
+      : result.status === "RUNNING"
+        ? {
+            success:
+              "Procesando. Actualiza la página para consultar el resultado de esta solicitud.",
+          }
+        : {
+            error:
+              result.status === "STALE"
+                ? "El gasto, la jornada o el acceso cambiaron. La respuesta se conserva sin modificar el gasto."
+                : "El análisis no se completó. Consulta el error registrado en el historial.",
+          };
+  } catch (error) {
+    revalidatePath(`/app/${company}/horas/gastos`);
+    return { error: receiptReviewError(error) };
+  }
+}
+export async function confirmWorkforceReceipt(
+  company: string,
+  _: WorkforceExpenseState,
+  form: FormData,
+): Promise<WorkforceExpenseState> {
+  const { db } = await requireModule(company, "horasfix", "write");
+  const parsed = receiptConfirmationSchema.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  const v = parsed.data;
+  const result = await db.rpc("confirm_workforce_receipt_review", {
+    p_company: company,
+    p_request: v.request,
+    p_id: v.id,
+    p_version: v.version,
+    p_job: v.job,
+    p_note: v.note,
+  });
+  if (result.error) return { error: receiptReviewError(result.error) };
+  revalidatePath(`/app/${company}/horas/gastos`);
+  revalidatePath(`/app/${company}/historial/workforce_expenses/${v.id}`);
+  return {
+    success:
+      "Revisión humana registrada con tu cuenta y fecha. No se aprobó ni pagó el gasto.",
+  };
 }

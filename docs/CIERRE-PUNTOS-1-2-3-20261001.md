@@ -74,9 +74,9 @@ las filas Comprobada; el denominador se declara provisional hasta completar inve
 | T10 | Dispositivos: comportamiento físico operativo | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | T11 | Gasto: recibos, datos, pagador y revisiones | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | T12 | Gasto: doble aprobación Workforce | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| T13 | IA: extracción de recibo y comparación | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| T14 | IA: estados, errores, reintentos y duplicados | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| T15 | Revisión humana: actor, fecha e invalidación | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
+| T13 | IA: extracción de recibo y comparación | Implementada | Código 060 y 47 comparaciones PHP independientes; proveedor real, HEIC, disparadores y sesión pendientes. [Contrato y límites](REVISION-RECIBOS-20261001.md). |
+| T14 | IA: estados, errores, reintentos y duplicados | Implementada | Registro duradero, permisos y errores comprobados localmente; concurrencia nativa y staging pendientes. [Pruebas y límites](REVISION-RECIBOS-20261001.md). |
+| T15 | Revisión humana: actor, fecha e invalidación | Implementada | Confirmación separada y contexto vigente comprobados localmente; sesión y persistencia en staging pendientes. [Contrato](REVISION-RECIBOS-20261001.md). |
 | T16 | Decisión: precondiciones IA y revisión según origen | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | T17 | Deuda: únicamente bolsillo propio elegible | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | T18 | Reembolso: constancia de pago, versión e idempotencia | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |

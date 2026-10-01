@@ -19,6 +19,12 @@ jobs:
         run: php -l scripts/zone-reference.php
       - name: Immutable dependency overlay checks
         run: python3 scripts/ops/test-dependency-overlay.py
+      - name: Compare receipt rules with frozen ADT PHP source
+        run: |
+          php -l scripts/receipt-reference.php
+          php -l tests/reference/receipt-verdict-source.php
+          npx tsx scripts/test-receipt-reference.ts
+          php scripts/receipt-reference.php tests/reference/receipt-verdict-source.php .local/receipt-reference-input.json cb675701a90ce7ca11502ee8c60a5640f2918f9ac68359b727161277c185db4f
       - run: npm run check
       - uses: denoland/setup-deno@v2
         with:
@@ -59,6 +65,7 @@ jobs:
           npx tsx scripts/test-expense-batch-concurrency.ts
           npx tsx scripts/test-workforce-concurrency.ts
           npx tsx scripts/test-workforce-expense-concurrency.ts
+          npx tsx scripts/test-receipt-review-concurrency.ts
   backup-recovery:
     runs-on: ubuntu-latest
     timeout-minutes: 15

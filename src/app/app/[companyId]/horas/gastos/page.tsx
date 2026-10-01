@@ -1,3 +1,8 @@
+import {
+  WorkforceReceiptReview,
+  receiptReviewHistorySchema,
+} from "@/components/workforce-receipt-review";
+import { receiptProviderConfig } from "@/lib/receipt-review-provider";
 import Link from "next/link";
 import { z } from "zod";
 import { randomUUID } from "node:crypto";
@@ -116,6 +121,15 @@ export default async function WorkforceExpenses({
       }),
     )
     .parse(versionsResult.data);
+  const reviewsResult = await db.rpc("workforce_receipt_reviews", {
+    p_company: companyId,
+    p_ids: (data ?? []).map((e) => e.id),
+  });
+  if (reviewsResult.error)
+    throw new Error("No se pudo consultar el historial de análisis.");
+  const receiptReviews = receiptReviewHistorySchema.parse(reviewsResult.data);
+  const reviewAvailable =
+    receiptProviderConfig(process.env, companyId).length > 0;
   const format = new Intl.DateTimeFormat("es", {
     timeZone: company.timezone,
     dateStyle: "medium",
@@ -336,6 +350,19 @@ export default async function WorkforceExpenses({
                   </ul>
                 </details>
               )}
+              <WorkforceReceiptReview
+                company={companyId}
+                id={e.id}
+                version={e.version}
+                expenseStatus={e.status}
+                reviewed={e.admin_review_status === "REVIEWED"}
+                attention={e.receipt_review_attention}
+                history={receiptReviews.filter((j) => j.expense_id === e.id)}
+                canReview={write && scope.role === "ADMIN"}
+                available={reviewAvailable}
+                observedAt={new Date().toISOString()}
+                timezone={company.timezone}
+              />
               {e.admin_review_status === "REVIEWED" && (
                 <p className="text-sm">
                   Revisado manualmente:{" "}

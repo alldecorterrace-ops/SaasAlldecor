@@ -84,3 +84,10 @@ Evidencia: [Paredes independientes](AUDITORIA-PAREDES-20260926.md),
 [Permisos e Instalaciones](AUDITORIA-PERMISOS-INSTALACIONES-20260925.md),
 [auditoría de staging](AUDITORIA-STAGING-20260924.md),
 [alcance](ALCANCE-Y-PARIDAD.md).
+
+## Continuación de recibos del 1 de octubre
+
+Registro duradero de IA y confirmación humana implementados en esquema 060.
+527 pruebas locales y 47 comparaciones PHP independientes aprobadas. Proveedor
+real, despliegue, HEIC, disparadores y sesión siguen pendientes. Las filas T13–T15
+son Implementada, no Comprobada; el conteo permanece 1 / 65. [Contrato y límites](REVISION-RECIBOS-20261001.md).
