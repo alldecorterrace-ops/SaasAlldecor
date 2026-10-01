@@ -6,6 +6,7 @@ import type { StoredCommercialDocument } from "./commercial-documents";
 import { estimateStatuses } from "./estimates";
 import { priceBases } from "./commercial";
 import { usd } from "./finance";
+import { paymentStageLabels } from "./payment-terms";
 // Vendor font is pinned, licensed and included in the release; never fetch customer content.
 export async function renderCommercialPdf(
   doc: StoredCommercialDocument,
@@ -154,6 +155,20 @@ export async function renderCommercialPdf(
     text(
       `Pagado al generar: ${usd(r.paid_amount)} · Saldo al generar: ${usd(r.balance_due)}`,
     );
+  if (r.commercial_terms) {
+    rule();
+    text("Calendario de pagos", 12);
+    const terms = r.commercial_terms;
+    paymentStageLabels.forEach((label, n) =>
+      text(`${label} · ${terms.percentages[n]}% · ${usd(terms.amounts[n])}`),
+    );
+    if (terms.delivery_date) text(`Entrega prevista: ${terms.delivery_date}`);
+    if (terms.conditions) {
+      text("Condiciones particulares", 12);
+      text(terms.conditions);
+    }
+    text("El calendario no acredita pagos recibidos.", 9);
+  }
   if (r.notes) {
     rule();
     text("Notas", 12);

@@ -24,8 +24,12 @@ se conservan, sin copiar accesos globales del sistema anterior.
 El plan del 1 de octubre se ejecuta con una [matriz única de obligaciones](CIERRE-PUNTOS-1-2-3-20261001.md).
 La meta de hoy mantiene paridad completa; las comprobaciones no terminadas siguen
 abiertas. Fuente pública del panel renovada y con huella igual al 29 de septiembre.
-Solicitudes financieras del esquema 058 implementadas y ocho pruebas locales
-aprobadas; publicación, concurrencia y auditoría de staging aún pendientes.
+Solicitudes financieras 05c1bda / esquema 058 publicadas y comprobadas: 504 pruebas,
+CI verde, concurrencia PostgreSQL, recorrido sintético y 50 reenvíos sin duplicados.
+[Evidencia y límites](AUDITORIA-SOLICITUDES-FINANCIERAS-20261001.md). C15 cerrada;
+1 / 65 obligaciones agrupadas de la matriz provisional. Calendario y condiciones
+comerciales del esquema 059 implementados, con publicación/auditoría pendientes.
+Los tres bloques permanecen abiertos.
 
 ## Cola de verificación
 

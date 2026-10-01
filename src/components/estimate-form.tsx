@@ -22,6 +22,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { SubmitButton } from "./submit-button";
 import { Feedback } from "./feedback";
+import { PaymentTermsEditor } from "./payment-terms-editor";
 export function EstimateForm({
   companyId,
   id,
@@ -433,6 +434,12 @@ export function EstimateForm({
           </p>
         </div>
       </div>
+      <PaymentTermsEditor
+        value={v.commercial_terms}
+        total={totals?.total ?? null}
+        readOnly={readOnly}
+        onChange={(commercial_terms) => set({ ...v, commercial_terms })}
+      />
       <div className="flex flex-wrap gap-3">
         {!readOnly && (
           <SubmitButton>

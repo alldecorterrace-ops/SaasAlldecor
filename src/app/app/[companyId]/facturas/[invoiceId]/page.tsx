@@ -13,6 +13,7 @@ import { PrintButton } from "@/components/print-button";
 import { Input } from "@/components/ui/input";
 import { ListPagination } from "@/components/list-pagination";
 import { InvoiceProvenance } from "@/components/invoice-provenance";
+import { PaymentTermsSummary } from "@/components/payment-terms-summary";
 export default async function Invoice({
   params,
   searchParams,
@@ -90,7 +91,13 @@ export default async function Invoice({
           />
         </div>
       )}
-      <CommercialDocumentPanel companyId={companyId} kind="invoice" record={invoiceId} version={i.version} canGenerate={i.status!=="VOID"&&!i.historical_invoice_id}/>
+      <CommercialDocumentPanel
+        companyId={companyId}
+        kind="invoice"
+        record={invoiceId}
+        version={i.version}
+        canGenerate={i.status !== "VOID" && !i.historical_invoice_id}
+      />
       <article className="space-y-6">
         <header className="card">
           <p className="eyebrow">{company.name} · USD</p>
@@ -128,6 +135,7 @@ export default async function Invoice({
           total={i.total}
           historical={!!i.historical_invoice_id}
         />
+        <PaymentTermsSummary terms={i.commercial_terms} />
         {!i.historical_invoice_id && (
           <section className="card print:hidden">
             <h2 className="font-semibold mb-3">

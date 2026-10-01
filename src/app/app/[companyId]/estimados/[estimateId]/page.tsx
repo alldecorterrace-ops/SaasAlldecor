@@ -7,6 +7,7 @@ import { canAccess } from "@/lib/modules";
 import { todayInTimezone } from "@/lib/commercial";
 import { estimateRecord } from "@/lib/estimate-record";
 import type { EstimateInput } from "@/lib/estimates";
+import { defaultPaymentTerms } from "@/lib/payment-terms";
 import { EstimateForm } from "@/components/estimate-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +38,7 @@ export default async function EstimatePage({
     valid_until: null,
     status: "BORRADOR",
     notes: "",
+    commercial_terms: defaultPaymentTerms(),
     items: [],
     discount: "0.00",
     taxes: "0.00",
@@ -165,7 +167,18 @@ export default async function EstimatePage({
           </div>
         )}
       </div>
-      {!isNew && <CommercialDocumentPanel companyId={companyId} kind="estimate" record={id} version={version} canGenerate={!search.revision && !["BORRADOR", "ANULADA"].includes(initial.status)}/>}
+      {!isNew && (
+        <CommercialDocumentPanel
+          companyId={companyId}
+          kind="estimate"
+          record={id}
+          version={version}
+          canGenerate={
+            !search.revision &&
+            !["BORRADOR", "ANULADA"].includes(initial.status)
+          }
+        />
+      )}
       {invoice && (
         <p className="card mb-6">
           Factura vinculada:{" "}

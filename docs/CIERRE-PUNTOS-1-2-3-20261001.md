@@ -47,8 +47,8 @@ las filas Comprobada; el denominador se declara provisional hasta completar inve
 | C12 | Estimado: revisiones, reapertura y documentos guardados | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | C13 | Estimado: estados y aprobación vigente | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | C14 | Aprobación: factura y proyecto únicos | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| C15 | Solicitud financiera: reintento y respuesta perdida | Implementada | Esquema 058 y ocho pruebas locales aprobadas; CI, PostgreSQL concurrente y sesión publicada pendientes. |
-| C16 | Estimado: plantilla y comunicaciones | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
+| C15 | Solicitud financiera: reintento y respuesta perdida | Comprobada | 05c1bda / 058: 504 pruebas, CI verde, PostgreSQL concurrente, recorrido UI, 50 reenvíos sin duplicados y empresa restringida. [Evidencia y límites](AUDITORIA-SOLICITUDES-FINANCIERAS-20261001.md). |
+| C16 | Estimado: plantilla y comunicaciones | Pendiente | ADT actual confirma calendario 10/50/30/10, condiciones particulares y entrega. Implementación aditiva 059 con siete pruebas específicas; publicación y prueba UI pendientes. Restan plantilla y comunicaciones. |
 | C17 | Factura: plantilla, numeración y documentos | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | C18 | Pago: anticipo, parcial y saldo completo | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | C19 | Pago: recibo y consulta del registro | Pendiente | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
@@ -118,7 +118,19 @@ las filas Comprobada; el denominador se declara provisional hasta completar inve
 - Migración aditiva; RPC anteriores conservados para retorno de código compatible.
   La aplicación nueva requiere 058 antes de activarse. Ninguna clave administrativa
   llega al navegador ni se habilita una escritura en ADT.
-- Comprobaciones locales: lint, tipos, 504 pruebas (ocho nuevas) y compilaci�n aprobadas. Los resultados de CI,
+- Comprobaciones locales: lint, tipos, 504 pruebas (ocho nuevas) y compilación aprobadas. Los resultados de CI,
   hosting y sesión real se incorporarán al obtenerlos, sin anticipar evidencias.
 - Estados generales: **los tres bloques siguen abiertos**. No hay contratación,
   cargo, transferencia, envío comercial ni traslado de información de negocio.
+
+## Avance verificado del 1 de octubre
+
+**1 / 65 obligaciones agrupadas comprobadas** (C15); inventario aún provisional.
+Los tres bloques siguen abiertos. Este conteo no mide el porcentaje del código
+ya construido ni constituye una estimación de tiempo.
+
+La nueva diferencia comercial se verificó en la sesión de ADT y en `pagosDe`:
+$47,937.34 produce $4,793.73 / $23,968.67 / $14,381.20 / $4,793.74.
+El esquema 059 conserva calendario, condiciones y entrega en revisión/factura;
+no asigna condiciones desconocidas a documentos anteriores ni recrea abonos.
+No se declara cerrado C16 ni el requisito completo de inicio de producción.

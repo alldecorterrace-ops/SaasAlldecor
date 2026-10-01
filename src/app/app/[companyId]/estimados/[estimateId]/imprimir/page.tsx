@@ -4,6 +4,7 @@ import { estimateRecord } from "@/lib/estimate-record";
 import { estimateStatuses } from "@/lib/estimates";
 import { priceBases } from "@/lib/commercial";
 import { PrintButton } from "@/components/print-button";
+import { PaymentTermsSummary } from "@/components/payment-terms-summary";
 export default async function PrintEstimate({
   params,
   searchParams,
@@ -134,6 +135,7 @@ export default async function PrintEstimate({
             <span>{money(r.total)}</span>
           </p>
         </div>
+        <PaymentTermsSummary terms={r.commercial_terms} />
         {r.notes && (
           <section className="border-t border-border pt-5">
             <h2 className="font-semibold text-sm">Notas</h2>

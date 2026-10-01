@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { decimal, priceBases } from "./commercial";
+import { paymentTermsInput } from "./payment-terms";
 export const estimateStatuses = {
   ENVIADO: "Enviado",
   APROBADO: "Aprobado",
@@ -65,6 +66,7 @@ export const estimateSchema = z
       "APROBADO",
     ]),
     notes: z.string().max(10000),
+    commercial_terms: paymentTermsInput.nullable().optional(),
     discount: decimal,
     taxes: decimal,
     items: z.array(estimateItemSchema).min(1).max(100),

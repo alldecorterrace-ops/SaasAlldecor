@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { storedPaymentTerms } from "./payment-terms";
 const money = z.union([
   z.number().finite().nonnegative(),
   z.string().regex(/^\d{1,12}(\.\d{1,2})?$/),
@@ -44,6 +45,7 @@ export const commercialSnapshot = z.object({
     taxes: money,
     total: money,
     notes: text,
+    commercial_terms: storedPaymentTerms.nullable().optional(),
     paid_amount: money.optional(),
     balance_due: money.optional(),
   }),

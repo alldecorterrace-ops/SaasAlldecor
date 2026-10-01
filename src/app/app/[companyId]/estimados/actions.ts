@@ -47,15 +47,16 @@ export async function saveEstimate(
   });
   if (error)
     return {
-      error:
-        isRecordConflict(error.code)
-          ? "Existe una revisión más reciente. Copia tus cambios y vuelve a abrir el estimado."
-          : error.code === "23505"
-            ? "Esta solicitud ya se guardó. Vuelve al listado."
-            : error.message.includes("customer_access_required")
-              ? "Necesitas permiso de lectura de Clientes para seleccionar un cliente."
-              : error.message.includes("estimate_voided")
-                ? "Un estimado anulado no se puede modificar."
+      error: isRecordConflict(error.code)
+        ? "Existe una revisión más reciente. Copia tus cambios y vuelve a abrir el estimado."
+        : error.code === "23505"
+          ? "Esta solicitud ya se guardó. Vuelve al listado."
+          : error.message.includes("customer_access_required")
+            ? "Necesitas permiso de lectura de Clientes para seleccionar un cliente."
+            : error.message.includes("estimate_voided")
+              ? "Un estimado anulado no se puede modificar."
+              : error.message.includes("invalid_payment_terms")
+                ? "Revisa el calendario: debe sumar 100% y sus importes redondeados no pueden superar el total."
                 : "No se pudo guardar. Revisa los datos, el cliente seleccionado y los permisos.",
     };
   revalidatePath(`/app/${companyId}`, "layout");
