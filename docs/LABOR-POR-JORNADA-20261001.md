@@ -88,3 +88,40 @@ directa, reapertura, jornadas/solicitudes/asignaciones, auditoría reservada,
 revision de ajuste, revocación y nómina previa sin duplicación. Banco nativo
 preparado: ocho solicitudes iguales, tarifas concurrentes superpuestas, ediciones
 obsoletas y revocación mientras la solicitud espera el bloqueo.
+
+## Entrega 062 publicada y comprobada en sesión
+
+Staging activa `f84c5de13985083fd38addb8cc9515854eef3353`; retorno compatible
+`b312b40`. CI 36954738947 aprobado: lint, tipos, 563 pruebas y compilación,
+50 comparaciones con el modelo PHP fechado y PostgreSQL nativo. Ocho reintentos
+produjeron un efecto; tarifas superpuestas y ediciones simultáneas produjeron
+un efecto por carrera. Una revocación mientras la solicitud esperaba el bloqueo
+rechazó el guardado, con permisos comprobados nuevamente.
+
+Esquema 062 aplicado sin carga de negocio: 76 tablas y 856 filas anteriores
+conservaron su huella. Fuente SHA-256
+`7f299ffcc0cb8ee77df5674165896afbf64f379c7ed667744b2a7f3592d2c78e`.
+Las cuatro rutas públicas de staging respondieron 200, proceso activo confirmado,
+configuración y salud de producción conservadas.
+
+Un propietario creó por interfaz tarifa diaria, modo de proyecto y asignación,
+y aprobó una jornada sintética. Reabrir mostró un costo de $250, sin incidencias,
+sin nómina ni pago. Móvil emulado 390 px: área útil y ancho de documento 375 px,
+sin desbordamiento. El mismo usuario en su empresa restringida recibió Página
+no disponible. Pagos y gastos administrativos globales conservaron las huellas
+anteriores; solo se guardaron dos solicitudes de configuración y su auditoría.
+
+Esto acredita esa jornada y ese propietario, no toda la matriz de roles ni
+comportamiento físico de Campo. Los ajustes, tarifas históricas, correspondencias
+y consumidores restantes aún requieren evidencia de interfaz completa.
+
+## Registro unificado 063 en preparación
+
+Consulta STABLE con permisos del actor captura gastos originales y contexto de
+Labor en una sola sentencia. La aplicación concilia toda la empresa antes de
+filtrar, conserva los gastos originales y añade solo el suplemento. Gastos,
+proyectos, expediente del cliente y CSV usan esa misma proyección. Labor lleva
+estado Calculado y no acredita pago. Incidencias también se conservan en CSV,
+sin inventar importes. Una fuente incompleta o superior al límite de consulta
+falla explícitamente; no devuelve un total parcial. Esta preparación todavía
+no acredita publicación ni pruebas de interfaz de 063.

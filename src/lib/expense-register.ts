@@ -3,6 +3,7 @@ import { uuid } from "./validation";
 export const expenseSources = {
   ADMINISTRATIVE: "Administración",
   WORKFORCE: "Trabajador · Workforce",
+  LABOR: "Labor calculada",
 } as const;
 export const registerStates = {
   ACTIVOS: "Activos",
@@ -11,6 +12,7 @@ export const registerStates = {
   APROBADO: "Aprobados",
   RECHAZADO: "Rechazados",
   ANULADO: "Anulados",
+  CALCULADO: "Calculados · Labor",
 } as const;
 const dateFilter = z.union([z.literal(""), z.iso.date()]).default("");
 const idFilter = z.union([z.literal(""), uuid]).default("");
@@ -31,7 +33,7 @@ export const expenseFiltersSchema = z
     payer: z
       .enum(["", "EMPRESA", "EFECTIVO_EMPRESA", "TRABAJADOR", "SIN_REGISTRAR"])
       .default(""),
-    source: z.enum(["", "ADMINISTRATIVE", "WORKFORCE"]).default(""),
+    source: z.enum(["", "ADMINISTRATIVE", "WORKFORCE", "LABOR"]).default(""),
     worker: idFilter,
     project: idFilter,
     customer: idFilter,
@@ -51,6 +53,17 @@ export const expenseRegisterSchema = z.object({
     })
     .optional(),
   workforce_unconfirmed: money.optional(),
+  labor_pending: z
+    .array(
+      z.object({
+        reason: z.string(),
+        date: z.string().optional(),
+        worker_name: z.string().optional(),
+        project_name: z.string().optional(),
+      }),
+    )
+    .optional(),
+  labor_complete: z.boolean().optional(),
   count: z.number().int().nonnegative(),
   page: z.number().int().positive(),
   total: money,
@@ -61,7 +74,7 @@ export const expenseRegisterSchema = z.object({
       z.object({
         id: uuid,
         source: z
-          .enum(["ADMINISTRATIVE", "WORKFORCE"])
+          .enum(["ADMINISTRATIVE", "WORKFORCE", "LABOR"])
           .default("ADMINISTRATIVE"),
         date: z.iso.date(),
         vendor: z.string(),
@@ -75,7 +88,13 @@ export const expenseRegisterSchema = z.object({
           .optional(),
         worker_id: uuid.nullable().optional(),
         worker_name: z.string().nullable().optional(),
-        status: z.enum(["PENDIENTE", "APROBADO", "RECHAZADO", "ANULADO"]),
+        status: z.enum([
+          "PENDIENTE",
+          "APROBADO",
+          "RECHAZADO",
+          "ANULADO",
+          "CALCULADO",
+        ]),
         method: z.string(),
         reimbursement_status: z.string(),
         project_id: uuid.nullable(),
@@ -133,6 +152,24 @@ export function expenseCsv(data: ExpenseRegisterResult) {
       r.worker_name ?? "",
       r.has_receipt ? "Sí" : "No",
       expenseSources[r.source],
+    ]),
+    ...(data.labor_pending ?? []).map((i) => [
+      "INCIDENCIA",
+      i.date ?? "",
+      "",
+      i.project_name ?? "",
+      "",
+      "",
+      "Labor",
+      i.reason,
+      "",
+      "PENDIENTE DE CONCILIACION",
+      "NO ACREDITA PAGO",
+      "NO_APLICA",
+      "",
+      i.worker_name ?? "",
+      "",
+      "Labor calculada",
     ]),
   ];
   return (

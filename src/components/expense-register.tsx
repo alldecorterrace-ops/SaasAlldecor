@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { loadCostRegister } from "@/lib/cost-register";
 import { requireModule } from "@/lib/auth";
 import { canAccess } from "@/lib/modules";
 import { expensePayers } from "@/lib/operations";
@@ -6,7 +7,6 @@ import { usd } from "@/lib/finance";
 import {
   expenseSources,
   expenseFiltersSchema,
-  expenseRegisterSchema,
   registerStates,
 } from "@/lib/expense-register";
 import { EntitySelect } from "./entity-select";
@@ -37,25 +37,23 @@ export async function ExpenseRegister({
     page = /^\d+$/.test(String(search.page ?? "1"))
       ? Math.max(1, Math.min(100000, Number(search.page ?? 1)))
       : 1;
-  const { data, error } = await db.rpc("expense_register", {
-    p_company: companyId,
-    p_filters: filters,
-    p_page: page,
-    p_export: false,
-  });
-  if (error)
+  let result;
+  try {
+    result = await loadCostRegister(db, companyId, filters, page);
+  } catch {
     return (
       <div className="space-y-4">
         <h1 className="page-title">Gastos</h1>
         <p role="alert">
-          No se pudo cargar el registro. Revisa tu acceso y vuelve a intentarlo.
+          No se pudo cargar el registro completo. Revisa tu acceso o reduce el
+          intervalo de fechas; no se muestran totales parciales.
         </p>
         <Link href={base} className="underline">
           Limpiar filtros
         </Link>
       </div>
     );
-  const result = expenseRegisterSchema.parse(data);
+  }
   const workers = canAccess(member, "trabajadores"),
     projects = canAccess(member, "fin-proyectos"),
     customers = projects && canAccess(member, "clientes");
@@ -87,8 +85,8 @@ export async function ExpenseRegister({
           <p className="eyebrow">Finanzas</p>
           <h1 className="page-title mt-2">Gastos</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Gastos de administración y costos aprobados de Workforce, según tus
-            permisos.
+            Gastos de administración, costos aprobados de Workforce y Labor
+            calculada, según tus permisos.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -295,8 +293,26 @@ export async function ExpenseRegister({
       <p className="text-sm text-muted-foreground">
         Los costos de Workforce requieren ambas aprobaciones y se gestionan en
         su origen. No se crea una segunda ficha. Las constancias de reembolso se
-        gestionan en Horas; Labor automática sigue pendiente.
+        gestionan en Horas. Labor calculada no acredita pago y descuenta los
+        costos anteriores conciliados.
       </p>
+      {result.labor_complete === false && (
+        <aside className="panel p-4 space-y-2" role="status">
+          <strong>Labor pendiente de conciliación</strong>
+          <p>
+            Los importes conocidos no constituyen el costo completo de Labor.
+            Revisa las incidencias y las correspondencias antes de cerrar los
+            costos.
+          </p>
+          <ul className="list-disc pl-5">
+            {result.labor_pending?.map((i, n) => (
+              <li key={n}>
+                {i.date} · {i.worker_name} · {i.project_name} · {i.reason}
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )}
       <div className="space-y-3">
         {result.rows.length === 0 ? (
           <div className="panel p-6">No hay gastos con estos filtros.</div>
@@ -310,16 +326,20 @@ export async function ExpenseRegister({
                 <div className="min-w-0">
                   <Link
                     href={
-                      row.source === "WORKFORCE"
-                        ? `/app/${companyId}/horas/gastos?expense=${row.id}#expense-${row.id}`
-                        : `${base}/${row.id}`
+                      row.source === "LABOR"
+                        ? `/app/${companyId}/horas/labor`
+                        : row.source === "WORKFORCE"
+                          ? `/app/${companyId}/horas/gastos?expense=${row.id}#expense-${row.id}`
+                          : `${base}/${row.id}`
                     }
                     className="font-semibold underline break-words"
                   >
                     {row.vendor ||
-                      (row.source === "WORKFORCE"
-                        ? "Costo de Workforce"
-                        : "Gasto sin proveedor")}
+                      (row.source === "LABOR"
+                        ? `/app/${companyId}/horas/labor`
+                        : row.source === "WORKFORCE"
+                          ? "Costo de Workforce"
+                          : "Gasto sin proveedor")}
                   </Link>
                   <p className="text-sm">
                     {row.date} · {row.category} · {registerStates[row.status]}
@@ -370,9 +390,11 @@ export async function ExpenseRegister({
                   )}
                 </span>
                 <span>
-                  {row.method === "SIN_CONFIRMAR"
-                    ? "Método sin confirmar"
-                    : row.method}{" "}
+                  {row.method === "COSTO_CALCULADO"
+                    ? "Costo calculado · No acredita pago"
+                    : row.method === "SIN_CONFIRMAR"
+                      ? "Método sin confirmar"
+                      : row.method}{" "}
                   · {row.has_receipt ? "Con comprobante" : "Sin comprobante"}
                 </span>
               </div>

@@ -173,7 +173,31 @@ async function main() {
       gate.release();
       if (waiting) await waiting;
     }
+    const snapshots = await Promise.all(
+      Array.from({ length: 8 }, () =>
+        actor(
+          f.owner,
+          async (c) =>
+            (await c.query("select cost_register_context($1,'{}') data", [f.a]))
+              .rows[0].data,
+        ),
+      ),
+    );
+    for (const value of snapshots) assert.deepEqual(value, snapshots[0]);
+    await assert.rejects(
+      actor(f.otherOwner, (c) =>
+        c.query("select cost_register_context($1,'{}')", [f.a]),
+      ),
+      /permission_denied/,
+    );
     await setup.query("reset role");
+    const contract = (
+      await setup.query(
+        "select prosecdef,provolatile from pg_proc where oid='public.cost_register_context(uuid,jsonb)'::regprocedure",
+      )
+    ).rows[0];
+    assert.equal(contract.prosecdef, false);
+    assert.equal(contract.provolatile, "s");
     assert.deepEqual(await finance(), before);
     console.log(
       JSON.stringify({
@@ -182,6 +206,12 @@ async function main() {
           overlapping_rates: { attempts: 2, effects: 1 },
           stale_edits: { attempts: 2, effects: 1 },
           revocation_while_waiting: { effects: 0, permission_rechecked: true },
+          cost_projection: {
+            concurrent_reads: 8,
+            consistent: true,
+            read_only: true,
+            revoked_read_denied: true,
+          },
           payments_and_administrative_costs_unchanged: true,
         },
       }),

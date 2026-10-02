@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import Link from "next/link";
+import { RelatedCostsLoader as RelatedCosts } from "@/components/related-costs-loader";
 import { notFound } from "next/navigation";
 import { requireModule } from "@/lib/auth";
 import { canAccess } from "@/lib/modules";
@@ -109,6 +110,11 @@ export default async function Project({
               ]
             }
           </p>
+        </div>
+      )}
+      {canAccess(member, "gastos") && (
+        <div className="mb-6">
+          <RelatedCosts companyId={companyId} project={projectId} />
         </div>
       )}
       <section className="card">

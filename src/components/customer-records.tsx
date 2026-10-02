@@ -2,6 +2,7 @@ import { CustomerCommercialDocuments } from "./customer-commercial-documents";
 import { CustomerPermits } from "./customer-permits";
 import { CustomerHistory } from "./customer-history";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { CustomerLedger } from "./customer-ledger";
 import { ListPagination } from "./list-pagination";
 import { estimateStatuses } from "@/lib/estimates";
@@ -12,8 +13,10 @@ export function CustomerRecords({
   companyId,
   customerId,
   records,
+  costs,
   timezone = "UTC",
 }: {
+  costs?: ReactNode;
   companyId: string;
   customerId: string;
   timezone?: string;
@@ -92,6 +95,8 @@ export function CustomerRecords({
           before={before}
           timezone={timezone}
         />
+      ) : section.id === "gastos" && costs ? (
+        costs
       ) : ledger ? (
         <CustomerLedger
           companyId={companyId}
@@ -155,7 +160,7 @@ export function CustomerRecords({
           No hay {section.label.toLowerCase()} vinculados a este cliente.
         </p>
       )}
-      {!history && (
+      {!history && !costs && (
         <ListPagination
           path={path}
           page={page}

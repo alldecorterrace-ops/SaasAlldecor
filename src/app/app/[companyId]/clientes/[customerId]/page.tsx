@@ -5,6 +5,7 @@ import { uuid, type CustomerInput } from "@/lib/validation";
 import { CustomerForm } from "@/components/customer-form";
 import Link from "next/link";
 import { loadCustomerRecords } from "@/lib/customer-records";
+import { RelatedCostsLoader } from "@/components/related-costs-loader";
 import { CustomerRecords } from "@/components/customer-records";
 export default async function CustomerDetail({
   params,
@@ -91,6 +92,11 @@ export default async function CustomerDetail({
         companyId={companyId}
         customerId={customerId}
         records={records}
+        costs={
+          records.section?.id === "gastos" ? (
+            <RelatedCostsLoader companyId={companyId} customer={customerId} />
+          ) : undefined
+        }
         timezone={company.timezone}
       />
     </>

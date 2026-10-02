@@ -109,3 +109,12 @@ Las aprobaciones de preparación por RPC son evidencia distinta de las pantallas
 pendientes de encargado/oficina. Lote en UI, controlador vigente y consumidores
 de Labor pendientes. T17–T19 Implementada, conteo **1 / 65**, tres bloques abiertos.
 [Contrato, evidencia y límites](REEMBOLSOS-WORKFORCE-20261001.md).
+
+## Labor 062 — entrega parcial comprobada, 1 de octubre
+
+Publicada `f84c5de` en staging con CI aprobado y 563 pruebas; 50 comparaciones
+PHP y concurrencia nativa. Tarifa, proyecto, asignación y jornada sintética
+comprobados por propietario: costo $250 al reabrir, sin pagos ni copias de gastos.
+Móvil emulado y empresa restringida comprobados. [Detalle de pruebas y límites](LABOR-POR-JORNADA-20261001.md).
+El registro unificado 063 está en preparación; no se confunde con publicación.
+Tres bloques abiertos, conteo provisional 1/65 obligaciones agrupadas comprobadas.
