@@ -196,11 +196,13 @@ export default async function Invoice({
                     <td>
                       {p.status === "VOID"
                         ? `Revertido: ${p.void_reason}`
-                        : "Aplicado"}
+                        : p.status === "ASSOCIATED_TO_VOID_INVOICE"
+                          ? `Asociado a factura anulada: ${p.void_reason}`
+                          : "Aplicado"}
                     </td>
                     {write && (
                       <td className="print:hidden">
-                        {p.status === "APPLIED" && (
+                        {p.status === "APPLIED" && i.status !== "VOID" && (
                           <details>
                             <summary className="cursor-pointer underline">
                               Revertir registro
@@ -219,7 +221,7 @@ export default async function Invoice({
                                 <Input
                                   name="reason"
                                   required
-                                  minLength={3}
+                                  minLength={1}
                                   maxLength={2000}
                                 />
                               </label>
@@ -344,9 +346,9 @@ export default async function Invoice({
                   Anular factura
                 </summary>
                 <p className="text-sm my-3">
-                  Conserva el documento y sus registros. Si tiene pagos
-                  aplicados, primero deben revertirse sus registros con el
-                  motivo correspondiente.
+                  Conserva el documento, los importes y los registros de pago.
+                  Los pagos aplicados quedarán asociados a la factura anulada.
+                  Esta acción no realiza un reembolso.
                 </p>
                 <FinanceForm
                   requestId={randomUUID()}
@@ -362,7 +364,7 @@ export default async function Invoice({
                     Motivo
                     <Input
                       name="reason"
-                      minLength={3}
+                      minLength={1}
                       maxLength={2000}
                       required
                     />

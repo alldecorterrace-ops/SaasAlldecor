@@ -53,7 +53,7 @@ async function main() {
       ["Not charged.", "NOT_CHARGED"],
       ["", "SIN_METODO"],
     ];
-    const cases = [];
+    const cases: object[] = [];
     let version = 1;
     for (const [raw, canonical, amount] of [
       ...pairs.map(([raw, canonical], i) => [
@@ -122,6 +122,26 @@ async function main() {
           methods: payments.map((p) => p.method),
         },
       });
+    }
+    const rows = (await db.query<{ id: string }>("select id from payments where invoice_id=$1 order by created_at,id", [invoice])).rows;
+    const operations = [
+      { operation: "invoiceVoid", input: { external_id: "QA-INV", reason: "Synthetic annulment" }, payment: null },
+      { operation: "invoiceVoid", input: { external_id: "QA-INV", reason: "Repeated annulment" }, payment: null },
+      { operation: "paymentVoid", input: { external_id: "QA-PAY-1", reason: "Synthetic reversal" }, payment: rows[0].id },
+      { operation: "paymentVoid", input: { external_id: "QA-PAY-1", reason: "Repeated reversal" }, payment: rows[0].id },
+      { operation: "paymentVoid", input: { external_id: "QA-PAY-2", reason: "Second reversal" }, payment: rows[1].id },
+    ];
+    for (const step of operations) {
+      const current = (await db.query<{ version: number }>("select version from invoices where id=$1", [invoice])).rows[0];
+      if (step.operation === "invoiceVoid") {
+        await db.query("select update_invoice($1,$2,$3,'2026-10-02',null,'',$4)", [company, invoice, current.version, step.input.reason]);
+      } else {
+        const pay = (await db.query<{ version: number }>("select version from payments where id=$1", [step.payment])).rows[0];
+        await db.query("select void_payment($1,$2,$3,$4)", [company, step.payment, pay.version, step.input.reason]);
+      }
+      const state = (await db.query<Record<string, unknown>>("select paid_amount,balance_due,payment_status from invoices where id=$1", [invoice])).rows[0];
+      const payments = (await db.query<{ method: string; amount: string; status: string; void_reason: string }>("select method,amount,status,void_reason from payments where invoice_id=$1 order by created_at,id", [invoice])).rows;
+      cases.push({ name: step.operation + "-" + step.input.reason, operation: step.operation, input: step.input, actual: { status: 200, error: null, ...state, count: payments.length, methods: payments.map(p => p.method), payment_states: payments.map(p => ({ amount: p.amount, status: p.status, reason: p.void_reason })) } });
     }
     await mkdir(".local", { recursive: true });
     await writeFile(

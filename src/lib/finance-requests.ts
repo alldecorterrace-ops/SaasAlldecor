@@ -1,13 +1,14 @@
 import { z } from "zod";
 import { paymentSchema, projectSchema } from "./finance";
 const reason = z.string().trim().min(3).max(2000);
+const voidReason = z.string().trim().min(1).max(2000);
 const invoiceData = z.object({ date: z.iso.date(), due: z.iso.date().nullable(), notes: z.string().max(10000) });
 const dataSchemas = {
   approve: z.object({ date: z.iso.date(), name: z.string().trim().min(2).max(255), note: reason }),
   payment: paymentSchema.extend({ payment_id: z.uuid() }),
-  "void-payment": z.object({ reason }),
+  "void-payment": z.object({ reason: voidReason }),
   invoice: invoiceData.refine(v => !v.due || v.due >= v.date),
-  "void-invoice": invoiceData.extend({ reason }).refine(v => !v.due || v.due >= v.date),
+  "void-invoice": invoiceData.extend({ reason: voidReason }).refine(v => !v.due || v.due >= v.date),
   project: projectSchema,
 };
 export const financeOperations = Object.keys(dataSchemas) as Array<keyof typeof dataSchemas>;

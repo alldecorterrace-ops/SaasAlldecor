@@ -13,9 +13,16 @@ class ReferenceQuery {
  public function fields(...$args){ if($this->operation!=='select')$this->values=$args[0];return $this; }
  public function condition($field,$value){$this->conditions[$field]=$value;return $this;}
  public function execute(){
-  if($this->operation==='select')return new ReferenceResult($this->db->invoice['external_id']===$this->conditions['external_id']?$this->db->invoice:false);
+  if($this->operation==='select'){
+   if($this->table==='adt_crm_invoice')return new ReferenceResult($this->db->invoice['external_id']===$this->conditions['external_id']?$this->db->invoice:false);
+   foreach($this->db->payments as $p)if($p['external_id']===$this->conditions['external_id'])return new ReferenceResult($p);
+   return new ReferenceResult(false);
+  }
   if($this->operation==='insert'){$this->db->payments[]=$this->values;return 1;}
-  if($this->operation==='update'){$this->db->invoice=array_merge($this->db->invoice,$this->values);return 1;}
+  if($this->operation==='update'){
+   if($this->table==='adt_crm_invoice'){$this->db->invoice=array_merge($this->db->invoice,$this->values);return 1;}
+   foreach($this->db->payments as &$p){$match=true;foreach($this->conditions as $key=>$value)if(($p[$key]??null)!==$value)$match=false;if($match)$p=array_merge($p,$this->values);}unset($p);return 1;
+  }
   throw new RuntimeException('Unexpected reference operation');
  }
 }
@@ -24,7 +31,7 @@ class ReferenceDb {
  public array $payments=[];
  public function select($table,$alias){return new ReferenceQuery($this,'select',$table);}
  public function insert($table){if($table!=='adt_crm_payment')throw new RuntimeException('Unexpected insert table');return new ReferenceQuery($this,'insert',$table);}
- public function update($table){if($table!=='adt_crm_invoice')throw new RuntimeException('Unexpected update table');return new ReferenceQuery($this,'update',$table);}
+ public function update($table){if(!in_array($table,['adt_crm_invoice','adt_crm_payment'],true))throw new RuntimeException('Unexpected update table');return new ReferenceQuery($this,'update',$table);}
  public function query($sql,$params){
   if(!str_contains($sql,'SUM(amount)')||$params[':s']!=='APPLIED')throw new RuntimeException('Unexpected query');
   return new ReferenceResult(array_sum(array_map(fn($p)=>$p['status']==='APPLIED'?(float)$p['amount']:0,$this->payments)));
@@ -78,4 +85,81 @@ class PaymentReference {
     $projExt=trim((string)($inv['project_external_id']??'')); if($projExt===''||!$this->projectForClient($projExt,(string)$inv['client_external_id']))return new JsonResponse(['ok'=>FALSE,'error'=>'invoice_project_required'],422);
     $ext=$this->genExtId('adt_crm_payment');$now=time();$fields=['external_id'=>$ext,'invoice_external_id'=>$invExt,'client_external_id'=>(string)$inv['client_external_id'],'project_external_id'=>$projExt,'payment_date'=>(string)($d['payment_date']??date('Y-m-d')),'amount'=>$this->money($amount),'method'=>(string)($d['method']??''),'notes'=>(string)($d['notes']??''),'status'=>'APPLIED','created'=>$now,'changed'=>$now,'reference'=>(string)($d['reference']??''),'created_by'=>$this->adtUser()?:'system']; $txn=$this->db()->startTransaction();try{$this->db()->insert('adt_crm_payment')->fields($fields)->execute();$rc=$this->recomputeInvoice($invExt);$this->financialEvent('payment',$ext,$invExt,(string)$inv['client_external_id'],'CREATE',NULL,$fields,(string)($d['notes']??''));}catch(\Exception $e){$txn->rollBack();return new JsonResponse(['ok'=>FALSE,'error'=>'payment_failed','detail'=>$e->getMessage()],500);}return new JsonResponse(['ok'=>TRUE,'external_id'=>$ext,'invoice'=>$rc]);
   }
+  public function invoiceVoid(Request $request): JsonResponse {
+    if (!$this->allowedWrite() || !$this->roleCan('invoices')) { return new JsonResponse(['ok' => FALSE, 'error' => 'forbidden'], 403); }
+    $d = $this->body($request);
+    $ext = trim((string) ($d['external_id'] ?? ''));
+    if ($ext === '') { return new JsonResponse(['ok' => FALSE, 'error' => 'external_id_required'], 422); }
+    $inv = $this->db()->select('adt_crm_invoice', 'i')->fields('i')
+      ->condition('external_id', $ext)->execute()->fetchAssoc();
+    if (!$inv) { return new JsonResponse(['ok' => FALSE, 'error' => 'invoice_not_found'], 404); }
+    if (strtoupper((string) $inv['status']) === 'VOID') {
+      return new JsonResponse(['ok' => TRUE, 'external_id' => $ext, 'already_void' => TRUE]);
+    }
+    $actor = $this->adtUser() ?: 'system';
+    $reason = (string) ($d['reason'] ?? $d['void_reason'] ?? '');
+    $now = time();
+    $txn = $this->db()->startTransaction();
+    try {
+      $this->db()->update('adt_crm_invoice')->fields([
+        'status' => 'VOID', 'payment_status' => 'VOID',
+        'closed_at' => $now, 'closed_by' => $actor, 'void_reason' => $reason, 'changed' => $now,
+      ])->condition('external_id', $ext)->execute();
+      $this->db()->update('adt_crm_payment')->fields([
+        'status' => 'ASSOCIATED_TO_VOID_INVOICE', 'void_reason' => $reason, 'changed_by' => $actor, 'changed' => $now,
+      ])->condition('invoice_external_id', $ext)->condition('status', 'APPLIED')->execute();
+      $after = $this->db()->select('adt_crm_invoice', 'i')->fields('i')->condition('external_id', $ext)->execute()->fetchAssoc();
+      $this->financialEvent('invoice', $ext, $ext, (string) $inv['client_external_id'], 'VOID', $inv, $after, $reason);
+    }
+    catch (\Exception $e) {
+      $txn->rollBack();
+      return new JsonResponse(['ok' => FALSE, 'error' => 'void_failed', 'detail' => $e->getMessage()], 500);
+    }
+    return new JsonResponse(['ok' => TRUE, 'external_id' => $ext, 'status' => 'VOID']);
+  }
+  // ADT-AUTOFACT-V1 (2026-08-06, decisión Lemuel): lógica única para facturar un estimado.
+  // Candado anti-duplicado + crea/liga proyecto (ADT-PROY-V1). El PAGO nunca se registra aquí:
+  // la palabra del cliente no mueve dinero — Zelle/cash/wire los confirma finanzas; solo Stripe se auto-verifica.
+  public function paymentVoid(Request $request): JsonResponse {
+    if (!$this->allowedWrite() || !$this->roleCan('payments')) { return new JsonResponse(['ok' => FALSE, 'error' => 'forbidden'], 403); }
+    $d = $this->body($request);
+    $ext = trim((string) ($d['external_id'] ?? ''));
+    if ($ext === '') { return new JsonResponse(['ok' => FALSE, 'error' => 'external_id_required'], 422); }
+    $pay = $this->db()->select('adt_crm_payment', 'p')->fields('p')
+      ->condition('external_id', $ext)->execute()->fetchAssoc();
+    if (!$pay) { return new JsonResponse(['ok' => FALSE, 'error' => 'payment_not_found'], 404); }
+    if (strtoupper((string) $pay['status']) === 'VOID') {
+      return new JsonResponse(['ok' => TRUE, 'external_id' => $ext, 'already_void' => TRUE]);
+    }
+    $actor = $this->adtUser() ?: 'system';
+    $reason = (string) ($d['reason'] ?? $d['void_reason'] ?? '');
+    $now = time();
+    $invExt = (string) $pay['invoice_external_id'];
+    $txn = $this->db()->startTransaction();
+    try {
+      $this->db()->update('adt_crm_payment')->fields([
+        'status' => 'VOID', 'void_reason' => $reason, 'changed_by' => $actor, 'changed' => $now,
+      ])->condition('external_id', $ext)->execute();
+      $rc = $this->recomputeInvoice($invExt);
+      $after = $this->db()->select('adt_crm_payment', 'p')->fields('p')->condition('external_id', $ext)->execute()->fetchAssoc();
+      $this->financialEvent('payment', $ext, $invExt, (string) $pay['client_external_id'], 'VOID', $pay, $after, $reason);
+    }
+    catch (\Exception $e) {
+      $txn->rollBack();
+      return new JsonResponse(['ok' => FALSE, 'error' => 'void_failed', 'detail' => $e->getMessage()], 500);
+    }
+    return new JsonResponse(['ok' => TRUE, 'external_id' => $ext, 'invoice' => $rc]);
+  }
+
+   /* ===================== ADT DELETE ENGINE (admin) =====================
+   * Borrado real gated por allowedWrite(). Un método para factura y lead.
+   * - invoice: borra la factura + sus pagos. SOLO si status=VOID (anula primero),
+   *            salvo que se pase force:true. Protege facturas reales.
+   * - lead: borra la webform_submission de Drupal por id (sid).
+   * Ruta: POST /adt/api/crm/record-delete  { type:'invoice'|'lead', external_id|id, force? }
+   */
+  // ===================== ADT PRODUCTOS (catalogo parametrico) =====================
+  // Tabla adt_crm_product autocreada. Un producto = regla de precio:
+  // base (area_ft2|linear_ft|volume_ft3|unit|fixed|manual), unit_price, specs[], options[].
+  // El configurador leera GET /products y calculara el total con las medidas del vendedor.
 }

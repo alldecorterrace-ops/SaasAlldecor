@@ -36,7 +36,7 @@ jobs:
           php -l scripts/payment-reference.php
           php -l tests/reference/invoice-payment-source.php
           npx tsx scripts/test-payment-reference.ts
-          php scripts/payment-reference.php tests/reference/invoice-payment-source.php .local/payment-reference-input.json d14199eefb090da7fde174f83edeb9664f79b073aca85a9e6255578567f0c2e1
+          php scripts/payment-reference.php tests/reference/invoice-payment-source.php .local/payment-reference-input.json 75adeb6b8ff6606afa06eec4735237373b452bba676e290d0f28530c4e2730ed
       - run: npm run check
       - uses: denoland/setup-deno@v2
         with:
