@@ -2,11 +2,16 @@
 
 ## Estado
 
-Motor de cálculo y conciliación implementados, con 14 pruebas locales aprobadas.
-Banco de 50 casos preparado para contraste independiente con PHP en CI.
-Esta entrega **todavía no conecta** Labor con datos persistentes ni pantallas.
-T20/T21/T22 y los tres bloques siguen abiertos. No se publica un total operacional
-ni se registra una nómina, pago o gasto por tener un cálculo local correcto.
+Motor de cálculo y conciliación: **581c6ea** pasó CI completo, 554 pruebas y
+**50 comparaciones independientes** con PHP. Nueva configuración aditiva 062,
+formularios y consulta persistente implementados; lint, tipos, **563 pruebas** y
+compilación locales aprobados. Su CI nativo, aplicación del esquema y recorrido
+real de staging siguen pendientes. La versión operativa de staging permanece
+b312b40 / 061. T20/T21/T22 y los tres bloques siguen abiertos.
+
+No se registra una nómina, pago o copia de gasto por calcular Labor. Gastos,
+Proyectos, expediente y CSV aún necesitan consumir el mismo registro de Labor;
+la nueva consulta separada no acredita esa integración completa.
 
 ## Referencia
 
@@ -52,3 +57,34 @@ no se trasladan al código ni a la base del SaaS.
    con origen, incidencias y pago separados del costo calculado.
 5. Probar permisos, revocaciones, concurrencia PostgreSQL real y recorridos de
    pantalla en staging. No importar nómina ni información real de ADT.
+
+## Configuración y consulta persistente preparadas
+
+- Tarifas por trabajador y vigencia, acuerdos por proyecto con revisión de
+  estimado capturada, regla explícita para días compartidos y correspondencias
+  de costos históricos. Tablas nuevas, sin relleno de valores ni importación.
+- Escrituras por propietario/administrador con permisos de Horas y consulta
+  financiera/equipo; actor, versión esperada, solicitud y auditoría en la misma
+  transacción. Reenvío igual no duplica; datos cambiados o tarifa superpuesta
+  devuelven conflicto. La identidad del trabajador en una tarifa queda fija.
+- Lectura de Labor exige todos los permisos y rol financiero de administración.
+  Los trabajadores no pueden consultar tarifas ni sus fotografías de auditoría.
+- Jornada aprobada, sin solicitud pendiente y dentro de una asignación histórica
+  fechada. Cerrar la asignación después del turno conserva el costo; excluir el
+  turno por sus fechas genera incidencia. Una asignación cerrada no se reabre.
+- La correspondencia de nómina conserva la fila de gasto original. Su reparto
+  por trabajador/fecha suma el importe exacto. Cambios en importe, proyecto,
+  trabajador, categoría o estado invalidan el vínculo y bloquean un suplemento
+  nuevo hasta revisar. Archivo y restauración conservan la correspondencia.
+- La consulta devuelve un contexto de datos consistente; no recorta una empresa
+  con más de 20.000 marcaciones para presentar un total aparentemente completo.
+- Pantalla preparada en Horas → Labor por jornada: importes conocidos,
+  suplemento, costos anteriores, incidencias y configuración con motivo/revisión.
+  Todavía no se ha publicado ni comprobado en sesión real.
+
+Nueve pruebas del contrato de base aprobadas localmente, además de las catorce
+del modelo puro. Incluyen tarifas y reintentos, dos empresas, ausencia de mutación
+directa, reapertura, jornadas/solicitudes/asignaciones, auditoría reservada,
+revision de ajuste, revocación y nómina previa sin duplicación. Banco nativo
+preparado: ocho solicitudes iguales, tarifas concurrentes superpuestas, ediciones
+obsoletas y revocación mientras la solicitud espera el bloqueo.

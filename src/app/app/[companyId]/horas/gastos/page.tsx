@@ -155,6 +155,11 @@ export default async function WorkforceExpenses({
         <Link className="underline" href={`/app/${companyId}/horas/reembolsos`}>
           Reembolsos
         </Link>
+        {["owner", "admin"].includes(member.role) && (
+          <Link className="underline" href={`/app/${companyId}/horas/labor`}>
+            Labor por jornada
+          </Link>
+        )}
       </nav>
       <p className="mb-5">
         Las decisiones se conservan por separado: encargado y oficina. Aprobar
