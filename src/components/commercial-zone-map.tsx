@@ -8,6 +8,14 @@ import {
   type ZoneCategory,
 } from "@/lib/zone-analysis";
 import { usd } from "@/lib/finance";
+import {
+  cartographyTileUrl,
+  type CartographyProvider,
+} from "@/lib/cartography";
+import {
+  monitorCartography,
+  type CartographyStatus,
+} from "@/lib/cartography-status";
 import "../../public/vendor/leaflet-1.9.4/leaflet.css";
 
 type MapView = {
@@ -22,12 +30,15 @@ type Layer = {
   remove: () => void;
 };
 type Marker = { bindPopup: (content: HTMLElement) => Marker };
+type TileLayer = {
+  addTo: (map: MapView) => TileLayer;
+  on: (events: Record<string, () => void>) => TileLayer;
+  off: (events: Record<string, () => void>) => TileLayer;
+  redraw: () => TileLayer;
+};
 type Leaflet = {
   map: (element: HTMLElement, options: object) => MapView;
-  tileLayer: (
-    url: string,
-    options: object,
-  ) => { addTo: (map: MapView) => unknown };
+  tileLayer: (url: string, options: object) => TileLayer;
   layerGroup: () => Layer;
   circleMarker: (point: number[], options: object) => Marker;
 };
@@ -52,16 +63,18 @@ const all = Object.keys(zoneCategories) as ZoneCategory[];
 
 export function CommercialZoneMap({
   report,
-  tilesAllowed,
+  provider,
 }: {
   report: ZoneAnalysis;
-  tilesAllowed: boolean;
+  provider: CartographyProvider;
 }) {
   const element = useRef<HTMLDivElement>(null),
     map = useRef<MapView | null>(null),
-    layer = useRef<Layer | null>(null);
+    layer = useRef<Layer | null>(null),
+    retry = useRef<(() => void) | null>(null);
   const [ready, setReady] = useState(false),
     [failed, setFailed] = useState(false);
+  const [tileStatus, setTileStatus] = useState<CartographyStatus>("loading");
   const [categories, setCategories] = useState<ZoneCategory[]>(all),
     [outside, setOutside] = useState(false);
   const points = visibleZonePoints(report, categories, outside);
@@ -73,23 +86,46 @@ export function CommercialZoneMap({
       9,
     );
     map.current = view;
-    if (tilesAllowed)
-      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    const monitor = monitorCartography(setTileStatus, {
+      schedule: (action, delay) => window.setTimeout(action, delay),
+      cancel: (timer) => window.clearTimeout(timer as number),
+    });
+    const events = {
+      loading: monitor.loading,
+      tileerror: monitor.tileerror,
+      load: monitor.load,
+    };
+    const url = cartographyTileUrl(provider);
+    let tiles: TileLayer | null = null;
+    if (url) {
+      tiles = L.tileLayer(url, {
         maxZoom: 19,
         attribution:
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }).addTo(view);
+        // The browser sends its normal User-Agent, origin Referer and HTTP cache.
+        referrerPolicy: "strict-origin-when-cross-origin",
+      })
+        .on(events)
+        .addTo(view);
+      retry.current = () => {
+        monitor.loading();
+        tiles?.redraw();
+      };
+    }
     layer.current = L.layerGroup().addTo(view);
     const observer = new ResizeObserver(() => view.invalidateSize());
     observer.observe(element.current);
     return () => {
       observer.disconnect();
+      monitor.stop();
+      tiles?.off(events);
+      retry.current = null;
       layer.current?.remove();
       layer.current = null;
       view.remove();
       map.current = null;
     };
-  }, [ready, tilesAllowed]);
+  }, [ready, provider]);
   useEffect(() => {
     const L = window.L,
       group = layer.current;
@@ -120,7 +156,7 @@ export function CommercialZoneMap({
         }).bindPopup(content),
       );
     }
-  }, [ready, tilesAllowed, report, categories, outside]);
+  }, [ready, provider, report, categories, outside]);
   return (
     <section className="space-y-4 min-w-0">
       <Script
@@ -185,13 +221,34 @@ export function CommercialZoneMap({
           la página.
         </p>
       )}
+      {!failed && provider !== "disabled" && (
+        <div aria-live="polite" className="space-y-2 text-sm">
+          {tileStatus === "loading" && <p role="status">Cargando calles…</p>}
+          {tileStatus === "ready" && <p role="status">Calles cargadas.</p>}
+          {tileStatus === "unavailable" && (
+            <>
+              <p role="alert">
+                No se pudieron cargar todas las calles. Los puntos, la lista y
+                la exportación siguen disponibles.
+              </p>
+              <button
+                type="button"
+                className="underline"
+                onClick={() => retry.current?.()}
+              >
+                Reintentar calles
+              </button>
+            </>
+          )}
+        </div>
+      )}
       <div
         ref={element}
         role="region"
         aria-label="Mapa comercial por código postal"
         className="relative z-0 isolate h-96 w-full rounded-xl border bg-slate-100 sm:h-[460px]"
       />
-      {!tilesAllowed && (
+      {provider === "disabled" && (
         <p className="text-sm text-muted-foreground">
           Entorno de pruebas: las calles externas están desactivadas. Los puntos
           usan las ubicaciones de prueba guardadas.

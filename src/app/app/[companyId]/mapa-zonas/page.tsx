@@ -3,7 +3,7 @@ import { requireModule } from "@/lib/auth";
 import { canAccess } from "@/lib/modules";
 import { missingZonePermissions } from "@/lib/commercial-zones";
 import { analyzeAdtZones, type ZoneSource } from "@/lib/zone-analysis";
-import { externalEffectsAllowed } from "@/lib/deployment-environment";
+import { cartographyConfig } from "@/lib/cartography";
 import { zoneTableMoney, zoneTableTicket } from "@/lib/zone-presentation";
 import { CommercialZoneMap } from "@/components/commercial-zone-map";
 import { LocatePostalCodes } from "@/components/locate-postal-codes";
@@ -14,7 +14,7 @@ export default async function CommercialZones({
   searchParams,
 }: {
   params: Promise<{ companyId: string }>;
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; cartography?: string }>;
 }) {
   const { companyId } = await params;
   const { db, member } = await requireModule(companyId, "mapazonas");
@@ -46,6 +46,7 @@ export default async function CommercialZones({
     report = analyzeAdtZones(source),
     write = canAccess(member, "mapazonas", "write");
   const sp = await searchParams;
+  const cartography = cartographyConfig(process.env, companyId, sp.cartography);
   return (
     <div className="space-y-6 min-w-0">
       <div className="flex flex-wrap justify-between gap-4">
@@ -71,10 +72,29 @@ export default async function CommercialZones({
       {sp.saved === "1" && (
         <p role="status">Ubicación del código postal guardada.</p>
       )}
-      <CommercialZoneMap
-        report={report}
-        tilesAllowed={externalEffectsAllowed(process.env)}
-      />
+      {cartography.testBank && (
+        <div className="card space-y-2 text-sm">
+          <p>Banco aislado de cartografía con datos sintéticos.</p>
+          {cartography.provider === "unavailable" && (
+            <p>
+              Fallo simulado local; no representa un fallo real de
+              OpenStreetMap.
+            </p>
+          )}
+          <div className="flex flex-wrap gap-4">
+            <Link className="underline" href={base}>
+              Ver calles del proveedor
+            </Link>
+            <Link
+              className="underline"
+              href={`${base}?cartography=unavailable`}
+            >
+              Ensayar fallo de calles
+            </Link>
+          </div>
+        </div>
+      )}
+      <CommercialZoneMap report={report} provider={cartography.provider} />
       <div className="card space-y-2 text-sm">
         <p>
           Ordenada por dinero recibido de facturas no anuladas. «Facturado»
@@ -122,7 +142,12 @@ export default async function CommercialZones({
                   style={{
                     textAlign: "right",
                     fontWeight: 700,
-                    color: z.cierre >= 50 ? "#1F5233" : z.cierre > 0 ? "#8A6D1F" : "#94A3B8",
+                    color:
+                      z.cierre >= 50
+                        ? "#1F5233"
+                        : z.cierre > 0
+                          ? "#8A6D1F"
+                          : "#94A3B8",
                   }}
                 >
                   {z.cierre}%

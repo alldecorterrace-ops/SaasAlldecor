@@ -224,3 +224,12 @@ sin desbordamiento. [Evidencia y límites](INSTALACIONES-CUADRILLAS-20261002.md)
 O07–O09 continúan Implementada, abiertas por el contraste del backend y los
 perfiles/recorridos restantes. Los tres bloques siguen abiertos, conteo 1/65.
 No se reanuda migración de negocio, traspaso, configuradores ni 3D.
+
+
+## Cartografía aislada · 2 de octubre de 2026
+
+Candidata con banco de empresa sintética, estados de carga/error, timeout y
+reintento manual. Lint, tipos, 603 pruebas y compilación locales correctos.
+CI, publicación y recorrido del proveedor en sesión pendientes; O15 no cerrada.
+[Contrato, referencias y límites](CARTOGRAFIA-AISLADA-20261002.md).
+El conteo estricto sigue 1/65 y los tres bloques continúan abiertos.
