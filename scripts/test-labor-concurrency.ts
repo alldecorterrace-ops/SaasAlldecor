@@ -199,6 +199,86 @@ async function main() {
     assert.equal(contract.prosecdef, false);
     assert.equal(contract.provolatile, "s");
     assert.deepEqual(await finance(), before);
+    const source = randomUUID();
+    await setup.query(
+      `insert into expenses(id,company_id,project_id,worker_id,expense_date,category,description,amount,method,status,created_by,updated_by)
+      values($1,$2,$3,$4,$5,'Labor','Synthetic native previous cost',100.01,'OTRO','APROBADO',$6,$6)`,
+      [source, f.a, f.project, f.worker.id, f.day, f.owner],
+    );
+    const mappedFinance = await finance();
+    const mapBody = {
+      expense_version: 1,
+      allocations: [{ worker: f.worker.id, date: f.day, cents: 10001 }],
+      active: true,
+    };
+    const map = (version: number, request: string, data: unknown) =>
+      actor(
+        f.owner,
+        async (c) =>
+          (
+            await c.query(
+              "select save_labor_config($1,$2,$3,$4,'HISTORICAL',$5,'Synthetic concurrent correspondence') id",
+              [f.a, request, source, version, JSON.stringify(data)],
+            )
+          ).rows[0].id,
+      );
+    const mapRequest = randomUUID();
+    const mappings = await Promise.all(
+      Array.from({ length: 8 }, () => map(0, mapRequest, mapBody)),
+    );
+    assert.ok(mappings.every((v) => v === source));
+    assert.equal(
+      (
+        await setup.query(
+          "select version from labor_expense_links where id=$1",
+          [source],
+        )
+      ).rows[0].version,
+      1,
+    );
+    const mappingEdits = await Promise.allSettled([
+      map(1, randomUUID(), { ...mapBody, active: false }),
+      map(1, randomUUID(), mapBody),
+    ]);
+    assert.equal(
+      mappingEdits.filter((v) => v.status === "fulfilled").length,
+      1,
+    );
+    assert.equal(
+      (
+        await setup.query(
+          "select version from labor_expense_links where id=$1",
+          [source],
+        )
+      ).rows[0].version,
+      2,
+    );
+    const historySnapshots = await Promise.all(
+      Array.from({ length: 8 }, () =>
+        actor(
+          f.owner,
+          async (c) =>
+            (await c.query("select labor_history_context($1) data", [f.a]))
+              .rows[0].data,
+        ),
+      ),
+    );
+    for (const value of historySnapshots)
+      assert.deepEqual(value, historySnapshots[0]);
+    await assert.rejects(
+      actor(f.otherOwner, (c) =>
+        c.query("select labor_history_context($1)", [f.a]),
+      ),
+      /permission_denied/,
+    );
+    const historyContract = (
+      await setup.query(
+        "select prosecdef,provolatile from pg_proc where oid='public.labor_history_context(uuid)'::regprocedure",
+      )
+    ).rows[0];
+    assert.equal(historyContract.prosecdef, false);
+    assert.equal(historyContract.provolatile, "s");
+    assert.deepEqual(await finance(), mappedFinance);
     console.log(
       JSON.stringify({
         labor: {
@@ -206,6 +286,15 @@ async function main() {
           overlapping_rates: { attempts: 2, effects: 1 },
           stale_edits: { attempts: 2, effects: 1 },
           revocation_while_waiting: { effects: 0, permission_rechecked: true },
+          historical_mapping: {
+            same_request_attempts: 8,
+            effects: 1,
+            simultaneous_edits: 2,
+            edit_effects: 1,
+            concurrent_reads: 8,
+            source_and_payments_unchanged: true,
+            revoked_read_denied: true,
+          },
           cost_projection: {
             concurrent_reads: 8,
             consistent: true,

@@ -8,6 +8,8 @@ import {
   laborReport,
   laborIssueLabels,
 } from "@/lib/labor-report";
+import { laborHistorySchema } from "@/lib/labor-history";
+import { LaborHistoryFields } from "@/components/labor-history-fields";
 import { LaborConfigForm } from "@/components/labor-config-form";
 import { Input } from "@/components/ui/input";
 export default async function Labor({
@@ -32,6 +34,14 @@ export default async function Labor({
     throw new Error(
       "No se pudo consultar Labor. No se muestran totales parciales.",
     );
+  const historyResult = await db.rpc("labor_history_context", {
+    p_company: companyId,
+  });
+  if (historyResult.error)
+    throw new Error(
+      "No se pudieron consultar los costos anteriores de Labor. No se muestran correspondencias parciales.",
+    );
+  const history = laborHistorySchema.parse(historyResult.data);
   const context = laborContextSchema.parse(contextResult.data),
     report = laborReport(context),
     write = canAccess(member, "horasfix", "write");
@@ -372,6 +382,79 @@ export default async function Labor({
           </table>
         </div>
       </section>
+      <details className="card my-5 min-w-0">
+        <summary className="font-semibold cursor-pointer">
+          Conciliar Labor ya registrada ({history.sources.length})
+        </summary>
+        <p className="my-4">
+          La correspondencia conserva el gasto, su importe y sus pagos. Solo
+          identifica el costo ya registrado para descontarlo de Labor calculada.
+          No registra ni confirma un pago.
+        </p>
+        {history.sources.length === 0 && (
+          <p>No hay gastos anteriores de Labor para conciliar.</p>
+        )}
+        {history.sources.map((source) => (
+          <details
+            className="mt-5 border-t pt-4 min-w-0"
+            key={`${source.id}:${source.version}:${source.link?.version ?? 0}`}
+          >
+            <summary className="font-semibold cursor-pointer break-words">
+              {source.description} · {usd(source.amountCents)} · {source.date}
+            </summary>
+            <div className="mt-3 space-y-3 min-w-0">
+              <p>
+                {source.category} · {source.status} · Revisión del gasto{" "}
+                {source.version} ·{" "}
+                {source.project
+                  ? (context.names.projects[source.project] ??
+                    "Proyecto pendiente")
+                  : "Sin proyecto"}
+              </p>
+              <Link
+                className="underline"
+                href={`/app/${companyId}/gastos/${source.id}`}
+              >
+                Consultar gasto original
+              </Link>
+              {source.link && (
+                <p>
+                  Correspondencia: revisión {source.link.version} ·{" "}
+                  {source.link.active ? "Activa" : "Inactiva"} ·{" "}
+                  {source.link.matches
+                    ? "Coincide con el gasto guardado"
+                    : "El gasto cambió: requiere una nueva revisión"}
+                  . Último cambio{" "}
+                  {new Intl.DateTimeFormat("es-US", {
+                    timeZone: context.timezone,
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }).format(new Date(source.link.updatedAt))}
+                  . Motivo: {source.link.reason}
+                </p>
+              )}
+              {(source.status !== "APROBADO" || !source.project) && (
+                <p role="status">
+                  Solo se puede conciliar un gasto aprobado con proyecto. Revisa
+                  primero su ficha original.
+                </p>
+              )}
+              <LaborConfigForm
+                company={companyId}
+                kind="HISTORICAL"
+                id={source.id}
+                version={source.link?.version ?? 0}
+                request={randomUUID()}
+                disabled={
+                  !write || source.status !== "APROBADO" || !source.project
+                }
+              >
+                <LaborHistoryFields source={source} workers={workerOptions} />
+              </LaborConfigForm>
+            </div>
+          </details>
+        ))}
+      </details>
       <details className="card my-5 min-w-0">
         <summary className="font-semibold cursor-pointer">
           Configurar tarifas y acuerdos

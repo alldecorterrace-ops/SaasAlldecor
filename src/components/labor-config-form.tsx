@@ -17,7 +17,7 @@ export function LaborConfigForm({
   disabled = false,
 }: {
   company: string;
-  kind: "RATE" | "PROJECT" | "SETTINGS";
+  kind: "RATE" | "PROJECT" | "SETTINGS" | "HISTORICAL";
   id: string;
   version: number;
   request: string;
@@ -45,7 +45,11 @@ export function LaborConfigForm({
           />
         </label>
         <Button type="submit" disabled={disabled || pending}>
-          {pending ? "Procesando…" : "Guardar configuración"}
+          {pending
+            ? "Procesando…"
+            : kind === "HISTORICAL"
+              ? "Guardar correspondencia"
+              : "Guardar configuración"}
         </Button>
       </fieldset>
     </form>

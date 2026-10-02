@@ -1,5 +1,6 @@
 "use server";
 import { z } from "zod";
+import { parseLaborAllocations } from "@/lib/labor-history";
 import { requireModule } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -35,7 +36,7 @@ const project = z.object({
 });
 export async function saveLabor(
   company: string,
-  kind: "RATE" | "PROJECT" | "SETTINGS",
+  kind: "RATE" | "PROJECT" | "SETTINGS" | "HISTORICAL",
   id: string,
   version: number,
   _: LaborState,
@@ -77,6 +78,21 @@ export async function saveLabor(
         active: form.get("active") === "on",
       };
     } else data = { mode: v.mode, active: form.get("active") === "on" };
+  } else if (kind === "HISTORICAL") {
+    const allocations = parseLaborAllocations(form);
+    if ("error" in allocations) return { error: allocations.error };
+    const sourceVersion = z.coerce
+      .number()
+      .int()
+      .positive()
+      .safeParse(form.get("expense_version"));
+    if (!sourceVersion.success)
+      return { error: "Reabre el gasto original para comprobar su revisión." };
+    data = {
+      expense_version: sourceVersion.data,
+      allocations: allocations.allocations,
+      active: form.get("active") === "on",
+    };
   } else {
     const rule = z
       .enum(["review", "minutes"])
@@ -98,6 +114,21 @@ export async function saveLabor(
     const message = error.message;
     if (message.includes("permission_denied"))
       return { error: "Tu cuenta ya no tiene acceso para configurar Labor." };
+    if (message.includes("labor_source_changed"))
+      return {
+        error:
+          "El gasto original cambió o no es elegible. Reabre y revisa proyecto, estado e importe antes de conciliar.",
+      };
+    if (message.includes("labor_allocation_total"))
+      return {
+        error:
+          "La suma de las jornadas debe coincidir exactamente con el importe del gasto original, sin fechas repetidas por trabajador.",
+      };
+    if (message.includes("invalid_labor_config"))
+      return {
+        error:
+          "Revisa las jornadas, el trabajador original y los datos de la correspondencia.",
+      };
     if (message.includes("labor_rate_overlap"))
       return {
         error:

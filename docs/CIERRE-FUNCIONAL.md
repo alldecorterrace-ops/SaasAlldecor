@@ -121,3 +121,36 @@ Gastos, proyecto, expediente y CSV muestran la misma conciliación sintética;
 móvil emulado y empresa restringida comprobados. Matriz completa e interfaz de
 correspondencias aún pendientes.
 Tres bloques abiertos, conteo provisional 1/65 obligaciones agrupadas comprobadas.
+
+
+### Correspondencias de Labor y referencia de Inventario
+
+La corrección de etiqueta del registro de costos está publicada en staging desde
+07b9e96, con esquema 063, las tres tareas CI aprobadas y las cuatro comprobaciones
+públicas 200. El proceso usa esa raíz exacta; d28b19f conserva retorno compatible.
+La interfaz presenta «Labor calculada» y los dos costos sintéticos suman $350.
+La configuración y la salud pública de producción se conservaron.
+
+El esquema 064 y la pantalla de correspondencias de Labor están en validación:
+[reglas y límites](LABOR-POR-JORNADA-20261001.md). Todavía no se declaran publicados.
+
+Inventario de ADT se renovó desde su sesión autenticada: el componente inline
+`Inventario()` consultado tiene SHA-256
+8896a084d4d07ed1b31a0221607390cd0073d042cb1d8a15c662187a1f4f2e43.
+El montaje actual elige ese componente; la tabla lee la colección de la pantalla,
+la búsqueda no conecta un controlador y «Añadir material» no tiene `onClick`.
+Pulsarlo conservó la pantalla, sin formulario ni efecto operativo observado.
+Esta evidencia acota la pantalla, no prueba ausencia de otras entradas en el
+servidor. O03–O06 siguen abiertos; las operaciones de inventario del SaaS no se
+acreditan como equivalentes operativos por imitar esta tabla.
+
+Instalaciones de ADT también se observó autenticado: muestra la descripción
+«Calendario, equipo asignado, materiales cargados, checklist de instalación y
+firma del cliente» y la etiqueta «Módulo del sistema», sin controles operativos.
+No se presupone que esos elementos existan en un servicio por aparecer en la
+descripción. Se conserva la agenda del SaaS y O07–O09 permanecen abiertos.
+
+Permisos sí consulta `/permits` y abre un borrador con proyecto, tipo, autoridad,
+estado, número, tasa y fechas de envío/aprobación/vencimiento. Se abrió y canceló
+el formulario, sin guardar ni quitar registros del origen. El módulo y la
+referencia publicada se conservan para el contraste del backend y sus permisos.

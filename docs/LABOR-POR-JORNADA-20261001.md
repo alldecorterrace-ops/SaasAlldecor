@@ -143,3 +143,29 @@ y el contexto de horas en 20.000. Si excede el límite no se muestra un total
 parcial. El CSV conserva las incidencias con importe vacío, sin inventar cero.
 Los reembolsos conservan sus constancias originales; el costo de Labor calculado
 no crea deuda de bolsillo propio ni acredita pago.
+
+## Correspondencias de costos anteriores — esquema 064 en preparación
+
+La pantalla de Labor permite relacionar un gasto anterior con trabajador, día e
+importe en centavos. No rellena la fecha trabajada desde la fecha contable ni
+atribuye automáticamente un gasto sin trabajador. La suma debe coincidir
+exactamente con el original; la misma persona y día no se repiten en una
+correspondencia. Se conservan importe, comprobante y pagos del gasto original.
+
+La consulta nueva es estable y usa los permisos de quien la ejecuta, limitada a
+20.000 fuentes sin mostrar resultados parciales. Mantiene revisión de gasto y
+correspondencia, motivo, autor y fecha. Guardar exige las revisiones actuales,
+identidad de solicitud y elegibilidad del gasto; oficina/trabajador no reciben
+estas tarifas ni correspondencias. Desactivar conserva las jornadas y su historial.
+
+La fecha contable se incorpora a la huella del origen. Cambiarla deja la
+correspondencia pendiente hasta revisión humana. Los vínculos del esquema 062
+que no capturaron esa fecha se conservan y requieren confirmación: la migración
+no inventa la fecha ni reescribe su contenido. La versión anterior de la aplicación
+sigue pudiendo consultar y guardar vínculos usando el esquema aditivo.
+
+Las 22 pruebas dirigidas y las 576 pruebas del conjunto pasan, junto con lint,
+tipos y compilación local. Cubren exactitud de centavos, formularios sin
+atribuciones inventadas, revisiones, duplicados, aislamiento y cambio de fecha.
+El ensayo nativo incorpora ocho reintentos y dos modificaciones simultáneas.
+Faltan su resultado CI, publicación y sesión real; no se anticipa cierre.
