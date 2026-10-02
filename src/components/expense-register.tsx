@@ -336,7 +336,7 @@ export async function ExpenseRegister({
                   >
                     {row.vendor ||
                       (row.source === "LABOR"
-                        ? `/app/${companyId}/horas/labor`
+                        ? "Labor calculada"
                         : row.source === "WORKFORCE"
                           ? "Costo de Workforce"
                           : "Gasto sin proveedor")}

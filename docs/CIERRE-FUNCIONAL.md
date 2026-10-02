@@ -116,5 +116,8 @@ Publicada `f84c5de` en staging con CI aprobado y 563 pruebas; 50 comparaciones
 PHP y concurrencia nativa. Tarifa, proyecto, asignación y jornada sintética
 comprobados por propietario: costo $250 al reabrir, sin pagos ni copias de gastos.
 Móvil emulado y empresa restringida comprobados. [Detalle de pruebas y límites](LABOR-POR-JORNADA-20261001.md).
-El registro unificado 063 está en preparación; no se confunde con publicación.
+El registro unificado 063 se publicó desde d28b19f con CI completo y 569 pruebas.
+Gastos, proyecto, expediente y CSV muestran la misma conciliación sintética;
+móvil emulado y empresa restringida comprobados. Matriz completa e interfaz de
+correspondencias aún pendientes.
 Tres bloques abiertos, conteo provisional 1/65 obligaciones agrupadas comprobadas.

@@ -83,7 +83,7 @@ las filas Comprobada; el denominador se declara provisional hasta completar inve
 | T19 | Gasto: coordinación de archivo/restauración con deuda   | Implementada     | Archivo/restauración reales en staging conservaron una constancia y deuda $0; costo activo $100→$0→$100. Huellas de Pagos/Gastos iguales; consumidores restantes pendientes. [Pruebas y límites](REEMBOLSOS-WORKFORCE-20261001.md).                           |
 | T20 | Labor: costo por jornada/proyecto y tarifas vigentes    | Implementada     | f84c5de / 062 activa; 563 pruebas y CI nativo. Propietario guardó tarifa, proyecto, asignación y jornada; reapertura $250, móvil y empresa restringida comprobados. Matriz completa y consumidores en preparación. [Contrato](LABOR-POR-JORNADA-20261001.md). |
 | T21 | Labor: incidencias y nómina sin doble contabilización   | Implementada     | 062 conserva correspondencia de nómina y bloquea fuentes cambiadas; CI nativo y jornada sintética comprobados sin cambios en Pagos/Gastos. UI de correspondencias y consumidores completos pendientes. [Contrato](LABOR-POR-JORNADA-20261001.md).             |
-| T22 | Costos: registro unificado, expediente y exportación    | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes.                                                                                                                                                                  |
+| T22 | Costos: registro unificado, expediente y exportación    | Implementada     | d28b19f / 063 activa, 569 pruebas y CI nativo. Proyecto/expediente/Gastos $350 y CSV de dos filas comprobados; móvil y empresa restringida comprobados. Matriz completa y correspondencias en UI pendientes. [Contrato](LABOR-POR-JORNADA-20261001.md).       |
 | T23 | Autorización: equipo, revocación y dos empresas         | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes.                                                                                                                                                                  |
 
 ## Operaciones
@@ -182,3 +182,11 @@ jornada de $250 guardada/reabierta, móvil emulado y empresa restringida comprob
 Pagos y gastos administrativos conservaron huellas. [Pruebas y límites](LABOR-POR-JORNADA-20261001.md).
 T20/T21 permanecen abiertas: esta evidencia no cubre todos los perfiles ni
 consumidores. El conteo sigue **1 / 65**, con los tres bloques abiertos.
+
+## Registro unificado de costos 063
+
+`d28b19f` publicada: 569 pruebas y CI completo, lectura concurrente y revocación
+nativas. Propietario comprobó los mismos $350 en Gastos, proyecto y expediente;
+CSV privado descargado con $250 calculados y $100 de Workforce, sin pago de Labor.
+Móvil y empresa restringida comprobados. T22 implementada, aún abierta por
+matriz completa y UI de correspondencias. Conteo de cierre permanece **1 / 65**.

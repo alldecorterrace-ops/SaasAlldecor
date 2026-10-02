@@ -2,16 +2,15 @@
 
 ## Estado
 
-Motor de cálculo y conciliación: **581c6ea** pasó CI completo, 554 pruebas y
-**50 comparaciones independientes** con PHP. Nueva configuración aditiva 062,
-formularios y consulta persistente implementados; lint, tipos, **563 pruebas** y
-compilación locales aprobados. Su CI nativo, aplicación del esquema y recorrido
-real de staging siguen pendientes. La versión operativa de staging permanece
-b312b40 / 061. T20/T21/T22 y los tres bloques siguen abiertos.
+Activa en staging `d28b19f` / esquema 063, con retorno `f84c5de`. CI
+36956532483 aprobado: lint, tipos, **569 pruebas**, compilación, 50 comparaciones
+PHP del modelo puro y PostgreSQL nativo. La jornada de $250 reaparece en Labor,
+Gastos, proyecto y expediente; el CSV privado conserva su estado Calculado.
+No se registra una nómina, pago o copia de gasto por calcular Labor.
 
-No se registra una nómina, pago o copia de gasto por calcular Labor. Gastos,
-Proyectos, expediente y CSV aún necesitan consumir el mismo registro de Labor;
-la nueva consulta separada no acredita esa integración completa.
+T20/T21/T22 y los tres bloques siguen abiertos: faltan perfiles completos,
+interfaz de correspondencias y escenarios adicionales de acuerdos, tarifas y
+reaperturas. Estas comprobaciones no sustituyen la prueba física de Campo.
 
 ## Referencia
 
@@ -115,7 +114,7 @@ Esto acredita esa jornada y ese propietario, no toda la matriz de roles ni
 comportamiento físico de Campo. Los ajustes, tarifas históricas, correspondencias
 y consumidores restantes aún requieren evidencia de interfaz completa.
 
-## Registro unificado 063 en preparación
+## Registro unificado 063 publicado y comprobado
 
 Consulta STABLE con permisos del actor captura gastos originales y contexto de
 Labor en una sola sentencia. La aplicación concilia toda la empresa antes de
@@ -123,5 +122,24 @@ filtrar, conserva los gastos originales y añade solo el suplemento. Gastos,
 proyectos, expediente del cliente y CSV usan esa misma proyección. Labor lleva
 estado Calculado y no acredita pago. Incidencias también se conservan en CSV,
 sin inventar importes. Una fuente incompleta o superior al límite de consulta
-falla explícitamente; no devuelve un total parcial. Esta preparación todavía
-no acredita publicación ni pruebas de interfaz de 063.
+falla explícitamente; no devuelve un total parcial.
+
+En sesión del propietario, Gastos, proyecto y expediente del cliente mostraron
+$350: $250 de Labor calculada y $100 de Workforce aprobado, con deuda $0.
+El CSV descargado contiene exactamente ambas filas y conserva COSTO_CALCULADO.
+Móvil emulado de 390 px mantiene ancho útil y documento 375 px. La empresa sin
+Gastos devuelve Página no disponible. Se comprobó también en pantalla el rechazo
+de una tarifa superpuesta, conservando $250 y la revisión original.
+
+Esquema 063: consulta aditiva sin mutaciones de negocio. 81 tablas y 865 filas
+anteriores conservaron su huella. Fuente SHA-256
+`5783daadb6e890bb0bf60e2ba0d901b856539491af70ad4edbb0354d31961449`.
+Ocho lecturas concurrentes nativas devolvieron la misma proyección sin efectos;
+el usuario revocado no pudo consultarla. La función STABLE de permisos del
+actor conserva una instantánea por sentencia antes del filtro y la paginación.
+
+Límite operativo actual: el registro original filtrado debe caber en 5.000 filas
+y el contexto de horas en 20.000. Si excede el límite no se muestra un total
+parcial. El CSV conserva las incidencias con importe vacío, sin inventar cero.
+Los reembolsos conservan sus constancias originales; el costo de Labor calculado
+no crea deuda de bolsillo propio ni acredita pago.
