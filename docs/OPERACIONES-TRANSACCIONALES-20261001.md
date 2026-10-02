@@ -116,5 +116,41 @@ para consulta autorizada y restauración. No se cambian objetos ni relaciones.
 Cuatro pruebas nuevas verifican descarga, errores y revocación, incluida una que
 ocurre entre leer la ficha y descargar el objeto bajo RLS SQL real. Esta prueba
 usa el contrato mínimo de Storage, no una sesión Supabase real. Lint, tipos,
-588 pruebas y compilación locales aprobados; CI y publicación de esta corrección
-de descarga aún pendientes. No necesita una migración de esquema.
+588 pruebas y compilación locales aprobados. CI
+[36965028995](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36965028995)
+completo aprobado. No necesita una migración de esquema.
+
+`9de7c8e6ab1a1b19e111b4821ef1812b7dba6fa4` publicada exclusivamente en staging;
+retorno compatible `42fdad5`. Se comprobaron revisión, raíz y proceso Node activo.
+Las cuatro rutas públicas respondieron 200 desde una conexión externa y después
+desde el hosting; producción respondió 200 y conservó su configuración. El primer
+intento del hosting tuvo un fallo de resolución DNS; el siguiente terminó correcto.
+
+Sesión real: el enlace autenticado descargó los 1508 bytes originales, con la
+misma huella. Una petición externa sin sesión recibió 401, JSON sin contenido
+del archivo y caché privada desactivada. Se revocó temporalmente únicamente la
+membresía del auditor en la empresa sintética: falló la descarga desde el enlace
+ya abierto y el formulario devolvió Página no disponible. No se atribuye un
+estado HTTP numérico al error de la herramienta de descarga. Después se restauró
+la membresía exacta, comprobada por huella, y volvió a descargar los mismos bytes.
+La ficha de inventario permaneció idéntica y el contador quedó en 16 solicitudes.
+
+La apertura directa de una URL con otra empresa fue bloqueada por el navegador;
+esa tentativa no acredita un rechazo autenticado del servidor. La separación de
+empresa y tipo sí está comprobada por RLS SQL en las pruebas; la ficha operativa
+ajena devolvió Página no disponible en el recorrido anterior. Se conservan estos
+límites para no confundir una protección del navegador con evidencia del backend.
+
+Permiso real sintético guardado y reabierto con número, autoridad, tasa 12.34 y
+tres fechas. Aprobar antes de presentar se rechazó; recargar recuperó la fecha
+correcta. Anular y recuperar conservaron número, tasa, fechas y versiones.
+Instalación programada guardada/reabierta con proyecto, responsable, horario local
+10:00–12:00 y colaboradores de texto. Iniciarla sin anticipo fue rechazado;
+recargar conservó Programada. La cuadrilla aún no es una asignación estructurada
+de varios trabajadores y necesita su cierre específico.
+
+Móvil emulado de inventario: viewport 390, ancho de documento/contenido 375,
+sin desbordamiento horizontal y menú cerrado. El conjunto de dieciséis solicitudes
+operativas conservó todas las huellas anteriores de pagos, facturas, gastos y
+proyectos. Se comprobaron nuevamente después de restaurar la membresía. Las
+lecturas/descargas no agregaron solicitudes ni mutaron los originales.

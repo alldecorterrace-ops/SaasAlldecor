@@ -184,3 +184,19 @@ Los bloques comercial, trabajadores/Campo y operaciones siguen abiertos; el
 conteo estricto permanece 1/65 obligaciones agrupadas. La migración de negocio,
 traspaso, configuradores, 3D, Portal e IA Assistant siguen fuera de esta entrega.
 La IA de recibos continúa incluida y exige comprobación real del proveedor.
+
+
+### Estado publicado tras proteger descargas operativas
+
+Activa `9de7c8e6ab1a1b19e111b4821ef1812b7dba6fa4`, retorno `42fdad5`, esquema
+065. CI 36965028995 completo aprobado, 588 pruebas y compilación. PDF binario
+real, petición anónima 401, revocación con formulario abierto, restauración exacta
+de membresía/ficha y descarga recuperada comprobados. Permiso recuperado,
+instalación programada y rechazo de inicio sin anticipo comprobados. Las huellas
+de finanzas y proyectos anteriores se conservaron tras dieciséis solicitudes.
+[Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md).
+
+Pendientes explícitos: cuadrilla estructurada y sus superposiciones, matriz de
+perfiles y recorridos restantes, contraste completo del backend actual de ADT,
+cartografía/proveedor, plantillas/comunicaciones, proveedor real de recibos y
+comprobación física de Campo. No se declara ninguno de los tres bloques cerrado.

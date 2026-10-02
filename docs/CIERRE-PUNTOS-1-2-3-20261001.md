@@ -96,9 +96,9 @@ las filas Comprobada; el denominador se declara provisional hasta completar inve
 | O04 | Inventario: entradas y salidas por proyecto       | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
 | O05 | Inventario: reversos y unidad histórica           | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
 | O06 | Inventario: movimientos simultáneos               | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
-| O07 | Instalación: proyecto, responsable y cuadrilla    | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O08 | Instalación: agenda, zona horaria y superposición | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O09 | Instalación: estados, requisitos y concurrencia   | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
+| O07 | Instalación: proyecto, responsable y cuadrilla    | Implementada | 065: agenda, responsable, persistencia y rechazo sin anticipo comprobados por propietario; carrera de superposición nativa comprobada. Cuadrilla estructurada, contraste y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
+| O08 | Instalación: agenda, zona horaria y superposición | Implementada | 065: agenda, responsable, persistencia y rechazo sin anticipo comprobados por propietario; carrera de superposición nativa comprobada. Cuadrilla estructurada, contraste y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
+| O09 | Instalación: estados, requisitos y concurrencia   | Implementada | 065: agenda, responsable, persistencia y rechazo sin anticipo comprobados por propietario; carrera de superposición nativa comprobada. Cuadrilla estructurada, contraste y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
 | O10 | Manual: instrucciones, materiales y revisión      | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
 | O11 | Manual: aprobación e invalidación por cambios     | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
 | O12 | Manual: documentos, archivo y restauración        | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
@@ -218,3 +218,17 @@ El conteo de cierre sigue **1/65 obligaciones agrupadas**, que no es un
 porcentaje de código construido. La fecha objetivo del 1 de octubre pasó sin
 cierre de los tres bloques; no se reduce el alcance para modificar el conteo.
 IA de recibos externa y prueba física siguen pendientes de sus dependencias.
+
+
+## Descargas operativas publicadas
+
+Activa `9de7c8e`, retorno `42fdad5`, esquema 065. CI 36965028995 completo,
+588 pruebas y compilación aprobados. Descarga autenticada real y rechazo 401
+sin sesión; revocación de la membresía sintética con formulario abierto, ficha
+intacta y restauración exacta comprobados. Permiso recuperado y agenda guardada;
+ejecución sin anticipo rechazada. Dieciséis solicitudes, finanzas originales
+preservadas y móvil emulado comprobados. [Evidencia](OPERACIONES-TRANSACCIONALES-20261001.md).
+
+O07–O09 también se distinguen como Implementada. O14–O17 de mapa continúan
+Pendiente de su contraste completo; las restantes operaciones siguen abiertas
+por perfiles, reglas y recorridos enumerados. El conteo de cierre sigue 1/65.
