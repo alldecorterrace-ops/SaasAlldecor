@@ -78,9 +78,9 @@ las filas Comprobada; el denominador se declara provisional hasta completar inve
 | T14 | IA: estados, errores, reintentos y duplicados           | Implementada     | Registro duradero y PostgreSQL nativo comprobados: ocho reintentos por fase, duplicados y corrección simultánea. Publicado en staging; proveedor y perfiles completos pendientes. [Pruebas y límites](REVISION-RECIBOS-20261001.md). |
 | T15 | Revisión humana: actor, fecha e invalidación            | Implementada     | Confirmación desde sesión de propietario y reapertura en staging, actor/fecha y gasto pendiente conservados; sin pagos ni copias. Falta matriz completa de perfiles. [Contrato](REVISION-RECIBOS-20261001.md).                       |
 | T16 | Decisión: precondiciones IA y revisión según origen     | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes.                                                                                                                                         |
-| T17 | Deuda: únicamente bolsillo propio elegible              | Implementada     | 061: deuda aprobada, empresa y pagador desconocido separados; 540 pruebas locales. Staging y contraste final pendientes. [Contrato](REEMBOLSOS-WORKFORCE-20261001.md).                                                               |
-| T18 | Reembolso: constancia de pago, versión e idempotencia   | Implementada     | Selección exacta, revisión vigente y constancia transaccional; sin transferencias. CI nativo y sesión pendientes. [Contrato](REEMBOLSOS-WORKFORCE-20261001.md).                                                                      |
-| T19 | Gasto: coordinación de archivo/restauración con deuda   | Implementada     | Evidencia pagada preservada y deuda activa retirada/restaurada sin duplicación; comprobada localmente. [Pruebas y límites](REEMBOLSOS-WORKFORCE-20261001.md).                                                                        |
+| T17 | Deuda: únicamente bolsillo propio elegible              | Implementada     | 061 aplicada; b312b40 activa, 540 pruebas y CI nativo; deuda $100→$0 y costo $100 comprobados en sesión. Contraste final y matriz completa pendientes. [Contrato](REEMBOLSOS-WORKFORCE-20261001.md).                                                               |
+| T18 | Reembolso: constancia de pago, versión e idempotencia   | Implementada     | Constancia individual, reapertura y móvil comprobados; CI nativo 8 reintentos/un efecto y tres carreras/un efecto. Lote y perfiles separados en UI pendientes. [Contrato](REEMBOLSOS-WORKFORCE-20261001.md).                                                                      |
+| T19 | Gasto: coordinación de archivo/restauración con deuda   | Implementada     | Archivo/restauración reales en staging conservaron una constancia y deuda $0; costo activo $100→$0→$100. Huellas de Pagos/Gastos iguales; consumidores restantes pendientes. [Pruebas y límites](REEMBOLSOS-WORKFORCE-20261001.md).                                                                        |
 | T20 | Labor: costo por jornada/proyecto y tarifas vigentes    | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes.                                                                                                                                         |
 | T21 | Labor: incidencias y nómina sin doble contabilización   | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes.                                                                                                                                         |
 | T22 | Costos: registro unificado, expediente y exportación    | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes.                                                                                                                                         |
@@ -160,3 +160,17 @@ continúa desactivado y la pantalla distingue las pruebas de referencia.
 
 El conteo permanece **1 / 65**. Las filas T13–T15 siguen Implementada; no se
 confunde comprobación parcial de una acción con cierre completo del bloque.
+
+## Reembolsos publicados y archivo recuperable
+
+b312b40 / 061 activa; retorno fb640bd compatible. CI exacto aprobado, 540 pruebas,
+cuatro carreras de reembolso en PostgreSQL nativo y esquema aditivo con 831 filas
+anteriores preservadas. Constancia individual, reapertura, archivo/restauración,
+proyección de costo y rechazo de empresa restringida comprobados en sesión real.
+Preparación de las dos aprobaciones por RPC sintéticas identificada por separado.
+La IA externa permanece desactivada; no se realizaron pagos ni transferencias.
+[Evidencia y límites](REEMBOLSOS-WORKFORCE-20261001.md).
+
+El conteo permanece **1 / 65**. T17–T19 siguen Implementada porque aún requieren
+contraste del controlador actual, lote/perfiles reales y consumidores de Labor.
+Los tres bloques siguen abiertos; estos resultados no se declaran cierre total.

@@ -96,3 +96,16 @@ pruebas de referencia, sin extracción real de proveedor. Pagos y gastos
 administrativos conservan sus huellas; confirmar no aprobó ni pagó.
 Proveedor real, HEIC, disparadores y matriz completa de perfiles siguen pendientes.
 Las filas T13–T15 son Implementada, no Comprobada; el conteo permanece 1 / 65. [Contrato y límites](REVISION-RECIBOS-20261001.md).
+
+## Continuación de reembolsos del 1 de octubre
+
+b312b40 / esquema 061 activa en staging; retorno fb640bd compatible. CI exacto
+con 540 pruebas y concurrencia PostgreSQL nativa aprobado. Migración aditiva:
+76 conjuntos y 831 registros originales preservados. Sesión real de propietario:
+constancia individual, reapertura, archivo/restauración y empresa restringida.
+Costo activo $100→$0→$100, deuda $0 y una sola constancia conservada; Pagos y Gastos
+administrativos idénticos. Móvil emulado sin desbordamiento; producción sin cambios.
+Las aprobaciones de preparación por RPC son evidencia distinta de las pantallas
+pendientes de encargado/oficina. Lote en UI, controlador vigente y consumidores
+de Labor pendientes. T17–T19 Implementada, conteo **1 / 65**, tres bloques abiertos.
+[Contrato, evidencia y límites](REEMBOLSOS-WORKFORCE-20261001.md).

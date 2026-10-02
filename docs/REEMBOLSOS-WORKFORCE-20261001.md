@@ -2,9 +2,10 @@
 
 ## Estado de esta entrega
 
-Contrato aditivo 061 y pantalla implementados. Lint, tipos, **540 pruebas** y
-compilación locales aprobados. Concurrencia PostgreSQL nativa incorporada a CI;
-aplicación del esquema, despliegue y recorrido real de staging pendientes.
+Contrato aditivo 061 aplicado y entrega **b312b40** activa en staging; retorno
+**fb640bd** compatible. Lint, tipos, **540/540 pruebas** y compilación aprobados
+en CI del commit exacto. Concurrencia PostgreSQL nativa aprobada. Pantalla,
+reapertura, archivo/restauración, costos y empresa restringida comprobados en sesión.
 Producción y ADT conservan su operación. No hay transferencia ni integración bancaria.
 
 ## Referencia y diferencias conocidas
@@ -58,16 +59,44 @@ reintentos, archivo/restauración, contexto IA cambiado y ausencia de pagos/copi
 El registro unificado mantiene costo y centavos. El lote completo reduce deuda
 sin modificar el costo de proyecto.
 
-El ensayo nativo preparado cubre ocho reenvíos de la misma solicitud, solicitudes
-distintas sobre un gasto, constancia individual contra lote y archivo concurrente.
-Su resultado se documentará después de CI; una prueba embebida no lo sustituye.
+El [CI de b312b40](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36950336251)
+terminó con sus tres jobs aprobados. PostgreSQL nativo: ocho reenvíos de la misma
+solicitud producen un efecto; solicitudes distintas, individual contra lote y
+archivo concurrente producen un efecto cada uno. Las huellas de pagos y gastos
+administrativos permanecen iguales. El CI también conserva las 47 comparaciones
+independientes del recibo con PHP.
+
+La aplicación aditiva de 061 conservó **76 conjuntos / 831 registros originales**
+mediante conteos y huellas, excluyendo únicamente las cuatro columnas nuevas de
+la comparación de Workforce. No hubo relleno de valores ni importación de negocio.
+
+En sesión real de propietario se registró una constancia sintética individual
+por $100, se recargó y se reabrió. La deuda bajó de $100 a $0; el costo activo
+permaneció en $100. Archivar retiró el costo activo ($0) y conservó una constancia;
+restaurar recuperó $100 de costo activo, deuda $0 y la misma constancia y fecha.
+El registro unificado mantuvo PAGADO y no creó copias en Pagos/Gastos administrativos.
+Sus huellas globales antes y después son idénticas. El detalle del gasto ya muestra
+la fecha y nota guardadas, incluso después de restaurarlo.
+
+Escritorio y móvil emulado a 390 × 844: ancho de contenido y desplazamiento 375 px,
+sin desbordamiento. La cuenta restringida de la segunda empresa obtiene Página no
+disponible. Cuatro rutas públicas de staging y salud de producción devolvieron 200;
+se verificaron revisión, raíz activa, proceso Node y configuración de producción
+sin cambios. Evidencia con identificadores sintéticos fuera del repositorio.
+
+Las aprobaciones previas del caso se prepararon mediante las RPC reales con
+identidades de prueba y rol autenticado en una transacción de staging; **no**
+acreditan el recorrido en pantalla de encargado y oficina. La constancia posterior,
+el archivo/restauración y el rechazo entre empresas sí se probaron en la sesión
+emitida del propietario. Ninguna constancia de ensayo corresponde a dinero enviado.
 
 ## Pendientes de cierre
 
-1. Aprobar CI exacto, aplicar 061 de forma aditiva y publicar solo en staging.
-2. Probar pantalla, reapertura, móvil y perfiles separados con registros sintéticos.
-3. Renovar controlador de origen y sus consumidores contables actuales.
-4. Completar coordinación con Labor y demás consumidores del costo.
+1. Probar el conjunto completo y los perfiles separados en pantalla, además de
+   los contratos y carreras PostgreSQL ya aprobados.
+2. Renovar el controlador de origen y sus consumidores contables actuales.
+3. Completar coordinación con Labor y demás consumidores del costo.
+4. Completar revocación con formulario abierto y comportamiento físico operativo.
 
 T17–T19 quedan Implementada, no Comprobada. Los tres bloques siguen abiertos.
 No se registran reembolsos reales durante esta auditoría.
