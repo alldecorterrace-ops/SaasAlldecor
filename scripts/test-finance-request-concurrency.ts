@@ -70,8 +70,9 @@ async function main() {
       const secondOperation=firstOperation==="payment"?"void-invoice":"payment";
       const lock=await pool.connect();
       try {
-        await lock.query("begin");await lock.query("select set_config('request.jwt.claim.sub',$1,true)",[owner]);await lock.query("set local role authenticated");
+        await lock.query("begin");await lock.query("select set_config('request.jwt.claim.sub',$1,true)",[owner]);
         await lock.query("select 1 from invoices where company_id=$1 and id=$2 for update",[company,inv]);
+        await lock.query("set local role authenticated");
         const competing=execute(secondOperation,inv,2,secondOperation==="payment"?nextPay:voidData,randomUUID()).then(()=>({ok:true,error:""}),e=>({ok:false,error:String(e.message)}));
         await lock.query("select execute_finance_action($1,$2,$3,$4,2,$5)",[company,randomUUID(),firstOperation,inv,JSON.stringify(firstOperation==="payment"?nextPay:voidData)]);
         await lock.query("commit");
