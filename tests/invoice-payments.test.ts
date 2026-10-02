@@ -225,7 +225,7 @@ test("invoice PDF captures applied payments at its locked version without changi
           }).success,
           false,
         );
-        // Renderer contract only: generating a VOID invoice remains gated by its RPC.
+        // Renderer and VOID snapshot capture are covered by separate contracts.
         const voidFixture = structuredClone(noPayments);
         voidFixture.snapshot.record.status = "VOID";
         voidFixture.snapshot.record.payment_status = "VOID";

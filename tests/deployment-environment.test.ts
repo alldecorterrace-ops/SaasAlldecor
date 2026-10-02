@@ -21,6 +21,7 @@ test("staging rejects a live backend, live domain and enabled external delivery"
     { NEXT_PUBLIC_SUPABASE_URL: "https://loqbmrlkhskqzozknehx.supabase.co" },
     { NEXT_PUBLIC_SITE_URL: "https://app.alldecorpatio.com" },
     { INVITATION_MAIL_ENABLED: "true" },
+    { INVOICE_MAIL_ENABLED: "true" },
     { OPENAI_API_KEY: "synthetic-key" },
     { STAGING_SUPABASE_PROJECT_REF: "" },
   ])

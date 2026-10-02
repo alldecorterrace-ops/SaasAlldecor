@@ -86,7 +86,8 @@ test("ADT invoice annulment preserves payments and document snapshots", async (t
         await assert.rejects(execute("void-invoice", invoice, Number(before.version), { ...voidData, reason: "Changed request" }, request), /request_conflict/);
         await assert.rejects(execute("payment", invoice, Number(after.version), { payment_id: randomUUID(), amount: "1.00", payment_date: "2026-10-02", method: "ZELLE", reference: "", notes: "" }), /invoice_void/);
         await assert.rejects(execute("invoice", invoice, Number(after.version), { date: "2026-10-02", due: null, notes: "Alter" }), /invoice_void/);
-        await assert.rejects(db.query("select prepare_commercial_document($1,'invoice',$2,$3)", [a, invoice, after.version]), /document_state/);
+        // Current VOID PDF capture is covered separately with immutable amounts
+        // and applied-payment exclusion, matching ADT's Enviar por email action.
         assert.deepEqual(await fingerprint(), afterRepeat);
         if (afterPayments.length) {
           const first = afterPayments[0], reversalRequest = randomUUID();

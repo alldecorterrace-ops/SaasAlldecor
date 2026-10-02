@@ -94,6 +94,17 @@ export const storedCommercialDocument = z
     "Invalid PDF state",
   );
 export type StoredCommercialDocument = z.infer<typeof storedCommercialDocument>;
+export function appliedPaymentTotal(
+  payments: NonNullable<
+    StoredCommercialDocument["snapshot"]["record"]["payments"]
+  >,
+) {
+  const total = payments.reduce((sum, p) => {
+    const [whole, fraction = ""] = money.parse(p.amount).toString().split(".");
+    return sum + BigInt(whole + fraction.padEnd(2, "0"));
+  }, 0n);
+  return `${total / 100n}.${(total % 100n).toString().padStart(2, "0")}`;
+}
 export const commercialDocumentList = z.object({
   count: z.number().int().nonnegative(),
   page: z.number().int().positive(),

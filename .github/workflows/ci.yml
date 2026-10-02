@@ -74,6 +74,7 @@ jobs:
           npx tsx scripts/test-queue-concurrency.ts
           npx tsx scripts/test-commercial-concurrency.ts
           npx tsx scripts/test-finance-request-concurrency.ts
+          npx tsx scripts/test-invoice-email-concurrency.ts
           npx tsx scripts/test-expense-batch-concurrency.ts
           npx tsx scripts/test-workforce-concurrency.ts
           npx tsx scripts/test-workforce-expense-concurrency.ts

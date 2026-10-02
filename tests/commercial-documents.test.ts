@@ -401,7 +401,11 @@ test("commercial PDF generation preserves finance and isolates immutable revisio
           (await downloadCommercialDocument(service, company, inv)).status,
           200,
         );
-        await assert.rejects(() => generate("invoice", invoice, 2));
+        const voidBefore = await fingerprint();
+        const voidPdf = await generate("invoice", invoice, 2);
+        assert.notEqual(voidPdf, inv);
+        assert.equal(await fingerprint(), voidBefore);
+        assert.deepEqual(files.get(`${company}/${inv}.pdf`), saved);
       },
     );
     await t.test(

@@ -2,6 +2,9 @@ import { requireModule } from "@/lib/auth";
 import { canAccess } from "@/lib/modules";
 import { commercialModule } from "@/lib/commercial-documents";
 import { CommercialDocumentForm } from "./commercial-document-form";
+import { randomUUID } from "node:crypto";
+import { InvoiceEmailForm } from "./invoice-email-form";
+import { invoiceEmailConfig } from "@/lib/invoice-email";
 export async function CommercialDocumentPanel({
   companyId,
   kind,
@@ -26,6 +29,32 @@ export async function CommercialDocumentPanel({
     .order("record_version", { ascending: false })
     .limit(20);
   if (error) throw new Error("No se pudieron cargar los PDF conservados.");
+  const emailConfig =
+    kind === "invoice" && canGenerate
+      ? invoiceEmailConfig(process.env, companyId)
+      : null;
+  const attempts =
+    kind === "invoice"
+      ? await db
+          .from("invoice_email_attempts")
+          .select("id,recipient,status,created_at,record_version")
+          .eq("company_id", companyId)
+          .eq("invoice_id", record)
+          .order("created_at", { ascending: false })
+          .order("id")
+          .limit(20)
+      : { data: [], error: null };
+  if (attempts.error)
+    throw new Error("No se pudo cargar el historial de envíos.");
+  const recipient =
+    kind === "invoice" && emailConfig
+      ? await db.rpc("invoice_email_recipient", {
+          p_company: companyId,
+          p_invoice: record,
+        })
+      : { data: null, error: null };
+  if (recipient.error)
+    throw new Error("No se pudo comprobar el destinatario de la factura.");
   return (
     <section className="card print:hidden space-y-4 mb-6">
       <h2 className="font-semibold">PDF comerciales conservados</h2>
@@ -65,6 +94,76 @@ export async function CommercialDocumentPanel({
       )}
       {data?.length === 20 && (
         <p className="text-sm">Se muestran las 20 revisiones más recientes.</p>
+      )}
+      {emailConfig && canAccess(member, "fin-invoices", "write") && (
+        <div className="border-t pt-4">
+          <h3 className="font-semibold mb-3">Enviar por email</h3>
+          <InvoiceEmailForm
+            key={`email:${record}:${version}`}
+            companyId={companyId}
+            invoice={record}
+            version={version}
+            request={randomUUID()}
+            capture={emailConfig.mode === "capture"}
+            recipient={
+              typeof recipient.data === "string" ? recipient.data : null
+            }
+          />
+        </div>
+      )}
+      {kind === "invoice" &&
+        !emailConfig &&
+        canGenerate &&
+        canAccess(member, "fin-invoices", "write") && (
+          <p className="text-sm">
+            El envío de facturas no está habilitado en este entorno.
+          </p>
+        )}
+      {!!attempts.data?.length && (
+        <div className="border-t pt-4">
+          <h3 className="font-semibold mb-3">Historial de envíos</h3>
+          <ul className="space-y-3 text-sm">
+            {attempts.data.map((a) => (
+              <li key={a.id}>
+                <p>
+                  Revisión {a.record_version} · {a.recipient}
+                </p>
+                <p>
+                  {new Intl.DateTimeFormat("es", {
+                    timeZone: "UTC",
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }).format(new Date(a.created_at))}{" "}
+                  UTC ·{" "}
+                  {
+                    (
+                      {
+                        processing: "Resultado pendiente de confirmar",
+                        captured: "Prueba capturada · Sin envío externo",
+                        queued:
+                          "Aceptado por el servidor · Recepción pendiente de comprobar",
+                        failed: "No se completó",
+                        unknown:
+                          "Resultado incierto · Comprobar antes de repetir",
+                      } as Record<string, string>
+                    )[a.status]
+                  }
+                </p>
+                {a.status === "captured" && (
+                  <a
+                    className="underline"
+                    href={`/api/invoice-email/${companyId}/${a.id}`}
+                  >
+                    Descargar mensaje de prueba
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+          {attempts.data.length === 20 && (
+            <p className="mt-3">Se muestran los 20 envíos más recientes.</p>
+          )}
+        </div>
       )}
     </section>
   );

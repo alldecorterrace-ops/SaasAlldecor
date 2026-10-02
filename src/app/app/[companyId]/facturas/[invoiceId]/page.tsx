@@ -96,7 +96,7 @@ export default async function Invoice({
         kind="invoice"
         record={invoiceId}
         version={i.version}
-        canGenerate={i.status !== "VOID" && !i.historical_invoice_id}
+        canGenerate={!i.historical_invoice_id}
       />
       <article className="space-y-6">
         <header className="card">

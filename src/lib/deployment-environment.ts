@@ -59,6 +59,6 @@ export function assertDeploymentEnvironment(env: Environment) {
     !["http:", "https:"].includes(site.protocol)
   )
     throw new Error("Staging must use a separate application origin");
-  if (env.INVITATION_MAIL_ENABLED === "true" || env.OPENAI_API_KEY)
+  if (env.INVITATION_MAIL_ENABLED === "true" || env.INVOICE_MAIL_ENABLED === "true" || env.OPENAI_API_KEY)
     throw new Error("External email and AI must be disabled in staging");
 }

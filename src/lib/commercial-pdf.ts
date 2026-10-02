@@ -5,8 +5,9 @@ import path from "node:path";
 import type { StoredCommercialDocument } from "./commercial-documents";
 import { estimateStatuses } from "./estimates";
 import { priceBases } from "./commercial";
-import { usd, paymentMethods, paymentStatuses } from "./finance";
+import { usd } from "./finance";
 import { paymentStageLabels } from "./payment-terms";
+import { drawInvoicePdf } from "./invoice-pdf";
 // Vendor font is pinned, licensed and included in the release; never fetch customer content.
 export async function renderCommercialPdf(
   doc: StoredCommercialDocument,
@@ -30,6 +31,10 @@ export async function renderCommercialPdf(
   const title = doc.kind === "estimate" ? "Estimado" : "Factura",
     r = doc.snapshot.record;
   pdf.setTitle(`${title} ${doc.number} · Revisión ${doc.record_version}`);
+  if (doc.kind === "invoice") {
+    drawInvoicePdf(pdf, font, doc, synthetic);
+    return pdf.save();
+  }
   const supported = new Set(font.getCharacterSet());
   const normalize = (s: string) =>
     s.normalize("NFC").replace(/\r\n?/g, "\n").replace(/\t/g, "    ");
@@ -115,8 +120,6 @@ export async function renderCommercialPdf(
     VOID: "Anulada",
   };
   text(`Estado al generar: ${states[r.status] ?? r.status}`);
-  if (doc.kind === "invoice" && r.payment_status !== undefined)
-    text(`Estado de pago al generar: ${paymentStatuses[r.payment_status]}`);
   rule();
   text(r.customer_snapshot.full_name, 13);
   text(
@@ -160,43 +163,6 @@ export async function renderCommercialPdf(
     ["Total", r.total],
   ] as const)
     text(`${label}: ${usd(amount)}`, label === "Total" ? 16 : 11);
-  if (
-    doc.kind === "invoice" &&
-    r.paid_amount !== undefined &&
-    r.balance_due !== undefined
-  )
-    text(
-      `Pagado al generar: ${usd(r.paid_amount)} · Saldo al generar: ${usd(r.balance_due)}`,
-    );
-  if (doc.kind === "invoice" && r.payments !== undefined) {
-    rule();
-    const paymentLabel = (p: (typeof r.payments)[number]) =>
-      `${p.payment_date} · ${paymentMethods[p.method as keyof typeof paymentMethods] ?? p.method} · ${usd(p.amount)}`;
-    heading(
-      "Pagos y depósitos aplicados",
-      r.payments[0]
-        ? paymentLabel(r.payments[0])
-        : "Sin pagos aplicados al generar.",
-    );
-    if (!r.payments.length) text("Sin pagos aplicados al generar.");
-    for (const p of r.payments) {
-      heading(
-        paymentLabel(p),
-        p.reference
-          ? `Referencia: ${p.reference}`
-          : p.notes || `Registro: ${p.id} · Versión ${p.version}`,
-        10,
-      );
-      if (p.reference) text(`Referencia: ${p.reference}`);
-      if (p.notes) text(`Notas del pago: ${p.notes}`);
-      text(`Registro: ${p.id} · Versión ${p.version}`, 8);
-    }
-    text(`Total de pagos aplicados al generar: ${usd(r.paid_amount ?? "0")}`);
-    text(
-      "Un reverso posterior no reemplaza este documento; consulta la revisión actual de la factura.",
-      9,
-    );
-  }
   if (r.commercial_terms) {
     rule();
     const terms = r.commercial_terms;
