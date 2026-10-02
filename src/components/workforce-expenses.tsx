@@ -90,7 +90,7 @@ export function WorkforceExpenseForm({
         encargado y después por oficina.
       </p>
       <Feedback error={state.error} />
-      <fieldset disabled={pending} className="grid gap-4 md:grid-cols-2">
+      <fieldset disabled={pending} className="grid min-w-0 gap-4 md:grid-cols-2">
         <input type="hidden" name="id" value={id} />
         <input type="hidden" name="request" value={request} />
         <label className="field">
@@ -162,6 +162,7 @@ export function WorkforceExpenseForm({
           Recibo
           <input
             aria-label="Recibo"
+            className="w-full min-w-0 max-w-full"
             type="file"
             accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
             required
