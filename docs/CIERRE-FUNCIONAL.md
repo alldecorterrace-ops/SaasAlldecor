@@ -320,3 +320,15 @@ La prueba de URL privada ajena quedó limitada por el navegador, no acredita una
 respuesta de la aplicación. Los tres bloques siguen abiertos; conteo estricto
 1/65. ADT principal, sin migración de negocio ni traspaso, sin operación financiera
 real ni envíos externos de staging.
+
+## Zelle en Facturas · 2 de octubre de 2026
+
+Activa b064fa3 / esquema aditivo 069, CI completo aprobado con 634 pruebas.
+Método Zelle conservado en factura, pago y PDF; repetición y concurrencia sin
+duplicados. Recorrido de propietario y reverso sintéticos comprobados en staging,
+tres páginas PDF y conservación de documentos y registros anteriores verificadas.
+Migración conserva 1.060 filas de 82 tablas. [Evidencia y límites](ZELLE-FACTURAS-20261002.md).
+
+C19 continúa Implementada: opciones restantes del origen, recibo separado,
+perfiles y comunicaciones pendientes. Los tres bloques siguen abiertos; 1/65
+obligaciones agrupadas de la matriz provisional. ADT sigue principal.

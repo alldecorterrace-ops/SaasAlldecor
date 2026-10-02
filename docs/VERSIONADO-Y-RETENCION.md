@@ -191,3 +191,19 @@ ser retorno y se añade al inventario de sobrantes, fuera de esa petición.
 Conservar aaf268c y dependencias. GitHub conserva el historial oficial; retirar
 sobrantes exige comprobación de contenido único/enlaces/procesos y confirmación
 aplicable. No usar estas notas históricas para acumular entregas en el hosting.
+
+## Estado de Zelle en Facturas · 2 de octubre de 2026
+
+Activa b064fa3ccbc7d9c361415153c105de50a432bc4a, esquema 069. CI exacto
+aprobado y compilación/raíz/proceso/rutas/recorrido de propietario comprobados.
+Entrega anterior e12b27253ae69bd6d72e59739b7d238a5abdd6a3 conservada,
+comprobada antes del cambio. Compatibilidad aditiva de datos; su UI anterior
+no ofrece/etiqueta Zelle en Facturas, por lo que no acredita retorno con esa
+capacidad nueva. [Evidencia](ZELLE-FACTURAS-20261002.md). Dependencias c66e4ec/b149bee
+y entorno privado idénticos; producción conserva salud y huella de configuración.
+
+Sin borrados. Los 52 elementos consultados siguen pendientes de confirmación.
+56fcd98 deja de ser retorno y pasa al inventario de sobrantes, fuera de esa
+petición. Conservar aaf268c y dependencias. GitHub conserva el historial; retirar
+sobrantes requiere comprobar contenido único, enlaces, procesos y confirmación
+aplicable. Estas notas históricas no autorizan acumular entregas indefinidamente.
