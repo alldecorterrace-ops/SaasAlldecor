@@ -51,9 +51,9 @@ las filas Comprobada; el denominador se declara provisional hasta completar inve
 | C16 | Estimado: plantilla y comunicaciones                    | Pendiente        | ADT actual confirma calendario 10/50/30/10, condiciones particulares y entrega. d34c358 / 059 publicada: 511 pruebas, calendario, revisiones, factura, PDF privado, móvil emulado y aislamiento comprobados. [Evidencia y límites](CALENDARIO-COMERCIAL-20261001.md). Restan plantilla completa y comunicaciones; la fila permanece abierta. |
 | C17 | Factura: plantilla, numeración y documentos             | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes.                                                                                                                                                                                                                                                 |
 | C18 | Pago: anticipo, parcial y saldo completo                | Implementada | Recorridos sintéticos de propietario y PostgreSQL, importes y documentos anteriores preservados; bfb8e3a / 067 publicada con CI 612 pruebas. Contraste completo, perfiles y diferencias pendientes. [Evidencia](RECORRIDO-COMERCIAL-20261002.md). |
-| C19 | Pago: recibo y consulta del registro | Implementada | b064fa3 / 069: Zelle persistente en Facturas y PDF, 634 pruebas, ocho reintentos PostgreSQL y reverso en sesión; datos/documentos anteriores conservados. Recibo separado, opciones restantes, perfiles y comunicaciones pendientes. [Pagos en PDF](PAGOS-EN-PDF-FACTURA-20261002.md); [Zelle](ZELLE-FACTURAS-20261002.md). |
+| C19 | Pago: recibo y consulta del registro | Implementada | 7aee726 / 070: seis opciones manuales de ADT, compatibilidad con ocho códigos y estado de pago capturado en PDF; 636 pruebas y CI completo. Propietario registró/revirtió los dos métodos nuevos; registros y PDF anteriores conservados. Recibo separado, perfiles y comunicaciones pendientes. [Evidencia](METODOS-PAGO-ADT-20261002.md). |
 | C20 | Pago: reversión conservando historial                   | Implementada | Recorridos sintéticos de propietario y PostgreSQL, importes y documentos anteriores preservados; bfb8e3a / 067 publicada con CI 612 pruebas. Contraste completo, perfiles y diferencias pendientes. [Evidencia](RECORRIDO-COMERCIAL-20261002.md). |
-| C21 | Factura: anulación y requisitos actuales                | Implementada | Recorridos sintéticos de propietario y PostgreSQL, importes y documentos anteriores preservados; bfb8e3a / 067 publicada con CI 612 pruebas. Contraste completo, perfiles y diferencias pendientes. [Evidencia](RECORRIDO-COMERCIAL-20261002.md). |
+| C21 | Factura: anulación y requisitos actuales | Implementada | Diferencia confirmada en el controlador ADT del 2 de octubre: permite anular con pagos APPLIED y los conserva como ASSOCIATED_TO_VOID_INVOICE; el SaaS exige reversos previos. Equivalencia y perfiles pendientes, sin anulación de registros reales. [Regla y límite](METODOS-PAGO-ADT-20261002.md). |
 | C22 | Proyecto: estados, anticipo y fechas                    | Implementada | Recorridos sintéticos de propietario y PostgreSQL, importes y documentos anteriores preservados; bfb8e3a / 067 publicada con CI 612 pruebas. Contraste completo, perfiles y diferencias pendientes. [Evidencia](RECORRIDO-COMERCIAL-20261002.md). |
 | C23 | Proyecto: expediente y consumidores de costos           | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes.                                                                                                                                                                                                                                                 |
 | C24 | Recorrido comercial completo con roles restringidos     | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes.                                                                                                                                                                                                                                                 |
@@ -352,3 +352,17 @@ r6 y PDF original idénticos tras el reverso. Migración conserva 1.060 filas de
 82 tablas; datos financieros ajenos al ensayo intactos. Escritorio/móvil emulado.
 C19 Implementada; los tres bloques siguen abiertos y el conteo estricto 1/65
 no es porcentaje de código. [Evidencia y límites](ZELLE-FACTURAS-20261002.md).
+
+## Métodos manuales de ADT publicados · 2 de octubre de 2026
+
+Activa 7aee726 / esquema aditivo 070. CI completo: 636 pruebas, comparación PHP
+del origen y concurrencia PostgreSQL aprobados. Not charged. y (sin método)
+guardados desde la sesión de propietario; cuatro PDF con estados/saldos correctos,
+reversos auditados y documentos anteriores idénticos. Consulta de solo lectura
+confirmó conservación de las otras facturas, pagos, gastos, proyectos y estimados.
+[Evidencia y límites](METODOS-PAGO-ADT-20261002.md).
+
+C19 sigue Implementada; recibo separado, perfiles y comunicaciones pendientes.
+C21 conserva una diferencia verificada de anulación con pagos asociados.
+Los tres bloques continúan abiertos y el conteo estricto sigue en 1/65 de la
+matriz provisional. ADT principal, sin nuevos datos de negocio ni traspaso.

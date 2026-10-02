@@ -207,3 +207,22 @@ Sin borrados. Los 52 elementos consultados siguen pendientes de confirmación.
 petición. Conservar aaf268c y dependencias. GitHub conserva el historial; retirar
 sobrantes requiere comprobar contenido único, enlaces, procesos y confirmación
 aplicable. Estas notas históricas no autorizan acumular entregas indefinidamente.
+
+## Estado de métodos manuales de Facturas · 2 de octubre de 2026
+
+Activa 7aee726bb05787f15e2a8c2d84133920ed8f5827, esquema aditivo 070. CI exacto
+completo aprobado; compilación previa, raíz/proceso/rutas, recorrido sintético de
+propietario y PDF descargados comprobados. Dependencias c66e4ec/b149bee y entorno
+privado idénticos; salud y huella de configuración de producción conservadas.
+[Evidencia](METODOS-PAGO-ADT-20261002.md).
+
+Retorno b064fa3ccbc7d9c361415153c105de50a432bc4a conservado y comprobado antes
+del cambio, compatible con los datos aditivos. Su UI no ofrece/etiqueta los dos
+métodos nuevos; recuperar esa capacidad exige republicar 7aee726 desde GitHub.
+Sin ensayo de regreso posterior. El retorno del código no revierte datos.
+
+Sin borrados. Los 52 elementos consultados siguen pendientes de confirmación
+concreta. e12b272 deja de ser retorno y pasa al inventario de sobrantes, fuera
+de esa petición. Conservar aaf268c y dependencias. Verificar contenido único,
+enlaces y procesos antes de retirar sobrantes con la confirmación aplicable.
+Estas notas históricas no justifican conservar entregas indefinidamente.

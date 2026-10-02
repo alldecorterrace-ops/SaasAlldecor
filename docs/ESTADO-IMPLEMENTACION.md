@@ -1,6 +1,25 @@
-# Estado de implementación — 30 de septiembre de 2026
+# Estado de implementación — 2 de octubre de 2026
 
-**Entrega vigente del 30 de septiembre: 518447a, esquema 057, solo staging.**
+**Entrega vigente: 7aee726, esquema aditivo 070, solo staging.**
+
+Continuación de pagos en Facturas: seis opciones manuales de ADT, ocho códigos
+compatibles y estado de pago conservado en cada PDF. CI completo de la revisión
+exacta aprobado: 636 pruebas, comparación PHP del origen, concurrencia PostgreSQL,
+compilación y recuperación. Propietario registró/revirtió los dos métodos nuevos
+con datos sintéticos; cuatro PDF revisados y constancias anteriores intactas.
+Consulta independiente confirmó conservación de las otras facturas, pagos,
+documentos, proyectos, gastos, estimados y revisiones. Raíz/proceso/rutas de
+staging comprobados; producción y configuración privada conservadas.
+[Evidencia y límites](METODOS-PAGO-ADT-20261002.md).
+
+Retorno b064fa3 compatible con el esquema, con limitación de interfaz para los
+métodos nuevos; dependencias c66e4ec/b149bee conservadas. Sin borrados de hosting.
+La matriz estricta sigue en 1/65 obligaciones agrupadas, con tres bloques abiertos:
+recibo separado, perfiles, comunicaciones, anulación con pagos asociados y
+restantes recorridos siguen pendientes. ADT principal, migración de negocio y
+traspaso suspendidos; alcance activo de 21 módulos sin configuradores/3D.
+
+**Entrega anterior del 30 de septiembre: 518447a, esquema 057, solo staging.**
 
 Registro unificado de Gastos publicado y comprobado: Administración y costos de
 Workforce con ambas aprobaciones, origen, filtros, sumas y CSV con centavos.

@@ -332,3 +332,17 @@ Migración conserva 1.060 filas de 82 tablas. [Evidencia y límites](ZELLE-FACTU
 C19 continúa Implementada: opciones restantes del origen, recibo separado,
 perfiles y comunicaciones pendientes. Los tres bloques siguen abiertos; 1/65
 obligaciones agrupadas de la matriz provisional. ADT sigue principal.
+
+## Métodos manuales de ADT publicados · 2 de octubre de 2026
+
+Activa 7aee726 / esquema aditivo 070. CI completo: 636 pruebas, comparación PHP
+del origen y concurrencia PostgreSQL aprobados. Not charged. y (sin método)
+guardados desde la sesión de propietario; cuatro PDF con estados/saldos correctos,
+reversos auditados y documentos anteriores idénticos. Consulta de solo lectura
+confirmó conservación de las otras facturas, pagos, gastos, proyectos y estimados.
+[Evidencia y límites](METODOS-PAGO-ADT-20261002.md).
+
+C19 sigue Implementada; recibo separado, perfiles y comunicaciones pendientes.
+C21 conserva una diferencia verificada de anulación con pagos asociados.
+Los tres bloques continúan abiertos y el conteo estricto sigue en 1/65 de la
+matriz provisional. ADT principal, sin nuevos datos de negocio ni traspaso.
