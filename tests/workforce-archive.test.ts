@@ -387,7 +387,7 @@ test("Workforce recoverable archive preserves evidence and enforces tenant and r
         );
         await assert.rejects(
           db.query(
-            "select correct_workforce_expense($1,$2,$3,2,$4,false,current_date,12.34,'TOOLS','QA','empresa',$5,'QA correction')",
+            "select correct_workforce_expense($1,$2,$3,2,$4,false,(now() at time zone (select timezone from public.companies where id=$1))::date,12.34,'TOOLS','QA','empresa',$5,'QA correction')",
             [a, randomUUID(), e.id, project, e.receipt],
           ),
           /expense_correction_state/,
@@ -413,7 +413,7 @@ test("Workforce recoverable archive preserves evidence and enforces tenant and r
         );
         await as(office.user);
         await db.query(
-          "select correct_workforce_expense($1,$2,$3,1,$4,false,current_date,12.34,'MATERIALS','Synthetic reviewed','propio',$5,'Synthetic visual review')",
+          "select correct_workforce_expense($1,$2,$3,1,$4,false,(now() at time zone (select timezone from public.companies where id=$1))::date,12.34,'MATERIALS','Synthetic reviewed','propio',$5,'Synthetic visual review')",
           [a, randomUUID(), e.id, project, e.receipt],
         );
         await as(foreman.user);
