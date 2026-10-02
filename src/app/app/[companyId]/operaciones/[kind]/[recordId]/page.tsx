@@ -186,6 +186,7 @@ export default async function WorkspaceDetail({
         kind={k}
         id={r.id}
         version={r.version}
+        requestId={randomUUID()}
         name={r.name}
         status={r.status}
         statuses={cfg.statuses}
@@ -226,6 +227,7 @@ export default async function WorkspaceDetail({
                 key={`movement:${r.version}`}
                 companyId={companyId}
                 kind={k}
+                requestId={randomUUID()}
                 operation="movement"
                 label="Registrar movimiento"
               >
@@ -309,6 +311,7 @@ export default async function WorkspaceDetail({
                             key={`${m.id}:${r.version}`}
                             companyId={companyId}
                             kind={k}
+                            requestId={randomUUID()}
                             operation="movement"
                             label="Registrar reverso"
                           >
@@ -379,6 +382,7 @@ export default async function WorkspaceDetail({
                 key={`file:${r.version}`}
                 companyId={companyId}
                 kind={k}
+                requestId={randomUUID()}
                 operation="attachment"
                 label="Adjuntar archivo"
               >
@@ -415,12 +419,18 @@ export default async function WorkspaceDetail({
                       key={`${f.id}:${r.version}`}
                       companyId={companyId}
                       kind={k}
+                      requestId={randomUUID()}
                       operation="attachment"
                       label={f.active ? "Archivar" : "Restaurar"}
                     >
                       <input type="hidden" name="record_id" value={r.id} />
                       <input type="hidden" name="version" value={r.version} />
                       <input type="hidden" name="attachment_id" value={f.id} />
+                      <input
+                        type="hidden"
+                        name="active"
+                        value={String(!f.active)}
+                      />
                     </WorkActionForm>
                   </div>
                 )}

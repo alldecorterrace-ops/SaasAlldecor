@@ -63,6 +63,7 @@ export function WorkForm({
   kind,
   id,
   version,
+  requestId,
   name,
   status,
   statuses,
@@ -76,6 +77,7 @@ export function WorkForm({
   kind: string;
   id: string;
   version: number;
+  requestId: string;
   name: string;
   status: string;
   statuses: Record<string, string>;
@@ -97,6 +99,7 @@ export function WorkForm({
       />
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="version" value={version} />
+      <input type="hidden" name="request" value={requestId} />
       <fieldset
         disabled={readOnly || pending}
         className="grid gap-5 md:grid-cols-2"
@@ -164,12 +167,14 @@ export function WorkActionForm({
   companyId,
   kind,
   operation,
+  requestId,
   children,
   label,
 }: {
   companyId: string;
   kind: string;
   operation: "movement" | "attachment";
+  requestId: string;
   children: ReactNode;
   label: string;
 }) {
@@ -183,6 +188,7 @@ export function WorkActionForm({
   );
   return (
     <form onReset={onReset} action={action} className="space-y-3">
+      <input type="hidden" name="request" value={requestId} />
       <Feedback error={state.error} success={state.success} />
       <fieldset disabled={pending} className="space-y-3">
         {children}
