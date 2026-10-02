@@ -25,6 +25,12 @@ jobs:
           php -l tests/reference/receipt-verdict-source.php
           npx tsx scripts/test-receipt-reference.ts
           php scripts/receipt-reference.php tests/reference/receipt-verdict-source.php .local/receipt-reference-input.json cb675701a90ce7ca11502ee8c60a5640f2918f9ac68359b727161277c185db4f
+      - name: Compare daily labor with frozen ADT pure PHP model
+        run: |
+          php -l scripts/labor-reference.php
+          php -l tests/reference/labor-cost-source.php
+          npx tsx scripts/test-labor-reference.ts
+          php scripts/labor-reference.php tests/reference/labor-cost-source.php .local/labor-reference-input.json 847ea58cedf5bb8f85069df8176824ab342a0a4ddd0e833eb79e5ed9f12bfbb6
       - run: npm run check
       - uses: denoland/setup-deno@v2
         with:

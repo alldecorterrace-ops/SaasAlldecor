@@ -1,0 +1,54 @@
+# Labor por jornada y proyecto — continuación del 1 de octubre
+
+## Estado
+
+Motor de cálculo y conciliación implementados, con 14 pruebas locales aprobadas.
+Banco de 50 casos preparado para contraste independiente con PHP en CI.
+Esta entrega **todavía no conecta** Labor con datos persistentes ni pantallas.
+T20/T21/T22 y los tres bloques siguen abiertos. No se publica un total operacional
+ni se registra una nómina, pago o gasto por tener un cálculo local correcto.
+
+## Referencia
+
+Se conservó el modelo puro LaborCostModel de la entrega de ADT del 27 de septiembre,
+separado de Drupal, HTTP y datos. Huella del archivo congelado:
+847ea58cedf5bb8f85069df8176824ab342a0a4ddd0e833eb79e5ed9f12bfbb6.
+La fuente del modelo y el banco sintético se ejecutan por separado del SaaS.
+Esto no acredita renovación del controlador ni de los datos actuales de ADT.
+Los identificadores, tarifas y proyectos particulares del adaptador histórico
+no se trasladan al código ni a la base del SaaS.
+
+## Reglas portadas
+
+- Una jornada local de trabajador/proyecto usa una tarifa diaria efectiva en su
+  fecha. Las horas netas no multiplican una tarifa diaria ni se reemplaza esta
+  tarifa con el precio de venta o la tarifa horaria actual de la ficha.
+- Varios turnos del mismo día conservan sus orígenes y generan un único costo.
+  Repetir un turno idéntico no duplica; una repetición conflictiva devuelve error.
+- Jornada abierta, corrección pendiente, tarifa ausente/superpuesta y modo de
+  proyecto desconocido generan incidencias fechadas. Costo conocido cero no se
+  presenta como conciliación completa.
+- El día compartido exige una decisión explícita. Si se autoriza reparto por
+  minutos netos, la asignación racional conserva todos los centavos, con desempate
+  determinista. La política por defecto sigue siendo revisión.
+- Un ajuste exige responsable, importe, estimado y revisión capturados. Incluye
+  la cuadrilla completa; no añade tarifas diarias de los trabajadores incluidos.
+  Su reutilización en dos proyectos devuelve conflicto.
+- El costo de nómina anterior permanece en su origen y se descuenta del
+  suplemento de la jornada conciliada. Cobertura completa no genera suplemento;
+  exceso, procedencia conflictiva o jornada sin correspondencia son incidencias.
+- Labor previa en un proyecto por ajuste bloquea un segundo ajuste hasta
+  conciliarlo. El cálculo no registra ni confirma ningún pago.
+- Zona horaria de empresa y cambios de hora se aplican a la fecha de inicio.
+
+## Siguiente entrega necesaria
+
+1. Confirmar adaptador de tiempos/asignaciones y controlador operativo actual.
+2. Añadir configuración autenticada y auditada por empresa: tarifas por vigencia,
+   modo/acuerdo capturado del proyecto y decisión sobre días compartidos.
+3. Mantener todo costo previo con su correspondencia; filas sin conciliación
+   impedirán calcular un suplemento inventado.
+4. Consultar un único registro persistente en Gastos, Proyectos, expediente y CSV,
+   con origen, incidencias y pago separados del costo calculado.
+5. Probar permisos, revocaciones, concurrencia PostgreSQL real y recorridos de
+   pantalla en staging. No importar nómina ni información real de ADT.
