@@ -103,3 +103,23 @@ nuevo SaaS no renueva la referencia del servidor original.
 No se reanuda migración de negocio, traspaso, configuradores/3D, Portal ni Assistant.
 IA de recibos y Campo continúan dentro del alcance y mantienen sus comprobaciones
 pendientes, incluido proveedor real y dispositivo físico.
+
+
+## Paginación de documentos nuevos
+
+Se reprodujeron dos defectos concretos leyendo el PDF generado: Notas y
+Condiciones particulares quedaban al final de una página mientras su cuerpo
+comenzaba en la siguiente. El renderer reserva espacio para el título y las
+primeras líneas de su contenido; también protege partidas y calendario.
+No modifica los archivos ya conservados ni sus snapshots.
+
+La prueba lee los operadores de texto, coordenadas y mapas Unicode del PDF real;
+no usa llamadas simuladas al renderer. Notas y condiciones fallaban con el código
+anterior y pasan con el nuevo, además de contenido largo, cifras, acentos y bytes
+deterministas. Las pruebas previas de descarga, revocación, revisiones e importes
+también pasan. Inspección visual y extracción independiente con pypdf comprobaron
+ambas páginas y los encabezados acompañados de su cuerpo.
+
+Esta corrección está validada localmente; CI y publicación pendientes en esta
+nota. La plantilla completa y el recibo independiente de pago siguen abiertos.
+No se declara cerrado C16/C17 ni ninguno de los tres bloques.

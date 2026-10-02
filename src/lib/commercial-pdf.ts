@@ -80,6 +80,13 @@ export async function renderCommercialPdf(
     }
     y -= 5;
   }
+  // Keep section titles with the first body lines, including at a page boundary.
+  function heading(title: string, next: string, size = 12) {
+    const titleHeight = wrap(title, font, size, 516).length * size * 1.45 + 5;
+    const bodyLines = Math.min(2, wrap(next, font, 10, 516).length);
+    if (y - titleHeight - (bodyLines - 1) * 14.5 < 68) addPage();
+    text(title, size);
+  }
   function rule() {
     if (y < 65) addPage();
     page.drawLine({
@@ -126,7 +133,11 @@ export async function renderCommercialPdf(
   );
   rule();
   r.items.forEach((i, n) => {
-    text(`${n + 1}. ${i.name}`, 12);
+    heading(
+      `${n + 1}. ${i.name}`,
+      i.description ||
+        `Cantidad: ${i.qty} · ${priceBases[i.base as keyof typeof priceBases] ?? i.base}`,
+    );
     if (i.description) text(i.description);
     text(
       `Cantidad: ${i.qty} · ${priceBases[i.base as keyof typeof priceBases] ?? i.base}`,
@@ -157,21 +168,24 @@ export async function renderCommercialPdf(
     );
   if (r.commercial_terms) {
     rule();
-    text("Calendario de pagos", 12);
     const terms = r.commercial_terms;
+    heading(
+      "Calendario de pagos",
+      `${paymentStageLabels[0]} · ${terms.percentages[0]}% · ${usd(terms.amounts[0])}`,
+    );
     paymentStageLabels.forEach((label, n) =>
       text(`${label} · ${terms.percentages[n]}% · ${usd(terms.amounts[n])}`),
     );
     if (terms.delivery_date) text(`Entrega prevista: ${terms.delivery_date}`);
     if (terms.conditions) {
-      text("Condiciones particulares", 12);
+      heading("Condiciones particulares", terms.conditions);
       text(terms.conditions);
     }
     text("El calendario no acredita pagos recibidos.", 9);
   }
   if (r.notes) {
     rule();
-    text("Notas", 12);
+    heading("Notas", r.notes);
     text(r.notes);
   }
   rule();
