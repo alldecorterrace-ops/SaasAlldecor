@@ -42,6 +42,7 @@ export default async function EstimatePage({
     items: [],
     discount: "0.00",
     taxes: "0.00",
+    tax_pct: "0",
   };
   if (!isNew) {
     const { record, latestVersion } = await estimateRecord(
@@ -107,6 +108,8 @@ export default async function EstimatePage({
       status: record.status as EstimateInput["status"],
       discount: String(record.discount),
       taxes: String(record.taxes),
+      tax_pct:
+        record.tax_pct == null ? null : (String(record.tax_pct) as "0" | "7"),
     };
   }
   const readOnly =

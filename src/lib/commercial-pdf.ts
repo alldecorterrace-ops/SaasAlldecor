@@ -143,7 +143,7 @@ export async function renderCommercialPdf(
   for (const [label, amount] of [
     ["Subtotal", r.subtotal],
     ["Descuento", r.discount],
-    ["Impuestos", r.taxes],
+    [r.tax_pct === 7 ? "Impuestos (7%)" : "Impuestos", r.taxes],
     ["Total", r.total],
   ] as const)
     text(`${label}: ${usd(amount)}`, label === "Total" ? 16 : 11);

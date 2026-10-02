@@ -245,3 +245,14 @@ huellas financieras e instalaciones intactas, 22 constancias operativas.
 [Evidencia, referencia y límites](CARTOGRAFIA-AISLADA-20261002.md).
 O15 continúa Implementada, abierta por contraste/perfiles completos; O14,
 O16 y O17 conservan sus pendientes. Los tres bloques siguen abiertos, 1/65.
+
+
+## Recorrido comercial y editor · 2 de octubre de 2026
+
+En staging ab2307f / 066: lead guardado, archivo/restauración, conversión repetida
+sin duplicar cliente, cuatro revisiones, aprobación repetida con una factura y
+proyecto, bloqueo sin anticipo, dos pagos exactos, exceso rechazado, reversos y
+anulación conservando documentos. Filas financieras anteriores intactas.
+Corrección de impuesto opcional 7% y copia/orden de partidas validada localmente;
+067 y su publicación pendientes. [Evidencia y diferencias](RECORRIDO-COMERCIAL-20261002.md).
+Conteo estricto 1/65; los tres bloques siguen abiertos por contraste y perfiles.

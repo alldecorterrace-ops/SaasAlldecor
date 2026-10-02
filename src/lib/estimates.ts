@@ -69,6 +69,7 @@ export const estimateSchema = z
     commercial_terms: paymentTermsInput.nullable().optional(),
     discount: decimal,
     taxes: decimal,
+    tax_pct: z.enum(["0", "7"]).nullable().optional(),
     items: z.array(estimateItemSchema).min(1).max(100),
   })
   .refine((x) => !x.valid_until || x.valid_until >= x.estimate_date, {
@@ -117,12 +118,53 @@ export function centsText(n: bigint) {
   const abs = n < 0n ? -n : n;
   return `${sign}${abs / 100n}.${String(abs % 100n).padStart(2, "0")}`;
 }
-export function estimateTotals(
-  v: Pick<EstimateInput, "items" | "discount" | "taxes">,
+type EstimateAmounts = Pick<EstimateInput, "items" | "discount" | "taxes"> &
+  Pick<EstimateInput, "tax_pct">;
+export function estimateTaxes(v: EstimateAmounts): string {
+  if (v.tax_pct == null) return centsText(scaled(v.taxes, 2));
+  if (v.tax_pct !== "0" && v.tax_pct !== "7")
+    throw new Error("Invalid tax rate");
+  const subtotal = v.items.reduce((sum, i) => sum + lineCents(i), 0n),
+    discount = scaled(v.discount, 2);
+  if (discount > subtotal) throw new Error("El descuento supera el subtotal.");
+  return centsText(((subtotal - discount) * BigInt(v.tax_pct) + 50n) / 100n);
+}
+export function moveEstimateItem(
+  items: EstimateItem[],
+  index: number,
+  direction: -1 | 1,
 ) {
+  const target = index + direction;
+  if (
+    !Number.isInteger(index) ||
+    index < 0 ||
+    index >= items.length ||
+    target < 0 ||
+    target >= items.length
+  )
+    return items;
+  const result = [...items];
+  [result[index], result[target]] = [result[target], result[index]];
+  return result;
+}
+export function duplicateEstimateItem(items: EstimateItem[], index: number) {
+  if (
+    !Number.isInteger(index) ||
+    index < 0 ||
+    index >= items.length ||
+    items.length >= 100
+  )
+    return items;
+  return [
+    ...items.slice(0, index + 1),
+    { ...items[index] },
+    ...items.slice(index + 1),
+  ];
+}
+export function estimateTotals(v: EstimateAmounts) {
   const subtotal = v.items.reduce((sum, i) => sum + lineCents(i), 0n),
     discount = scaled(v.discount, 2),
-    taxes = scaled(v.taxes, 2);
+    taxes = scaled(estimateTaxes(v), 2);
   if (discount > subtotal) throw new Error("El descuento supera el subtotal.");
   const total = subtotal - discount + taxes;
   if (total > 99999999999999n)

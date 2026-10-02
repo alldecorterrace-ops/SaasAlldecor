@@ -127,7 +127,7 @@ export default async function PrintEstimate({
             <span>{money(r.discount)}</span>
           </p>
           <p className="flex justify-between">
-            <span>Impuestos</span>
+            <span>Impuestos{String(r.tax_pct) === "7" ? " (7%)" : ""}</span>
             <span>{money(r.taxes)}</span>
           </p>
           <p className="flex justify-between border-t border-border pt-3 text-xl font-semibold">

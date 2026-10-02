@@ -12,6 +12,9 @@ import {
   emptyItem,
   estimateStatuses,
   estimateTotals,
+  estimateTaxes,
+  moveEstimateItem,
+  duplicateEstimateItem,
   lineCents,
   centsText,
   type EstimateInput,
@@ -65,8 +68,10 @@ export function EstimateForm({
       items: old.items.map((x, n) => (n === i ? { ...x, ...patch } : x)),
     }));
   let totals: { subtotal: string; total: string } | null = null;
+  let calculatedTaxes: string | null = null;
   try {
     totals = estimateTotals(v);
+    calculatedTaxes = estimateTaxes(v);
   } catch {}
   const lookup = (kind: "customers" | "products") =>
     startTransition(async () => {
@@ -102,7 +107,11 @@ export function EstimateForm({
     <form action={action} className="space-y-6">
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="version" value={version} />
-      <input type="hidden" name="payload" value={JSON.stringify(v)} />
+      <input
+        type="hidden"
+        name="payload"
+        value={JSON.stringify({ ...v, taxes: calculatedTaxes ?? v.taxes })}
+      />
       <Feedback
         error={state.error}
         success={
@@ -279,16 +288,60 @@ export function EstimateForm({
                 Línea {i + 1} · {preview(item)}
               </h3>
               {!readOnly && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() =>
-                    set({ ...v, items: v.items.filter((_, n) => n !== i) })
-                  }
-                >
-                  Quitar línea {i + 1}
-                </Button>
+                <div className="flex flex-wrap gap-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={v.items.length >= 100}
+                    onClick={() =>
+                      set((old) => ({
+                        ...old,
+                        items: duplicateEstimateItem(old.items, i),
+                      }))
+                    }
+                  >
+                    Duplicar línea {i + 1}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={i === 0}
+                    onClick={() =>
+                      set((old) => ({
+                        ...old,
+                        items: moveEstimateItem(old.items, i, -1),
+                      }))
+                    }
+                  >
+                    Subir línea {i + 1}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={i === v.items.length - 1}
+                    onClick={() =>
+                      set((old) => ({
+                        ...old,
+                        items: moveEstimateItem(old.items, i, 1),
+                      }))
+                    }
+                  >
+                    Bajar línea {i + 1}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() =>
+                      set({ ...v, items: v.items.filter((_, n) => n !== i) })
+                    }
+                  >
+                    Quitar línea {i + 1}
+                  </Button>
+                </div>
               )}
             </div>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -409,17 +462,38 @@ export function EstimateForm({
             <span>Subtotal</span>
             <strong>${totals?.subtotal ?? "—"}</strong>
           </div>
+          <label className="field">
+            Impuesto
+            <select
+              disabled={readOnly}
+              value={v.tax_pct ?? "manual"}
+              onChange={(e) =>
+                set({
+                  ...v,
+                  tax_pct:
+                    e.target.value === "manual"
+                      ? null
+                      : (e.target.value as "0" | "7"),
+                  taxes: calculatedTaxes ?? v.taxes,
+                })
+              }
+            >
+              <option value="0">No aplicado</option>
+              <option value="7">7% después del descuento</option>
+              <option value="manual">Importe guardado / manual</option>
+            </select>
+          </label>
           {(["discount", "taxes"] as const).map((key) => (
             <label className="field" key={key}>
               {key === "discount"
                 ? "Descuento (importe USD)"
                 : "Impuestos (importe USD)"}
               <Input
-                readOnly={readOnly}
+                readOnly={readOnly || (key === "taxes" && v.tax_pct != null)}
                 inputMode="decimal"
                 required
                 pattern="[0-9]{1,9}([.][0-9]{1,2})?"
-                value={v[key]}
+                value={key === "taxes" ? (calculatedTaxes ?? v.taxes) : v[key]}
                 onChange={(e) => set({ ...v, [key]: e.target.value })}
               />
             </label>

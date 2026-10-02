@@ -155,8 +155,54 @@ async function main() {
       await writer.query("rollback");
       writer.release();
     }
+    const documentBefore = (
+      await pool.query(
+        "select to_jsonb(d) data from commercial_documents d where id=$1",
+        [id],
+      )
+    ).rows[0];
+    const taxRace = await Promise.allSettled(
+      ["0", "7"].map((tax_pct) =>
+        actor((c) =>
+          c.query("select save_estimate($1,$2,2,$3)", [
+            company,
+            record,
+            JSON.stringify({ ...input, tax_pct, taxes: "0.01" }),
+          ]),
+        ),
+      ),
+    );
+    assert.equal(taxRace.filter((x) => x.status === "fulfilled").length, 1);
+    assert.equal(taxRace.filter((x) => x.status === "rejected").length, 1);
+    const captured = (
+      await pool.query(
+        "select version,tax_pct,taxes,total from estimates where id=$1",
+        [record],
+      )
+    ).rows[0];
+    assert.equal(captured.version, 3);
+    assert.equal(captured.taxes, captured.tax_pct === 7 ? "7.02" : "0.00");
+    assert.equal(captured.total, captured.tax_pct === 7 ? "107.27" : "100.25");
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from estimate_revisions where estimate_id=$1",
+          [record],
+        )
+      ).rows[0].n,
+      3,
+    );
+    assert.deepEqual(
+      (
+        await pool.query(
+          "select to_jsonb(d) data from commercial_documents d where id=$1",
+          [id],
+        )
+      ).rows[0],
+      documentBefore,
+    );
     console.log(
-      "PASS eight concurrent PDF prepares/finalizes: one immutable document, two audit events, unchanged finance, stale generation rejected",
+      "PASS eight concurrent PDF prepares/finalizes: one immutable document, two audit events, unchanged finance, stale generation rejected; concurrent tax choices: one captured revision, one stale writer rejected, original PDF unchanged",
     );
   } finally {
     await pool.end();

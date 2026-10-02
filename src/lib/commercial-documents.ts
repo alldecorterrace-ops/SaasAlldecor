@@ -43,6 +43,10 @@ export const commercialSnapshot = z.object({
     subtotal: money,
     discount: money,
     taxes: money,
+    tax_pct: z
+      .union([z.literal(0), z.literal(7)])
+      .nullable()
+      .optional(),
     total: money,
     notes: text,
     commercial_terms: storedPaymentTerms.nullable().optional(),

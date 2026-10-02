@@ -53,11 +53,13 @@ export async function saveEstimate(
           ? "Esta solicitud ya se guardó. Vuelve al listado."
           : error.message.includes("customer_access_required")
             ? "Necesitas permiso de lectura de Clientes para seleccionar un cliente."
-            : error.message.includes("estimate_voided")
-              ? "Un estimado anulado no se puede modificar."
-              : error.message.includes("invalid_payment_terms")
-                ? "Revisa el calendario: debe sumar 100% y sus importes redondeados no pueden superar el total."
-                : "No se pudo guardar. Revisa los datos, el cliente seleccionado y los permisos.",
+            : error.message.includes("invalid_tax_percent")
+              ? "Selecciona impuesto no aplicado, 7% o importe guardado."
+              : error.message.includes("estimate_voided")
+                ? "Un estimado anulado no se puede modificar."
+                : error.message.includes("invalid_payment_terms")
+                  ? "Revisa el calendario: debe sumar 100% y sus importes redondeados no pueden superar el total."
+                  : "No se pudo guardar. Revisa los datos, el cliente seleccionado y los permisos.",
     };
   revalidatePath(`/app/${companyId}`, "layout");
   redirect(`/app/${companyId}/estimados/${id.data}?saved=1`);
