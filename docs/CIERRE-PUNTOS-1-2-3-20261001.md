@@ -104,7 +104,7 @@ las filas Comprobada; el denominador se declara provisional hasta completar inve
 | O12 | Manual: documentos, archivo y restauración        | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
 | O13 | Manual: impresión persistida y documentos largos  | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
 | O14 | Mapa: categorías, filtros, centros y sumas        | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O15 | Mapa: cartografía externa y errores | Implementada | Banco de empresa sintética, error parcial, timeout y reintento; pendiente CI/publicación y recorrido real. [Contrato y límites](CARTOGRAFIA-AISLADA-20261002.md). |
+| O15 | Mapa: cartografía externa y errores | Implementada | ab2307f publicado, 603 pruebas, proveedor real 10/10, caché 10/10, fallo local y reintento conservan vista/CSV; abierto por contraste y perfiles completos. [Evidencia](CARTOGRAFIA-AISLADA-20261002.md). |
 | O16 | Mapa: nombres multibyte y exportación             | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | O17 | Mapa: proveedor, caché y fallos reales            | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | O18 | Operaciones: permisos, revocación y dos empresas  | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
@@ -256,3 +256,15 @@ sin desbordamiento. [Evidencia y límites](INSTALACIONES-CUADRILLAS-20261002.md)
 O07–O09 continúan Implementada, abiertas por el contraste del backend y los
 perfiles/recorridos restantes. Los tres bloques siguen abiertos, conteo 1/65.
 No se reanuda migración de negocio, traspaso, configuradores ni 3D.
+
+
+## Cartografía publicada y comprobada · 2 de octubre de 2026
+
+Activa `ab2307f`, retorno `c7bdaf4`, esquema 066 sin cambio. CI 36971655443
+completo, 603 pruebas, lint, tipos y compilación correctos. Diez imágenes reales
+OSM y diez recuperadas desde caché; fallo local, reintento, filtros y CSV privado
+byte por byte conservados. Móvil 390 x 844 y empresa restringida comprobados;
+huellas financieras e instalaciones intactas, 22 constancias operativas.
+[Evidencia, referencia y límites](CARTOGRAFIA-AISLADA-20261002.md).
+O15 continúa Implementada, abierta por contraste/perfiles completos; O14,
+O16 y O17 conservan sus pendientes. Los tres bloques siguen abiertos, 1/65.

@@ -109,3 +109,20 @@ son candidatas de revisión, no autorización de borrado. Conservar aaf268c por
 la decisión explícita vigente del propietario. Eliminar sobrantes exige inventario
 de contenido único, enlaces/procesos y la confirmación aplicable.
 [Evidencia y procedimiento de retorno](REGISTRO-UNIFICADO-WORKFORCE-20260930.md).
+
+
+## Estado de cartografía · 2 de octubre de 2026
+
+Staging activa `ab2307fa91b86a830e09fdaef2cd1266d35454da`, retorno compatible
+`c7bdaf498409d9d066cf12785605df6fb7267721`, dependencias c66e4ec/b149bee.
+Esquema 066 conservado. Publicación desde CI exacto aprobado y recorrido en sesión.
+Configuración privada anterior preservada, con tres variables exclusivas del banco
+sintético. La configuración de producción conserva su huella verificada.
+
+La petición de 52 eliminaciones permanece sin respuesta; no se ejecutó ningún
+borrado en esta entrega. `9de7c8e` deja de ser retorno y se añade al próximo
+inventario de sobrantes, junto con los adicionales ya identificados. Su retirada
+requiere comprobar contenido único/enlaces/procesos y la confirmación aplicable;
+no está incluida en la petición anterior. Se conserva aaf268c por decisión del
+propietario. GitHub conserva el historial; estas notas no justifican retención
+indefinida de entregas en el servidor.

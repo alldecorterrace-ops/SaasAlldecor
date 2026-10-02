@@ -233,3 +233,15 @@ reintento manual. Lint, tipos, 603 pruebas y compilación locales correctos.
 CI, publicación y recorrido del proveedor en sesión pendientes; O15 no cerrada.
 [Contrato, referencias y límites](CARTOGRAFIA-AISLADA-20261002.md).
 El conteo estricto sigue 1/65 y los tres bloques continúan abiertos.
+
+
+## Cartografía publicada y comprobada · 2 de octubre de 2026
+
+Activa `ab2307f`, retorno `c7bdaf4`, esquema 066 sin cambio. CI 36971655443
+completo, 603 pruebas, lint, tipos y compilación correctos. Diez imágenes reales
+OSM y diez recuperadas desde caché; fallo local, reintento, filtros y CSV privado
+byte por byte conservados. Móvil 390 x 844 y empresa restringida comprobados;
+huellas financieras e instalaciones intactas, 22 constancias operativas.
+[Evidencia, referencia y límites](CARTOGRAFIA-AISLADA-20261002.md).
+O15 continúa Implementada, abierta por contraste/perfiles completos; O14,
+O16 y O17 conservan sus pendientes. Los tres bloques siguen abiertos, 1/65.

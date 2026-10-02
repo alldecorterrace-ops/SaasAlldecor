@@ -48,9 +48,50 @@ nueva entrega. Capturas y bytes quedan fuera de GitHub.
 
 ## Estado
 
-Candidata pendiente de CI del commit exacto, publicación y prueba en sesión de
-cartografía real, fallo local, filtros y exportación conservada. O15 tiene
-implementación, pero continúa abierta. O14, O16 y O17 conservan sus diferencias:
+Publicada en staging desde `ab2307fa91b86a830e09fdaef2cd1266d35454da`,
+con [CI 36971655443](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36971655443)
+completo aprobado: check, concurrencia PostgreSQL y recuperación. Las 603
+pruebas pasaron, junto con lint, tipos, compilación y los harness PHP.
+Retorno `c7bdaf498409d9d066cf12785605df6fb7267721`; esquema 066 sin cambios.
+El hosting compiló con una CPU y las dependencias compartidas anteriores.
+Paquete exacto SHA-256 c344e7e595a379b3fc5f3afd44ed7f102185ca00077e0e02300ac3fc9cbc0558.
+
+La raíz activa, proceso Node, cuatro rutas públicas de staging y salud de
+producción se comprobaron. La configuración de producción conserva su huella.
+La única diferencia privada de entorno son las tres variables del banco;
+la configuración previa permanece byte por byte como prefijo. Ninguna
+credencial, documento real o copia de base se incorpora al repositorio.
+
+### Recorrido real comprobado
+
+- Propietario sintético: diez imágenes OSM, diez respuestas HTTP 200, atribución
+  visible y Referer limitado a `https://staging.alldecorpatio.com/`.
+- El navegador recibió Cache-Control del proveedor. Después del fallo local,
+  la vuelta normal a la vista cargó las diez imágenes desde caché, conservando
+  la política HTTP del navegador. No se forzó zoom ni precarga de otras zonas.
+- Desactivar Activos dejó un punto, conservó la tabla y el CSV.
+- Fallo local: veinte respuestas 404 entre carga y reintento, ninguna nueva
+  petición a OSM. Al reintentar se conservaron la vista, filtro, punto y tabla.
+  Al volver al proveedor se recuperaron las calles; se restituyeron ambos puntos.
+- CSV privado: idénticos 205 bytes antes, después y durante el fallo; misma
+  huella indicada arriba. No se confunde una tabla redondeada con su CSV.
+- Segunda empresa sin permisos: página no disponible, sin renderizar el banco.
+- Móvil emulado 390 x 844: documento y cuerpo 375 px, tabla intacta, dos puntos,
+  aviso y reintento visibles. Se restauró la dimensión original al terminar.
+- Lectura SQL protegida por identidad de staging: mismas huellas de facturas,
+  pagos, gastos y proyectos; 22 constancias operativas e instalaciones idénticas
+  a la referencia posterior a las cuadrillas. El mapa no escribió registros.
+- ADT autenticado actual: diez imágenes de cartografía cargadas y las siete
+  columnas correspondientes. Esto renueva evidencia de interfaz; el backend
+  actual sigue pendiente del acceso al servidor original.
+
+Capturas, cabeceras públicas, bytes y huellas se conservan en el directorio
+privado de evidencia. Un primer intento de captura de página completa falló;
+se conservó después la captura de la vista publicada. No se usó una imagen
+incompleta como evidencia ni se ocultó el fallo del banco local.
+
+O15 tiene implementación y recorrido de proveedor real/errores, pero continúa
+abierta por el contraste y perfiles completos. O14, O16 y O17 conservan sus diferencias:
 contraste completo del backend actual, decisión multibyte y ensayo integrado
 real de geocodificación/caché. No se declara paridad por mostrar calles.
 
