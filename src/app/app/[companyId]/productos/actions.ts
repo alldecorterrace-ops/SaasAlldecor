@@ -14,7 +14,7 @@ export async function saveProduct(
   let payload: unknown;
   try {
     const raw = String(form.get("payload") ?? "");
-    if (raw.length > 110000) throw new Error();
+    if (Buffer.byteLength(raw, "utf8") > 4500000) throw new Error();
     payload = JSON.parse(raw);
   } catch {
     return { error: "No se pudieron leer los detalles del producto." };

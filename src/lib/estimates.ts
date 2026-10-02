@@ -19,7 +19,12 @@ export const estimateItemSchema = z
   .object({
     product_id: z.uuid().nullable(),
     name: z.string().trim().min(1).max(255),
-    description: z.string().max(2000),
+    description: z
+      .string()
+      .refine(
+        (s) => [...s].length <= 10000,
+        "La descripción supera 10000 caracteres.",
+      ),
     base: z.enum(
       Object.keys(priceBases) as [
         keyof typeof priceBases,

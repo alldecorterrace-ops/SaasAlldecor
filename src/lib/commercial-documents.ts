@@ -28,7 +28,7 @@ export const commercialSnapshot = z.object({
       .array(
         z.object({
           name: text,
-          description: text,
+          description: z.string().max(20000),
           qty: z.union([z.string(), z.number()]),
           base: z.string(),
           unit_price: money,

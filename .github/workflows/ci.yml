@@ -38,6 +38,12 @@ jobs:
           npx tsx scripts/test-payment-reference.ts
           php scripts/payment-reference.php tests/reference/invoice-payment-source.php .local/payment-reference-input.json 1dee52934c9a21438b3a4a5b9d8fd1f9321bad12db569916849bcbeeeba3f6a3
       - run: npm run check
+      - name: Compare product details with frozen ADT PHP service
+        run: |
+          php -l scripts/product-reference.php
+          php -l tests/reference/product-details-source.php
+          npx tsx scripts/test-product-reference.ts
+          php scripts/product-reference.php tests/reference/product-details-source.php .local/product-reference-input.json 93c22c2d59d2be0089841121553b3bc2e329e9b5d056459d55861c8938d2ce7f
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x

@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { isRecordConflict } from "./database-errors";
 import { customerSchema } from "./validation";
+import {
+  productDetailsSchema,
+  normalizeProductDetails,
+} from "./product-details";
 export const leadStatuses = [
   "NUEVO",
   "CONTACTADO",
@@ -64,29 +68,42 @@ export const productSchema = z.object({
   active: z.boolean(),
   specs: z
     .array(
-      z.object({
-        label: z.string().trim().min(1).max(120),
-        unit: z.string().trim().max(24),
-      }),
+      z
+        .object({
+          label: z.string().trim().min(1).max(120),
+          unit: z.string().trim().max(24),
+          value: z.string().trim().max(6000).optional(),
+        })
+        .passthrough(),
     )
     .max(30),
   options: z
     .array(
-      z.object({
-        label: z.string().trim().min(1).max(120),
-        choices: z
-          .array(
-            z.object({
-              label: z.string().trim().min(1).max(120),
-              add: signedDecimal,
-              addType: z.enum(["base", "flat", "percent"]),
-            }),
-          )
-          .min(1)
-          .max(30),
-      }),
+      z
+        .object({
+          label: z.string().trim().min(1).max(120),
+          kind: z.enum(["color", "size", "finish", "other"]).optional(),
+          choices: z
+            .array(
+              z
+                .object({
+                  label: z.string().trim().min(1).max(120),
+                  add: signedDecimal,
+                  addType: z.enum(["base", "flat", "percent"]),
+                  colorHex: z
+                    .string()
+                    .regex(/^(?:#[0-9a-fA-F]{6})?$/)
+                    .optional(),
+                })
+                .passthrough(),
+            )
+            .min(1)
+            .max(30),
+        })
+        .passthrough(),
     )
     .max(20),
+  details: productDetailsSchema.optional(),
 });
 export type LeadInput = z.infer<typeof leadSchema>;
 export type Lead = LeadInput & {
@@ -130,6 +147,7 @@ export const emptyProduct: ProductInput = {
   active: true,
   specs: [],
   options: [],
+  details: normalizeProductDetails({}),
 };
 export function commercialError(code?: string) {
   return isRecordConflict(code)

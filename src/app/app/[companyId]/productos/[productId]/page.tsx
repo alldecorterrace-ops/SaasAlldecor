@@ -6,6 +6,7 @@ import { uuid } from "@/lib/validation";
 import { emptyProduct, type Product } from "@/lib/commercial";
 import { ProductForm } from "@/components/product-form";
 import { ProductImage } from "@/components/product-image";
+import { normalizeProductDetails } from "@/lib/product-details";
 export default async function ProductPage({
   params,
   searchParams,
@@ -42,6 +43,7 @@ export default async function ProductPage({
     record = {
       ...data,
       unit_price: String(data.unit_price),
+      details: normalizeProductDetails(data.details ?? {}),
       options: data.options.map((g: Product["options"][number]) => ({
         ...g,
         choices: g.choices.map((c) => ({ ...c, add: String(c.add) })),

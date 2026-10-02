@@ -259,6 +259,7 @@ export function EstimateForm({
                           ...emptyItem,
                           product_id: p.id,
                           name: p.name,
+                          description: p.description,
                           base: p.base as EstimateItem["base"],
                           unit_price: String(p.unit_price),
                         },
@@ -271,9 +272,9 @@ export function EstimateForm({
               ))}
             </div>
             <p className="text-xs text-muted-foreground">
-              Se agrega el precio base vigente. Incluye acabados o ajustes como
-              líneas separadas. Los cambios posteriores del catálogo no cambian
-              este estimado.
+              Se agregan el precio base y la descripción de la ficha. Incluye
+              acabados o ajustes como líneas separadas. Los cambios posteriores
+              del catálogo no cambian este estimado.
             </p>
           </div>
         )}
@@ -432,7 +433,7 @@ export function EstimateForm({
                 Especificaciones y notas de la línea
                 <textarea
                   rows={2}
-                  maxLength={2000}
+                  maxLength={20000}
                   value={item.description}
                   onChange={(e) => editItem(i, { description: e.target.value })}
                 />

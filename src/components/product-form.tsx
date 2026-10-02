@@ -8,6 +8,11 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { SubmitButton } from "./submit-button";
 import { Feedback } from "./feedback";
+import { ProductDetailsFields } from "./product-details-fields";
+import {
+  normalizeProductDetails,
+  type ProductDetailsDraft,
+} from "@/lib/product-details";
 export function ProductForm({
   companyId,
   id,
@@ -23,7 +28,10 @@ export function ProductForm({
   readOnly: boolean;
   saved: boolean;
 }) {
-  const [v, set] = useState(initial),
+  const [v, set] = useState<
+      Omit<ProductInput, "details"> & { details: ProductDetailsDraft }
+    >({ ...initial, details: initial.details ?? normalizeProductDetails({}) }),
+    [uploading, setUploading] = useState(false),
     [state, action] = useActionState(
       saveProduct.bind(null, companyId),
       {} as CommercialState,
@@ -37,7 +45,13 @@ export function ProductForm({
       options: old.options.map((g, n) => (n === i ? { ...g, ...patch } : g)),
     }));
   return (
-    <form action={action} className="card max-w-5xl space-y-7">
+    <form
+      action={action}
+      onSubmit={(e) => {
+        if (uploading) e.preventDefault();
+      }}
+      className="card max-w-5xl space-y-7"
+    >
       <Feedback
         error={state.error}
         success={saved ? "Producto guardado." : undefined}
@@ -45,7 +59,7 @@ export function ProductForm({
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="version" value={version} />
       <input type="hidden" name="payload" value={JSON.stringify(v)} />
-      <fieldset disabled={readOnly} className="space-y-7 min-w-0">
+      <fieldset disabled={readOnly || uploading} className="space-y-7 min-w-0">
         <div className="grid gap-5 md:grid-cols-2">
           <label className="field md:col-span-2">
             Nombre *
@@ -108,6 +122,14 @@ export function ProductForm({
             <small>Los productos archivados conservan su historial.</small>
           </label>
         </div>
+        <ProductDetailsFields
+          value={v.details}
+          readOnly={readOnly}
+          onUploading={setUploading}
+          change={(patch) =>
+            set((old) => ({ ...old, details: { ...old.details, ...patch } }))
+          }
+        />
         <section className="border-t border-border pt-5">
           <div className="flex flex-wrap justify-between gap-3">
             <div>
@@ -133,7 +155,7 @@ export function ProductForm({
             {v.specs.map((s, i) => (
               <div
                 key={i}
-                className="grid items-end gap-3 sm:grid-cols-[2fr_1fr_auto]"
+                className="grid items-end gap-3 sm:grid-cols-[2fr_2fr_1fr_auto]"
               >
                 <label className="field">
                   Nombre
@@ -146,6 +168,21 @@ export function ProductForm({
                         ...v,
                         specs: v.specs.map((x, n) =>
                           n === i ? { ...x, label: e.target.value } : x,
+                        ),
+                      })
+                    }
+                  />
+                </label>
+                <label className="field">
+                  Valor
+                  <Input
+                    maxLength={6000}
+                    value={s.value ?? ""}
+                    onChange={(e) =>
+                      set({
+                        ...v,
+                        specs: v.specs.map((x, n) =>
+                          n === i ? { ...x, value: e.target.value } : x,
                         ),
                       })
                     }
@@ -224,6 +261,22 @@ export function ProductForm({
                 key={i}
               >
                 <div className="flex items-end gap-3">
+                  <label className="field">
+                    Tipo
+                    <select
+                      value={g.kind ?? "other"}
+                      onChange={(e) =>
+                        patchGroup(i, {
+                          kind: e.target.value as NonNullable<typeof g.kind>,
+                        })
+                      }
+                    >
+                      <option value="color">Color</option>
+                      <option value="size">Tamaño</option>
+                      <option value="finish">Acabado</option>
+                      <option value="other">Otro</option>
+                    </select>
+                  </label>
                   <label className="field flex-1">
                     Nombre de la opción
                     <Input
@@ -269,6 +322,24 @@ export function ProductForm({
                         }
                       />
                     </label>
+                    {g.kind === "color" && (
+                      <label className="field">
+                        Muestra de color
+                        <Input
+                          type="color"
+                          value={c.colorHex || "#d0d6df"}
+                          onChange={(e) =>
+                            patchGroup(i, {
+                              choices: g.choices.map((x, n) =>
+                                n === j
+                                  ? { ...x, colorHex: e.target.value }
+                                  : x,
+                              ),
+                            })
+                          }
+                        />
+                      </label>
+                    )}
                     <label className="field">
                       Ajuste
                       <Input

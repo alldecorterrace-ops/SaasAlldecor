@@ -5,6 +5,10 @@ import { requireModule } from "@/lib/auth";
 import { isRecordConflict } from "@/lib/database-errors";
 import { uuid } from "@/lib/validation";
 import {
+  normalizeProductDetails,
+  productDetailsSummary,
+} from "@/lib/product-details";
+import {
   estimateSchema,
   estimateTotals,
   captureEstimateInput,
@@ -77,6 +81,7 @@ export type ProductChoice = {
   name: string;
   base: string;
   unit_price: string | number;
+  description: string;
 };
 export async function searchEstimateChoices(
   companyId: string,
@@ -114,7 +119,7 @@ export async function searchEstimateChoices(
   }
   const { data, error } = await db
     .from("products")
-    .select("id,name,base,unit_price")
+    .select("id,name,base,unit_price,details")
     .eq("company_id", companyId)
     .eq("active", true)
     .ilike("name", `%${escaped}%`)
@@ -123,5 +128,12 @@ export async function searchEstimateChoices(
     .limit(25);
   return error
     ? { error: "No se pudo buscar en el catálogo." }
-    : { products: data };
+    : {
+        products: data.map(({ details, ...product }) => ({
+          ...product,
+          description: productDetailsSummary(
+            normalizeProductDetails(details ?? {}),
+          ),
+        })),
+      };
 }
