@@ -291,6 +291,21 @@ test("Dated Labor configuration persists audit, request identity and scoped read
           estimate_version: snapshot.version,
           active: true,
         });
+        await db.exec("reset role");
+        await assert.rejects(
+          db.query("update labor_project_terms set amount=null where id=$1", [
+            f.project,
+          ]),
+          /check constraint/,
+        );
+        await assert.rejects(
+          db.query(
+            "update labor_project_terms set estimate_version=null where id=$1",
+            [f.project],
+          ),
+          /check constraint/,
+        );
+        await f.as(f.owner);
         const r = laborReport(await context());
         assert.equal(r.knownCostCents, 60000);
         assert.equal(r.supplements.length, 1);

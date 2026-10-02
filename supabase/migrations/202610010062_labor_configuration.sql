@@ -28,7 +28,7 @@ create table public.labor_project_terms(
  foreign key(company_id,responsible_id) references public.workers(company_id,id),
  foreign key(company_id,estimate_id,estimate_version) references public.estimate_revisions(company_id,estimate_id,version),
  check((mode='day' and responsible_id is null and amount is null and cost_date is null and estimate_id is null and estimate_version is null)
- or (mode='adjustment' and responsible_id is not null and amount>0 and cost_date is not null and estimate_id is not null and estimate_version>0))
+ or (mode='adjustment' and responsible_id is not null and amount is not null and amount>0 and cost_date is not null and estimate_id is not null and estimate_version is not null and estimate_version>0))
 );
 create table public.labor_settings(
  id uuid primary key,company_id uuid not null unique references public.companies(id),
