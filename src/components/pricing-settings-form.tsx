@@ -86,6 +86,7 @@ export function PricingSettingsForm({
 }) {
   const [f, set] = useState(() => pricingForm(initial));
   const [costs, setCosts] = useState({ ...pricingSimulationDefaults });
+  const [confirmRestore, setConfirmRestore] = useState(false);
   const [state, action, pending] = useActionState(
     savePricingSettings.bind(null, companyId),
     {} as ActionState,
@@ -469,21 +470,36 @@ export function PricingSettingsForm({
           <div className="card flex flex-wrap gap-3">
             <SubmitButton>Guardar precios</SubmitButton>
             <Button
-              type="submit"
+              type="button"
               variant="outline"
-              name="operation"
-              value="restore"
-              onClick={(e) => {
-                if (
-                  !window.confirm(
-                    "¿Restaurar los valores por defecto? El historial conservará la configuración actual.",
-                  )
-                )
-                  e.preventDefault();
-              }}
+              onClick={() => setConfirmRestore(true)}
             >
               Restaurar valores por defecto
             </Button>
+            {confirmRestore && (
+              <div
+                className="w-full space-y-3"
+                role="group"
+                aria-label="Confirmar restauración"
+              >
+                <p role="alert">
+                  ¿Restaurar los valores por defecto? El historial conservará la
+                  configuración actual.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Button type="submit" name="operation" value="restore">
+                    Confirmar restauración
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setConfirmRestore(false)}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </fieldset>
