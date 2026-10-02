@@ -256,3 +256,20 @@ anulación conservando documentos. Filas financieras anteriores intactas.
 Corrección de impuesto opcional 7% y copia/orden de partidas validada localmente;
 067 y su publicación pendientes. [Evidencia y diferencias](RECORRIDO-COMERCIAL-20261002.md).
 Conteo estricto 1/65; los tres bloques siguen abiertos por contraste y perfiles.
+
+
+## Editor comercial publicado · 2 de octubre de 2026
+
+Activa `bfb8e3a`, retorno `ab2307f`, esquema 067; CI 36977920109 completo aprobado,
+612 pruebas y carrera nativa de dos tasas con un escritor. Migración aditiva:
+984 filas de 82 tablas preservadas, sin rellenar tasa de documentos anteriores.
+Propietario guardó y reabrió copia/orden de partidas, cinco revisiones 7%/0%,
+factura con 7% capturado y sin pago, PDF anterior byte por byte conservado.
+Compatibilidad del documento manual anterior, móvil emulado y empresa ajena
+comprobados. Filas financieras y proyectos preexistentes intactos.
+[Evidencia y diferencias abiertas](RECORRIDO-COMERCIAL-20261002.md).
+
+Los tres bloques siguen abiertos; conteo estricto 1/65. No se confunde este
+recorrido de propietario con la matriz completa, plantillas, comunicaciones,
+proveedor de recibos o dispositivo físico. Migración de negocio y traspaso siguen
+excluidos; producción y ADT no se modificaron.

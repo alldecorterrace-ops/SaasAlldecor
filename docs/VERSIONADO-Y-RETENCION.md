@@ -126,3 +126,20 @@ requiere comprobar contenido único/enlaces/procesos y la confirmación aplicabl
 no está incluida en la petición anterior. Se conserva aaf268c por decisión del
 propietario. GitHub conserva el historial; estas notas no justifican retención
 indefinida de entregas en el servidor.
+
+
+## Estado del editor comercial · 2 de octubre de 2026
+
+Staging activa `bfb8e3a3e8e653d12c269fb39991642682fc72b8`, retorno compatible
+`ab2307fa91b86a830e09fdaef2cd1266d35454da`, dependencias c66e4ec/b149bee.
+Esquema aditivo 067; configuración privada idéntica a la entrega anterior.
+Commit exacto con CI completo, proceso activo y recorridos comprobados. Retorno
+anterior probado antes del cambio, sin ensayo de regreso posterior. No se revierte
+el esquema al regresar; la tasa explícita se conserva con clientes anteriores.
+Producción mantiene salud y huella de configuración.
+
+Ningún borrado realizado; petición concreta de 52 elementos pendiente. c7bdaf4
+deja de ser retorno y requiere inventario/confirmación antes de retirarlo; tampoco
+está incluido en esa petición. aaf268c permanece protegido por decisión del dueño.
+GitHub conserva el historial, no las carpetas sobrantes del hosting. Evidencia
+privada y datos sintéticos se mantienen fuera del repositorio.

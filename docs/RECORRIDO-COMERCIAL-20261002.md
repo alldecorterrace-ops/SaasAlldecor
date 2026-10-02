@@ -33,7 +33,7 @@ La introducción automática de una fecha no disparó el evento del formulario;
 se repitió mediante teclado y se comprobó guardado/reapertura. No se considera
 correcta por aparecer únicamente en el control antes de guardar.
 
-## Diferencias identificadas y corrección en preparación
+## Diferencias identificadas y corrección publicada
 
 Referencia del editor general de ADT en `adt-modules-v2.jsx`, renovada el 1 de
 octubre y SHA-256 ff0058234ef4b418b219903dc63e7f2e501fde36b3c83f390916d31174d90df8:
@@ -57,9 +57,33 @@ partidas adyacentes. El SaaS tenía impuesto por importe y no esos controles.
   tipos, suite completa y compilación local correctos. CI añade una carrera real
   entre tasas 0/7: se exige un único escritor y PDF anterior conservado.
 
-CI del commit exacto, aplicación de 067, publicación y recorrido de esos nuevos
-controles aún pendientes en el momento de esta nota. La aplicación activa continúa
-ab2307f y el esquema 066; la candidata no se declara publicada.
+Entrega `bfb8e3a3e8e653d12c269fb39991642682fc72b8`, esquema 067 aplicado y
+activa en staging. [CI 36977920109](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36977920109)
+completo: lint, tipos, 612 pruebas, compilación, recuperación y concurrencia nativa.
+La carrera real entre tasas 0/7 terminó con una revisión, un escritor rechazado y
+el PDF original sin cambios. La migración preservó 984 filas de 82 tablas y no
+rellenó tasas anteriores. Proceso de la revisión nueva, cuatro rutas públicas y
+salud de producción HTTP 200; configuración de producción intacta.
+
+En sesión de propietario, duplicar la partida fraccionaria conserva sus medidas
+y permite editar solo la copia. Subirla conserva el orden tras guardar y reabrir.
+Dos partidas $219.35 / $202.95 producen subtotal $422.30; descuento $33.33,
+impuesto 7% $27.23 y total $416.20. Cinco revisiones conservan por separado:
+7% Borrador, 7% Pendiente, 0% Pendiente ($388.97), 7% Pendiente y Aprobado.
+La factura captura la revisión 4 y tasa 7%, pagado $0 y saldo $416.20; no hay cobro.
+El PDF privado de revisión 2 incluye etiqueta 7%, importes y orden, y sigue
+idéntico byte por byte después de las revisiones y aprobación. El documento
+anterior conserva impuesto manual $14.56 / total $300.59 y su PDF original.
+PostgreSQL confirma revisiones, tasa, importes y factura; las huellas de cada
+factura, pago, gasto y proyecto preexistentes permanecen intactas. Se conservan
+22 constancias operativas. Móvil emulado 390 × 844 sin desbordamiento y ruta con
+otra empresa rechazada. Perfiles restantes y dispositivo físico no acreditados.
+
+Retorno `ab2307fa91b86a830e09fdaef2cd1266d35454da`, comprobado antes del cambio,
+compatible con 067: omitir la tasa preserva la capturada. No se ejecutó un retorno
+real posterior. Dependencias y configuración privada idénticas; evidencia privada
+fuera de GitHub. La paginación detecta encabezados de Notas/Condiciones al final
+de página separados de su cuerpo; corrección pendiente, plantilla completa abierta.
 
 ## Límites de cierre
 
