@@ -143,3 +143,18 @@ deja de ser retorno y requiere inventario/confirmación antes de retirarlo; tamp
 está incluido en esa petición. aaf268c permanece protegido por decisión del dueño.
 GitHub conserva el historial, no las carpetas sobrantes del hosting. Evidencia
 privada y datos sintéticos se mantienen fuera del repositorio.
+
+
+## Estado de paginación comercial · 2 de octubre de 2026
+
+Staging activa `2aae1ad2122bb856bb52ae5562d225e3e2805a60`, retorno
+`bfb8e3a3e8e653d12c269fb39991642682fc72b8`, esquema 067 conservado.
+CI aprobado, proceso/raíz/rutas y PDF reales de revisión guardada comprobados.
+Dependencias c66e4ec/b149bee y entorno privado idénticos; producción conservada.
+Retorno comprobado antes del cambio, sin vuelta real posterior.
+
+Sin borrados; los 52 elementos pendientes requieren respuesta específica.
+ab2307f deja de ser retorno y se suma al inventario de sobrantes, fuera de esa
+petición. No retirar dependencias ni aaf268c. Las versiones adicionales no
+sustituyen GitHub y no se consideran necesarias por ser anteriores; su retirada
+exige comprobar contenido único, enlaces y procesos y obtener la confirmación.

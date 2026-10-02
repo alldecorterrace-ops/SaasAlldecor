@@ -296,3 +296,17 @@ Los tres bloques siguen abiertos; conteo estricto 1/65. No se confunde este
 recorrido de propietario con la matriz completa, plantillas, comunicaciones,
 proveedor de recibos o dispositivo físico. Migración de negocio y traspaso siguen
 excluidos; producción y ADT no se modificaron.
+
+
+## Paginación comercial comprobada · 2 de octubre de 2026
+
+Activa `2aae1ad`, retorno `bfb8e3a`, esquema 067; CI 36981452231 completo,
+616 pruebas y compilación correctos. Dos defectos reproducidos antes y corregidos:
+Notas y Condiciones no quedan separadas de su cuerpo al cambiar de página.
+Propietario generó/descargó dos revisiones aprobadas; cuatro páginas inspeccionadas,
+importes y textos completos, originales byte por byte conservados. Finanzas y
+proyectos permanecen intactos. [Evidencia y límites](RECORRIDO-COMERCIAL-20261002.md).
+
+C16/C17 y los tres bloques siguen abiertos por plantilla/recibo completo,
+comunicaciones, contraste actual y perfiles pendientes. Conteo estricto 1/65.
+Se mantiene el trabajo independiente; no se reanuda migración ni traspaso.

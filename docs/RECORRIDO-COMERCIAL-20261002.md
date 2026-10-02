@@ -82,8 +82,9 @@ otra empresa rechazada. Perfiles restantes y dispositivo físico no acreditados.
 Retorno `ab2307fa91b86a830e09fdaef2cd1266d35454da`, comprobado antes del cambio,
 compatible con 067: omitir la tasa preserva la capturada. No se ejecutó un retorno
 real posterior. Dependencias y configuración privada idénticas; evidencia privada
-fuera de GitHub. La paginación detecta encabezados de Notas/Condiciones al final
-de página separados de su cuerpo; corrección pendiente, plantilla completa abierta.
+fuera de GitHub. La paginación detectó encabezados de Notas/Condiciones al final
+de página separados de su cuerpo; la corrección posterior se acredita abajo.
+La plantilla completa permanece abierta.
 
 ## Límites de cierre
 
@@ -120,6 +121,21 @@ deterministas. Las pruebas previas de descarga, revocación, revisiones e import
 también pasan. Inspección visual y extracción independiente con pypdf comprobaron
 ambas páginas y los encabezados acompañados de su cuerpo.
 
-Esta corrección está validada localmente; CI y publicación pendientes en esta
-nota. La plantilla completa y el recibo independiente de pago siguen abiertos.
-No se declara cerrado C16/C17 ni ninguno de los tres bloques.
+Entrega activa `2aae1ad2122bb856bb52ae5562d225e3e2805a60`, esquema 067 sin cambios.
+[CI 36981452231](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36981452231)
+completo aprobado: lint, tipos, 616 pruebas, compilación, recuperación y
+concurrencia. Se comprobó proceso/raíz de la revisión activa, cuatro rutas
+públicas 200 y producción con salud y configuración conservadas.
+
+Desde la sesión del propietario se generaron dos PDF nuevos de revisiones ya
+aprobadas: uno con tasa 7% y otro con importe anterior manual. Se descargaron,
+extrajeron con pypdf y revisaron visualmente sus cuatro páginas: títulos junto
+al contenido, cantidades, totales $416.20/$300.59, notas, condiciones, acentos,
+calendario y entrega guardados completos. Los dos PDF anteriores siguen idénticos
+byte por byte. La generación no altera facturas, pagos, gastos ni proyectos.
+
+Retorno `bfb8e3a3e8e653d12c269fb39991642682fc72b8`, compatible con el mismo esquema,
+comprobado antes del cambio; sin ensayo de regreso posterior. Configuración y
+dependencias compartidas idénticas. Evidencia privada fuera del repositorio.
+La plantilla completa y el recibo independiente de pago siguen abiertos.
+No se declara cerrado C16/C17 ni ninguno de los tres bloques. Conteo 1/65.
