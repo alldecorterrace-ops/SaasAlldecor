@@ -50,6 +50,19 @@ export const commercialSnapshot = z.object({
     total: money,
     notes: text,
     commercial_terms: storedPaymentTerms.nullable().optional(),
+    payments: z
+      .array(
+        z.object({
+          id: z.uuid(),
+          version: z.number().int().positive(),
+          payment_date: z.iso.date(),
+          amount: money,
+          method: z.string().min(1).max(100),
+          reference: z.string().max(255),
+          notes: z.string().max(2000),
+        }),
+      )
+      .optional(),
     paid_amount: money.optional(),
     balance_due: money.optional(),
   }),

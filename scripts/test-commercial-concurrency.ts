@@ -283,6 +283,206 @@ async function main() {
       ).rows[0].n,
       0,
     );
+    // A separate synthetic invoice exercises payment writers against PDF readers.
+    const paymentEstimate = randomUUID();
+    const paymentInvoice = await actor(async (c) => {
+      await c.query("select save_estimate($1,$2,0,$3)", [
+        company,
+        paymentEstimate,
+        JSON.stringify({
+          ...input,
+          items: [{ ...emptyItem, name: "QA receipt", unit_price: "100.10" }],
+        }),
+      ]);
+      return (
+        await c.query(
+          "select approve_estimate($1,$2,1,'2026-10-02','Payment PDF QA','Synthetic approval') id",
+          [company, paymentEstimate],
+        )
+      ).rows[0].id as string;
+    });
+    const financeHash = async () =>
+      (
+        await pool.query(
+          "select md5(to_jsonb(i)::text) invoice,(select md5(coalesce(string_agg(to_jsonb(p)::text,'' order by p.id),'')) from payments p where p.company_id=$1 and p.invoice_id=$2) payments from invoices i where i.company_id=$1 and i.id=$2",
+          [company, paymentInvoice],
+        )
+      ).rows[0];
+    const paymentDocs = await Promise.all(
+      Array.from({ length: 8 }, () =>
+        actor(
+          async (c) =>
+            (
+              await c.query(
+                "select to_jsonb(prepare_commercial_document($1,'invoice',$2,1)) data",
+                [company, paymentInvoice],
+              )
+            ).rows[0].data,
+        ),
+      ),
+    );
+    assert.equal(new Set(paymentDocs.map((d) => d.id)).size, 1);
+    assert.deepEqual(paymentDocs[0].snapshot.record.payments, []);
+    const documentHash = async (id: string) =>
+      (
+        await pool.query(
+          "select md5(to_jsonb(d)::text) hash from commercial_documents d where id=$1",
+          [id],
+        )
+      ).rows[0].hash;
+    const originalHash = await documentHash(paymentDocs[0].id);
+    const waitForDatabaseLock = async (label: string) => {
+      for (let attempt = 0; attempt < 200; attempt++) {
+        const row = (
+          await pool.query(
+            "select count(*)::int n from pg_stat_activity where application_name=$1 and wait_event_type='Lock'",
+            [label],
+          )
+        ).rows[0];
+        if (row.n === 1) return;
+        await new Promise((resolve) => setTimeout(resolve, 25));
+      }
+      throw new Error("Expected real PostgreSQL lock wait: " + label);
+    };
+    const partialId = randomUUID(),
+      balanceId = randomUUID();
+    const paymentData = (amount: string, reference: string) =>
+      JSON.stringify({
+        amount,
+        payment_date: "2026-10-02",
+        method: "TRANSFERENCIA",
+        reference,
+        notes: "QA payment, no transfer",
+      });
+    const lockedWriter = await pool.connect();
+    try {
+      await lockedWriter.query("begin");
+      await lockedWriter.query(
+        "select set_config('request.jwt.claim.sub',$1,true)",
+        [owner],
+      );
+      await lockedWriter.query("set local role authenticated");
+      await lockedWriter.query("select record_payment($1,$2,$3,1,$4)", [
+        company,
+        partialId,
+        paymentInvoice,
+        paymentData("30.06", "QA-PARTIAL"),
+      ]);
+      const label = "invoice-pdf-stale-" + randomUUID();
+      const stale = actor(async (c) => {
+        await c.query("select set_config('application_name',$1,true)", [label]);
+        return c.query(
+          "select prepare_commercial_document($1,'invoice',$2,1)",
+          [company, paymentInvoice],
+        );
+      });
+      const rejected = assert.rejects(stale, /record_conflict/);
+      await waitForDatabaseLock(label);
+      await lockedWriter.query("commit");
+      await rejected;
+    } finally {
+      await lockedWriter.query("rollback");
+      lockedWriter.release();
+    }
+    const lockedReader = await pool.connect();
+    let partialDocument: {
+      id: string;
+      snapshot: {
+        record: {
+          payments: Array<{ id: string; amount: number }>;
+          paid_amount: number;
+          balance_due: number;
+        };
+      };
+    };
+    try {
+      await lockedReader.query("begin");
+      await lockedReader.query(
+        "select set_config('request.jwt.claim.sub',$1,true)",
+        [owner],
+      );
+      await lockedReader.query("set local role authenticated");
+      partialDocument = (
+        await lockedReader.query(
+          "select to_jsonb(prepare_commercial_document($1,'invoice',$2,2)) data",
+          [company, paymentInvoice],
+        )
+      ).rows[0].data;
+      assert.equal(partialDocument.snapshot.record.paid_amount, 30.06);
+      assert.equal(partialDocument.snapshot.record.balance_due, 70.04);
+      assert.deepEqual(
+        partialDocument.snapshot.record.payments.map((p) => [p.id, p.amount]),
+        [[partialId, 30.06]],
+      );
+      const label = "invoice-payment-wait-" + randomUUID();
+      const next = actor(async (c) => {
+        await c.query("select set_config('application_name',$1,true)", [label]);
+        return c.query("select record_payment($1,$2,$3,2,$4)", [
+          company,
+          balanceId,
+          paymentInvoice,
+          paymentData("70.04", "QA-BALANCE"),
+        ]);
+      });
+      const completed = next.then((x) => x);
+      await waitForDatabaseLock(label);
+      await lockedReader.query("commit");
+      await completed;
+    } finally {
+      await lockedReader.query("rollback");
+      lockedReader.release();
+    }
+    const partialHash = await documentHash(partialDocument!.id),
+      beforePdf = await financeHash();
+    const fullDocument = await actor(
+      async (c) =>
+        (
+          await c.query(
+            "select to_jsonb(prepare_commercial_document($1,'invoice',$2,3)) data",
+            [company, paymentInvoice],
+          )
+        ).rows[0].data,
+    );
+    assert.equal(fullDocument.snapshot.record.payments.length, 2);
+    assert.equal(fullDocument.snapshot.record.paid_amount, 100.1);
+    assert.equal(fullDocument.snapshot.record.balance_due, 0);
+    assert.deepEqual(await financeHash(), beforePdf);
+    const fullHash = await documentHash(fullDocument.id);
+    await actor((c) =>
+      c.query("select void_payment($1,$2,1,'QA reverse')", [
+        company,
+        partialId,
+      ]),
+    );
+    const reversed = await actor(
+      async (c) =>
+        (
+          await c.query(
+            "select to_jsonb(prepare_commercial_document($1,'invoice',$2,4)) data",
+            [company, paymentInvoice],
+          )
+        ).rows[0].data,
+    );
+    assert.deepEqual(
+      reversed.snapshot.record.payments.map((p: { id: string }) => p.id),
+      [balanceId],
+    );
+    assert.equal(reversed.snapshot.record.paid_amount, 70.04);
+    assert.equal(await documentHash(paymentDocs[0].id), originalHash);
+    assert.equal(await documentHash(partialDocument!.id), partialHash);
+    assert.equal(await documentHash(fullDocument.id), fullHash);
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from payments where company_id=$1 and invoice_id=$2",
+          [company, paymentInvoice],
+        )
+      ).rows[0].n,
+      2,
+    );
+    console.log(
+      "PASS invoice payment/PDF locking: eight prepares yield one document; writer-first stale reader blocked/rejected; reader-first payment blocked until capture; applied totals and reversals preserve original documents; no duplicate payment",
+    );
     console.log(
       "PASS eight concurrent PDF prepares/finalizes: one immutable document, two audit events, unchanged finance, stale generation rejected; concurrent tax choices: one captured revision, one stale writer rejected, original PDF unchanged; concurrent captured discounts: one revision, one stale writer, capped amount, original snapshots and PDF unchanged, no financial side effects",
     );

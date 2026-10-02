@@ -5,7 +5,7 @@ import path from "node:path";
 import type { StoredCommercialDocument } from "./commercial-documents";
 import { estimateStatuses } from "./estimates";
 import { priceBases } from "./commercial";
-import { usd } from "./finance";
+import { usd, paymentMethods } from "./finance";
 import { paymentStageLabels } from "./payment-terms";
 // Vendor font is pinned, licensed and included in the release; never fetch customer content.
 export async function renderCommercialPdf(
@@ -166,6 +166,35 @@ export async function renderCommercialPdf(
     text(
       `Pagado al generar: ${usd(r.paid_amount)} · Saldo al generar: ${usd(r.balance_due)}`,
     );
+  if (doc.kind === "invoice" && r.payments !== undefined) {
+    rule();
+    const paymentLabel = (p: (typeof r.payments)[number]) =>
+      `${p.payment_date} · ${paymentMethods[p.method as keyof typeof paymentMethods] ?? p.method} · ${usd(p.amount)}`;
+    heading(
+      "Pagos y depósitos aplicados",
+      r.payments[0]
+        ? paymentLabel(r.payments[0])
+        : "Sin pagos aplicados al generar.",
+    );
+    if (!r.payments.length) text("Sin pagos aplicados al generar.");
+    for (const p of r.payments) {
+      heading(
+        paymentLabel(p),
+        p.reference
+          ? `Referencia: ${p.reference}`
+          : p.notes || `Registro: ${p.id} · Versión ${p.version}`,
+        10,
+      );
+      if (p.reference) text(`Referencia: ${p.reference}`);
+      if (p.notes) text(`Notas del pago: ${p.notes}`);
+      text(`Registro: ${p.id} · Versión ${p.version}`, 8);
+    }
+    text(`Total de pagos aplicados al generar: ${usd(r.paid_amount ?? "0")}`);
+    text(
+      "Un reverso posterior no reemplaza este documento; consulta la revisión actual de la factura.",
+      9,
+    );
+  }
   if (r.commercial_terms) {
     rule();
     const terms = r.commercial_terms;
