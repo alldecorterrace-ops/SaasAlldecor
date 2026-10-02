@@ -288,14 +288,14 @@ export async function ExpenseRegister({
           <p className="panel p-4 text-sm">
             Costos filtrados de Workforce declarados de bolsillo propio:{" "}
             {usd(result.workforce_unconfirmed)}. El reembolso no tiene
-            confirmación en este sistema; este importe no acredita una deuda
-            conciliada ni un pago.
+            constancia registrada. Consulta los recibos y la revisión vigente en
+            Reembolsos de trabajadores antes de registrar un pago ya realizado.
           </p>
         )}
       <p className="text-sm text-muted-foreground">
         Los costos de Workforce requieren ambas aprobaciones y se gestionan en
-        su origen. No se crea una segunda ficha. Labor automática y confirmación
-        de reembolsos siguen pendientes.
+        su origen. No se crea una segunda ficha. Las constancias de reembolso se
+        gestionan en Horas; Labor automática sigue pendiente.
       </p>
       <div className="space-y-3">
         {result.rows.length === 0 ? (

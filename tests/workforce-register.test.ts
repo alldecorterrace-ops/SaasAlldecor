@@ -196,7 +196,7 @@ test("Unified expense register preserves source, costs, archive, scopes and read
         assert.equal(result.count, 3);
         assert.equal(result.total, "44.68");
         assert.equal(result.active, "44.68");
-        assert.equal(result.reimbursements, "20.00");
+        assert.equal(result.reimbursements, "32.34");
         assert.equal(result.workforce_unconfirmed, "12.34");
         assert.deepEqual(
           result.rows
@@ -224,7 +224,7 @@ test("Unified expense register preserves source, costs, archive, scopes and read
         const csv = expenseCsv(await read({}, a, true));
         assert(csv.includes('"Origen"'));
         assert(csv.includes("Trabajador · Workforce"));
-        assert(csv.includes("SIN_CONFIRMACION"));
+        assert(csv.includes("PENDIENTE"));
         await assert.rejects(
           read({ source: "labor" }),
           /invalid_expense_filters/,
