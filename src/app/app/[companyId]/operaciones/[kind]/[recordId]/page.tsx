@@ -7,6 +7,8 @@ import { uuid } from "@/lib/validation";
 import { todayInTimezone } from "@/lib/commercial";
 import { workspaceKind, workspaces } from "@/lib/workspaces";
 import { WorkForm, WorkActionForm } from "@/components/work-form";
+import { InstallationCrewSelect } from "@/components/installation-crew-select";
+import { installationCrewIds } from "@/lib/installation-crew";
 import { EntitySelect } from "@/components/entity-select";
 import { Input } from "@/components/ui/input";
 import { PrintButton } from "@/components/print-button";
@@ -86,6 +88,11 @@ export default async function WorkspaceDetail({
     relation("projects", r.project_id),
     relation("workers", r.worker_id),
   ]);
+  const crewIds =
+    k === "installations" ? installationCrewIds(r.data.crew_worker_ids) : [];
+  const crew = (
+    await Promise.all(crewIds.map((id) => relation("workers", id)))
+  ).filter((w) => w !== null);
   const filePage = Math.max(
       1,
       Math.min(100000, parseInt(search.files ?? "1") || 1),
@@ -207,6 +214,13 @@ export default async function WorkspaceDetail({
             name="worker_id"
             label="Responsable"
             initial={worker}
+            canSearch={canAccess(member, "trabajadores") && !readOnly}
+          />
+        )}
+        {k === "installations" && (
+          <InstallationCrewSelect
+            companyId={companyId}
+            initial={crew}
             canSearch={canAccess(member, "trabajadores") && !readOnly}
           />
         )}

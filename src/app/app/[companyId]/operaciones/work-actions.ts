@@ -6,6 +6,7 @@ import { requireModule } from "@/lib/auth";
 import { uuid } from "@/lib/validation";
 import { financeError } from "@/lib/finance";
 import { workspaceKind, workspaces, workspaceError } from "@/lib/workspaces";
+import { parseInstallationCrew } from "@/lib/installation-crew";
 import { parseWorkIdentity, confirmedWorkResult } from "@/lib/work-requests";
 export type WorkState = { error?: string; success?: string };
 export async function saveWork(
@@ -44,6 +45,14 @@ export async function saveWork(
     (worker_id && !uuid.safeParse(worker_id).success)
   )
     return { error: "Revisa las relaciones." };
+  const crew =
+    k === "installations"
+      ? parseInstallationCrew(form)
+      : { success: true as const, data: undefined };
+  if (!crew.success)
+    return {
+      error: "Selecciona hasta 20 trabajadores distintos para la cuadrilla.",
+    };
   const { data: receipt, error } = await db.rpc("execute_work_action", {
     p_request: request,
     p_operation: "save",
@@ -51,7 +60,18 @@ export async function saveWork(
     p_id: id.data,
     p_version: version,
     p_kind: k,
-    p_data: { name, status, project_id, worker_id, data: parsed.data },
+    p_data: {
+      name,
+      status,
+      project_id,
+      worker_id,
+      data: {
+        ...(parsed.data as object),
+        ...(crew.data === undefined
+          ? {}
+          : { crew_worker_ids: crew.data.sort() }),
+      },
+    },
   });
   if (error) return { error: workspaceError(error) ?? financeError(error) };
   if (!confirmedWorkResult(receipt, k, "save", id.data, id.data))

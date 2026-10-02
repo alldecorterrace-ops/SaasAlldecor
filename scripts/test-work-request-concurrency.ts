@@ -21,6 +21,8 @@ async function main() {
     customer = id(),
     estimate = id(),
     worker = id(),
+    secondWorker = id(),
+    sharedWorker = id(),
     stock = id();
   const actor = async <T>(
     user: string,
@@ -126,21 +128,22 @@ async function main() {
           [company, estimate],
         )
       ).rows[0].id;
-      await c.query("select save_worker($1,$2,0,$3)", [
-        company,
-        worker,
-        JSON.stringify({
-          name: "Synthetic responsible",
-          email: "",
-          phone: "",
-          job_title: "",
-          team: "",
-          hourly_rate: "0",
-          weekly_target: 40,
-          active: true,
-          notes: "",
-        }),
-      ]);
+      for (const workerId of [worker, secondWorker, sharedWorker])
+        await c.query("select save_worker($1,$2,0,$3)", [
+          company,
+          workerId,
+          JSON.stringify({
+            name: "Synthetic responsible " + workerId,
+            email: "",
+            phone: "",
+            job_title: "",
+            team: "",
+            hourly_rate: "0",
+            weekly_target: 40,
+            active: true,
+            notes: "",
+          }),
+        ]);
       return (
         await c.query("select project_id from invoices where id=$1", [invoice])
       ).rows[0].project_id;
@@ -209,11 +212,15 @@ async function main() {
         ...workspaces.installations.defaults,
         starts_at: "2026-10-05T13:00:00Z",
         ends_at: "2026-10-05T17:00:00Z",
+        crew_worker_ids: [sharedWorker],
       },
     };
     const schedules = await Promise.allSettled([
       execute("save", "installations", id(), 0, schedule),
-      execute("save", "installations", id(), 0, schedule),
+      execute("save", "installations", id(), 0, {
+        ...schedule,
+        worker_id: secondWorker,
+      }),
     ]);
     assert.equal(schedules.filter((x) => x.status === "fulfilled").length, 1);
     const conflict = schedules.find((x) => x.status === "rejected");
@@ -346,6 +353,7 @@ async function main() {
           stale_movements: 2,
           stale_effects: 1,
           overlapping_schedules: 2,
+          distinct_responsibles_shared_crew: true,
           schedule_effects: 1,
           attachment_attempts: 8,
           attachment_effects: 1,

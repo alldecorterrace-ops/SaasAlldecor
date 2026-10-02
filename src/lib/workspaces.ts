@@ -122,7 +122,7 @@ export const workspaces: Record<WorkKind, Workspace> = {
     title: "Instalaciones",
     singular: "instalación",
     description:
-      "Agenda por proyecto y responsable. Se rechazan horarios superpuestos del mismo responsable.",
+      "Agenda por proyecto, responsable y cuadrilla. Se rechazan horarios superpuestos de cualquier trabajador asignado.",
     project: true,
     worker: true,
     statuses: {
@@ -143,7 +143,7 @@ export const workspaces: Record<WorkKind, Workspace> = {
       { name: "address", label: "Dirección", maxLength: 500 },
       {
         name: "crew",
-        label: "Equipo / colaboradores",
+        label: "Notas del equipo / colaboradores",
         type: "textarea",
         maxLength: 2000,
       },
@@ -284,7 +284,12 @@ export function workspaceKind(value: string): WorkKind | null {
 }
 export function workspaceError(error: { code?: string; message: string }) {
   const messages: Record<string, string> = {
-    schedule_overlap: "El responsable ya tiene una instalación en ese horario.",
+    schedule_overlap:
+      "Un trabajador asignado ya tiene una instalación en ese horario.",
+    invalid_crew:
+      "Selecciona hasta 20 trabajadores distintos para la cuadrilla.",
+    crew_worker_unavailable:
+      "Revisa los permisos y los trabajadores activos de la cuadrilla.",
     insufficient_stock: "La salida supera la existencia disponible.",
     unit_locked:
       "No puedes cambiar la unidad de un artículo con movimientos registrados, aunque su saldo sea cero.",

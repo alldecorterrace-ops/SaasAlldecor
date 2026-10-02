@@ -200,3 +200,12 @@ Pendientes explícitos: cuadrilla estructurada y sus superposiciones, matriz de
 perfiles y recorridos restantes, contraste completo del backend actual de ADT,
 cartografía/proveedor, plantillas/comunicaciones, proveedor real de recibos y
 comprobación física de Campo. No se declara ninguno de los tres bloques cerrado.
+
+## Cuadrillas estructuradas · 2 de octubre de 2026
+
+Candidata aditiva 066: selección de colaboradores, agenda por cada integrante,
+conservación de revisiones y compatibilidad con formularios anteriores.
+[Reglas, referencia y límites](INSTALACIONES-CUADRILLAS-20261002.md).
+Las pruebas locales añaden nueve casos; el cierre operativo requiere CI,
+publicación en staging y recorridos reales. O07–O09 continúan Implementada,
+los tres bloques siguen abiertos y el conteo estricto permanece 1/65.
