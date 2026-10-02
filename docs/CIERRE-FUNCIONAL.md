@@ -287,3 +287,18 @@ proyectos permanecen intactos. [Evidencia y límites](RECORRIDO-COMERCIAL-202610
 C16/C17 y los tres bloques siguen abiertos por plantilla/recibo completo,
 comunicaciones, contraste actual y perfiles pendientes. Conteo estricto 1/65.
 Se mantiene el trabajo independiente; no se reanuda migración ni traspaso.
+
+
+## Descuento comercial comprobado · 2 de octubre de 2026
+
+Activa `56fcd98`, retorno `2aae1ad`, esquema 067 conservado. CI 36984639612
+completo aprobado: 621 pruebas y carrera real PostgreSQL con un único escritor.
+Vista previa y Server Action capturan el descuento al límite del subtotal
+observado en ADT. Propietario guardó/reabrió tres revisiones ($107.01, $0.00,
+$104.34), consultó originales, verificó móvil emulado y rechazo entre empresas.
+15 estimados, 35 revisiones y todos los registros financieros anteriores
+preservados. [Evidencia y límites](DESCUENTO-ESTIMADOS-20261002.md).
+
+C11 sigue Implementada; contraste completo y perfiles pendientes. Los tres
+bloques permanecen abiertos y el conteo estricto sigue 1/65. El ensayo de total
+cero cubre borradores y no acredita aprobación de una factura de total cero.

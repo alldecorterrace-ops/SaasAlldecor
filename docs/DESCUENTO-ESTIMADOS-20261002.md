@@ -41,8 +41,34 @@ proyecto o pago por esa operación.
 Lint, tipos, 621 pruebas y compilación local aprobados. CI incluye una carrera
 real entre descuento total limitado y descuento parcial: exige un único escritor,
 una revisión, snapshots/PDF anteriores intactos y ningún efecto financiero.
-CI exacto, publicación y sesión de staging pendientes en esta nota. Staging activa 2aae1ad, esquema 067;
-no se necesita una migración adicional para esta corrección.
+CI [36984639612](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/36984639612)
+aprobado en sus tres jobs, con 621 pruebas, compilación y carrera real PostgreSQL.
+Commit exacto `56fcd98963c1d5f54ce768623b23702903676c5d` publicado y activo en staging;
+esquema 067 conservado, sin migración nueva. Retorno `2aae1ad` y dependencias
+c66e4ec/b149bee conservados. Raíz/proceso y cuatro rutas públicas comprobados;
+producción mantiene disponibilidad y su configuración anterior.
+
+## Recorrido autenticado en staging
+
+Propietario de empresa sintética guardó y reabrió tres revisiones de una partida
+fija de $100.01. Los importes se contrastaron con consulta de solo lectura:
+
+| Revisión | Descuento solicitado | Descuento conservado | Impuesto 7% | Total |
+| --- | ---: | ---: | ---: | ---: |
+| 1 | $0.00 | $0.00 | $7.00 | $107.01 |
+| 2 | $100.02 | $100.01 | $0.00 | $0.00 |
+| 3 | $2.50 | $2.50 | $6.83 | $104.34 |
+
+Las revisiones 1 y 2 siguieron consultables después de guardar la tercera.
+En móvil emulado de 390 px, el aviso del límite fue visible sin desbordamiento
+horizontal; esa edición de prueba no se guardó. El mismo identificador bajo
+otra empresa devolvió Página no disponible, sin mostrar el documento.
+
+Las huellas de los 15 estimados y 35 revisiones anteriores siguen presentes.
+Gastos, pagos, facturas, proyectos, documentos comerciales y 22 solicitudes
+Workforce conservan sus huellas/conteos previos. Guardar estos borradores no
+creó factura, proyecto ni pago. Los datos y pantallas sintéticos de esta prueba
+permanecen privados fuera de GitHub.
 
 ## Cierre pendiente
 

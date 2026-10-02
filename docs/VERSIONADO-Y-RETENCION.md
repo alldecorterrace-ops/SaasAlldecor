@@ -158,3 +158,19 @@ ab2307f deja de ser retorno y se suma al inventario de sobrantes, fuera de esa
 petición. No retirar dependencias ni aaf268c. Las versiones adicionales no
 sustituyen GitHub y no se consideran necesarias por ser anteriores; su retirada
 exige comprobar contenido único, enlaces y procesos y obtener la confirmación.
+
+
+## Estado del descuento comercial · 2 de octubre de 2026
+
+Staging activa `56fcd98963c1d5f54ce768623b23702903676c5d`, retorno
+`2aae1ad2122bb856bb52ae5562d225e3e2805a60`, esquema 067 conservado.
+CI exacto aprobado, compilación del candidato, proceso activo y recorrido
+sintético autenticado comprobados. Dependencias c66e4ec/b149bee y entorno
+privado idénticos; producción conserva disponibilidad y configuración.
+Retorno comprobado antes del cambio, sin vuelta real posterior.
+
+Sin borrados; los 52 elementos consultados siguen pendientes de confirmación.
+bfb8e3a deja de ser retorno y se suma al inventario de sobrantes, fuera de esa
+petición. Se preservan dependencias y aaf268c. El historial oficial permanece
+en GitHub; retirar una carpeta adicional requiere verificar contenido único,
+enlaces, procesos y obtener la confirmación aplicable.
