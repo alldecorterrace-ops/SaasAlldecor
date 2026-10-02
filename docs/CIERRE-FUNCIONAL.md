@@ -125,14 +125,14 @@ Tres bloques abiertos, conteo provisional 1/65 obligaciones agrupadas comprobada
 
 ### Correspondencias de Labor y referencia de Inventario
 
-La corrección de etiqueta del registro de costos está publicada en staging desde
+La corrección de etiqueta del registro de costos se publicó previamente desde
 07b9e96, con esquema 063, las tres tareas CI aprobadas y las cuatro comprobaciones
 públicas 200. El proceso usa esa raíz exacta; d28b19f conserva retorno compatible.
 La interfaz presenta «Labor calculada» y los dos costos sintéticos suman $350.
 La configuración y la salud pública de producción se conservaron.
 
-El esquema 064 y la pantalla de correspondencias de Labor están en validación:
-[reglas y límites](LABOR-POR-JORNADA-20261001.md). Todavía no se declaran publicados.
+El esquema 064 y la pantalla de correspondencias de Labor se publicaron en staging:
+[reglas, evidencia y límites](LABOR-POR-JORNADA-20261001.md). La entrega actual se identifica abajo.
 
 Inventario de ADT se renovó desde su sesión autenticada: el componente inline
 `Inventario()` consultado tiene SHA-256
@@ -154,3 +154,19 @@ Permisos sí consulta `/permits` y abre un borrador con proyecto, tipo, autorida
 estado, número, tasa y fechas de envío/aprobación/vencimiento. Se abrió y canceló
 el formulario, sin guardar ni quitar registros del origen. El módulo y la
 referencia publicada se conservan para el contraste del backend y sus permisos.
+
+
+### Correspondencias históricas de Labor comprobadas en staging
+
+Activa `1e2735a95bb9b66fd8cf889580cb31189f4d5bce`, retorno `07b9e96`, esquema 064.
+CI 36959034936 aprobado con 576 pruebas, compilación y concurrencia nativa.
+81 tablas y 867 filas anteriores conservaron sus huellas al aplicar el esquema.
+Sesión real del propietario: rechazo de diferencia de un centavo, guardado y
+reapertura de correspondencia, actor/fecha/motivo persistidos y costo original
+conservado. Proyecto y Gastos muestran tres costos por $350, con CSV privado
+coincidente. Móvil emulado y empresa restringida comprobados. No se crearon pagos.
+[Evidencia y límites](LABOR-POR-JORNADA-20261001.md).
+
+T21/T22 siguen abiertas por perfiles y recorridos restantes. La evidencia de UI
+no sustituye la comprobación física de Campo ni el proveedor real de IA de recibos.
+El conteo de obligaciones cerradas sigue 1/65; los tres bloques permanecen abiertos.

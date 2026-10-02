@@ -82,8 +82,8 @@ las filas Comprobada; el denominador se declara provisional hasta completar inve
 | T18 | Reembolso: constancia de pago, versión e idempotencia   | Implementada     | Constancia individual, reapertura y móvil comprobados; CI nativo 8 reintentos/un efecto y tres carreras/un efecto. Lote y perfiles separados en UI pendientes. [Contrato](REEMBOLSOS-WORKFORCE-20261001.md).                                                  |
 | T19 | Gasto: coordinación de archivo/restauración con deuda   | Implementada     | Archivo/restauración reales en staging conservaron una constancia y deuda $0; costo activo $100→$0→$100. Huellas de Pagos/Gastos iguales; consumidores restantes pendientes. [Pruebas y límites](REEMBOLSOS-WORKFORCE-20261001.md).                           |
 | T20 | Labor: costo por jornada/proyecto y tarifas vigentes    | Implementada     | f84c5de / 062 activa; 563 pruebas y CI nativo. Propietario guardó tarifa, proyecto, asignación y jornada; reapertura $250, móvil y empresa restringida comprobados. Matriz completa y consumidores en preparación. [Contrato](LABOR-POR-JORNADA-20261001.md). |
-| T21 | Labor: incidencias y nómina sin doble contabilización   | Implementada     | 062 conserva correspondencia de nómina y bloquea fuentes cambiadas; CI nativo y jornada sintética comprobados sin cambios en Pagos/Gastos. UI de correspondencias y consumidores completos pendientes. [Contrato](LABOR-POR-JORNADA-20261001.md).             |
-| T22 | Costos: registro unificado, expediente y exportación    | Implementada     | d28b19f / 063 activa, 569 pruebas y CI nativo. Proyecto/expediente/Gastos $350 y CSV de dos filas comprobados; móvil y empresa restringida comprobados. Matriz completa y correspondencias en UI pendientes. [Contrato](LABOR-POR-JORNADA-20261001.md).       |
+| T21 | Labor: incidencias y nómina sin doble contabilización   | Implementada     | 062 conserva correspondencia de nómina y bloquea fuentes cambiadas; CI nativo y jornada sintética comprobados sin cambios en Pagos/Gastos. 064 añade UI de correspondencias: rechazo de un centavo, guardado/reapertura, actor/fecha y original preservado comprobados. Perfiles, corrección y consumidores completos pendientes. [Contrato](LABOR-POR-JORNADA-20261001.md).             |
+| T22 | Costos: registro unificado, expediente y exportación    | Implementada     | 1e2735a / 064 activa, 576 pruebas y CI nativo. Proyecto/Gastos $350 y CSV de tres filas tras correspondencia comprobados; móvil y empresa restringida comprobados. Matriz completa y corrección por UI pendientes. [Contrato](LABOR-POR-JORNADA-20261001.md).       |
 | T23 | Autorización: equipo, revocación y dos empresas         | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes.                                                                                                                                                                  |
 
 ## Operaciones
@@ -190,3 +190,17 @@ nativas. Propietario comprobó los mismos $350 en Gastos, proyecto y expediente;
 CSV privado descargado con $250 calculados y $100 de Workforce, sin pago de Labor.
 Móvil y empresa restringida comprobados. T22 implementada, aún abierta por
 matriz completa y UI de correspondencias. Conteo de cierre permanece **1 / 65**.
+
+
+## Correspondencias de Labor 064 publicadas
+
+`1e2735a` activa, retorno `07b9e96`, CI 36959034936 completo aprobado.
+576 pruebas y carreras nativas: ocho reintentos con un efecto, dos ediciones
+simultáneas con un efecto y ocho lecturas sin mutación. Original/pagos preservados.
+El propietario comprobó rechazo de un centavo, correspondencia guardada/reabierta,
+$100.01 histórico + $149.99 de suplemento y $100 de Workforce: total $350.
+CSV privado de tres filas, móvil emulado y denegación en la empresa restringida.
+[Evidencia y pendientes](LABOR-POR-JORNADA-20261001.md).
+
+T21/T22 continúan abiertas por la matriz de perfiles y correcciones por UI.
+El conteo sigue **1/65**. No hay traslado de negocio ni traspaso operativo.

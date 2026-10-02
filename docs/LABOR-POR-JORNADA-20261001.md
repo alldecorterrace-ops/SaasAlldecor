@@ -144,7 +144,7 @@ parcial. El CSV conserva las incidencias con importe vacío, sin inventar cero.
 Los reembolsos conservan sus constancias originales; el costo de Labor calculado
 no crea deuda de bolsillo propio ni acredita pago.
 
-## Correspondencias de costos anteriores — esquema 064 en preparación
+## Correspondencias de costos anteriores — esquema 064 publicada
 
 La pantalla de Labor permite relacionar un gasto anterior con trabajador, día e
 importe en centavos. No rellena la fecha trabajada desde la fecha contable ni
@@ -164,8 +164,37 @@ que no capturaron esa fecha se conservan y requieren confirmación: la migració
 no inventa la fecha ni reescribe su contenido. La versión anterior de la aplicación
 sigue pudiendo consultar y guardar vínculos usando el esquema aditivo.
 
-Las 22 pruebas dirigidas y las 576 pruebas del conjunto pasan, junto con lint,
-tipos y compilación local. Cubren exactitud de centavos, formularios sin
-atribuciones inventadas, revisiones, duplicados, aislamiento y cambio de fecha.
-El ensayo nativo incorpora ocho reintentos y dos modificaciones simultáneas.
-Faltan su resultado CI, publicación y sesión real; no se anticipa cierre.
+Entrega `1e2735a95bb9b66fd8cf889580cb31189f4d5bce`, retorno `07b9e96`.
+CI 36959034936 completo aprobado: lint, tipos, 576 pruebas y compilación.
+Las 22 pruebas dirigidas cubren centavos, revisiones, duplicados, aislamiento y
+cambio de fecha. PostgreSQL nativo comprobó ocho reintentos con un efecto,
+dos ediciones simultáneas con un efecto, ocho lecturas sin mutación y rechazo
+del usuario revocado. El origen y los pagos conservaron sus huellas.
+
+Esquema 064 aplicado en staging conservando las huellas de 81 tablas y 867 filas
+anteriores. Fuente SHA-256
+`1a1f22dab802280f84a7a6ee0eca964b9c617f268f50657ad9896f0b248a2670`.
+Cuatro rutas públicas respondieron 200, proceso activo comprobado, configuración
+y salud de producción conservadas. Los diagnósticos y documentos privados quedan
+fuera de GitHub.
+
+Un propietario creó un gasto administrativo sintético de $100.01 antes de la
+prueba de correspondencia; esa alta es explícita y no se presenta como ausencia
+de escrituras. Sin atribución, Labor mostró la incidencia y retuvo el suplemento.
+El formulario rechazó $100.00 y conservó los datos escritos. Guardar $100.01 para
+el trabajador y día correctos dejó $100.01 históricos y $149.99 de suplemento,
+con $250 de Labor conciliada. Actor, motivo, fecha y revisión quedaron guardados.
+No creó pagos ni constancias de nómina; las huellas globales de pagos y gastos
+administrativos permanecieron iguales durante la correspondencia.
+
+Gastos y proyecto mostraron tres costos por $350: el gasto original $100.01,
+suplemento calculado $149.99 y Workforce aprobado $100. CSV privado descargado
+con esas tres filas y estado COSTO_CALCULADO. Reabrir en móvil emulado 390 px
+conservó día/importe y ancho útil/documento de 375 px, sin desbordamiento.
+La empresa sin permisos de Labor recibió Página no disponible.
+
+Quedan pendientes la matriz completa de perfiles, varios trabajadores por
+correspondencia en UI, corrección del origen y reconfirmación por interfaz,
+y la comparación del controlador actual de ADT. La invalidación por cambio de
+fecha sí está probada en SQL aislado, no se atribuye a un recorrido de UI completo.
+Esta entrega no cierra T21/T22 ni los tres bloques.
