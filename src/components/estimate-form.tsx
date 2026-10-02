@@ -12,7 +12,7 @@ import {
   emptyItem,
   estimateStatuses,
   estimateTotals,
-  estimateTaxes,
+  captureEstimateInput,
   moveEstimateItem,
   duplicateEstimateItem,
   lineCents,
@@ -68,10 +68,10 @@ export function EstimateForm({
       items: old.items.map((x, n) => (n === i ? { ...x, ...patch } : x)),
     }));
   let totals: { subtotal: string; total: string } | null = null;
-  let calculatedTaxes: string | null = null;
+  let captured: EstimateInput | null = null;
   try {
-    totals = estimateTotals(v);
-    calculatedTaxes = estimateTaxes(v);
+    captured = captureEstimateInput(v);
+    totals = estimateTotals(captured);
   } catch {}
   const lookup = (kind: "customers" | "products") =>
     startTransition(async () => {
@@ -110,7 +110,7 @@ export function EstimateForm({
       <input
         type="hidden"
         name="payload"
-        value={JSON.stringify({ ...v, taxes: calculatedTaxes ?? v.taxes })}
+        value={JSON.stringify(captured ?? v)}
       />
       <Feedback
         error={state.error}
@@ -474,7 +474,7 @@ export function EstimateForm({
                     e.target.value === "manual"
                       ? null
                       : (e.target.value as "0" | "7"),
-                  taxes: calculatedTaxes ?? v.taxes,
+                  taxes: captured?.taxes ?? v.taxes,
                 })
               }
             >
@@ -493,11 +493,17 @@ export function EstimateForm({
                 inputMode="decimal"
                 required
                 pattern="[0-9]{1,9}([.][0-9]{1,2})?"
-                value={key === "taxes" ? (calculatedTaxes ?? v.taxes) : v[key]}
+                value={key === "taxes" ? (captured?.taxes ?? v.taxes) : v[key]}
                 onChange={(e) => set({ ...v, [key]: e.target.value })}
               />
             </label>
           ))}
+          {captured && Number(v.discount) > Number(captured.discount) && (
+            <p role="status" className="text-sm text-muted-foreground">
+              El descuento aplicado se limita al subtotal: ${captured.discount}.
+              Se conservará ese importe al guardar esta revisión.
+            </p>
+          )}
           <div className="border-t border-border pt-4 flex justify-between text-xl font-semibold">
             <span>Total</span>
             <span>${totals?.total ?? "—"}</span>

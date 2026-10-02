@@ -93,8 +93,9 @@ de propietario no sustituye ventas, administrador, usuario restringido, móvil,
 dispositivos físicos ni comunicaciones e integraciones externas.
 
 Se conserva toda diferencia: falta el recibo independiente del pago y contraste
-completo de plantillas. ADT limita el descuento al subtotal en el editor; el SaaS
-rechaza un exceso. ADT añade procedencia de lead a las notas; el SaaS conserva el
+completo de plantillas. ADT limita el descuento al subtotal en el editor;
+la corrección de captura del SaaS está validada localmente, publicación pendiente.
+[Regla y evidencia](DESCUENTO-ESTIMADOS-20261002.md). ADT añade procedencia de lead a las notas; el SaaS conserva el
 mensaje original y la relación; falta completar la visualización de procedencia.
 El proyecto sintético queda en Producción después de la anulación; es necesario
 contrastar la regla operativa del backend antes de cambiar ese estado por inferencia.

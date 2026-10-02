@@ -4,7 +4,12 @@ import { revalidatePath } from "next/cache";
 import { requireModule } from "@/lib/auth";
 import { isRecordConflict } from "@/lib/database-errors";
 import { uuid } from "@/lib/validation";
-import { estimateSchema, estimateTotals } from "@/lib/estimates";
+import {
+  estimateSchema,
+  estimateTotals,
+  captureEstimateInput,
+  type EstimateInput,
+} from "@/lib/estimates";
 import type { CommercialState } from "../leads/actions";
 export async function saveEstimate(
   companyId: string,
@@ -31,19 +36,21 @@ export async function saveEstimate(
     };
   if (!id.success || !Number.isSafeInteger(version) || version < 0)
     return { error: "Vuelve a abrir el estimado." };
+  let captured: EstimateInput;
   try {
-    estimateTotals(parsed.data);
+    captured = captureEstimateInput(parsed.data);
+    estimateTotals(captured);
   } catch {
     return {
       error:
-        "Revisa los importes: el descuento no puede superar el subtotal y los precios admiten dos decimales.",
+        "Revisa los importes y las cantidades. Los precios admiten dos decimales.",
     };
   }
   const { error } = await db.rpc("save_estimate", {
     p_company: companyId,
     p_id: id.data,
     p_version: version,
-    p_data: parsed.data,
+    p_data: captured,
   });
   if (error)
     return {

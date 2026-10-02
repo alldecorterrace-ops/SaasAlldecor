@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { Pool, type PoolClient } from "pg";
-import { emptyItem } from "../src/lib/estimates";
+import {
+  emptyItem,
+  captureEstimateInput,
+  estimateSchema,
+} from "../src/lib/estimates";
 async function main() {
   const url = new URL(process.env.QUEUE_TEST_DATABASE_URL ?? "");
   if (
@@ -201,8 +205,86 @@ async function main() {
       ).rows[0],
       documentBefore,
     );
+    const originalRevisions = (
+      await pool.query(
+        "select version,md5(snapshot::text) hash from estimate_revisions where estimate_id=$1 order by version",
+        [record],
+      )
+    ).rows;
+    const discountRace = await Promise.allSettled(
+      ["100.26", "2.50"].map((discount) =>
+        actor((c) =>
+          c.query("select save_estimate($1,$2,3,$3)", [
+            company,
+            record,
+            JSON.stringify(
+              captureEstimateInput(
+                estimateSchema.parse({ ...input, discount, tax_pct: "7" }),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
+    assert.equal(
+      discountRace.filter((x) => x.status === "fulfilled").length,
+      1,
+    );
+    assert.equal(discountRace.filter((x) => x.status === "rejected").length, 1);
+    const discountRow = (
+      await pool.query(
+        "select version,discount,taxes,total from estimates where id=$1",
+        [record],
+      )
+    ).rows[0];
+    assert.equal(discountRow.version, 4);
+    assert.ok(["100.25", "2.50"].includes(discountRow.discount));
+    assert.equal(
+      discountRow.taxes,
+      discountRow.discount === "100.25" ? "0.00" : "6.84",
+    );
+    assert.equal(
+      discountRow.total,
+      discountRow.discount === "100.25" ? "0.00" : "104.59",
+    );
+    assert.deepEqual(
+      (
+        await pool.query(
+          "select version,md5(snapshot::text) hash from estimate_revisions where estimate_id=$1 and version<4 order by version",
+          [record],
+        )
+      ).rows,
+      originalRevisions,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "select count(*)::int n from estimate_revisions where estimate_id=$1",
+          [record],
+        )
+      ).rows[0].n,
+      4,
+    );
+    assert.deepEqual(
+      (
+        await pool.query(
+          "select to_jsonb(d) data from commercial_documents d where id=$1",
+          [id],
+        )
+      ).rows[0],
+      documentBefore,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "select ((select count(*) from invoices where company_id=$1)+(select count(*) from payments where company_id=$1)+(select count(*) from projects where company_id=$1))::int n",
+          [company],
+        )
+      ).rows[0].n,
+      0,
+    );
     console.log(
-      "PASS eight concurrent PDF prepares/finalizes: one immutable document, two audit events, unchanged finance, stale generation rejected; concurrent tax choices: one captured revision, one stale writer rejected, original PDF unchanged",
+      "PASS eight concurrent PDF prepares/finalizes: one immutable document, two audit events, unchanged finance, stale generation rejected; concurrent tax choices: one captured revision, one stale writer rejected, original PDF unchanged; concurrent captured discounts: one revision, one stale writer, capped amount, original snapshots and PDF unchanged, no financial side effects",
     );
   } finally {
     await pool.end();

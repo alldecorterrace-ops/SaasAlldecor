@@ -129,6 +129,17 @@ export function estimateTaxes(v: EstimateAmounts): string {
   if (discount > subtotal) throw new Error("El descuento supera el subtotal.");
   return centsText(((subtotal - discount) * BigInt(v.tax_pct) + 50n) / 100n);
 }
+// ADT's editor sends min(requested discount, rounded line subtotal).
+// Capture only the new input; existing revisions are never rewritten.
+export function captureEstimateInput(v: EstimateInput): EstimateInput {
+  const subtotal = v.items.reduce((sum, item) => sum + lineCents(item), 0n),
+    requested = scaled(v.discount, 2);
+  const captured = {
+    ...v,
+    discount: centsText(requested > subtotal ? subtotal : requested),
+  };
+  return { ...captured, taxes: estimateTaxes(captured) };
+}
 export function moveEstimateItem(
   items: EstimateItem[],
   index: number,
