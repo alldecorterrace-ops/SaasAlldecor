@@ -94,6 +94,24 @@ export const emptyItem: EstimateItem = {
   height: "0",
   manual_total: "0.00",
 };
+// ADT's non-configurator estimate editor copies the catalog base price only.
+// Option adjustments and descriptive product dimensions are not applied here.
+export function catalogEstimateItem(p: {
+  id: string;
+  name: string;
+  description: string;
+  base: string;
+  unit_price: string | number;
+}): EstimateItem {
+  return {
+    ...emptyItem,
+    product_id: p.id,
+    name: p.name,
+    description: p.description,
+    base: p.base as EstimateItem["base"],
+    unit_price: String(p.unit_price),
+  };
+}
 export function scaled(s: string, digits: number): bigint {
   if (!/^\d+(\.\d+)?$/.test(s)) throw new Error("Invalid decimal");
   const [a, b = ""] = s.split(".");

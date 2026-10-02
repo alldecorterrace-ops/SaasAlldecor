@@ -1,0 +1,407 @@
+{
+  "markup": 0.75,
+  "markupProducto": 1,
+  "overhead": 3500,
+  "permisoCosto": 3200,
+  "diaTrabajoExtra": 400,
+  "columnasBase": 4,
+  "margenArea": {
+    "techo": 0.75,
+    "estructura": 0.75,
+    "pared": 0.75,
+    "cocina": 1
+  },
+  "markupsOverride": [],
+  "tarifas": {
+    "pergolaBlanco": 45,
+    "pergolaCert": 55,
+    "pergolaComposite": 65,
+    "paredPanel": 25,
+    "paredComposite": 30,
+    "cocinaPorFt": 900,
+    "equiposMargen": 0.2,
+    "permisoFijo": 3200,
+    "permisoUmbralFt2": 620,
+    "permisoPorFt2": 5,
+    "heavyPorPieza": 1000
+  },
+  "capa2": {
+    "demanda": 0.15,
+    "demandaUmbral": 6,
+    "zonaDefault": 0.1,
+    "zonaFueraMiami": 0.3,
+    "zonaFueraFL": 0.5
+  },
+  "catalogo": [
+    {
+      "medida": "6x6",
+      "calibre": "0.125",
+      "color": "Bronce",
+      "proveedor": "Classic Metals",
+      "largo": 24,
+      "precio": 518.77
+    },
+    {
+      "medida": "6x6",
+      "calibre": "0.125",
+      "color": "Bronce",
+      "proveedor": "Classic Metals",
+      "largo": 30,
+      "precio": 648.47
+    },
+    {
+      "medida": "7x7",
+      "calibre": "0.139",
+      "color": "Bronce",
+      "proveedor": "Classic Metals",
+      "largo": 12,
+      "precio": 232.56
+    },
+    {
+      "medida": "8x8",
+      "calibre": "0.148",
+      "color": "Bronce",
+      "proveedor": "Classic Metals",
+      "largo": 24,
+      "precio": 752.85
+    },
+    {
+      "medida": "3x6",
+      "calibre": "0.125",
+      "color": "Bronce",
+      "proveedor": "Classic Metals",
+      "largo": 24,
+      "precio": 357
+    },
+    {
+      "medida": "2x6",
+      "calibre": "0.125",
+      "color": "Bronce",
+      "proveedor": "Classic Metals",
+      "largo": 24,
+      "precio": 328.73
+    },
+    {
+      "medida": "2x5",
+      "calibre": "0.088",
+      "color": "Bronce",
+      "proveedor": "Classic Metals",
+      "largo": 24,
+      "precio": 233.1
+    },
+    {
+      "medida": "4x10",
+      "calibre": "0.187",
+      "color": "Bronce",
+      "proveedor": "Classic Metals",
+      "largo": 24,
+      "precio": 831.19
+    },
+    {
+      "medida": "4x12",
+      "calibre": "0.187",
+      "color": "Bronce",
+      "proveedor": "Classic Metals",
+      "largo": 24,
+      "precio": 962.52
+    },
+    {
+      "medida": "6x8",
+      "calibre": "0.187",
+      "color": "Bronce",
+      "proveedor": "Classic Metals",
+      "largo": 24,
+      "precio": 781.5
+    }
+  ],
+  "componentes": {
+    "techo": [
+      {
+        "nombre": "Panel aislado certificado",
+        "tipo": "material",
+        "proveedor": "Classic Metals",
+        "regla": "por área de techo",
+        "cant": "",
+        "unidad": "$/ft²",
+        "precio": 6.75,
+        "detalle": "premium"
+      },
+      {
+        "nombre": "Panel aislado económico",
+        "tipo": "material",
+        "proveedor": "Classic Metals",
+        "regla": "por área de techo",
+        "cant": "",
+        "unidad": "$/ft²",
+        "precio": 3.62,
+        "detalle": "blanco"
+      },
+      {
+        "nombre": "Luz (foco)",
+        "tipo": "material",
+        "proveedor": "Luces Poliled",
+        "regla": "manual (cliente)",
+        "cant": "",
+        "unidad": "c/u",
+        "precio": 50,
+        "detalle": ""
+      },
+      {
+        "nombre": "Tira LED 8'",
+        "tipo": "material",
+        "proveedor": "Luces Poliled",
+        "regla": "manual (cliente)",
+        "cant": "",
+        "unidad": "c/u",
+        "precio": 69,
+        "detalle": ""
+      },
+      {
+        "nombre": "Ventilador",
+        "tipo": "material",
+        "proveedor": "Luces Poliled",
+        "regla": "manual (cliente)",
+        "cant": "",
+        "unidad": "c/u",
+        "precio": 75,
+        "detalle": ""
+      },
+      {
+        "nombre": "Cable eléctrico 14.2",
+        "tipo": "material",
+        "proveedor": "Home Depot",
+        "regla": "por proyecto",
+        "cant": 1,
+        "unidad": "rollo",
+        "precio": "",
+        "detalle": ""
+      },
+      {
+        "nombre": "Composite",
+        "tipo": "material",
+        "proveedor": "Brazilian Lumber",
+        "regla": "por área de techo",
+        "cant": "",
+        "unidad": "$/ft²",
+        "precio": 3.62,
+        "detalle": ""
+      },
+      {
+        "nombre": "Coking (impermeabilizar)",
+        "tipo": "material",
+        "proveedor": "American Fasteners",
+        "regla": "por proyecto",
+        "cant": 1,
+        "unidad": "caja",
+        "precio": "",
+        "detalle": ""
+      },
+      {
+        "nombre": "Tornillos de panel",
+        "tipo": "material",
+        "proveedor": "American Fasteners",
+        "regla": "por panel",
+        "cant": 8,
+        "unidad": "tornillo",
+        "precio": "",
+        "detalle": "8 por panel"
+      },
+      {
+        "nombre": "Viga 2x4 mill finish",
+        "tipo": "material",
+        "proveedor": "V&C",
+        "regla": "cada 2 ft (lado mayor)",
+        "cant": "",
+        "unidad": "tramo",
+        "precio": 177.97,
+        "detalle": "solo composite · viene 24ft, corte a lado menor"
+      },
+      {
+        "nombre": "Angular 1x1 (composite)",
+        "tipo": "material",
+        "proveedor": "Classic Metals",
+        "regla": "por perímetro ÷ 20",
+        "cant": "",
+        "unidad": "tramo",
+        "precio": "",
+        "detalle": "solo composite · 20ft · color = aluminio"
+      },
+      {
+        "nombre": "Canal (e-gutter)",
+        "tipo": "material",
+        "proveedor": "Classic Metals",
+        "regla": "según diseño",
+        "cant": "",
+        "unidad": "tramo",
+        "precio": "",
+        "detalle": ""
+      },
+      {
+        "nombre": "Fascia",
+        "tipo": "material",
+        "proveedor": "Classic Metals",
+        "regla": "según diseño",
+        "cant": "",
+        "unidad": "tramo",
+        "precio": "",
+        "detalle": "25ft"
+      }
+    ],
+    "estructura": [
+      {
+        "nombre": "Tornillos estructura",
+        "tipo": "material",
+        "proveedor": "American Fasteners",
+        "regla": "por viga/columna",
+        "cant": 15,
+        "unidad": "tornillo",
+        "precio": "",
+        "detalle": "15 por pieza"
+      },
+      {
+        "nombre": "Angular 3x3 1/4\" 20ft",
+        "tipo": "material",
+        "proveedor": "Classic Metals",
+        "regla": "por proyecto",
+        "cant": 1,
+        "unidad": "tramo",
+        "precio": 240,
+        "detalle": ""
+      },
+      {
+        "nombre": "End cap",
+        "tipo": "material",
+        "proveedor": "Classic Metals",
+        "regla": "por viga/columna",
+        "cant": 1,
+        "unidad": "c/u",
+        "precio": "",
+        "detalle": "tapa base · 1 por columna"
+      },
+      {
+        "nombre": "Cemento cimentación",
+        "tipo": "material",
+        "proveedor": "Home Depot",
+        "regla": "por proyecto",
+        "cant": 6,
+        "unidad": "saco",
+        "precio": 5,
+        "detalle": "6 sacos por hueco"
+      }
+    ],
+    "pared": [
+      {
+        "nombre": "U channel",
+        "tipo": "material",
+        "proveedor": "Classic Metals",
+        "regla": "por ft lineal",
+        "cant": "",
+        "unidad": "$/ft",
+        "precio": 3.19,
+        "detalle": ""
+      },
+      {
+        "nombre": "Paneles económicos",
+        "tipo": "material",
+        "proveedor": "Classic Metals",
+        "regla": "por área de pared",
+        "cant": "",
+        "unidad": "$/ft²",
+        "precio": 3.62,
+        "detalle": ""
+      },
+      {
+        "nombre": "Composite",
+        "tipo": "material",
+        "proveedor": "Brazilian Lumber",
+        "regla": "por área de pared",
+        "cant": "",
+        "unidad": "$/ft²",
+        "precio": 3.62,
+        "detalle": ""
+      }
+    ],
+    "cocina": [
+      {
+        "nombre": "Estructura aluminio",
+        "tipo": "material",
+        "proveedor": "Classic Metals",
+        "regla": "por ft lineal",
+        "cant": "",
+        "unidad": "$/ft",
+        "precio": 22.92,
+        "detalle": ""
+      },
+      {
+        "nombre": "Durock",
+        "tipo": "material",
+        "proveedor": "Home Depot",
+        "regla": "por ft lineal",
+        "cant": "",
+        "unidad": "$/ft",
+        "precio": 7.29,
+        "detalle": ""
+      },
+      {
+        "nombre": "Composite",
+        "tipo": "material",
+        "proveedor": "Brazilian Lumber",
+        "regla": "por ft lineal",
+        "cant": "",
+        "unidad": "$/ft",
+        "precio": "",
+        "detalle": ""
+      },
+      {
+        "nombre": "Piedra / encimera",
+        "tipo": "material",
+        "proveedor": "Jegam Stones",
+        "regla": "por área de piedra",
+        "cant": 1,
+        "unidad": "losa",
+        "precio": 1300,
+        "detalle": ""
+      },
+      {
+        "nombre": "Labor de piedra",
+        "tipo": "servicio",
+        "proveedor": "— servicio —",
+        "regla": "por área de piedra",
+        "cant": 1,
+        "unidad": "corte",
+        "precio": 20,
+        "detalle": ""
+      },
+      {
+        "nombre": "Mano de obra",
+        "tipo": "servicio",
+        "proveedor": "— servicio —",
+        "regla": "por proyecto",
+        "cant": 1,
+        "unidad": "lote",
+        "precio": 2000,
+        "detalle": ""
+      },
+      {
+        "nombre": "Equipos (grill, plancha…)",
+        "tipo": "material",
+        "proveedor": "Above Ground (Blaze)",
+        "regla": "manual (cliente)",
+        "cant": "",
+        "unidad": "c/u",
+        "precio": "",
+        "detalle": "el cliente elige"
+      },
+      {
+        "nombre": "Concreto",
+        "tipo": "material",
+        "proveedor": "Home Depot",
+        "regla": "por proyecto",
+        "cant": 1,
+        "unidad": "lote",
+        "precio": "",
+        "detalle": ""
+      }
+    ]
+  }
+}

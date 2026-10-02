@@ -10,6 +10,7 @@ import {
 import type { CommercialState } from "@/app/app/[companyId]/leads/actions";
 import {
   emptyItem,
+  catalogEstimateItem,
   estimateStatuses,
   estimateTotals,
   captureEstimateInput,
@@ -253,17 +254,7 @@ export function EstimateForm({
                   onClick={() =>
                     set({
                       ...v,
-                      items: [
-                        ...v.items,
-                        {
-                          ...emptyItem,
-                          product_id: p.id,
-                          name: p.name,
-                          description: p.description,
-                          base: p.base as EstimateItem["base"],
-                          unit_price: String(p.unit_price),
-                        },
-                      ],
+                      items: [...v.items, catalogEstimateItem(p)],
                     })
                   }
                 >
@@ -272,9 +263,8 @@ export function EstimateForm({
               ))}
             </div>
             <p className="text-xs text-muted-foreground">
-              Se agregan el precio base y la descripción de la ficha. Incluye
-              acabados o ajustes como líneas separadas. Los cambios posteriores
-              del catálogo no cambian este estimado.
+              Se agregan el precio base y la descripción de la ficha. Los
+              cambios posteriores del catálogo no cambian este estimado.
             </p>
           </div>
         )}

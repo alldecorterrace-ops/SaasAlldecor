@@ -44,6 +44,12 @@ jobs:
           php -l tests/reference/product-details-source.php
           npx tsx scripts/test-product-reference.ts
           php scripts/product-reference.php tests/reference/product-details-source.php .local/product-reference-input.json 93c22c2d59d2be0089841121553b3bc2e329e9b5d056459d55861c8938d2ce7f
+      - name: Compare pricing administration with isolated pure ADT functions
+        run: |
+          php -l scripts/pricing-reference.php
+          php -l tests/reference/pricing-source.php
+          npx tsx scripts/test-pricing-reference.ts
+          php scripts/pricing-reference.php tests/reference/pricing-source.php .local/pricing-reference-input.json 5f8948f3ece9360c2db4a984f4d1a770be8ba27561f5b4f3704a26661ec4cfc7
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.x

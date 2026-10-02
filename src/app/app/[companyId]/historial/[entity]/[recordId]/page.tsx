@@ -7,6 +7,7 @@ const entities: Record<string, { module: string; label: string }> = {
   web_forms: { module: "estimadosweb", label: "Formulario web" },
   web_requests: { module: "estimadosweb", label: "Solicitud web" },
   price_books: { module: "adm-precios", label: "Precios" },
+  pricing_settings: { module: "adm-precios", label: "Precios" },
   assistant_settings: { module: "ia", label: "Configuración de IA" },
   time_entries: { module: "horasfix", label: "Marcación" },
   time_requests: { module: "horasfix", label: "Solicitud de horas" },
