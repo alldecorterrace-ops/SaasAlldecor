@@ -103,15 +103,10 @@ export default async function WorkspaceDetail({
         .range((filePage - 1) * 20, filePage * 20 - 1);
   if (attachments.error)
     throw new Error("No se pudieron cargar los documentos.");
-  const files = await Promise.all(
-    (attachments.data ?? []).map(async (f) => {
-      const { data, error } = await db.storage
-        .from("work-files")
-        .createSignedUrl(f.path, 300);
-      if (error) throw new Error("No se pudo preparar el documento privado.");
-      return { ...f, url: data.signedUrl };
-    }),
-  );
+  const files = (attachments.data ?? []).map((f) => ({
+    ...f,
+    url: `/api/work-documents/${companyId}/${k}/${r.id}/${f.id}`,
+  }));
   const movements =
     k === "inventory" && !isNew
       ? await db

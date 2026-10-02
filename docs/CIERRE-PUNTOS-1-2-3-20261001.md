@@ -90,24 +90,24 @@ las filas Comprobada; el denominador se declara provisional hasta completar inve
 
 | ID  | Obligación                                        | Estado de cierre | Evidencia o siguiente comprobación                                                           |
 | --- | ------------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------------- |
-| O01 | Permiso: campos, fechas, estado y número          | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O02 | Permiso: documentos, archivo y restauración       | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O03 | Inventario: artículos, unidades y existencias     | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O04 | Inventario: entradas y salidas por proyecto       | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O05 | Inventario: reversos y unidad histórica           | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O06 | Inventario: movimientos simultáneos               | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
+| O01 | Permiso: campos, fechas, estado y número          | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
+| O02 | Permiso: documentos, archivo y restauración       | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
+| O03 | Inventario: artículos, unidades y existencias     | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
+| O04 | Inventario: entradas y salidas por proyecto       | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
+| O05 | Inventario: reversos y unidad histórica           | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
+| O06 | Inventario: movimientos simultáneos               | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
 | O07 | Instalación: proyecto, responsable y cuadrilla    | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | O08 | Instalación: agenda, zona horaria y superposición | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | O09 | Instalación: estados, requisitos y concurrencia   | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O10 | Manual: instrucciones, materiales y revisión      | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O11 | Manual: aprobación e invalidación por cambios     | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O12 | Manual: documentos, archivo y restauración        | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O13 | Manual: impresión persistida y documentos largos  | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
+| O10 | Manual: instrucciones, materiales y revisión      | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
+| O11 | Manual: aprobación e invalidación por cambios     | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
+| O12 | Manual: documentos, archivo y restauración        | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
+| O13 | Manual: impresión persistida y documentos largos  | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
 | O14 | Mapa: categorías, filtros, centros y sumas        | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | O15 | Mapa: cartografía externa y errores               | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | O16 | Mapa: nombres multibyte y exportación             | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
 | O17 | Mapa: proveedor, caché y fallos reales            | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
-| O18 | Operaciones: permisos, revocación y dos empresas  | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes. |
+| O18 | Operaciones: permisos, revocación y dos empresas  | Implementada | 42fdad5 / 065 publicada: 584 pruebas, CI y concurrencia nativa; propietario, persistencia, documentos y empresa restringida comprobados parcialmente. Contraste completo y perfiles restantes pendientes. [Evidencia y límites](OPERACIONES-TRANSACCIONALES-20261001.md). |
 
 ## Entregas y protección
 
@@ -204,3 +204,17 @@ CSV privado de tres filas, móvil emulado y denegación en la empresa restringid
 
 T21/T22 continúan abiertas por la matriz de perfiles y correcciones por UI.
 El conteo sigue **1/65**. No hay traslado de negocio ni traspaso operativo.
+
+
+## Operaciones 065 publicadas el 2 de octubre
+
+`42fdad5` activa con retorno `1e2735a`, CI completo aprobado y esquema 065
+aditivo con datos anteriores preservados. Inventario, documentos y manuales
+comprobados por propietario con datos sintéticos; concurrencia y revocación
+comprobadas en PostgreSQL nativo. [Resultados y límites](OPERACIONES-TRANSACCIONALES-20261001.md).
+
+O01–O06, O10–O13 y O18 se distinguen como Implementada, todavía abiertas.
+El conteo de cierre sigue **1/65 obligaciones agrupadas**, que no es un
+porcentaje de código construido. La fecha objetivo del 1 de octubre pasó sin
+cierre de los tres bloques; no se reduce el alcance para modificar el conteo.
+IA de recibos externa y prueba física siguen pendientes de sus dependencias.

@@ -170,3 +170,17 @@ coincidente. Móvil emulado y empresa restringida comprobados. No se crearon pag
 T21/T22 siguen abiertas por perfiles y recorridos restantes. La evidencia de UI
 no sustituye la comprobación física de Campo ni el proveedor real de IA de recibos.
 El conteo de obligaciones cerradas sigue 1/65; los tres bloques permanecen abiertos.
+
+
+### Operaciones duraderas 065 publicadas el 2 de octubre
+
+Activa `42fdad58b364046925cf7b0b68f6ae41618aa68d`, retorno `1e2735a`.
+CI 36962519122 aprobado, 584 pruebas y concurrencia nativa; 81 tablas y 870 filas
+anteriores preservadas al aplicar la migración aditiva. Inventario, reverso,
+descarga binaria, archivo/restauración y revisión de manual comprobados en sesión
+de propietario. Empresa ajena rechazada. [Pruebas y límites](OPERACIONES-TRANSACCIONALES-20261001.md).
+
+Los bloques comercial, trabajadores/Campo y operaciones siguen abiertos; el
+conteo estricto permanece 1/65 obligaciones agrupadas. La migración de negocio,
+traspaso, configuradores, 3D, Portal e IA Assistant siguen fuera de esta entrega.
+La IA de recibos continúa incluida y exige comprobación real del proveedor.
