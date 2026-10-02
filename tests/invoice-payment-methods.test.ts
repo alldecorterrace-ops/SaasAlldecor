@@ -9,6 +9,7 @@ import { emptyItem } from "../src/lib/estimates";
 import { parseFinanceRequest } from "../src/lib/finance-requests";
 import { storedCommercialDocument } from "../src/lib/commercial-documents";
 import { renderCommercialPdf } from "../src/lib/commercial-pdf";
+import { expenseMethods, expenseSchema } from "../src/lib/operations";
 
 const methods = [
   "EFECTIVO",
@@ -16,6 +17,8 @@ const methods = [
   "TRANSFERENCIA",
   "TARJETA_EXTERNA",
   "ZELLE",
+  "NOT_CHARGED",
+  "SIN_METODO",
   "OTRO",
 ];
 test("invoice form accepts Zelle and preserves the existing payment method codes", () => {
@@ -94,7 +97,7 @@ test("Zelle additive migration, durable payment, reversals and immutable documen
   try {
     await db.exec(authStorageContract);
     for (const f of (await readdir(directory))
-      .filter((f) => f.endsWith(".sql") && f < "202610020069")
+      .filter((f) => f.endsWith(".sql") && f < "202610020070")
       .sort())
       await db.exec(await readFile(new URL(f, directory), "utf8"));
     await db.query(
@@ -158,7 +161,7 @@ test("Zelle additive migration, durable payment, reversals and immutable documen
         await db.exec("reset role");
         await db.exec(
           await readFile(
-            new URL("202610020069_invoice_payment_zelle.sql", directory),
+            new URL("202610020070_invoice_payment_methods.sql", directory),
             "utf8",
           ),
         );
@@ -174,7 +177,7 @@ test("Zelle additive migration, durable payment, reversals and immutable documen
       receipt: unknown;
     }> = [];
     await t.test(
-      "all six codes persist; lost-response retries preserve amount, method and audit",
+      "all eight codes persist including Not charged and unspecified method; lost-response retries preserve amount, method and audit",
       async () => {
         let version = 2;
         for (const method of methods) {
@@ -221,7 +224,7 @@ test("Zelle additive migration, durable payment, reversals and immutable documen
               [invoice],
             )
           ).rows[0],
-          { paid_amount: "16.17", balance_due: "83.93", version: 8 },
+          { paid_amount: "18.19", balance_due: "81.91", version: 10 },
         );
         for (const p of payments)
           assert.equal(
@@ -262,7 +265,7 @@ test("Zelle additive migration, durable payment, reversals and immutable documen
         ]);
         await as(staff);
         await assert.rejects(
-          execute("payment", invoice, 8, zelle.data),
+          execute("payment", invoice, 10, zelle.data),
           /permission_denied/,
         );
         await as(owner);
@@ -286,7 +289,7 @@ test("Zelle additive migration, durable payment, reversals and immutable documen
       async () => {
         const data = (
           await db.query<{ data: unknown }>(
-            "select to_jsonb(prepare_commercial_document($1,'invoice',$2,8)) data",
+            "select to_jsonb(prepare_commercial_document($1,'invoice',$2,10)) data",
             [company, invoice],
           )
         ).rows[0].data;
@@ -298,8 +301,11 @@ test("Zelle additive migration, durable payment, reversals and immutable documen
           .map((x) => x.text)
           .join("\n");
         assert.match(content, /Zelle/);
+        assert.match(content, /Not charged\./);
+        assert.match(content, /\(sin método\)/);
+        assert.match(content, /Estado de pago al generar: Pago parcial/);
         assert.match(content, /QA-ZELLE/);
-        assert.match(content, /Total de pagos aplicados al generar: \$16.17/);
+        assert.match(content, /Total de pagos aplicados al generar: \$18.19/);
         assert.equal(
           captured.snapshot.record.payments?.find((p) => p.id === zelle.id)
             ?.method,
@@ -332,13 +338,13 @@ test("Zelle additive migration, durable payment, reversals and immutable documen
               [invoice],
             )
           ).rows[0],
-          { paid_amount: "15.16", balance_due: "84.94", version: 9 },
+          { paid_amount: "17.18", balance_due: "82.92", version: 11 },
         );
         const next = (
           await db.query<{
             data: { snapshot: { record: { payments: Array<{ id: string }> } } };
           }>(
-            "select to_jsonb(prepare_commercial_document($1,'invoice',$2,9)) data",
+            "select to_jsonb(prepare_commercial_document($1,'invoice',$2,11)) data",
             [company, invoice],
           )
         ).rows[0].data;
@@ -370,11 +376,27 @@ test("Zelle additive migration, durable payment, reversals and immutable documen
               [invoice],
             )
           ).rows[0].n,
-          7,
+          9,
         );
       },
     );
   } finally {
     await db.close();
   }
+});
+
+test("invoice-only legacy methods never expand expense validation", () => {
+  assert.deepEqual(
+    Object.keys(expenseMethods).sort(),
+    [
+      "EFECTIVO",
+      "CHEQUE",
+      "TRANSFERENCIA",
+      "TARJETA_EXTERNA",
+      "ZELLE",
+      "OTRO",
+    ].sort(),
+  );
+  for (const method of ["NOT_CHARGED", "SIN_METODO"])
+    assert.equal(expenseSchema.shape.method.safeParse(method).success, false);
 });

@@ -137,6 +137,7 @@ test("invoice PDF captures applied payments at its locked version without changi
         paid = await prepare(3);
         assert.equal(paid.snapshot.record.paid_amount, 100.1);
         assert.equal(paid.snapshot.record.balance_due, 0);
+        assert.equal(paid.snapshot.record.payment_status, "PAID");
         assert.equal(paid.snapshot.record.payments?.length, 2);
         await assert.rejects(() => prepare(2), /record_conflict/);
         const old = (
@@ -152,6 +153,7 @@ test("invoice PDF captures applied payments at its locked version without changi
           .flat()
           .map((x) => x.text)
           .join("\n");
+        assert.match(content, /Estado de pago al generar: Pagada/);
         assert.match(content, /QA-PARTIAL/);
         assert.match(content, /QA-BALANCE/);
         assert.match(content, /Total de pagos aplicados al generar: \$100.10/);
@@ -185,6 +187,55 @@ test("invoice PDF captures applied payments at its locked version without changi
           reversed.id,
           "repeat creates no duplicate",
         );
+      },
+    );
+    await t.test(
+      "printed payment status uses the captured revision; legacy status is never inferred",
+      async () => {
+        for (const [doc, label] of [
+          [noPayments, "Sin pagos"],
+          [partial, "Pago parcial"],
+          [paid, "Pagada"],
+        ] as const) {
+          const content = (
+            await printedPages(await renderCommercialPdf(doc, true))
+          )
+            .flat()
+            .map((x) => x.text)
+            .join("\n");
+          assert.ok(content.includes(`Estado de pago al generar: ${label}`));
+          assert.ok(content.includes("Estado al generar: Emitida"));
+        }
+        const legacy = structuredClone(noPayments);
+        delete legacy.snapshot.record.payment_status;
+        const legacyText = (
+          await printedPages(await renderCommercialPdf(legacy, true))
+        )
+          .flat()
+          .map((x) => x.text)
+          .join("\n");
+        assert.ok(!legacyText.includes("Estado de pago al generar:"));
+        assert.equal(
+          storedCommercialDocument.safeParse({
+            ...legacy,
+            snapshot: {
+              ...legacy.snapshot,
+              record: { ...legacy.snapshot.record, payment_status: "INVENTED" },
+            },
+          }).success,
+          false,
+        );
+        // Renderer contract only: generating a VOID invoice remains gated by its RPC.
+        const voidFixture = structuredClone(noPayments);
+        voidFixture.snapshot.record.status = "VOID";
+        voidFixture.snapshot.record.payment_status = "VOID";
+        const voidText = (
+          await printedPages(await renderCommercialPdf(voidFixture, true))
+        )
+          .flat()
+          .map((x) => x.text)
+          .join("\n");
+        assert.ok(voidText.includes("Estado de pago al generar: Anulada"));
       },
     );
     await t.test(
@@ -255,6 +306,7 @@ test("invoice PDF captures applied payments at its locked version without changi
       async () => {
         const legacy = structuredClone(paid);
         delete legacy.snapshot.record.payments;
+        delete legacy.snapshot.record.payment_status;
         assert.ok(storedCommercialDocument.safeParse(legacy).success);
         const legacyBytes = await renderCommercialPdf(legacy, true);
         assert.equal(

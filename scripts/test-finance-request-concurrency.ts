@@ -33,7 +33,15 @@ async function main() {
     const before=(await pool.query("select count(*)::int n from audit_events where company_id=$1",[company])).rows[0].n;
     await assert.rejects(execute("payment",invoice,1,{...data,amount:"25.11"},payRequest),/request_conflict/);
     assert.equal((await pool.query("select count(*)::int n from audit_events where company_id=$1",[company])).rows[0].n,before);
-    console.log("Finance concurrency: eight approval retries, eight payment retries, one stale writer rejected; Zelle method, cents and receipts preserved.");
+    for (const [method,version] of [["NOT_CHARGED",3],["SIN_METODO",4]] as const) {
+      const id=randomUUID(),req=randomUUID(),payload={payment_id:id,amount:"1.01",payment_date:"2026-10-02",method,reference:method,notes:"Synthetic legacy method"};
+      const replies=await Promise.all(Array.from({length:8},()=>execute("payment",invoice,version,payload,req)));
+      assert(replies.every(x=>JSON.stringify(x)===JSON.stringify(replies[0])));
+      assert.equal((await pool.query("select method from payments where id=$1",[id])).rows[0].method,method);
+    }
+    const final=(await pool.query("select (select count(*)::int from payments where company_id=$1) payments,paid_amount,balance_due,version from invoices where company_id=$1",[company])).rows[0];
+    assert.deepEqual(final,{payments:3,paid_amount:"27.12",balance_due:"72.88",version:5});
+    console.log("Finance concurrency: eight retries each for Zelle, Not charged and unspecified method; one effect per request, one stale writer rejected; methods, cents and receipts preserved.");
   } finally {await pool.end();}
 }
 main().catch(()=>{console.error("Finance concurrency verification failed");process.exitCode=1;});

@@ -5,7 +5,7 @@ import path from "node:path";
 import type { StoredCommercialDocument } from "./commercial-documents";
 import { estimateStatuses } from "./estimates";
 import { priceBases } from "./commercial";
-import { usd, paymentMethods } from "./finance";
+import { usd, paymentMethods, paymentStatuses } from "./finance";
 import { paymentStageLabels } from "./payment-terms";
 // Vendor font is pinned, licensed and included in the release; never fetch customer content.
 export async function renderCommercialPdf(
@@ -115,6 +115,8 @@ export async function renderCommercialPdf(
     VOID: "Anulada",
   };
   text(`Estado al generar: ${states[r.status] ?? r.status}`);
+  if (doc.kind === "invoice" && r.payment_status !== undefined)
+    text(`Estado de pago al generar: ${paymentStatuses[r.payment_status]}`);
   rule();
   text(r.customer_snapshot.full_name, 13);
   text(

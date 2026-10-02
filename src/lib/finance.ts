@@ -14,6 +14,8 @@ export const paymentMethods = {
   CHEQUE: "Cheque",
   TRANSFERENCIA: "Transferencia",
   ZELLE: "Zelle",
+  NOT_CHARGED: "Not charged.",
+  SIN_METODO: "(sin método)",
   TARJETA_EXTERNA: "Tarjeta (cobro externo)",
   OTRO: "Otro",
 } as const;

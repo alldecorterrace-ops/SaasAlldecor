@@ -1,12 +1,19 @@
 import { z } from "zod";
 import { decimal } from "./commercial";
-import { paymentMethods } from "./finance";
 export const expensePayers = {
   EMPRESA: "Empresa",
   EFECTIVO_EMPRESA: "Efectivo oficina",
   TRABAJADOR: "Trabajador",
 } as const;
-export const expenseMethods = { ...paymentMethods, ZELLE: "Zelle" } as const;
+// Expenses have their own method contract; invoice-only legacy choices do not apply.
+export const expenseMethods = {
+  EFECTIVO: "Efectivo",
+  CHEQUE: "Cheque",
+  TRANSFERENCIA: "Transferencia",
+  TARJETA_EXTERNA: "Tarjeta (cobro externo)",
+  ZELLE: "Zelle",
+  OTRO: "Otro",
+} as const;
 export const expenseStatuses = {
   PENDIENTE: "Pendiente",
   APROBADO: "Aprobado",

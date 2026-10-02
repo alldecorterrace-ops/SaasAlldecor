@@ -63,6 +63,7 @@ export const commercialSnapshot = z.object({
         }),
       )
       .optional(),
+    payment_status: z.enum(["UNPAID", "PARTIAL", "PAID", "VOID"]).optional(),
     paid_amount: money.optional(),
     balance_due: money.optional(),
   }),

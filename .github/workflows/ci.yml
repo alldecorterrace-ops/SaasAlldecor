@@ -31,6 +31,12 @@ jobs:
           php -l tests/reference/labor-cost-source.php
           npx tsx scripts/test-labor-reference.ts
           php scripts/labor-reference.php tests/reference/labor-cost-source.php .local/labor-reference-input.json 847ea58cedf5bb8f85069df8176824ab342a0a4ddd0e833eb79e5ed9f12bfbb6
+      - name: Compare invoice payment methods with current frozen ADT source
+        run: |
+          php -l scripts/payment-reference.php
+          php -l tests/reference/invoice-payment-source.php
+          npx tsx scripts/test-payment-reference.ts
+          php scripts/payment-reference.php tests/reference/invoice-payment-source.php .local/payment-reference-input.json d14199eefb090da7fde174f83edeb9664f79b073aca85a9e6255578567f0c2e1
       - run: npm run check
       - uses: denoland/setup-deno@v2
         with:
