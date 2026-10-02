@@ -209,3 +209,18 @@ conservación de revisiones y compatibilidad con formularios anteriores.
 Las pruebas locales añaden nueve casos; el cierre operativo requiere CI,
 publicación en staging y recorridos reales. O07–O09 continúan Implementada,
 los tres bloques siguen abiertos y el conteo estricto permanece 1/65.
+
+## Cuadrillas publicadas y comprobadas · 2 de octubre de 2026
+
+Activa `c7bdaf4`, retorno `9de7c8e`, esquema 066; CI 36968793404 completo,
+597 pruebas, lint, tipos y compilación correctos. La migración conservó
+922 filas de 82 tablas. Propietario guardó y reabrió la cuadrilla; se comprobaron
+cruces entre responsables distintos, corrección de la misma solicitud,
+cancelación, restauración rechazada por cruce y restauración posterior.
+Las seis escrituras nuevas dejaron 22 constancias totales, con huellas de
+facturas, pagos, gastos y proyectos intactas. Interfaz móvil a 390 × 844
+sin desbordamiento. [Evidencia y límites](INSTALACIONES-CUADRILLAS-20261002.md).
+
+O07–O09 continúan Implementada, abiertas por el contraste del backend y los
+perfiles/recorridos restantes. Los tres bloques siguen abiertos, conteo 1/65.
+No se reanuda migración de negocio, traspaso, configuradores ni 3D.
