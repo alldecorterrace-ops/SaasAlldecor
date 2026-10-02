@@ -13,6 +13,7 @@ export const paymentMethods = {
   EFECTIVO: "Efectivo",
   CHEQUE: "Cheque",
   TRANSFERENCIA: "Transferencia",
+  ZELLE: "Zelle",
   TARJETA_EXTERNA: "Tarjeta (cobro externo)",
   OTRO: "Otro",
 } as const;

@@ -22,17 +22,18 @@ async function main() {
     const results=await Promise.all(Array.from({length:8},()=>execute("approve",estimate,1,approval,request)));
     assert(results.every(x=>JSON.stringify(x)===JSON.stringify(results[0])));
     const invoice=results[0].id;
-    const payment=randomUUID(),payRequest=randomUUID(),data={payment_id:payment,amount:"25.10",payment_date:"2026-10-01",method:"TRANSFERENCIA",reference:"QA",notes:""};
+    const payment=randomUUID(),payRequest=randomUUID(),data={payment_id:payment,amount:"25.10",payment_date:"2026-10-01",method:"ZELLE",reference:"QA",notes:""};
     const paid=await Promise.all(Array.from({length:8},()=>execute("payment",invoice,1,data,payRequest)));
     assert(paid.every(x=>JSON.stringify(x)===JSON.stringify(paid[0])));
     const race=await Promise.allSettled([execute("invoice",invoice,2,{date:"2026-10-01",due:null,notes:"First writer"},randomUUID()),execute("invoice",invoice,2,{date:"2026-10-01",due:null,notes:"Second writer"},randomUUID())]);
     assert.equal(race.filter(x=>x.status==="fulfilled").length,1);assert.equal(race.filter(x=>x.status==="rejected").length,1);
     const row=(await pool.query("select (select count(*)::int from invoices where company_id=$1) invoices,(select count(*)::int from projects where company_id=$1) projects,(select count(*)::int from payments where company_id=$1) payments,(select count(*)::int from app_private.finance_requests where company_id=$1) receipts,paid_amount,balance_due,version from invoices where company_id=$1",[company])).rows[0];
     assert.deepEqual(row,{invoices:1,projects:1,payments:1,receipts:3,paid_amount:"25.10",balance_due:"74.90",version:3});
+    assert.equal((await pool.query("select method from payments where id=$1",[payment])).rows[0].method,"ZELLE");
     const before=(await pool.query("select count(*)::int n from audit_events where company_id=$1",[company])).rows[0].n;
     await assert.rejects(execute("payment",invoice,1,{...data,amount:"25.11"},payRequest),/request_conflict/);
     assert.equal((await pool.query("select count(*)::int n from audit_events where company_id=$1",[company])).rows[0].n,before);
-    console.log("Finance concurrency: eight approval retries, eight payment retries, one stale writer rejected; cents and receipts preserved.");
+    console.log("Finance concurrency: eight approval retries, eight payment retries, one stale writer rejected; Zelle method, cents and receipts preserved.");
   } finally {await pool.end();}
 }
 main().catch(()=>{console.error("Finance concurrency verification failed");process.exitCode=1;});
