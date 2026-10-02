@@ -293,13 +293,32 @@ export default async function WorkforceExpenses({
               <p className="font-medium">
                 Con qué se pagó: {workforcePayerLabel(e.pay_method)}
               </p>
-              <p className="text-sm">
-                {e.pay_method === "propio"
-                  ? "Pago declarado de su bolsillo. Su reembolso requiere aprobación y revisión; este registro no confirma un reembolso."
-                  : e.pay_method
-                    ? "Pago declarado de la empresa. No genera deuda de reembolso al trabajador."
-                    : "El pagador no está declarado. No se presume una deuda ni un pago."}
-              </p>
+              {e.reimbursed_at ? (
+                <div className="text-sm my-2">
+                  <p>
+                    Reembolso registrado el{" "}
+                    {format.format(new Date(e.reimbursed_at))}
+                    {e.reimbursed_by && <> · Cuenta {e.reimbursed_by}</>}. La
+                    constancia conserva el costo del gasto; no ejecuta una
+                    transferencia.
+                  </p>
+                  <p className="whitespace-pre-wrap">{e.reimbursement_note}</p>
+                  <Link
+                    className="underline"
+                    href={`/app/${companyId}/horas/reembolsos`}
+                  >
+                    Consultar constancias de reembolso
+                  </Link>
+                </div>
+              ) : (
+                <p className="text-sm">
+                  {e.pay_method === "propio"
+                    ? "Pago declarado de su bolsillo. Su reembolso requiere aprobación y revisión; este registro no confirma un reembolso."
+                    : e.pay_method
+                      ? "Pago declarado de la empresa. No genera deuda de reembolso al trabajador."
+                      : "El pagador no está declarado. No se presume una deuda ni un pago."}
+                </p>
+              )}
               <p className="font-medium">
                 Destino del costo:{" "}
                 {e.allocation === "GENERAL" ? "Gasto general" : "Obra"}
