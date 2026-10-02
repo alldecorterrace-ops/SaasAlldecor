@@ -51,7 +51,7 @@ las filas Comprobada; el denominador se declara provisional hasta completar inve
 | C16 | Estimado: plantilla y comunicaciones                    | Pendiente        | ADT actual confirma calendario 10/50/30/10, condiciones particulares y entrega. d34c358 / 059 publicada: 511 pruebas, calendario, revisiones, factura, PDF privado, móvil emulado y aislamiento comprobados. [Evidencia y límites](CALENDARIO-COMERCIAL-20261001.md). Restan plantilla completa y comunicaciones; la fila permanece abierta. |
 | C17 | Factura: plantilla, numeración y documentos             | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes.                                                                                                                                                                                                                                                 |
 | C18 | Pago: anticipo, parcial y saldo completo                | Implementada | Recorridos sintéticos de propietario y PostgreSQL, importes y documentos anteriores preservados; bfb8e3a / 067 publicada con CI 612 pruebas. Contraste completo, perfiles y diferencias pendientes. [Evidencia](RECORRIDO-COMERCIAL-20261002.md). |
-| C19 | Pago: recibo y consulta del registro                    | Pendiente        | Contrastar ADT actual y completar/pruebas según CIERRE-FUNCIONAL.md; conservar antecedentes.                                                                                                                                                                                                                                                 |
+| C19 | Pago: recibo y consulta del registro | Implementada | e12b272 / 068: desglose APPLIED conservado en PDF, 628 pruebas, carreras PostgreSQL, cinco revisiones y reversos en sesión. Recibo separado, métodos, perfiles y comunicación pendientes. [Evidencia](PAGOS-EN-PDF-FACTURA-20261002.md). |
 | C20 | Pago: reversión conservando historial                   | Implementada | Recorridos sintéticos de propietario y PostgreSQL, importes y documentos anteriores preservados; bfb8e3a / 067 publicada con CI 612 pruebas. Contraste completo, perfiles y diferencias pendientes. [Evidencia](RECORRIDO-COMERCIAL-20261002.md). |
 | C21 | Factura: anulación y requisitos actuales                | Implementada | Recorridos sintéticos de propietario y PostgreSQL, importes y documentos anteriores preservados; bfb8e3a / 067 publicada con CI 612 pruebas. Contraste completo, perfiles y diferencias pendientes. [Evidencia](RECORRIDO-COMERCIAL-20261002.md). |
 | C22 | Proyecto: estados, anticipo y fechas                    | Implementada | Recorridos sintéticos de propietario y PostgreSQL, importes y documentos anteriores preservados; bfb8e3a / 067 publicada con CI 612 pruebas. Contraste completo, perfiles y diferencias pendientes. [Evidencia](RECORRIDO-COMERCIAL-20261002.md). |
@@ -325,3 +325,21 @@ preservados. [Evidencia y límites](DESCUENTO-ESTIMADOS-20261002.md).
 C11 sigue Implementada; contraste completo y perfiles pendientes. Los tres
 bloques permanecen abiertos y el conteo estricto sigue 1/65. El ensayo de total
 cero cubre borradores y no acredita aprobación de una factura de total cero.
+
+
+## Pagos en PDF de factura comprobados · 2 de octubre de 2026
+
+Activa `e12b272`, retorno `56fcd98`, esquema aditivo 068; CI 36987975871
+completo aprobado, 628 pruebas y carrera real entre pago y preparación de PDF
+con esperas observadas en ambos órdenes. Migración conserva 1.019 filas de 82
+tablas. Propietario generó y descargó cinco revisiones (sin pagos, anticipo,
+pagada y dos reversos), sin duplicar factura/proyecto/pagos/documentos. Ocho
+páginas reales inspeccionadas, recibos/PDF anteriores idénticos byte por byte y
+registros financieros anteriores conservados. Móvil emulado y pantalla de
+factura ajena rechazados. [Evidencia y límites](PAGOS-EN-PDF-FACTURA-20261002.md).
+
+C19 Implementada; recibo separado, métodos/perfiles y comunicaciones pendientes.
+La prueba de URL privada ajena quedó limitada por el navegador, no acredita una
+respuesta de la aplicación. Los tres bloques siguen abiertos; conteo estricto
+1/65. ADT principal, sin migración de negocio ni traspaso, sin operación financiera
+real ni envíos externos de staging.

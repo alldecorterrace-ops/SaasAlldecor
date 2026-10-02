@@ -174,3 +174,20 @@ bfb8e3a deja de ser retorno y se suma al inventario de sobrantes, fuera de esa
 petición. Se preservan dependencias y aaf268c. El historial oficial permanece
 en GitHub; retirar una carpeta adicional requiere verificar contenido único,
 enlaces, procesos y obtener la confirmación aplicable.
+
+
+## Estado de pagos en documentos · 2 de octubre de 2026
+
+Staging activa `e12b27253ae69bd6d72e59739b7d238a5abdd6a3`, retorno
+`56fcd98963c1d5f54ce768623b23702903676c5d`, esquema 068 conservado.
+CI exacto aprobado, compilación, raíz/proceso/rutas y cinco PDF sintéticos
+comprobados. Dependencias c66e4ec/b149bee y entorno privado idénticos.
+Producción conserva salud y huella de configuración. El retorno mantiene
+compatibilidad con el campo aditivo en snapshots; no revierte el esquema ni
+los pagos. Versión anterior comprobada antes del cambio, sin vuelta real posterior.
+
+Ningún borrado; petición concreta de 52 elementos pendiente. 2aae1ad deja de
+ser retorno y se añade al inventario de sobrantes, fuera de esa petición.
+Conservar aaf268c y dependencias. GitHub conserva el historial oficial; retirar
+sobrantes exige comprobación de contenido único/enlaces/procesos y confirmación
+aplicable. No usar estas notas históricas para acumular entregas en el hosting.

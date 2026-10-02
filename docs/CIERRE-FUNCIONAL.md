@@ -302,3 +302,21 @@ preservados. [Evidencia y límites](DESCUENTO-ESTIMADOS-20261002.md).
 C11 sigue Implementada; contraste completo y perfiles pendientes. Los tres
 bloques permanecen abiertos y el conteo estricto sigue 1/65. El ensayo de total
 cero cubre borradores y no acredita aprobación de una factura de total cero.
+
+
+## Pagos en PDF de factura comprobados · 2 de octubre de 2026
+
+Activa `e12b272`, retorno `56fcd98`, esquema aditivo 068; CI 36987975871
+completo aprobado, 628 pruebas y carrera real entre pago y preparación de PDF
+con esperas observadas en ambos órdenes. Migración conserva 1.019 filas de 82
+tablas. Propietario generó y descargó cinco revisiones (sin pagos, anticipo,
+pagada y dos reversos), sin duplicar factura/proyecto/pagos/documentos. Ocho
+páginas reales inspeccionadas, recibos/PDF anteriores idénticos byte por byte y
+registros financieros anteriores conservados. Móvil emulado y pantalla de
+factura ajena rechazados. [Evidencia y límites](PAGOS-EN-PDF-FACTURA-20261002.md).
+
+C19 Implementada; recibo separado, métodos/perfiles y comunicaciones pendientes.
+La prueba de URL privada ajena quedó limitada por el navegador, no acredita una
+respuesta de la aplicación. Los tres bloques siguen abiertos; conteo estricto
+1/65. ADT principal, sin migración de negocio ni traspaso, sin operación financiera
+real ni envíos externos de staging.
