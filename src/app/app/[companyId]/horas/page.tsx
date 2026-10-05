@@ -43,12 +43,15 @@ export default async function Hours({
         .maybeSingle()
     : { data: null, error: null };
   if (current.error) throw new Error("No se pudo consultar tu marcación.");
-  let punchProjects: { id: string; name: string }[] = [];
-  if (mine && write && !current.data) {
-    const scope = await db.rpc("workforce_scope", { p_company: companyId });
-    if (scope.error) throw new Error("No se pudieron cargar tus proyectos.");
-    punchProjects = workforceScopeSchema.parse(scope.data).projects;
-  }
+  const scope = await db.rpc("workforce_scope", { p_company: companyId });
+  if (scope.error)
+    throw new Error("No se pudo consultar el alcance del equipo.");
+  const workforce = workforceScopeSchema.parse(scope.data);
+  const punchProjects =
+    mine && write && !current.data ? workforce.projects : [];
+  const hasTeamReport = ["ADMIN", "FOREMAN", "OFFICE"].includes(
+    workforce.role ?? "",
+  );
   const statuses =
       view === "requests"
         ? {
@@ -152,6 +155,11 @@ export default async function Hours({
         <Link className="underline" href={`${base}/resumen`}>
           Días trabajados por proyecto
         </Link>
+        {hasTeamReport && (
+          <Link className="underline" href={`${base}/equipo/resumen`}>
+            Horas del equipo
+          </Link>
+        )}
         <Link className="underline" href={`/app/${companyId}/horas/gastos`}>
           Gastos de Workforce
         </Link>

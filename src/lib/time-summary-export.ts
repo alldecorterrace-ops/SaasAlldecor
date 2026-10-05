@@ -4,12 +4,14 @@ import {
   loadTimeSummary,
   timeSummaryCsv,
   timeSummaryFiltersSchema,
+  type TimeSummaryScope,
 } from "./time-summary";
 
 export async function exportTimeSummary(
   company: string,
   filters: Record<string, unknown>,
   connect: () => Promise<SupabaseClient>,
+  scope: TimeSummaryScope = "personal",
 ) {
   const headers = {
     "Cache-Control": "private, no-store",
@@ -26,12 +28,12 @@ export async function exportTimeSummary(
     if (auth.error || !auth.data.user) return fail(401);
     const parsed = timeSummaryFiltersSchema.safeParse(filters);
     if (!parsed.success) return fail(400, "Revisa las fechas y los filtros.");
-    const report = await loadTimeSummary(db, company, parsed.data);
+    const report = await loadTimeSummary(db, company, parsed.data, 1, scope);
     return new Response(timeSummaryCsv(report), {
       headers: {
         ...headers,
         "Content-Type": "text/csv; charset=utf-8",
-        "Content-Disposition": 'attachment; filename="resumen-dias.csv"',
+        "Content-Disposition": `attachment; filename="${scope === "team" ? "resumen-dias-equipo" : "resumen-dias"}.csv"`,
         "Content-Security-Policy": "sandbox",
       },
     });

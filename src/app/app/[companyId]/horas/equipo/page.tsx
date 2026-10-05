@@ -19,6 +19,16 @@ export default async function Team({
       <p className="eyebrow">Equipo</p>
       <h1 className="page-title mt-2">Equipo y obras</h1>
       <nav className="flex flex-wrap gap-5 my-5">
+        {scope.role && (
+          <Link
+            className="underline"
+            href={`/app/${companyId}/horas/equipo/resumen`}
+          >
+            {scope.role === "WORKER"
+              ? "Mis días trabajados"
+              : "Horas del equipo"}
+          </Link>
+        )}
         <Link className="underline" href={`/app/${companyId}/horas/gastos`}>
           Gastos de Workforce
         </Link>
