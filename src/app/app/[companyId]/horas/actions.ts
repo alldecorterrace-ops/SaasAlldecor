@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireModule } from "@/lib/auth";
 import { uuid } from "@/lib/validation";
 import { financeError } from "@/lib/finance";
+import { normalizePunchGPS } from "@/lib/time-gps";
 export type TimeState = { error?: string; success?: string };
 export async function timeAction(
   companyId: string,
@@ -39,11 +40,24 @@ export async function timeAction(
       },
     }));
   } else if (operation === "punch") {
+    let raw: unknown;
+    try {
+      raw = JSON.parse(value("gps"));
+    } catch {
+      return { error: "Verifica tu ubicación actual antes de marcar." };
+    }
+    const gps = normalizePunchGPS(raw, Math.floor(Date.now() / 1000) * 1000);
+    if (!gps)
+      return {
+        error:
+          "La ubicación no es válida, es antigua o no tiene suficiente precisión. Intenta otra vez.",
+      };
     ({ error } = await db.rpc("punch_time", {
       p_company: companyId,
       p_id: id,
       p_action: value("action"),
       p_project: value("project_id") || null,
+      p_gps: gps,
     }));
   } else if (operation === "request") {
     ({ error } = await db.rpc("request_time_change", {
@@ -83,6 +97,13 @@ export async function timeAction(
   } else return { error: "Acción no disponible." };
   if (error) {
     const messages: Record<string, string> = {
+      clock_worker_locked:
+        "La ubicación pertenece al trabajador que marcó. Conserva ese trabajador; registra una corrección separada si corresponde.",
+      gps_required:
+        "Verifica tu ubicación actual, con precisión de hasta 100 metros, antes de marcar.",
+      project_unavailable: "Selecciona un proyecto disponible para tu cuenta.",
+      entry_unavailable:
+        "La jornada ya no está disponible. Recarga para consultar su estado.",
       worker_login_required:
         "Un administrador debe vincular tu cuenta a tu ficha de trabajador.",
       member_not_found:
