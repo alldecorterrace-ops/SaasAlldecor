@@ -57,7 +57,7 @@ export async function timeAction(
       p_id: id,
       p_action: value("action"),
       p_project: value("project_id") || null,
-      p_gps: gps,
+      p_gps: { ...gps, acc: Number((raw as Record<string, unknown>).acc) },
     }));
   } else if (operation === "request") {
     ({ error } = await db.rpc("request_time_change", {
