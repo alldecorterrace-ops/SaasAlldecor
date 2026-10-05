@@ -149,6 +149,9 @@ export default async function Hours({
         </section>
       )}
       <nav className="flex flex-wrap gap-5 mb-5">
+        <Link className="underline" href={`${base}/resumen`}>
+          Días trabajados por proyecto
+        </Link>
         <Link className="underline" href={`/app/${companyId}/horas/gastos`}>
           Gastos de Workforce
         </Link>
