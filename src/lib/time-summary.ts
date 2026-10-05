@@ -58,21 +58,26 @@ export const timeSummarySchema = z.object({
   ),
 });
 export type TimeSummary = z.infer<typeof timeSummarySchema>;
+export type TimeSummaryScope = "personal" | "team";
 export async function loadTimeSummary(
   db: Pick<SupabaseClient, "rpc">,
   company: string,
   filters: TimeSummaryFilters,
   page = 1,
+  scope: TimeSummaryScope = "personal",
 ) {
   const f = timeSummaryFiltersSchema.parse(filters);
-  const { data, error } = await db.rpc("time_summary", {
-    p_company: company,
-    p_from: f.from,
-    p_to: f.to,
-    p_project: f.project || null,
-    p_worker: f.worker || null,
-    p_page: page,
-  });
+  const { data, error } = await db.rpc(
+    scope === "team" ? "workforce_time_summary" : "time_summary",
+    {
+      p_company: company,
+      p_from: f.from,
+      p_to: f.to,
+      p_project: f.project || null,
+      p_worker: f.worker || null,
+      p_page: page,
+    },
+  );
   if (error) throw error;
   const report = timeSummarySchema.parse(data);
   if (
