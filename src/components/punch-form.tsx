@@ -60,6 +60,10 @@ export function PunchForm({
         hasta 100 metros. Activa la ubicación del teléfono y permite el acceso
         cuando Chrome lo solicite.
       </p>
+      <p className="text-sm text-muted-foreground">
+        El reloj redondea al minuto más cercano y registra como mínimo un minuto
+        al cerrar la jornada.
+      </p>
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="action" value={exit ? "OUT" : "IN"} />
       <fieldset disabled={pending}>

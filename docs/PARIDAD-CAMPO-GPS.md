@@ -4,15 +4,15 @@ Cambio aditivo 075, contrastado con ADT vigente el 5 de octubre de 2026.
 El alcance de esta entrega es la ubicación de entrada y salida. Los demás
 recorridos de Campo conservan sus pendientes de paridad.
 
-| Acción | Regla comprobada en ADT | Implementación del SaaS | Prueba |
-|---|---|---|---|
-| Entrada y salida | GPS obligatorio antes de guardar cualquiera de las dos acciones | Validación en navegador, acción de servidor y RPC PostgreSQL | Límites sintéticos del navegador y base; RPC anterior sin GPS rechazado |
-| Precisión y coordenadas | Precisión mayor de 0 y hasta 100 m; latitud/longitud válidas; excluir pareja cercana a cero | Mismos límites, normalización numérica y muestras separadas | 31 casos compartidos, contrastados con métodos puros del PHP vigente |
-| Antigüedad | Hasta 60 s; reloj adelantado hasta 10 s | Reloj del servidor como referencia; el cliente además rechaza muestras anteriores a la solicitud por más de 1 s | Límites exactos, muestra almacenada y nueva solicitud |
-| Lectura del teléfono | Alta precisión, sin caché, 15 s por intento; repetir una vez salvo permiso denegado | Solicitud nueva al pulsar entrada o salida; mensaje de progreso y bloqueo mientras se verifica | Doble intento de baja precisión y rechazo inmediato de permiso denegado |
-| Reintentos | Una jornada abierta propia | Identidad existente, bloqueo por empresa, mismo proyecto al reintentar entrada, sin repetir auditoría | Base local y concurrencia en PostgreSQL del CI |
-| Corrección administrativa | Conservar trazabilidad del marcaje | Mantener ambas muestras, aprobar/corregir horas sin sustituir ubicación | Corrección con GPS manipulado en el formulario no cambia la muestra |
-| Confidencialidad | Adaptación multiempresa y usuario autenticado | Horas propias por RLS; GPS ligado al trabajador original | Usuario ajeno no ve fila ni historial; no se permite reasignar una fila con GPS |
+| Acción                    | Regla comprobada en ADT                                                                     | Implementación del SaaS                                                                                         | Prueba                                                                          |
+| ------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Entrada y salida          | GPS obligatorio antes de guardar cualquiera de las dos acciones                             | Validación en navegador, acción de servidor y RPC PostgreSQL                                                    | Límites sintéticos del navegador y base; RPC anterior sin GPS rechazado         |
+| Precisión y coordenadas   | Precisión mayor de 0 y hasta 100 m; latitud/longitud válidas; excluir pareja cercana a cero | Mismos límites, normalización numérica y muestras separadas                                                     | 31 casos compartidos, contrastados con métodos puros del PHP vigente            |
+| Antigüedad                | Hasta 60 s; reloj adelantado hasta 10 s                                                     | Reloj del servidor como referencia; el cliente además rechaza muestras anteriores a la solicitud por más de 1 s | Límites exactos, muestra almacenada y nueva solicitud                           |
+| Lectura del teléfono      | Alta precisión, sin caché, 15 s por intento; repetir una vez salvo permiso denegado         | Solicitud nueva al pulsar entrada o salida; mensaje de progreso y bloqueo mientras se verifica                  | Doble intento de baja precisión y rechazo inmediato de permiso denegado         |
+| Reintentos                | Una jornada abierta propia                                                                  | Identidad existente, bloqueo por empresa, mismo proyecto al reintentar entrada, sin repetir auditoría           | Base local y concurrencia en PostgreSQL del CI                                  |
+| Corrección administrativa | Conservar trazabilidad del marcaje                                                          | Mantener ambas muestras, aprobar/corregir horas sin sustituir ubicación                                         | Corrección con GPS manipulado en el formulario no cambia la muestra             |
+| Confidencialidad          | Adaptación multiempresa y usuario autenticado                                               | Horas propias por RLS; GPS ligado al trabajador original                                                        | Usuario ajeno no ve fila ni historial; no se permite reasignar una fila con GPS |
 
 La entrada exige un proyecto. El selector usa el alcance de Workforce ya
 configurado; no concede acceso general a Proyectos. La salida conserva el
@@ -46,3 +46,10 @@ anterior. Su RPC sin ubicación se conserva como firma y rechaza el marcaje
 sin GPS; por tanto, volver al código anterior deja el reloj bloqueado hasta
 restaurar una entrega que capture GPS. El retorno no revierte ni borra datos
 de Supabase. Se debe comprobar esta limitación antes de cambiar de entrega.
+
+## Cierre de minutos del reloj
+
+El esquema 078 resuelve el redondeo y mínimo un minuto para nuevas marcaciones.
+Conserva los valores y reglas de los registros previos, así como el cálculo
+administrativo existente. Ver [alcance y validación](PARIDAD-CLOCK-MINUTOS.md).
+Los apartados anteriores que describen el truncamiento reflejan el esquema 075.
