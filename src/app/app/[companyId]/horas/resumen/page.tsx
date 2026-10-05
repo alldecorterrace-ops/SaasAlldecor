@@ -39,7 +39,7 @@ export default async function HoursSummary({
       report = await loadTimeSummary(db, companyId, parsed.data, page);
     } catch (failure) {
       if ((failure as { code?: string }).code === "22023")
-        error = "Revisa el intervalo: ADT admite hasta 62 días transcurridos.";
+        error = "Revisa el intervalo: el máximo es de 62 días transcurridos.";
       else throw new Error("No se pudo cargar el resumen de horas.");
     }
   }

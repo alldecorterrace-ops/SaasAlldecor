@@ -40,7 +40,7 @@ export async function exportTimeSummary(
     return fail(
       code === "42501" ? 403 : code === "22023" ? 400 : 503,
       code === "22023"
-        ? "Revisa el intervalo: ADT admite hasta 62 días transcurridos."
+        ? "Revisa el intervalo: el máximo es de 62 días transcurridos."
         : undefined,
     );
   }
