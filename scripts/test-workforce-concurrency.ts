@@ -176,6 +176,85 @@ async function main() {
       ).rows[0].version,
       2,
     );
+    // Fresh GPS is checked inside the serialized clock operation, not only in UI.
+    await actor((c) =>
+      c.query("select public.link_worker_login($1,$2,1,$3)", [
+        company,
+        worker,
+        `${owner}@example.test`,
+      ]),
+    );
+    const clockEntry = randomUUID();
+    const punch = (
+      c: PoolClient,
+      action: string,
+      id = clockEntry,
+      accuracy = 25,
+    ) =>
+      c.query(
+        "select public.punch_time($1,$2,$3,$4,jsonb_build_object('lat',25.75,'lng',-80.30,'acc',$5::numeric,'gps_ts',floor(extract(epoch from clock_timestamp()))*1000))",
+        [company, id, action, project, accuracy],
+      );
+    await assert.rejects(
+      actor((c) =>
+        c.query("select public.punch_time($1,$2,'IN',$3)", [
+          company,
+          clockEntry,
+          project,
+        ]),
+      ),
+      /gps_required/,
+    );
+    await assert.rejects(
+      actor((c) => punch(c, "IN", clockEntry, 101)),
+      /gps_required/,
+    );
+    assert.equal(await auditCount("time_entries"), 0);
+    await Promise.all(
+      Array.from({ length: 8 }, () => actor((c) => punch(c, "IN"))),
+    );
+    assert.equal(await auditCount("time_entries"), 1);
+    await assert.rejects(
+      actor((c) => punch(c, "IN", randomUUID())),
+      /time_overlap/,
+    );
+    const before = (
+      await pool.query(
+        "select to_jsonb(t) data from time_entries t where id=$1",
+        [clockEntry],
+      )
+    ).rows[0].data;
+    await assert.rejects(
+      actor((c) => punch(c, "OUT", clockEntry, 101)),
+      /gps_required/,
+    );
+    assert.deepEqual(
+      (
+        await pool.query(
+          "select to_jsonb(t) data from time_entries t where id=$1",
+          [clockEntry],
+        )
+      ).rows[0].data,
+      before,
+    );
+    await Promise.all(
+      Array.from({ length: 8 }, () => actor((c) => punch(c, "OUT"))),
+    );
+    assert.equal(await auditCount("time_entries"), 2);
+    const closed = (
+      await pool.query(
+        "select version,gps_in,gps_out,ends_at,created_by from time_entries where id=$1",
+        [clockEntry],
+      )
+    ).rows[0];
+    assert.equal(closed.version, 2);
+    assert.ok(closed.ends_at);
+    assert.equal(closed.gps_in.acc, 25);
+    assert.equal(closed.gps_out.acc, 25);
+    assert.equal(closed.created_by, owner);
+    console.log(
+      "PASS Clock GPS: native PostgreSQL; legacy/missing and inaccurate location rejected; eight concurrent IN and OUT retries; exactly one entry, two audits and immutable samples",
+    );
     console.log(
       "PASS Workforce: eight profile retries; competing versions; abort and lost response; concurrent overlap exclusion; eight revoke retries; one effect, audit and receipt per accepted command",
     );

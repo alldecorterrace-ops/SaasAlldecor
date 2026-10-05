@@ -8,6 +8,7 @@ import { TimeForm } from "@/components/time-form";
 import { LocalDateTime } from "@/components/work-form";
 import { EntitySelect } from "@/components/entity-select";
 import { Input } from "@/components/ui/input";
+import type { PunchGPS } from "@/lib/time-gps";
 type Entry = {
   id: string;
   worker_id: string | null;
@@ -20,6 +21,8 @@ type Entry = {
   notes: string;
   version: number;
   reason: string;
+  gps_in: PunchGPS | null;
+  gps_out: PunchGPS | null;
 };
 export default async function TimeDetail({
   params,
@@ -49,6 +52,8 @@ export default async function TimeDetail({
     notes: "",
     reason: "",
     version: 0,
+    gps_in: null,
+    gps_out: null,
   };
   if (!isNew) {
     const { data, error } = await db
@@ -168,6 +173,19 @@ export default async function TimeDetail({
             · Descanso: {e.break_minutes} min
           </p>
           <p>Proyecto: {project?.name ?? "Sin asignar"}</p>
+          <div className="mt-3 text-sm">
+            {[
+              { label: "Ubicación de entrada", gps: e.gps_in },
+              { label: "Ubicación de salida", gps: e.gps_out },
+            ].map(({ label, gps }) => (
+              <p key={label}>
+                {label}:{" "}
+                {gps
+                  ? `${gps.lat.toFixed(6)}, ${gps.lng.toFixed(6)} · precisión ${gps.acc} m · ${dates.format(new Date(gps.gps_ts))}`
+                  : "Sin ubicación registrada"}
+              </p>
+            ))}
+          </div>
           <p className="whitespace-pre-wrap">{e.notes}</p>
           <p className="text-sm">
             Motivo del último ajuste: {e.reason || "Marcación del reloj"}
