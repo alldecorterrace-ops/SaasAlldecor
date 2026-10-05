@@ -129,6 +129,14 @@ export async function OperationDetail({
         <Link className="underline" href={`/app/${companyId}/${moduleId}`}>
           Volver al listado
         </Link>
+        {workers && !isNew && canAccess(member, "horasfix") && (
+          <Link
+            className="underline"
+            href={`/app/${companyId}/horas/resumen?worker=${id}`}
+          >
+            Ver días por proyecto
+          </Link>
+        )}
         {workers && !isNew && canAccess(member, "gastos") && (
           <Link
             className="underline"
