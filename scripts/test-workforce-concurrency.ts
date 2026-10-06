@@ -252,6 +252,74 @@ async function main() {
     assert.equal(closed.gps_in.acc, 25);
     assert.equal(closed.gps_out.acc, 25);
     assert.equal(closed.created_by, owner);
+    // Fully paid job: parallel retries must preserve the first visit reason.
+    await actor(async (c) => {
+      const invoice = (
+        await c.query(
+          "select id,version from invoices where company_id=$1 and project_id=$2",
+          [company, project],
+        )
+      ).rows[0];
+      await c.query("select record_payment($1,$2,$3,$4,$5)", [
+        company,
+        randomUUID(),
+        invoice.id,
+        invoice.version,
+        JSON.stringify({
+          amount: "100.00",
+          payment_date: "2026-10-06",
+          method: "OTRO",
+          reference: "Synthetic visit concurrency",
+          notes: "Fictitious CI payment",
+        }),
+      ]);
+    });
+    const visit = randomUUID();
+    const visitPunch = (c: PoolClient, action: string, reason: string) =>
+      c.query(
+        "select punch_time($1,$2,$3,$4,jsonb_build_object('lat',25.75,'lng',-80.30,'acc',25,'gps_ts',floor(extract(epoch from clock_timestamp()))*1000),$5)",
+        [company, visit, action, project, reason],
+      );
+    await assert.rejects(
+      actor((c) => punch(c, "IN", visit)),
+      /visit_reason_required/,
+    );
+    const visits = await Promise.allSettled(
+      Array.from({ length: 8 }, (_, i) =>
+        actor((c) => visitPunch(c, "IN", i % 2 ? "garantia" : "limpieza")),
+      ),
+    );
+    assert.equal(visits.filter((x) => x.status === "fulfilled").length, 4);
+    for (const result of visits)
+      if (result.status === "rejected")
+        assert.match(String(result.reason), /request_conflict/);
+    assert.equal(await auditCount("time_entries"), 3);
+    const visitBefore = (
+      await pool.query(
+        "select to_jsonb(t) data from time_entries t where id=$1",
+        [visit],
+      )
+    ).rows[0].data;
+    assert.equal(visitBefore.punch_project_state, "terminado");
+    assert.ok(["garantia", "limpieza"].includes(visitBefore.visit_reason));
+    await Promise.all(
+      Array.from({ length: 8 }, () =>
+        actor((c) => visitPunch(c, "OUT", "remodelacion")),
+      ),
+    );
+    const visitClosed = (
+      await pool.query(
+        "select to_jsonb(t) data from time_entries t where id=$1",
+        [visit],
+      )
+    ).rows[0].data;
+    assert.equal(visitClosed.visit_reason, visitBefore.visit_reason);
+    assert.equal(visitClosed.project_id, project);
+    assert.equal(visitClosed.version, 2);
+    assert.equal(await auditCount("time_entries"), 4);
+    console.log(
+      "PASS Completed visits: eight competing IN requests retain one reason and one audit; eight OUT retries retain the project/reason and write one close audit",
+    );
     console.log(
       "PASS Clock GPS: native PostgreSQL; legacy/missing and inaccurate location rejected; eight concurrent IN and OUT retries; exactly one entry, two audits and immutable samples",
     );

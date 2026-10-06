@@ -58,6 +58,7 @@ export async function timeAction(
       p_action: value("action"),
       p_project: value("project_id") || null,
       p_gps: { ...gps, acc: Number((raw as Record<string, unknown>).acc) },
+      p_visit_reason: value("visit_reason"),
     }));
   } else if (operation === "request") {
     ({ error } = await db.rpc("request_time_change", {
@@ -101,6 +102,8 @@ export async function timeAction(
         "La ubicación pertenece al trabajador que marcó. Conserva ese trabajador; registra una corrección separada si corresponde.",
       gps_required:
         "Verifica tu ubicación actual, con precisión de hasta 100 metros, antes de marcar.",
+      visit_reason_required:
+        "Este proyecto está terminado. Selecciona el motivo de la visita y vuelve a marcar entrada.",
       project_unavailable: "Selecciona un proyecto disponible para tu cuenta.",
       entry_unavailable:
         "La jornada ya no está disponible. Recarga para consultar su estado.",
