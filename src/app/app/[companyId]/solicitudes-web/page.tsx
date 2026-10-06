@@ -102,6 +102,12 @@ export default async function WebRequests({
                   .join(", ")}
               </p>
             )}
+            {r.data.contact_preference && (
+              <p>Preferencia de contacto: {r.data.contact_preference}</p>
+            )}
+            {r.data.appointment_date && (
+              <p>Fecha de cita solicitada: {r.data.appointment_date}</p>
+            )}
             {r.lead_id && canAccess(member, "crm") ? (
               <Link
                 className="underline"
