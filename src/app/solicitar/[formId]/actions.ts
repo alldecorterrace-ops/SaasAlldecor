@@ -17,6 +17,8 @@ export async function submitInquiry(
       "postal_code",
       "message",
       "service",
+      "contact_preference",
+      "appointment_date",
       "length",
       "width",
       "height",
@@ -33,7 +35,7 @@ export async function submitInquiry(
   if (error)
     return {
       error:
-        "No se pudo registrar. Revisa nombre, correo y medidas (0–200 ft). El formulario puede haber vencido o alcanzado su límite diario.",
+        "No se pudo registrar. Revisa nombre, correo, fecha de cita y medidas (0–200 ft). El formulario puede haber vencido o alcanzado su límite diario.",
     };
   return {
     success:

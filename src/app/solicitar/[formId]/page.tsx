@@ -69,6 +69,16 @@ export default async function Inquiry({
             />
           </label>
         </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="field">
+            Preferencia de contacto (opcional)
+            <input name="contact_preference" maxLength={60} />
+          </label>
+          <label className="field">
+            Fecha de cita solicitada (opcional)
+            <input name="appointment_date" type="date" />
+          </label>
+        </div>
         <div className="grid grid-cols-3 gap-3">
           {Object.entries({
             length: "Largo (ft)",

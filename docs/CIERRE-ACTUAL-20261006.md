@@ -98,3 +98,8 @@ sesión y límites en [GASTOS-SIN-IA-20261006](GASTOS-SIN-IA-20261006.md) y
 [PR 14](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/14).
 Esto cierra el bloqueo de revisión por dependencia de IA; no certifica todos
 los consumidores de costos ni todo Comercial.
+
+Comercial: se completa fecha de cita y preferencia de contacto entre formulario,
+revisión y Lead. Contrato y límites en
+[COMERCIAL-CONTACTO-WEB-20261006](COMERCIAL-CONTACTO-WEB-20261006.md).
+No implica el cierre de todos los avisos o del módulo comercial completo.
