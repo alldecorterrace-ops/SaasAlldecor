@@ -59,7 +59,9 @@ create trigger time_field_declarations_audit after insert or update on public.ti
 
 create function app_private.field_time_clock_key(p_worker uuid,p_project uuid,p_start timestamptz,p_end timestamptz,p_break integer,p_rule text)
 returns text language sql immutable set search_path='' as $$
- select md5(jsonb_build_array(p_worker,p_project,extract(epoch from p_start),extract(epoch from p_end),p_break,p_rule)::text);
+ -- Project reassignment alone is metadata: it cannot discard effective Field
+ -- minutes. A different worker or clock still invalidates the private override.
+ select md5(jsonb_build_array(p_worker,extract(epoch from p_start),extract(epoch from p_end),p_break,p_rule)::text);
 $$;
 create function app_private.field_time_at(p_day date,p_hour text,p_tz text) returns timestamptz
 language plpgsql stable set search_path='' as $$

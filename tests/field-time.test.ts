@@ -1067,6 +1067,42 @@ test("Campo proposals preserve effective minutes and distinguish team review fro
         }),
     );
     await t.test(
+      "a project-only edit cannot recalculate unpaid Field minutes from declared clock endpoints",
+      () =>
+        tx(async () => {
+          await db.exec("reset role");
+          await db.query("update time_entries set ends_at=null where id=$1", [
+            entries.open,
+          ]);
+          await f.as(f.worker.user);
+          await submit("DECLARE", entries.open, 1, { end_hour: "11:00" });
+          await db.exec("reset role");
+          await db.query(
+            "update time_entries set project_id=null,version=version+1 where id=$1",
+            [entries.open],
+          );
+          assert.equal((await row(entries.open)).minutes, 0);
+          await f.as(f.owner);
+          await decide(
+            entries.open,
+            3,
+            false,
+            "Synthetic declaration rejection after project edit",
+          );
+          const c = laborContextSchema.parse(
+            (
+              await db.query<{ data: unknown }>(
+                "select labor_context($1) data",
+                [f.a],
+              )
+            ).rows[0].data,
+          );
+          const saved = c.entries.find((e) => e.external_id === entries.open)!;
+          assert.equal(saved.minutes, 0);
+          assert.equal(saved.minutes_authoritative, true);
+        }),
+    );
+    await t.test(
       "invalid hours, missing reasons, oversized payload and more than 18 hours leave all rows unchanged",
       async () => {
         for (const [kind, data, error] of [
