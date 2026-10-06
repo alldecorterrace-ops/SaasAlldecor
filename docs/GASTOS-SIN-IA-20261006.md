@@ -46,8 +46,32 @@ terceros. Los formatos JPG/PNG/WebP conservan los bytes. Errores son genéricos.
 reintentos, original ausente/corrupto, versión vieja, invalidación de revisión,
 aprobaciones conservadas, reembolso sin duplicar costo y conversión HEIC.
 No se enviaron correos, pagos, reembolsos reales ni datos de negocio de ADT.
-La publicación, SQL nativo y sesión web se registran después de verificarlos;
-estas pruebas locales todavía no acreditan esos niveles.
+Entrega de aplicación `8f14054915b70e62388e4300d60a95326da53843`, contrato
+084. [CI 37537460975](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/37537460975)
+aprobado: 884 pruebas, sin fallos ni omisiones, tipos, lint y los tres trabajos.
+
+SQL nativo de staging: 91 tablas y 1.385 filas conservadas durante la migración,
+sin backfill. Con identidades ficticias en contexto SQL se probaron reintento,
+versión vieja, Encargado/empresa ajena, aprobaciones conservadas, pagador cambiado,
+tarjeta de empresa sin reembolso y constancia sin duplicar costo. Toda esa
+simulación terminó en rollback; no sustituye una sesión de esos otros perfiles.
+
+La sesión administradora creó el gasto ficticio QA-RECIBO-MANUAL-20261006 por
+$12.34, abrió el original privado y confirmó la revisión visual. Quedó en
+SUBMITTED, versión 2, sin aprobaciones ni reembolso, con cero trabajos de IA.
+Una segunda carga de ensayo HEIC se mostró como JPG privado; su descarga original
+conservó los 2.520 bytes y SHA-256
+d969a675f55dee3b4642e4b454483ade935663f45c4e5e120c5be5e89166e995.
+Ese archivo no es un recibo comercial válido y no se confirmó su revisión.
+Los dos gastos anteriores permanecen exactamente iguales; las 20 filas de pagos
+y 11 de Gastos administrativos se conservaron. Solo se añadieron dos casos
+ficticios y sus metadatos/solicitudes/auditoría.
+
+Publicación y regreso real `8f14054 → 88dad31 → 8f14054` comprobados: sesión,
+salud 200, raíces de procesos, 17 archivos de fuente, conversor incluido en la
+traza de la ruta privada, entorno y dependencias conservados. Grupo final
+`saas-staging-8f14054-20261006-final-r1`, proceso observado 3688322. Producción
+con configuración idéntica y salud 200; sin imports ni traspaso.
 
 Comercial sigue en el alcance: Leads/formulario, productos/precios,
 plantillas/comunicaciones y escenarios de Facturas. No se declara cerrado por
