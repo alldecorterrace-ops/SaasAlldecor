@@ -17,6 +17,7 @@ create table app_private.workforce_project_choice_requests (
  primary key(company_id,actor_id,request_id)
 );
 alter table public.workforce_project_choices enable row level security;
+alter table app_private.workforce_project_choice_requests enable row level security;
 revoke all on public.workforce_project_choices,app_private.workforce_project_choice_requests from public,anon,authenticated;
 grant select on public.workforce_project_choices to authenticated;
 create policy workforce_project_choices_manager_read on public.workforce_project_choices for select to authenticated using(app_private.is_manager(company_id));
