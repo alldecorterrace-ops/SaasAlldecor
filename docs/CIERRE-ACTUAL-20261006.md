@@ -39,7 +39,7 @@ La implementación y el CI no equivalen al cierre completo de un módulo.
 | Estimados             | Plantillas/disparadores, revisiones y comunicaciones restantes                                                                    |
 | Facturas              | Escenarios/perfiles restantes, documentos privados y estados vinculados tras anulación; el PDF de correo requerido ya se comprobó |
 | Proyectos             | Estados y acciones actuales; ausencia de cancelación automática por anulación contrastada con ADT vigente                         |
-| Gastos                | Proveedor real de recibos, HEIC, reembolso/conciliación y demás consumidores sin duplicación                                      |
+| Gastos                | Proveedor real de recibos, prueba alojada de HEIC, reembolso/conciliación y demás consumidores sin duplicación                    |
 | Trabajadores          | Escenarios restantes de perfiles, asignaciones y costos; no repetir acciones ya comprobadas arriba                                |
 | Horas y solicitudes   | Escenarios restantes de jornadas, permisos, costos y periodos; catálogo ampliado por 083 y GPS físico aplazado                    |
 | Permisos              | Contraste de acciones vigentes y perfiles restantes                                                                               |
@@ -81,5 +81,5 @@ recorrido completo antes de cambiar código o marcarla cerrada.
    GPS físico, imports ni traspaso. Evidencia de entrega en el
    [PR 9](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/9).
 2. Privacidad de documentos publicada y comprobada en staging: 867 pruebas, nueve GET, regreso compatible y 1.380 filas conservadas; evidencia en [PR 10](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/10). Anulación y expediente: reglas del controlador ADT vigente contrastadas, 22 pruebas focalizadas, RLS/RPC nativos y cuatro GET con cuenta restringida aprobados; contrato y límites en [COMERCIAL-ANULACION-EXPEDIENTE-20261006](COMERCIAL-ANULACION-EXPEDIENTE-20261006.md). Diez GET con Administración y pantallas de factura, proyecto y documentos aprobados. La pantalla Pagos detectó un contrato desactualizado de métodos: corrección 74bdafb publicada en staging y comprobada con Administración, once movimientos y total aplicado conservados, diez GET de PDFs en candidato/retorno/final, regreso real y 1.380 filas intactas; evidencia en [EXPEDIENTE-PAGOS-METODOS-20261006](EXPEDIENTE-PAGOS-METODOS-20261006.md) y [PR 12](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/12). Continúan los demás escenarios comerciales y perfiles.
-3. Cerrar proveedor de recibos, Portal/IA y los demás recorridos operativos.
+3. Conversión HEIC/HEIF para recibos implementada y comprobada localmente con originales conservados; publicación/CI/hosting pendientes. Contrato en [RECIBOS-HEIC-20261006](RECIBOS-HEIC-20261006.md). Cerrar proveedor real de recibos, Portal/IA y los demás recorridos operativos.
 4. Verificación integral de los 21 módulos y preparación operativa.
