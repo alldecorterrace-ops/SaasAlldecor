@@ -7,6 +7,7 @@ import {
 } from "@/app/app/[companyId]/horas/actions";
 import { getPunchGPS, GPSFailure } from "@/lib/time-gps";
 import { visitReasons, type PunchProject } from "@/lib/time-visits";
+import { Input } from "./ui/input";
 import { Feedback } from "./feedback";
 import { SubmitButton } from "./submit-button";
 
@@ -101,7 +102,7 @@ export function PunchForm({
                   key={String(view)}
                   type="button"
                   aria-pressed={completedView === view}
-                  className="rounded-lg border px-4 py-3"
+                  className={`rounded-lg border px-4 py-3 ${completedView === view ? "bg-primary text-primary-foreground" : "bg-background"}`}
                   onClick={() => {
                     setCompletedView(view);
                     setSearch("");
@@ -121,7 +122,7 @@ export function PunchForm({
             )}
             <label className="field">
               Buscar proyecto
-              <input
+              <Input
                 type="search"
                 value={search}
                 onChange={(event) => {
