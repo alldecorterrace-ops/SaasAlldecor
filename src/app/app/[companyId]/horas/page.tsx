@@ -141,6 +141,7 @@ export default async function Hours({
                 id={current.data?.id ?? randomUUID()}
                 exit={Boolean(current.data)}
                 projects={punchProjects}
+                preferredProjectId={workforce.preferred_project_id}
               />
             </>
           ) : (

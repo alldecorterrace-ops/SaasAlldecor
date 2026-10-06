@@ -40,6 +40,7 @@ export const workforceAssignmentSchema = z
   });
 export const workforceScopeSchema = z.object({
   actor_id: z.uuid().nullable(),
+  preferred_project_id: z.uuid().nullable().optional().default(null),
   role: z.enum(["WORKER", "FOREMAN", "OFFICE", "ADMIN"]).nullable(),
   team: z.array(
     z.object({

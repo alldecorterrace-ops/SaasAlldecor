@@ -1,10 +1,16 @@
 import Link from "next/link";
+import { randomUUID } from "node:crypto";
+import { canAccess } from "@/lib/modules";
+import { workforceProjectChoicesContextSchema } from "@/lib/workforce-project-choice";
+import { WorkforceProjectChoiceForm } from "@/components/workforce-project-choice-form";
 import { requireModule } from "@/lib/auth";
 import { workforceRoles, workforceScopeSchema } from "@/lib/workforce";
 export default async function Team({
   params,
+  searchParams,
 }: {
   params: Promise<{ companyId: string }>;
+  searchParams: Promise<{updated?:string}>;
 }) {
   const { companyId } = await params,
     { db, member } = await requireModule(companyId, "horasfix");
@@ -14,10 +20,16 @@ export default async function Team({
   if (error) throw new Error("No se pudo consultar el equipo y las obras.");
   const scope = workforceScopeSchema.parse(data),
     manager = ["owner", "admin"].includes(member.role);
+  const search=await searchParams;
+  const canChoose=canAccess(member,"horasfix","write")&&(manager||scope.role==="FOREMAN");
+  const choices=canChoose?await db.rpc("workforce_project_choices_context",{p_company:companyId}):null;
+  if(choices?.error) throw new Error("No se pudieron cargar las obras actuales del equipo.");
+  const choiceContext=choices?workforceProjectChoicesContextSchema.parse(choices.data):null;
   return (
     <>
       <p className="eyebrow">Equipo</p>
       <h1 className="page-title mt-2">Equipo y obras</h1>
+      {search.updated==="project"&&<p role="status" className="card my-4">Obra actual guardada.</p>}
       <nav className="flex flex-wrap gap-5 my-5">
         {(manager || scope.role === "FOREMAN") && (
           <Link
@@ -76,6 +88,7 @@ export default async function Team({
                         {workforceRoles[w.role]}
                         {w.id === scope.actor_id ? " · Tu perfil" : ""}
                       </p>
+                      {choiceContext?.workers.some(c=>c.id===w.id)&&(()=>{const choice=choiceContext.workers.find(c=>c.id===w.id)!;return <><p className="text-sm mt-2">Obra actual: {choice.project_name??"Sin obra actual"}</p><WorkforceProjectChoiceForm key={`${choice.id}:${choice.version}`} companyId={companyId} request={randomUUID()} worker={choice} projects={choiceContext.projects}/></>;})()}
                       {manager && (
                         <Link
                           className="underline text-sm"

@@ -14,11 +14,13 @@ export function PunchForm({
   id,
   exit,
   projects,
+  preferredProjectId,
 }: {
   companyId: string;
   id: string;
   exit: boolean;
   projects: { id: string; name: string }[];
+  preferredProjectId?: string | null;
 }) {
   const flight = useRef(false);
   const [progress, setProgress] = useState("");
@@ -70,7 +72,7 @@ export function PunchForm({
         {!exit && (
           <label className="field">
             Proyecto
-            <select name="project_id" required defaultValue="">
+            <select name="project_id" required defaultValue={projects.some(p=>p.id===preferredProjectId)?preferredProjectId??"":""}>
               <option value="">Selecciona un proyecto</option>
               {projects.map((project) => (
                 <option key={project.id} value={project.id}>
