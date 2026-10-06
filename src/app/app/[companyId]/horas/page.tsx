@@ -4,6 +4,7 @@ import { requireModule } from "@/lib/auth";
 import { canAccess } from "@/lib/modules";
 import { TimeForm } from "@/components/time-form";
 import { PunchForm } from "@/components/punch-form";
+import { punchProjectsSchema } from "@/lib/time-visits";
 import { workforceScopeSchema } from "@/lib/workforce";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -47,8 +48,13 @@ export default async function Hours({
   if (scope.error)
     throw new Error("No se pudo consultar el alcance del equipo.");
   const workforce = workforceScopeSchema.parse(scope.data);
-  const punchProjects =
-    mine && write && !current.data ? workforce.projects : [];
+  const punchCatalog =
+    mine && write && !current.data
+      ? await db.rpc("time_punch_projects", { p_company: companyId })
+      : { data: [], error: null };
+  if (punchCatalog.error)
+    throw new Error("No se pudieron consultar los proyectos del reloj.");
+  const punchProjects = punchProjectsSchema.parse(punchCatalog.data);
   const hasTeamReport = ["ADMIN", "FOREMAN", "OFFICE"].includes(
     workforce.role ?? "",
   );

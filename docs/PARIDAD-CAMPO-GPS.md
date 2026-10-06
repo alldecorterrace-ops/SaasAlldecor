@@ -53,3 +53,7 @@ El esquema 078 resuelve el redondeo y mínimo un minuto para nuevas marcaciones.
 Conserva los valores y reglas de los registros previos, así como el cálculo
 administrativo existente. Ver [alcance y validación](PARIDAD-CLOCK-MINUTOS.md).
 Los apartados anteriores que describen el truncamiento reflejan el esquema 075.
+
+## Visitas a obras terminadas
+
+El esquema 082 añade un catálogo separado del reloj y motivo obligatorio según las facturas, sin ampliar el alcance de gastos. Ver [reglas y límites](PARIDAD-CAMPO-VISITAS.md). La prueba de GPS físico continúa aplazada.

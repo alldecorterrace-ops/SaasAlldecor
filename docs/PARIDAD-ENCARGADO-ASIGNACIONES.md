@@ -21,16 +21,16 @@ El archivo de origen y la evidencia operativa permanecen fuera del repositorio.
 
 ## Equivalencia y límites
 
-| Acción o regla | SaaS | Verificación reproducible |
-| --- | --- | --- |
-| Consultar equipo directo | RPC con trabajadores activos, perfil habilitado y supervisor actual | Encargado excluye su propio perfil y otras empresas |
-| Catálogo de obra | Identidad y nombre canónicos de proyectos de la misma empresa | No incluye datos de clientes, tarifas, pagos o credenciales |
-| Asignar obra actual | `choose_workforce_project`, selección inmutable con versión y actor | Cambio auditado; ningún registro anterior alterado |
-| Quitar obra actual | `project_id=null` y una nueva versión | Historial conservado y selección previa cerrada para nuevas operaciones |
-| Reintentar una respuesta perdida | Recibo por empresa, actor y solicitud | Un efecto y una auditoría; datos distintos rechazan el reintento |
-| Conflictos y revocación | Versión y permiso comprobados bajo el bloqueo de Workforce | Cambiar supervisor, perfil o permiso invalida la acción y el recibo |
-| Entrada propia | La obra actual se ofrece y se preselecciona entre obras disponibles | Las asignaciones administrativas conservan su vigencia independiente |
-| Turnos anteriores y abiertos | La selección no reescribe proyecto, reloj ni minutos | Comparación de todos los registros de tiempo antes y después |
+| Acción o regla                   | SaaS                                                                | Verificación reproducible                                               |
+| -------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Consultar equipo directo         | RPC con trabajadores activos, perfil habilitado y supervisor actual | Encargado excluye su propio perfil y otras empresas                     |
+| Catálogo de obra                 | Identidad y nombre canónicos de proyectos de la misma empresa       | No incluye datos de clientes, tarifas, pagos o credenciales             |
+| Asignar obra actual              | `choose_workforce_project`, selección inmutable con versión y actor | Cambio auditado; ningún registro anterior alterado                      |
+| Quitar obra actual               | `project_id=null` y una nueva versión                               | Historial conservado y selección previa cerrada para nuevas operaciones |
+| Reintentar una respuesta perdida | Recibo por empresa, actor y solicitud                               | Un efecto y una auditoría; datos distintos rechazan el reintento        |
+| Conflictos y revocación          | Versión y permiso comprobados bajo el bloqueo de Workforce          | Cambiar supervisor, perfil o permiso invalida la acción y el recibo     |
+| Entrada propia                   | La obra actual se ofrece y se preselecciona entre obras disponibles | Las asignaciones administrativas conservan su vigencia independiente    |
+| Turnos anteriores y abiertos     | La selección no reescribe proyecto, reloj ni minutos                | Comparación de todos los registros de tiempo antes y después            |
 
 Administración conserva la gestión de periodos de asignación en Trabajadores.
 La obra actual del Encargado es una selección operativa separada: quitarla
@@ -94,3 +94,7 @@ las asignaciones administrativas, la auditoría y los datos de negocio.
 
 No se ha activado este paquete al redactar esta nota. GPS físico sigue
 aplazado y el traspaso operativo desde ADT continúa sin activar.
+
+## Visitas a obras terminadas
+
+El esquema 082 añade un catálogo separado del reloj y motivo obligatorio según las facturas, sin ampliar el alcance de gastos. Ver [reglas y límites](PARIDAD-CAMPO-VISITAS.md). La prueba de GPS físico continúa aplazada.

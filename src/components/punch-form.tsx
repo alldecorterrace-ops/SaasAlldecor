@@ -6,6 +6,8 @@ import {
   type TimeState,
 } from "@/app/app/[companyId]/horas/actions";
 import { getPunchGPS, GPSFailure } from "@/lib/time-gps";
+import { visitReasons, type PunchProject } from "@/lib/time-visits";
+import { Input } from "./ui/input";
 import { Feedback } from "./feedback";
 import { SubmitButton } from "./submit-button";
 
@@ -19,9 +21,28 @@ export function PunchForm({
   companyId: string;
   id: string;
   exit: boolean;
-  projects: { id: string; name: string }[];
+  projects: PunchProject[];
   preferredProjectId?: string | null;
 }) {
+  const preferred = projects.find((p) => p.id === preferredProjectId);
+  const [projectId, setProjectId] = useState(preferred?.id ?? "");
+  const [completedView, setCompletedView] = useState(
+    preferred?.state === "terminado",
+  );
+  const [search, setSearch] = useState("");
+  const [reason, setReason] = useState("");
+  const completed =
+    projects.find((p) => p.id === projectId)?.state === "terminado";
+  const normalize = (text: string) =>
+    text
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  const shown = projects.filter(
+    (p) =>
+      (p.state === "terminado") === completedView &&
+      normalize(p.name).includes(normalize(search.trim())),
+  );
   const flight = useRef(false);
   const [progress, setProgress] = useState("");
   const [state, action, pending, onReset] = usePreservedActionState(
@@ -70,17 +91,90 @@ export function PunchForm({
       <input type="hidden" name="action" value={exit ? "OUT" : "IN"} />
       <fieldset disabled={pending}>
         {!exit && (
-          <label className="field">
-            Proyecto
-            <select name="project_id" required defaultValue={projects.some(p=>p.id===preferredProjectId)?preferredProjectId??"":""}>
-              <option value="">Selecciona un proyecto</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
+          <div className="space-y-4">
+            <div
+              role="group"
+              aria-label="Estado del proyecto"
+              className="flex flex-wrap gap-3"
+            >
+              {[false, true].map((view) => (
+                <button
+                  key={String(view)}
+                  type="button"
+                  aria-pressed={completedView === view}
+                  className={`rounded-lg border px-4 py-3 ${completedView === view ? "bg-primary text-primary-foreground" : "bg-background"}`}
+                  onClick={() => {
+                    setCompletedView(view);
+                    setSearch("");
+                    setProjectId("");
+                    setReason("");
+                  }}
+                >
+                  {view ? "Proyectos terminados" : "Activos"}
+                </button>
               ))}
-            </select>
-          </label>
+            </div>
+            {completedView && (
+              <p className="text-sm">
+                Para limpieza, garantía, reparación o remodelación. La visita se
+                registra en el mismo proyecto.
+              </p>
+            )}
+            <label className="field">
+              Buscar proyecto
+              <Input
+                type="search"
+                value={search}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setProjectId("");
+                  setReason("");
+                }}
+              />
+            </label>
+            <label className="field">
+              Proyecto
+              <select
+                name="project_id"
+                required
+                value={projectId}
+                onChange={(event) => {
+                  setProjectId(event.target.value);
+                  setReason("");
+                }}
+              >
+                <option value="">Selecciona un proyecto</option>
+                {shown.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {!shown.length && (
+              <p className="text-sm">
+                No hay proyectos disponibles en esta vista.
+              </p>
+            )}
+            {completed && (
+              <label className="field">
+                Motivo de la visita
+                <select
+                  name="visit_reason"
+                  required
+                  value={reason}
+                  onChange={(event) => setReason(event.target.value)}
+                >
+                  <option value="">Selecciona el motivo</option>
+                  {Object.entries(visitReasons).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+          </div>
         )}
       </fieldset>
       {!exit && !projects.length && (

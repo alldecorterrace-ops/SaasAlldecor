@@ -9,6 +9,7 @@ import { LocalDateTime } from "@/components/work-form";
 import { EntitySelect } from "@/components/entity-select";
 import { Input } from "@/components/ui/input";
 import { FieldTimePanel } from "@/components/field-time-panel";
+import { visitLabel } from "@/lib/time-visits";
 import type { PunchGPS } from "@/lib/time-gps";
 type Entry = {
   id: string;
@@ -24,6 +25,7 @@ type Entry = {
   reason: string;
   gps_in: PunchGPS | null;
   gps_out: PunchGPS | null;
+  visit_reason: string | null;
 };
 export default async function TimeDetail({
   params,
@@ -55,6 +57,7 @@ export default async function TimeDetail({
     version: 0,
     gps_in: null,
     gps_out: null,
+    visit_reason: null,
   };
   if (!isNew) {
     const { data, error } = await db
@@ -159,6 +162,11 @@ export default async function TimeDetail({
       </div>
       {!isNew && (
         <section className="card mb-6">
+          {visitLabel(e.visit_reason) && (
+            <p className="mb-3">
+              Proyecto terminado · {visitLabel(e.visit_reason)}
+            </p>
+          )}
           <p className="font-semibold">
             {e.status} · Revisión {e.version}
           </p>
