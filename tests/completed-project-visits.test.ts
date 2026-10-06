@@ -197,7 +197,20 @@ test("Campo completed visits preserve clocks, finances, role scope and reasons",
           c.some((p) => p.id === hidden || p.id === f.foreignProject),
           false,
         );
-        assert.deepEqual(Object.keys(c[0]).sort(), ["id", "name", "state"]);
+        assert.deepEqual(
+          Object.keys(
+            (
+              await db.query<{ data: Record<string, unknown>[] }>(
+                "select time_punch_projects($1) data",
+                [f.a],
+              )
+            ).rows[0].data[0],
+          ).sort(),
+          ["id", "name", "state"],
+        );
+        assert.equal(c[0].customer_name, "");
+        assert.equal(c[0].project_date, null);
+        assert.equal(c[0].address, "");
         assert.equal((await db.query("select * from projects")).rows.length, 0);
         assert.equal((await db.query("select * from invoices")).rows.length, 0);
         assert.equal((await db.query("select * from payments")).rows.length, 0);

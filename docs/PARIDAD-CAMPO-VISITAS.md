@@ -22,3 +22,6 @@ GPS de entrada/salida y cálculo de minutos 078 se conservan. La prueba de GPS e
 Los campos anteriores reciben null sin reescribir filas. Se conservan firmas RPC de cuatro y cinco argumentos: siguen exigiendo GPS y no permiten entrar en una obra terminada sin motivo. El código anterior no ofrece el catálogo nuevo ni el motivo; una salida de visita ya abierta sigue siendo posible. Volver al código no revierte el esquema ni borra datos.
 
 La implementación y las pruebas locales deben verificarse antes de declarar publicación, CI o prueba de usuario real. La paridad completa de los 21 módulos sigue abierta.
+
+
+La continuación 083 incorpora los campos y búsqueda del catálogo de entrada: [cliente, dirección y fecha](PARIDAD-CAMPO-CATALOGO.md). El límite por nombre descrito arriba corresponde a la entrega 082; consultar el cierre vigente para el estado de publicación.

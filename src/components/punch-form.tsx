@@ -6,7 +6,11 @@ import {
   type TimeState,
 } from "@/app/app/[companyId]/horas/actions";
 import { getPunchGPS, GPSFailure } from "@/lib/time-gps";
-import { visitReasons, type PunchProject } from "@/lib/time-visits";
+import {
+  filterPunchProjects,
+  visitReasons,
+  type PunchProject,
+} from "@/lib/time-visits";
 import { Input } from "./ui/input";
 import { Feedback } from "./feedback";
 import { SubmitButton } from "./submit-button";
@@ -33,16 +37,8 @@ export function PunchForm({
   const [reason, setReason] = useState("");
   const completed =
     projects.find((p) => p.id === projectId)?.state === "terminado";
-  const normalize = (text: string) =>
-    text
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase();
-  const shown = projects.filter(
-    (p) =>
-      (p.state === "terminado") === completedView &&
-      normalize(p.name).includes(normalize(search.trim())),
-  );
+  const selectedProject = projects.find((p) => p.id === projectId);
+  const shown = filterPunchProjects(projects, completedView, search);
   const flight = useRef(false);
   const [progress, setProgress] = useState("");
   const [state, action, pending, onReset] = usePreservedActionState(
@@ -121,7 +117,7 @@ export function PunchForm({
               </p>
             )}
             <label className="field">
-              Buscar proyecto
+              Buscar cliente o proyecto
               <Input
                 type="search"
                 value={search}
@@ -146,11 +142,29 @@ export function PunchForm({
                 <option value="">Selecciona un proyecto</option>
                 {shown.map((project) => (
                   <option key={project.id} value={project.id}>
-                    {project.name}
+                    {project.customer_name || project.name}
                   </option>
                 ))}
               </select>
             </label>
+            {selectedProject && (
+              <div className="space-y-2 text-sm" aria-live="polite">
+                <p>{selectedProject.name}</p>
+                {selectedProject.address && (
+                  <>
+                    <p>{selectedProject.address}</p>
+                    <a
+                      className="font-semibold underline"
+                      href={`https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=${encodeURIComponent(selectedProject.address)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Cómo llegar · Google Maps
+                    </a>
+                  </>
+                )}
+              </div>
+            )}
             {!shown.length && (
               <p className="text-sm">
                 No hay proyectos disponibles en esta vista.
