@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { paymentSchema } from "./finance";
 
 const money = z.string().regex(/^\d+\.\d{2}$/);
 export const customerLedgerSchema = z.object({
@@ -21,14 +22,9 @@ export const customerLedgerSchema = z.object({
           "APROBADO",
           "RECHAZADO",
         ]),
-        method: z.enum([
-          "EFECTIVO",
-          "CHEQUE",
-          "TRANSFERENCIA",
-          "TARJETA_EXTERNA",
-          "ZELLE",
-          "OTRO",
-        ]),
+        // The read ledger includes invoice methods, even on annulled entries.
+        // Expense creation retains its narrower, independent contract.
+        method: paymentSchema.shape.method,
         reference: z.string(),
         description: z.string(),
         vendor: z.string(),
