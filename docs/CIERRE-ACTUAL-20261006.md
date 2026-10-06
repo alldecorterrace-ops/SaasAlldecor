@@ -32,7 +32,7 @@ La implementación y el CI no equivalen al cierre completo de un módulo.
 | Actividad             | Matriz completa de eventos y visibilidad por permisos                                                                             |
 | Configuración         | Editor visual, cambios y revocaciones, invitaciones y escenarios restantes                                                        |
 | Leads                 | Estados, origen web/manual y comunicaciones actuales                                                                              |
-| Clientes              | Contraste restante de expediente/documentos y auditoría del origen; descarga privada ajena pendiente de respuesta del servidor    |
+| Clientes              | Contraste restante de expediente/documentos y auditoría del origen; rechazo HTTP de descarga ajena comprobado el 6 de octubre     |
 | Productos             | Opciones/especificaciones y escenarios restantes de captura en estimados                                                          |
 | Precios               | Catálogo/costos/márgenes operativos y perfiles restantes                                                                          |
 | Estimados web         | Formulario, estados, avisos y relación con Leads frente al origen vigente                                                         |
@@ -80,6 +80,6 @@ recorrido completo antes de cambiar código o marcarla cerrada.
    cliente ficticio del ensayo y su evento de auditoría. Sin marcación nueva,
    GPS físico, imports ni traspaso. Evidencia de entrega en el
    [PR 9](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/9).
-2. Cerrar escenarios comerciales, permisos y estados vinculados restantes.
+2. Descarga comercial: el servidor confirmó 200 para el PDF permitido, 401 sin sesión y 404 para empresa ajena o módulo no permitido. La prueba detectó un encabezado de privacidad sobrescrito; corrección y contrato en [PRIVACIDAD-DOCUMENTOS-20261006](PRIVACIDAD-DOCUMENTOS-20261006.md). La evidencia de publicación, regreso y conservación se registra en su PR. Continúan los demás escenarios comerciales, permisos y estados vinculados.
 3. Cerrar proveedor de recibos, Portal/IA y los demás recorridos operativos.
 4. Verificación integral de los 21 módulos y preparación operativa.

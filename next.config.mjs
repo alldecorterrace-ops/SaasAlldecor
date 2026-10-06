@@ -8,6 +8,18 @@ const config = {
   async headers() {
     return [
       {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
+      },
+      {
         source: "/cliente",
         headers: [
           { key: "Cache-Control", value: "private, no-store" },
@@ -23,18 +35,20 @@ const config = {
           { key: "Referrer-Policy", value: "no-referrer" },
         ],
       },
-      {
-        source: "/(.*)",
-        headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "DENY" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
-          },
-        ],
-      },
+      // Specific private routes must follow the general rule: Next uses the
+      // last matching header, including when a download returns an error.
+      ...[
+        "/api/commercial-documents/:path*",
+        "/api/invoice-email/:path*",
+        "/api/customers/:path*",
+        "/api/work-documents/:path*",
+        "/api/history-files/:path*",
+        "/api/expenses/:path*",
+        "/api/workforce/:path*",
+      ].map((source) => ({
+        source,
+        headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
+      })),
     ];
   },
 };
