@@ -19,6 +19,7 @@ export const laborContextSchema = z.object({
       clock_in: z.number().int().safe(),
       clock_out: z.number().int().safe().nullable(),
       minutes: z.number().int().nullable(),
+      minutes_authoritative: z.boolean().optional(),
       status: z.string(),
       review_status: z.string(),
       req_status: z.string(),

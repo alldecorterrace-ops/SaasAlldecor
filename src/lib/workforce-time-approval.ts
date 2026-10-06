@@ -30,6 +30,14 @@ export const timeReviewSchema = z.object({
       locked: z.boolean(),
       correction_pending: z.boolean(),
       can_approve: z.boolean(),
+      field_minutes: z.number().int().nonnegative().nullable().default(null),
+      field_kind: z.enum(["REQUEST", "DECLARE"]).nullable().default(null),
+      field_needs_review: z.boolean().default(false),
+      formal_pending: z.boolean().default(false),
+      field_in_local: z.string().nullable().default(null),
+      field_out_local: z.string().nullable().default(null),
+      can_approve_field: z.boolean().default(false),
+      can_reject_field: z.boolean().default(false),
     }),
   ),
 });
@@ -49,6 +57,8 @@ export function timeApprovalError(error: { code?: string; message: string }) {
     permission_denied: "Tu cuenta ya no tiene permiso para aprobar horas.",
     foreman_required: "Esta acción requiere un Encargado o administrador.",
     entry_unavailable: "Este turno ya no está disponible para tu equipo.",
+    field_review_pending:
+      "Revisa la propuesta de Campo antes de aprobar el turno.",
     shift_open: "Cierra el turno antes de aprobarlo.",
     period_locked:
       "La semana está cerrada. Un administrador debe reabrirla antes de aprobar.",

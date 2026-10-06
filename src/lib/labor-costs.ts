@@ -9,6 +9,8 @@ export interface LaborEntry {
   clock_in: number;
   clock_out?: number | null;
   minutes?: number | null;
+  // An explicit Field value of zero must not be inferred from the clock.
+  minutes_authoritative?: boolean;
   status: string;
   review_status?: string;
   req_status?: string;
@@ -192,7 +194,8 @@ export function previewLabor(input: LaborInput) {
       e.review_status?.toUpperCase() !== "NEEDS_REVIEW" &&
       e.req_status?.toUpperCase() !== "PENDING";
     let minutes = e.minutes ?? 0;
-    if (valid && minutes <= 0) minutes = Math.round((co - ci) / 60);
+    if (valid && minutes <= 0 && !e.minutes_authoritative)
+      minutes = Math.round((co - ci) / 60);
     if (!valid || !Number.isSafeInteger(minutes) || minutes <= 0) {
       pending.push({
         entryId: e.external_id,

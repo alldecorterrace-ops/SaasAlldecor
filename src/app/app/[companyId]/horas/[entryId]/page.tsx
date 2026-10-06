@@ -8,6 +8,7 @@ import { TimeForm } from "@/components/time-form";
 import { LocalDateTime } from "@/components/work-form";
 import { EntitySelect } from "@/components/entity-select";
 import { Input } from "@/components/ui/input";
+import { FieldTimePanel } from "@/components/field-time-panel";
 import type { PunchGPS } from "@/lib/time-gps";
 type Entry = {
   id: string;
@@ -192,6 +193,18 @@ export default async function TimeDetail({
           </p>
         </section>
       )}
+      {!isNew && (
+        <FieldTimePanel
+          db={db}
+          company={companyId}
+          entry={e.id}
+          version={e.version}
+          timezone={company.timezone}
+          own={mine?.id === e.worker_id}
+          write={write}
+          manager={manager}
+        />
+      )}
       {manager && (
         <section className="card mb-6">
           <h2 className="text-xl font-semibold mb-4">
@@ -247,11 +260,13 @@ export default async function TimeDetail({
       )}
       {!isNew &&
         write &&
-        (manager || mine?.id === e.worker_id) &&
+        manager &&
         e.status !== "ANULADO" &&
         !requests.data?.some((r) => r.status === "PENDIENTE") && (
           <section className="card mb-6">
-            <h2 className="text-xl font-semibold mb-4">Solicitar corrección</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              Solicitar corrección administrativa
+            </h2>
             <TimeForm
               key={`request:${e.version}`}
               companyId={companyId}

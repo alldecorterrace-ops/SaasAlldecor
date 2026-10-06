@@ -10,6 +10,7 @@ import {
 } from "@/lib/workforce-time-approval";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { FieldTimeForm } from "@/components/field-time-form";
 import { Feedback } from "@/components/feedback";
 import { ListPagination } from "@/components/list-pagination";
 import { WorkforceTimeApprovalForm } from "@/components/workforce-time-approval-form";
@@ -75,9 +76,8 @@ export default async function TimeReview({
       <p className="text-sm mt-2 text-muted-foreground">
         Consulta por fecha de entrada en {company.timezone}.
         {manager
-          ? " Trabajadores activos de tu empresa."
-          : " Solo tu equipo directo."}{" "}
-        Al aprobar se conservan las horas registradas.
+          ? " Trabajadores activos de tu empresa. Administración puede aplicar el horario solicitado o rechazarlo con motivo."
+          : " Solo tu equipo directo. Revisa los minutos propuestos sin cambiar el horario registrado; la solicitud de horario sigue pendiente de Administración."}
       </p>
       <nav className="flex flex-wrap gap-4 my-5">
         <Link className="underline" href={`/app/${companyId}/horas/equipo`}>
@@ -130,7 +130,7 @@ export default async function TimeReview({
                   <dd>{entry.starts_local}</dd>
                   <dt>Salida</dt>
                   <dd>{entry.ends_local ?? "Turno abierto"}</dd>
-                  <dt>Tiempo neto</dt>
+                  <dt>Minutos vigentes</dt>
                   <dd>
                     {entry.minutes === null
                       ? "En curso"
@@ -145,10 +145,90 @@ export default async function TimeReview({
                   <p className="text-sm">Cierra el turno antes de aprobarlo.</p>
                 )}
                 {entry.locked && <p className="text-sm">Semana cerrada.</p>}
-                {entry.correction_pending && (
-                  <p className="text-sm">
-                    Corrección pendiente de revisión por un administrador.
-                  </p>
+                {entry.correction_pending &&
+                  !entry.field_needs_review &&
+                  !entry.formal_pending && (
+                    <p className="text-sm">
+                      Corrección pendiente de revisión por un administrador.
+                    </p>
+                  )}
+                {(entry.field_needs_review || entry.formal_pending) && (
+                  <div className="border-t pt-4 space-y-4">
+                    <p>
+                      Campo · Propuestos: {entry.field_minutes ?? 0} min.
+                      Vigentes: {entry.minutes ?? 0} min.
+                    </p>
+                    {entry.formal_pending && (
+                      <p className="text-sm">
+                        Horario solicitado pendiente de Administración.
+                        {!entry.field_needs_review
+                          ? " El Encargado ya revisó los minutos."
+                          : ""}
+                      </p>
+                    )}
+                    {manager && entry.field_in_local && (
+                      <p className="text-sm">
+                        Horario solicitado: {entry.field_in_local} →{" "}
+                        {entry.field_out_local ?? "Sin salida solicitada"}
+                      </p>
+                    )}
+                    {entry.can_approve_field && (
+                      <FieldTimeForm
+                        company={companyId}
+                        review
+                        label={
+                          manager
+                            ? "Aplicar propuesta de Campo"
+                            : (entry.field_minutes ?? 0) > 0
+                              ? `Aprobar ${entry.field_minutes} min propuestos`
+                              : `Conservar ${entry.minutes ?? 0} min vigentes`
+                        }
+                      >
+                        <input
+                          type="hidden"
+                          name="request"
+                          value={randomUUID()}
+                        />
+                        <input type="hidden" name="entry" value={entry.id} />
+                        <input
+                          type="hidden"
+                          name="version"
+                          value={entry.version}
+                        />
+                        <input type="hidden" name="decision" value="approve" />
+                        {manager && (
+                          <label className="field md:col-span-2">
+                            Nota de decisión
+                            <Input name="note" maxLength={240} />
+                          </label>
+                        )}
+                      </FieldTimeForm>
+                    )}
+                    {entry.can_reject_field && (
+                      <FieldTimeForm
+                        company={companyId}
+                        review
+                        label="Rechazar propuesta de Campo"
+                      >
+                        <input
+                          type="hidden"
+                          name="request"
+                          value={randomUUID()}
+                        />
+                        <input type="hidden" name="entry" value={entry.id} />
+                        <input
+                          type="hidden"
+                          name="version"
+                          value={entry.version}
+                        />
+                        <input type="hidden" name="decision" value="reject" />
+                        <label className="field md:col-span-2">
+                          Motivo del rechazo
+                          <Input name="note" maxLength={240} required />
+                        </label>
+                      </FieldTimeForm>
+                    )}
+                  </div>
                 )}
                 {entry.can_approve && entry.minutes !== null && (
                   <WorkforceTimeApprovalForm
