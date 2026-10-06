@@ -62,7 +62,7 @@ recorrido completo antes de cambiar código o marcarla cerrada.
 - Ensayar respaldo/restauración reales de base/Auth, archivos privados y hosting;
   recepción de alertas y carga observada. El CI de recuperación no sustituye
   una restauración operativa.
-- Hosting: entrega 083 registra 56 carpetas, seis protegidas y 50 a revisar.
+- Hosting: inventario actualizado el 6 de octubre registra 58 carpetas, seis protegidas y 52 a revisar.
   No se ha aplicado toda la retención; inventario y autorización específica
   antes de cualquier eliminación permanente.
 - Consolidar una entrega final publicada, CI y retorno compatible.
@@ -80,6 +80,6 @@ recorrido completo antes de cambiar código o marcarla cerrada.
    cliente ficticio del ensayo y su evento de auditoría. Sin marcación nueva,
    GPS físico, imports ni traspaso. Evidencia de entrega en el
    [PR 9](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/9).
-2. Privacidad de documentos publicada y comprobada en staging: 867 pruebas, nueve GET, regreso compatible y 1.380 filas conservadas; evidencia en [PR 10](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/10). Anulación y expediente: reglas del controlador ADT vigente contrastadas, 22 pruebas focalizadas, RLS/RPC nativos y cuatro GET con cuenta restringida aprobados; contrato y límites en [COMERCIAL-ANULACION-EXPEDIENTE-20261006](COMERCIAL-ANULACION-EXPEDIENTE-20261006.md). Diez GET con Administración y pantallas de factura, proyecto y documentos aprobados. La pantalla Pagos detectó un contrato desactualizado de métodos: reproducción y corrección local en [EXPEDIENTE-PAGOS-METODOS-20261006](EXPEDIENTE-PAGOS-METODOS-20261006.md), pendiente de publicar y comprobar en staging. Continúan los demás escenarios comerciales y perfiles.
+2. Privacidad de documentos publicada y comprobada en staging: 867 pruebas, nueve GET, regreso compatible y 1.380 filas conservadas; evidencia en [PR 10](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/10). Anulación y expediente: reglas del controlador ADT vigente contrastadas, 22 pruebas focalizadas, RLS/RPC nativos y cuatro GET con cuenta restringida aprobados; contrato y límites en [COMERCIAL-ANULACION-EXPEDIENTE-20261006](COMERCIAL-ANULACION-EXPEDIENTE-20261006.md). Diez GET con Administración y pantallas de factura, proyecto y documentos aprobados. La pantalla Pagos detectó un contrato desactualizado de métodos: corrección 74bdafb publicada en staging y comprobada con Administración, once movimientos y total aplicado conservados, diez GET de PDFs en candidato/retorno/final, regreso real y 1.380 filas intactas; evidencia en [EXPEDIENTE-PAGOS-METODOS-20261006](EXPEDIENTE-PAGOS-METODOS-20261006.md) y [PR 12](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/12). Continúan los demás escenarios comerciales y perfiles.
 3. Cerrar proveedor de recibos, Portal/IA y los demás recorridos operativos.
 4. Verificación integral de los 21 módulos y preparación operativa.

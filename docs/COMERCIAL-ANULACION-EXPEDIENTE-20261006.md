@@ -34,11 +34,11 @@ No son una sesión web de Administración y no cambian miembros ni permisos.
 | Acción                             | Resultado comprobado                                                                                                  | Nivel de prueba                                   |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
 | Factura anulada y abonos asociados | VOID v4, total 128.41, pagado guardado 50.01, saldo guardado 78.40; abonos 19.95 y 30.06 asociados a la anulación, v2 | SQL nativo y referencia ADT vigente               |
-| Proyecto vinculado                 | NUEVO v1; no se aplica cancelación automática                                                                         | SQL nativo; pruebas locales antes/después         |
-| Revisiones privadas                | Dos PDF ready, de la revisión anterior y de la anulada, conservados                                                   | SQL nativo; descarga con Administración pendiente |
-| Expediente comercial del cliente   | Excluye ambas revisiones de la factura VOID; conserva una factura vigente del mismo cliente y documentos de estimados | RPC nativo con RLS y controles positivos          |
-| Cliente de control                 | Su factura vigente conserva el PDF visible en el RPC                                                                  | RPC nativo con RLS                                |
-| Movimientos de pagos               | Los asociados a anulación siguen visibles como ANULADO y no se suman; total aplicado 0.00 en ese cliente ficticio     | RPC nativo con RLS                                |
+| Proyecto vinculado                 | NUEVO v1; no se aplica cancelación automática                                                                         | SQL nativo, pruebas locales y pantalla administrativa |
+| Revisiones privadas                | Dos PDF ready, de la revisión anterior y de la anulada, conservados                                                   | SQL nativo y descarga HTTP con Administración |
+| Expediente comercial del cliente   | Excluye ambas revisiones de la factura VOID; conserva una factura vigente del mismo cliente y documentos de estimados | RPC nativo con RLS, HTTP y pantalla administrativa |
+| Cliente de control                 | Su factura vigente conserva el PDF visible en el RPC                                                                  | RPC nativo con RLS y descarga HTTP                                |
+| Movimientos de pagos               | Los asociados a anulación siguen visibles como ANULADO y no se suman; total aplicado 0.00 en ese cliente ficticio     | RPC nativo con RLS y pantalla administrativa corregida por PR 12 |
 | Cliente incorrecto                 | RPC rechazado, sin documentos de otra ficha                                                                           | RPC nativo con RLS                                |
 | Módulo de Facturas restringido     | Documentos de facturas invisibles, estimado permitido visible                                                         | RLS nativo y HTTP de sesión real                  |
 
@@ -56,10 +56,12 @@ ni se presenta un pago asociado a anulación como APPLIED.
   factura vigente del módulo restringido 404 con el mismo error genérico.
   Conservan private/no-store, nosniff y no-referrer. La sesión temporal privada
   se elimina al finalizar y no se guarda en resultados ni en Git.
-- Se preparó la prueba complementaria con Administración: descargas internas
+- Diez GET con sesión real de Administración aprobaron: descargas internas
   de revisiones anterior/anulada, rechazo de ambas con contexto de cliente,
   dos facturas vigentes como controles positivos, anonimato, empresa/cliente
-  incorrectos y entrada malformada. Falta ejecutarla con esa sesión real.
+  incorrectos y entrada malformada. Bytes y huellas originales conservados;
+  encabezados privados y sesión efímera eliminada. Se repitieron en candidato,
+  regreso efectivo ca4085d y entrega final 74bdafb, todos aprobados.
 
 - Comparación final: las 91 tablas y 1.380 filas del ámbito de aplicación
   conservan sus conteos y huellas; máximo de auditoría 761 sin cambios,
@@ -68,13 +70,17 @@ ni se presenta un pago asociado a anulación como APPLIED.
 
 No se atribuye el rechazo HTTP de la cuenta restringida al estado VOID: esa
 cuenta carece de permiso de Facturas. La regla específica de exclusión de VOID
-tiene evidencia nativa y local; su comprobación HTTP autorizada y la revisión
-en pantalla siguen pendientes del acceso a la cuenta administradora ficticia.
+tiene evidencia nativa, local y HTTP con Administración. En pantalla se
+comprobaron factura, abonos, proyecto y documentos. Pagos detectó un contrato
+desactualizado de métodos y quedó corregido, publicado y probado en
+[PR 12](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/12), con
+el total aplicado y los movimientos anulados conservados.
 
 ## Límites
 
-La revisión no modifica reglas de negocio ni requiere una nueva entrega de
-aplicación. No envía emails, cobra, reembolsa, anula registros, crea PDFs,
+La revisión de anulación no modifica reglas de negocio. La corrección del
+contrato de lectura y etiquetas de Pagos se entregó por separado en PR 12.
+No envía emails, cobra, reembolsa, anula registros, crea PDFs,
 modifica permisos o ejecuta imports. ADT conserva la operación; GPS físico
 aplazado y configuradores/3D excluidos. Los demás estados, perfiles, documentos,
 Portal/IA, recibos y preparación operativa siguen en el cierre vigente.
