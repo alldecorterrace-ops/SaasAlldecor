@@ -4,7 +4,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { compareReceipt, receiptReviewContextSchema } from "./receipt-review";
 import {
-  extractReceipt,
   ReceiptProviderError,
   receiptProviderConfig,
 } from "./receipt-review-provider";
@@ -13,6 +12,7 @@ import {
   workforceReceiptSchema,
 } from "./workforce-receipts";
 import { assertDeploymentEnvironment } from "./deployment-environment";
+import { extractReceiptForReview } from "./receipt-image";
 
 export async function runWorkforceReceiptReview(
   db: SupabaseClient,
@@ -60,13 +60,7 @@ export async function runWorkforceReceiptReview(
     if (found.error) throw new Error("receipt_unavailable");
     receipt = workforceReceiptSchema.parse(found.data);
     const file = await verifyWorkforceReceipt(db, receipt);
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.contentType))
-      throw new Error("heic_conversion_required");
-    extraction = await extractReceipt(
-      providers,
-      file.bytes,
-      file.contentType as "image/jpeg" | "image/png" | "image/webp",
-    );
+    extraction = await extractReceiptForReview(providers, file);
     const normalizedDate = z.iso.date().safeParse(extraction.data.fecha.trim());
     // Context derives the fallback date from the bound declaration, not the browser.
     const current = await db

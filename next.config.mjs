@@ -3,7 +3,17 @@
 /** @type {import('next').NextConfig} */
 const config = {
   poweredByHeader: false,
-  outputFileTracingIncludes: { "/*": ["./assets/fonts/NotoSans-Regular.ttf"] },
+  outputFileTracingIncludes: {
+    "/*": [
+      "./assets/fonts/NotoSans-Regular.ttf",
+      "./scripts/receipt-heic-convert.cjs",
+      "./node_modules/heic-convert/**/*",
+      "./node_modules/heic-decode/**/*",
+      "./node_modules/libheif-js/**/*",
+      "./node_modules/jpeg-js/**/*",
+      "./node_modules/pngjs/**/*",
+    ],
+  },
   experimental: { cpus: 1, serverActions: { bodySizeLimit: "6mb" } },
   async headers() {
     return [
