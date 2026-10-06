@@ -1,5 +1,7 @@
 # Cierre funcional de los 21 módulos del alcance activo
 
+> Seguimiento vigente: [Cierre actual del 6 de octubre](CIERRE-ACTUAL-20261006.md). Los conteos y entregas de este documento son antecedentes; no representan el cierre actual.
+
 Prioridad del propietario, 25 de septiembre de 2026: comprobar y completar las
 funciones de ADT antes de introducir cambios propios del SaaS. Nuevas migraciones
 de datos suspendidas hasta petición expresa. Los registros ya incorporados se
