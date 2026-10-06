@@ -76,7 +76,7 @@ export const modules = [
 // Excluded by the owner on 2026-09-29. Keep the legacy catalog and grants
 // for existing records; new workspace navigation uses only the active scope.
 export const workspaceModules = modules.filter(
-  (m) => m.id !== "nuevo3d" && m.id !== "pergolamotor",
+  (m) => m.id !== "nuevo3d" && m.id !== "pergolamotor" && m.id !== "ia",
 );
 export type ModuleId = (typeof modules)[number]["id"];
 export type Membership = {
@@ -92,7 +92,7 @@ export function canAccess(
   module: string,
   action: "read" | "write" = "read",
 ) {
-  if (!member.active) return false;
+  if (!member.active || module === "ia") return false;
   if (member.role === "owner" || member.role === "admin") return true;
   const granted = member.permissions[module] ?? [];
   return (

@@ -1,11 +1,16 @@
-# Cierre vigente de los 21 módulos · 6 de octubre de 2026
+# Cierre vigente: Gastos y Comercial · 6 de octubre de 2026
 
 Este registro sustituye como entrada de seguimiento los conteos históricos de
 ESTADO-IMPLEMENTACION, CIERRE-FUNCIONAL y CIERRE-PUNTOS-1-2-3. Sus antecedentes
 se conservan. La matriz antigua de 65 obligaciones no se usa para calcular un
 porcentaje actual sin reconciliar cada fila con los ensayos del 5 y 6 de octubre.
 
-Alcance: 21 módulos, sin configuradores/3D. GPS físico aplazado por el propietario.
+Decisión vigente del propietario: IA queda excluida. Continuar únicamente los
+dos primeros bloques de la lista de seis: **Gastos y costos** y **Comercial**.
+Operaciones, Administración, Portal y preparación integral quedan fuera de esta
+continuación, sin retirar sus funciones ni modificar sus datos. El catálogo
+histórico se conserva; el menú de trabajo tiene 20 módulos, sin IA ni 3D.
+GPS físico continúa aplazado.
 Nuevos imports de negocio y traspaso siguen suspendidos. ADT mantiene la operación.
 La implementación y el CI no equivalen al cierre completo de un módulo.
 
@@ -24,7 +29,7 @@ La implementación y el CI no equivalen al cierre completo de un módulo.
 | Campo: visitas con cuatro motivos                           | 082, bbaba51, PR 8, CI 856 pruebas; sesión Encargado y RPC con ubicación sintética                               | Publicada en staging; catálogo ampliado por 083                                                  |
 | Cliente/dirección/fecha de catálogo                         | 083, 88d209c, PR 9, CI 864 pruebas; SQL nativo y sesión Encargado                                                | Publicada y probada en staging; dirección durante jornada ya abierta queda fuera de esta entrega |
 
-## Pendientes por módulo
+## Inventario histórico por módulo (no amplía el alcance vigente)
 
 | Módulo                | Cierre restante                                                                                                                   |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
@@ -54,7 +59,7 @@ Estos pendientes mezclan diferencias de implementación y comprobaciones faltant
 No se afirma que cada función esté ausente: hay que contrastar el origen y el
 recorrido completo antes de cambiar código o marcarla cerrada.
 
-## Preparación operativa y publicación final
+## Preparación operativa anterior (fuera de esta continuación)
 
 - Recorrer la matriz de roles y dos empresas, escritorio/Android, errores,
   desconexión, reenvíos y aislamiento. Cada prueba debe identificar su nivel:
@@ -81,5 +86,5 @@ recorrido completo antes de cambiar código o marcarla cerrada.
    GPS físico, imports ni traspaso. Evidencia de entrega en el
    [PR 9](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/9).
 2. Privacidad de documentos publicada y comprobada en staging: 867 pruebas, nueve GET, regreso compatible y 1.380 filas conservadas; evidencia en [PR 10](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/10). Anulación y expediente: reglas del controlador ADT vigente contrastadas, 22 pruebas focalizadas, RLS/RPC nativos y cuatro GET con cuenta restringida aprobados; contrato y límites en [COMERCIAL-ANULACION-EXPEDIENTE-20261006](COMERCIAL-ANULACION-EXPEDIENTE-20261006.md). Diez GET con Administración y pantallas de factura, proyecto y documentos aprobados. La pantalla Pagos detectó un contrato desactualizado de métodos: corrección 74bdafb publicada en staging y comprobada con Administración, once movimientos y total aplicado conservados, diez GET de PDFs en candidato/retorno/final, regreso real y 1.380 filas intactas; evidencia en [EXPEDIENTE-PAGOS-METODOS-20261006](EXPEDIENTE-PAGOS-METODOS-20261006.md) y [PR 12](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/12). Continúan los demás escenarios comerciales y perfiles.
-3. Conversión HEIC/HEIF para recibos publicada en staging: CI de 873 pruebas, seis pruebas de conversión alojadas, imagen sintética de 12 MP, pantalla administradora y regreso real; originales conservados. El proveedor real sigue desactivado y sin configurar. Contrato en [RECIBOS-HEIC-20261006](RECIBOS-HEIC-20261006.md). Cerrar proveedor real de recibos, Portal/IA y los demás recorridos operativos.
-4. Verificación integral de los 21 módulos y preparación operativa.
+3. Conversión HEIC/HEIF para recibos publicada en staging: CI de 873 pruebas, seis pruebas de conversión alojadas, imagen sintética de 12 MP, pantalla administradora y regreso real; originales conservados. El proveedor real sigue desactivado y sin configurar. Contrato en [RECIBOS-HEIC-20261006](RECIBOS-HEIC-20261006.md). IA ya no forma parte del cierre solicitado; Portal y demás recorridos quedan fuera de esta continuación.
+4. Prioridad actual: revisión manual de recibos, reembolsos y costos; después, escenarios comerciales. La verificación integral y preparación operativa no forman parte de esta continuación.

@@ -11,7 +11,13 @@
   Pérgola sin 3D y Nuevo estimado 3D, junto con geometría, despiece y planos
   automáticos dependientes del configurador. Conservar datos, documentos, código
   histórico y permisos existentes; no implica borrar registros ni módulos operativos.
-- Centrar el trabajo en verificar y completar los 21 módulos restantes contra
+- Decisión del propietario del 6 de octubre de 2026: IA queda fuera del alcance.
+  El cierre activo comprende 20 módulos; no activar el asistente ni análisis de
+  recibos por IA. Conservar código histórico, recibos y revisiones existentes.
+- Prioridad del propietario del 6 de octubre: trabajar únicamente los bloques
+  1 Gastos y costos y 2 Comercial de la lista de seis. No continuar Operaciones,
+  Administración, Portal ni preparación integral. Conservar lo ya existente.
+- Centrar el trabajo autorizado en estos dos bloques contra
   ADT actual. Usar lectura del origen y datos sintéticos en staging.
   Las migraciones aditivas de esquema para implementar funciones no son una
   autorización para trasladar datos de negocio.

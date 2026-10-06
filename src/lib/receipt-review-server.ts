@@ -1,4 +1,5 @@
 import "server-only";
+import { aiFeaturesIncluded } from "./product-scope";
 import { createClient } from "@supabase/supabase-js";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
@@ -21,6 +22,7 @@ export async function runWorkforceReceiptReview(
   expense: string,
   version: number,
 ) {
+  if (!aiFeaturesIncluded) throw new Error("receipt_review_not_configured");
   const providers = receiptProviderConfig(process.env, company);
   if (!providers.length) throw new Error("receipt_review_not_configured");
   assertDeploymentEnvironment(process.env);

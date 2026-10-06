@@ -19,10 +19,12 @@ import {
 } from "../src/lib/modules";
 
 test("active workspace excludes configurators without deleting the legacy catalog", () => {
-  assert.equal(workspaceModules.length, 21);
+  assert.equal(workspaceModules.length, 20);
   assert.equal(modules.length, 23);
   assert.ok(
-    !workspaceModules.some((m) => ["nuevo3d", "pergolamotor"].includes(m.id)),
+    !workspaceModules.some((m) =>
+      ["nuevo3d", "pergolamotor", "ia"].includes(m.id),
+    ),
   );
   for (const id of [
     "clientes",
