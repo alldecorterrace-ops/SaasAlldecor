@@ -53,7 +53,7 @@ La implementación y el CI no equivalen al cierre completo de un módulo.
 | Manual de fabricación | Recorrido y documentos operativos; generación desde 3D excluida                                                                   |
 | Mapa de zonas         | Filtros/categorías/centros, contrato multibyte, exportación y perfiles; cartografía real/caché ya probadas parcialmente           |
 | Portal del cliente    | Contrastar/completar documentos, fotos, mensajes, enlaces, revocación y aislamiento                                               |
-| IA Assistant          | Contrastar/completar conversación, archivos y acciones operativas con permisos y efectos controlados                              |
+| IA Assistant          | Excluido por decisión del propietario; conservar historial, sin activación |
 
 Estos pendientes mezclan diferencias de implementación y comprobaciones faltantes.
 No se afirma que cada función esté ausente: hay que contrastar el origen y el
@@ -99,7 +99,24 @@ sesión y límites en [GASTOS-SIN-IA-20261006](GASTOS-SIN-IA-20261006.md) y
 Esto cierra el bloqueo de revisión por dependencia de IA; no certifica todos
 los consumidores de costos ni todo Comercial.
 
-Comercial: se completa fecha de cita y preferencia de contacto entre formulario,
-revisión y Lead. Contrato y límites en
-[COMERCIAL-CONTACTO-WEB-20261006](COMERCIAL-CONTACTO-WEB-20261006.md).
+Comercial: fecha de cita y preferencia de contacto publicadas y comprobadas
+entre formulario público, revisión y Lead: 891 pruebas CI, 085 sin backfill,
+SQL nativo y sesión administradora ficticia, formulario de ensayo revocado,
+retorno real 269e8cb → 8f14054 → 269e8cb, pagos/gastos y recibos protegidos
+conservados. Contrato y límites en
+[COMERCIAL-CONTACTO-WEB-20261006](COMERCIAL-CONTACTO-WEB-20261006.md) y
+[PR 15](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/15).
 No implica el cierre de todos los avisos o del módulo comercial completo.
+
+### Pendientes activos después de estas entregas
+
+1. Gastos y costos: completar conciliación/reembolsos por los perfiles vigentes
+   y comprobar los consumidores de horas/gastos/costos de proyecto y periodos.
+   El contrato nativo de un único costo tras reembolso ya pasó; no repetirlo
+   como si faltara implementarlo ni presentar ese ensayo como pago real.
+2. Comercial: avisos y estados de Leads/formulario, captura restante de
+   productos/precios en estimados, plantillas y comunicaciones de estimados,
+   y escenarios/perfiles de Facturas que no estén acreditados por entregas
+   anteriores. Fecha/preferencia del formulario ya no son pendientes.
+
+Los otros cuatro bloques y la IA no forman parte de esta continuación.
