@@ -55,5 +55,16 @@ El código anterior puede convivir con el esquema aditivo: no ofrece las nuevas
 acciones y su aprobación simple rechaza propuestas pendientes. Retornar código
 no revierte decisiones ni elimina las tablas o auditorías.
 
-Pendiente fuera de este paquete: declaración diaria y otras acciones delegadas
-de Campo. GPS en teléfono físico sigue aplazado por el propietario.
+La equivalencia de jornada completa administrativa y la asignación de obra
+actual se documentan en la actualización siguiente. GPS en teléfono físico
+sigue aplazado por el propietario.
+
+
+Actualización del 6 de octubre: el propietario aclaró que registra la jornada
+completa desde Horas del panel administrativo. Su equivalencia existente es
+Registrar horas, reservada a Administración. El recorrido se comprobó en
+una sesión real administradora con una jornada ficticia de 450 minutos netos,
+luego anulada de forma reversible y excluida de Labor, conservando historial. No se añade una jornada completa propia de
+Trabajador a partir de esta aclaración. La obra actual del Encargado se trata
+en [el paquete de asignación](PARIDAD-ENCARGADO-ASIGNACIONES.md), con sus límites
+y verificaciones independientes.
