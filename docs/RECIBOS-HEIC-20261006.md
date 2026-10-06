@@ -42,9 +42,37 @@ original. También se comprobó rechazo de imagen dañada antes del proveedor,
 reintento, saturación, tamaño y MIME discordante, y entrega de JPEG a un
 proveedor simulado. Los archivos y sus huellas están en tests/fixtures/receipt-heic.
 
-Las 22 pruebas focalizadas de conversión/revisión/recibos y la comprobación de
-tipos pasan localmente. La publicación, CI completo y prueba en hosting todavía
-no están acreditadas en esta revisión del registro.
+Las 22 pruebas focalizadas y los tipos pasan localmente. El commit de aplicación
+88dad31096aa2a1c6f29131f2064c09559361385 pasó el
+[CI 37532449492](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/37532449492):
+873 pruebas, cero fallos/omisiones, lint, tipos, compilación y los tres trabajos.
+Publicado en staging desde el archivo oficial verificado por SHA-256, con cinco
+paquetes nuevos privados y las dependencias anteriores conservadas. Se verificaron
+los 15 archivos modificados y el trazado del conversor y sus paquetes en la ruta
+compilada de Gastos de Workforce.
+
+En el hosting pasaron las mismas seis pruebas compiladas a un arnés privado de
+JavaScript. El cargador tsx excedió 90 segundos en el ensayo original; esa batería
+no se registra como aprobada. El arnés equivalente usa código de este commit,
+proveedor simulado y las mismas imágenes. Además, un HEIC sintético de 4032 × 3024
+píxeles se convirtió y se decodificó para comprobar dimensiones/píxeles en unos
+2,5 segundos; el original conservó su SHA-256. No se usó cámara física.
+
+El regreso real 88dad31 → 74bdafb → 88dad31 pasó por proceso y pantalla
+administradora de Gastos, con dos registros de referencia. La entrega final usa
+el grupo saas-staging-88dad31-20261006-final-r1 y se verificó el proceso dentro de
+su carpeta, salud de staging/producción y configuración privada conservada.
+La configuración de producción no cambió.
+
+La comparación de las 91 tablas conserva las 1.380 filas originales y sus huellas,
+sin filas previas alteradas o desaparecidas. La actividad concurrente del catálogo
+registró un producto nuevo y cuatro eventos de auditoría en la empresa de pruebas;
+se conserva y se informa por separado. El total observado pasó a 1.385 filas. Auth
+interno no forma parte de esa comparación. Sin migración de esquema: continúa 083.
+
+El inventario de hosting registra 59 carpetas, seis protegidas y 53 a revisar;
+ninguna eliminada. Se conservan entrega activa, regreso y bases de dependencias.
+Evidencia de entrega en [PR 13](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/13).
 
 El proveedor real permanece desactivado y sin credenciales/modelos configurados.
 Estos ensayos no demuestran lectura real de IA, confirmación en pantalla ni cierre
