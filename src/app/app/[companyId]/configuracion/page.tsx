@@ -1,3 +1,4 @@
+import { SubscriptionSummary } from "@/components/subscription-summary";
 import { requireModule } from "@/lib/auth";
 import { randomUUID } from "node:crypto";
 import {
@@ -76,6 +77,12 @@ export default async function Settings({
       <p className="mt-3 mb-7 text-sm text-muted-foreground">
         Ajusta tu espacio y define cómo participa cada persona.
       </p>
+      {manager && (
+        <SubscriptionSummary
+          companyId={companyId}
+          owner={member.role === "owner"}
+        />
+      )}
       <div className="mb-8 grid items-start gap-5 xl:grid-cols-2">
         <CompanySettings
           company={company}
@@ -86,7 +93,7 @@ export default async function Settings({
             companyId={companyId}
             requestId={randomUUID()}
             mailEnabled={mailEnabled}
-            canInviteAdmin={member.role === "owner"}
+            canInviteAdmin={manager}
           />
         )}
       </div>

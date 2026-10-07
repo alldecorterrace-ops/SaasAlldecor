@@ -74,13 +74,11 @@ export function AuthForm({
           </Link>
           <p className="eyebrow">Tu espacio de trabajo</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight">
-            {registering
-              ? "Crea tu cuenta con invitación"
-              : "Bienvenido de nuevo"}
+            {registering ? "Crea tu cuenta" : "Bienvenido de nuevo"}
           </h1>
           <p className="mt-3 mb-8 text-sm leading-6 text-muted-foreground">
             {registering
-              ? "Necesitas una invitación vigente del administrador del SaaS o del gerente de tu empresa. Regístrate con el correo al que te invitaron."
+              ? "Necesitas una invitación vigente o un plan pagado y verificado. Usa ese mismo correo y crea tu propia contraseña; después confirma el correo."
               : "Inicia sesión y continúa donde lo dejaste."}
           </p>
           <Feedback error={state.error ?? error} success={state.success} />

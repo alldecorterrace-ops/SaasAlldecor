@@ -11,7 +11,16 @@ import { IncomingManagerInvitation } from "@/components/platform-forms";
 import { IncomingInvitation } from "@/components/invitation-forms";
 export const dynamic = "force-dynamic";
 export default async function Companies() {
-  const { db, user, platform } = await platformContext();
+  const initial = await platformContext();
+  const { db, user } = initial;
+  if (initial.platform?.role !== "administrator") {
+    const { error } = await db.rpc("activate_my_paid_companies");
+    if (error) throw new Error("No se pudo comprobar la activación del plan.");
+  }
+  const { data: updatedPlatform, error: platformError } =
+    await db.rpc("platform_context");
+  if (platformError) throw new Error("No se pudo comprobar tu acceso.");
+  const platform = updatedPlatform?.[0] ?? null;
   if (platform?.role === "administrator" && platform.active)
     redirect("/administracion-saas");
   const { data: managerInvitations, error: managerInvitationError } =
@@ -45,6 +54,9 @@ export default async function Companies() {
           </Button>
         </form>
       </header>
+      <div className="mt-8 flex flex-wrap gap-4 text-sm font-semibold text-primary">
+        <Link href="/planes">Planes para otra empresa</Link>
+      </div>
       <div className="mt-16 mb-8">
         <p className="eyebrow">Espacios de trabajo</p>
         <h1 className="page-title mt-3">Tus empresas</h1>
@@ -124,7 +136,7 @@ export default async function Companies() {
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
                 {platform?.can_create_company
                   ? "Como gerente invitado, puedes crear tus empresas y añadir a sus usuarios con los roles y permisos que definas."
-                  : "Acepta una invitación de gerente para crear tus empresas, o pide al gerente de tu empresa que te invite al equipo."}
+                  : "Si compraste un plan, la empresa se activa al verificar el pago y confirmar tu correo. Si eres empleado, acepta la invitación del equipo."}
               </p>
             </div>
           )}

@@ -34,10 +34,10 @@ export function InviteMember({
     <section className="card grid gap-4">
       <h2 className="font-semibold">Invitar al equipo</h2>
       <p className="text-sm leading-6 text-muted-foreground">
-        La invitación vence en siete días. El destinatario debe registrarse o
-        iniciar sesión con ese correo confirmado y aceptar en Tus empresas.
-        Selecciona el rol y sus permisos antes de enviar; se aplican cuando
-        acepte.
+        La invitación vence en siete días. El empleado crea su propia contraseña
+        al registrarse, o puede iniciar sesión con ese correo confirmado y
+        aceptar en Tus empresas. Selecciona el rol y sus permisos antes de
+        enviar; se aplican cuando acepte.
       </p>
       <Feedback {...state} />
       <form action={action} className="grid gap-4">
@@ -63,7 +63,9 @@ export function InviteMember({
           >
             <option value="member">Miembro con permisos definidos</option>
             {canInviteAdmin && (
-              <option value="admin">Administrador de empresa</option>
+              <option value="admin">
+                Administrador · acceso total e invitaciones
+              </option>
             )}
           </select>
         </label>

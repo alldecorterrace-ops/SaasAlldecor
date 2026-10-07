@@ -117,10 +117,7 @@ export function MemberPermissions({
   const [role, setRole] = useState(target.role),
     [active, setActive] = useState(target.active),
     [permissions, setPermissions] = useState(target.permissions);
-  const locked =
-    target.role === "owner" ||
-    target.user_id === actor.user_id ||
-    (actor.role === "admin" && target.role === "admin");
+  const locked = target.role === "owner" || target.user_id === actor.user_id;
   function change(id: string, action: string, checked: boolean) {
     setPermissions((old) => ({
       ...old,
@@ -145,7 +142,7 @@ export function MemberPermissions({
       {locked ? (
         <p className="mt-5 text-sm text-muted-foreground">
           Este acceso está protegido. No puedes modificar al propietario, tu
-          propia cuenta ni otro administrador desde tu rol.
+          propia cuenta desde esta pantalla.
         </p>
       ) : (
         <form action={action} className="mt-6">
@@ -159,7 +156,7 @@ export function MemberPermissions({
                 onChange={(e) => setRole(e.target.value as Membership["role"])}
               >
                 <option value="member">Miembro con permisos</option>
-                {actor.role === "owner" && (
+                {["owner", "admin"].includes(actor.role) && (
                   <option value="admin">Administrador</option>
                 )}
               </select>
@@ -175,7 +172,7 @@ export function MemberPermissions({
             </label>
           </div>
           <p className="mb-4 text-xs leading-5 text-muted-foreground">
-            Todos los módulos son seleccionables. Editar incluye consultar. Un
+            Los módulos activos son seleccionables. Editar incluye consultar. Un
             administrador tiene acceso completo a la empresa. Los módulos en
             preparación respetarán estas selecciones cuando estén disponibles.
           </p>
@@ -189,31 +186,37 @@ export function MemberPermissions({
                 </tr>
               </thead>
               <tbody>
-                {modules.map((m) => (
-                  <tr key={m.id}>
-                    <td>{m.label}</td>
-                    <td>
-                      <input
-                        aria-label={`Consultar ${m.label}`}
-                        type="checkbox"
-                        name={`read:${m.id}`}
-                        checked={permissions[m.id]?.includes("read") ?? false}
-                        onChange={(e) => change(m.id, "read", e.target.checked)}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        aria-label={`Editar ${m.label}`}
-                        type="checkbox"
-                        name={`write:${m.id}`}
-                        checked={permissions[m.id]?.includes("write") ?? false}
-                        onChange={(e) =>
-                          change(m.id, "write", e.target.checked)
-                        }
-                      />
-                    </td>
-                  </tr>
-                ))}
+                {modules
+                  .filter((m) => m.ready)
+                  .map((m) => (
+                    <tr key={m.id}>
+                      <td>{m.label}</td>
+                      <td>
+                        <input
+                          aria-label={`Consultar ${m.label}`}
+                          type="checkbox"
+                          name={`read:${m.id}`}
+                          checked={permissions[m.id]?.includes("read") ?? false}
+                          onChange={(e) =>
+                            change(m.id, "read", e.target.checked)
+                          }
+                        />
+                      </td>
+                      <td>
+                        <input
+                          aria-label={`Editar ${m.label}`}
+                          type="checkbox"
+                          name={`write:${m.id}`}
+                          checked={
+                            permissions[m.id]?.includes("write") ?? false
+                          }
+                          onChange={(e) =>
+                            change(m.id, "write", e.target.checked)
+                          }
+                        />
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
