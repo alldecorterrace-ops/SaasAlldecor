@@ -1,21 +1,30 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { randomUUID } from "node:crypto";
 import { Building2, ArrowUpRight, LogOut } from "lucide-react";
-import { requireUser } from "@/lib/auth";
+
 import { signOut } from "@/app/auth/actions";
 import { CompanyForm } from "@/components/company-form";
 import { Button } from "@/components/ui/button";
+import { platformContext } from "@/lib/platform";
+import { IncomingManagerInvitation } from "@/components/platform-forms";
 import { IncomingInvitation } from "@/components/invitation-forms";
 export const dynamic = "force-dynamic";
 export default async function Companies() {
-  const { db, user } = await requireUser();
+  const { db, user, platform } = await platformContext();
+  if (platform?.role === "administrator" && platform.active)
+    redirect("/administracion-saas");
+  const { data: managerInvitations, error: managerInvitationError } =
+    await db.rpc("my_manager_invitations");
+  if (managerInvitationError)
+    throw new Error("Invitaciones de gerente no disponibles");
   const { data, error } = await db
     .from("companies")
     .select("id,name,timezone")
     .order("name");
   if (error) throw new Error("Companies unavailable");
   const { data: invitations, error: invitationError } = await db.rpc(
-    "my_company_invitations",
+    "my_company_role_invitations",
   );
   if (invitationError) throw new Error("Invitaciones no disponibles");
   const dates = new Intl.DateTimeFormat("es", {
@@ -43,6 +52,18 @@ export default async function Companies() {
           Selecciona dónde quieres trabajar. Sesión de {user.email}.
         </p>
       </div>
+      {platform && !platform.active && (
+        <p role="status" className="card mb-8">
+          Tu acceso al SaaS está suspendido. Contacta al administrador global.
+        </p>
+      )}
+      {managerInvitations?.map((i: { id: string; expires_at: string }) => (
+        <IncomingManagerInvitation
+          key={i.id}
+          id={i.id}
+          expires={`${dates.format(new Date(i.expires_at))} UTC`}
+        />
+      ))}
       {invitations?.length > 0 && (
         <section
           className="mb-8 grid gap-4"
@@ -52,11 +73,19 @@ export default async function Companies() {
             Te invitaron a estas empresas
           </h2>
           {invitations.map(
-            (i: { id: string; company_name: string; expires_at: string }) => (
+            (i: {
+              id: string;
+              company_name: string;
+              expires_at: string;
+              role: string;
+              permissions: Record<string, string[]>;
+            }) => (
               <IncomingInvitation
                 key={i.id}
                 id={i.id}
                 name={i.company_name}
+                role={i.role}
+                permissions={i.permissions}
                 expires={`${dates.format(new Date(i.expires_at))} UTC`}
               />
             ),
@@ -87,22 +116,29 @@ export default async function Companies() {
           ) : (
             <div className="card py-12 text-center">
               <Building2 className="mx-auto mb-4 text-primary" />
-              <h2 className="font-semibold">Tu primera empresa empieza aquí</h2>
+              <h2 className="font-semibold">
+                {platform?.can_create_company
+                  ? "Crea tu primera empresa"
+                  : "Tu acceso a una empresa"}
+              </h2>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                Crea un espacio o pide al administrador que agregue tu correo a
-                su equipo.
+                {platform?.can_create_company
+                  ? "Como gerente invitado, puedes crear tus empresas y añadir a sus usuarios con los roles y permisos que definas."
+                  : "Acepta una invitación de gerente para crear tus empresas, o pide al gerente de tu empresa que te invite al equipo."}
               </p>
             </div>
           )}
         </section>
-        <aside className="card h-fit">
-          <h2 className="mb-2 text-lg font-semibold">Un nuevo espacio</h2>
-          <p className="mb-6 text-sm leading-6 text-muted-foreground">
-            Tendrás acceso como propietario. Los datos de cada empresa
-            permanecen separados.
-          </p>
-          <CompanyForm requestId={randomUUID()} />
-        </aside>
+        {platform?.can_create_company && (
+          <aside className="card h-fit">
+            <h2 className="mb-2 text-lg font-semibold">Un nuevo espacio</h2>
+            <p className="mb-6 text-sm leading-6 text-muted-foreground">
+              Tendrás acceso como gerente y propietario. Los datos de cada
+              empresa permanecen separados.
+            </p>
+            <CompanyForm requestId={randomUUID()} />
+          </aside>
+        )}
       </div>
     </main>
   );

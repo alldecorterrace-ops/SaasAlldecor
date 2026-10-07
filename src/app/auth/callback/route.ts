@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   }
   return NextResponse.redirect(
     new URL(
-      "/login?error=El%20enlace%20no%20es%20v%C3%A1lido%20o%20ya%20venci%C3%B3.",
+      "/login?error=No%20pudimos%20abrir%20la%20sesi%C3%B3n%20con%20este%20enlace.%20Si%20ya%20confirmaste%20tu%20correo%2C%20inicia%20sesi%C3%B3n.%20Si%20no%2C%20usa%20el%20enlace%20m%C3%A1s%20reciente%20en%20el%20navegador%20donde%20te%20registraste.",
       origin,
     ),
   );

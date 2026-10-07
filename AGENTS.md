@@ -26,6 +26,27 @@
   los cambios propios de esta app se tratarán después con el propietario.
 - El traspaso operativo sigue aplazado. ADT conserva la operación principal.
 
+## Puesta en marcha solicitada el 7 de octubre
+
+- El propietario descarta migrar datos de ADT. No realizar imports, sincronización,
+  backfill de negocio ni eliminación de datos ya existentes.
+- Autoriza preparar y activar producción y el correo del SaaS. El alta de empresas
+  la realizan gerentes invitados por un administrador global, no el operador.
+- Cuenta global designada por el propietario en el canal privado. La contraseña
+  se introduce directamente en el navegador; no publicar identidad, credenciales
+  ni asignaciones privadas en GitHub.
+- Implementar y probar administrador global -> invitación de gerente -> creación
+  de empresas -> invitaciones de equipo con rol y permisos; conservar aislamiento.
+- Aclaración del propietario: el administrador global solo gestiona gerentes;
+  no crea ni opera empresas. Solo los gerentes invitados, confirmados y activos
+  crean empresas y gestionan sus equipos y permisos.
+- Aclaración posterior: toda cuenta nueva requiere una invitación vigente.
+  El administrador global invita gerentes; solo gerentes invitados, confirmados y
+  activos invitan a usuarios de sus empresas. El equipo, incluido su administrador
+  de empresa, no crea empresas ni invita gerentes. Bloquear también el alta directa
+  en Supabase Auth; no basta ocultar el formulario. Preservar cuentas existentes.
+- Mantener IA, GPS físico y configuradores/3D excluidos.
+
 ## Versionado y despliegues
 
 - GitHub es la fuente oficial del código y de su historial. Antes de desplegar,

@@ -1,3 +1,4 @@
+import { mailCompanyEnabled } from "./mail-company-scope";
 import {
   commercialCompanyName,
   commercialContactLines,
@@ -80,16 +81,7 @@ export function estimateEmailConfig(
       };
     if (!externalEffectsAllowed(env) || env.ESTIMATE_MAIL_ENABLED !== "true")
       return null;
-    const companies = (env.ESTIMATE_MAIL_COMPANY_IDS ?? "")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-    if (
-      !companies.length ||
-      companies.some((s) => !z.uuid().safeParse(s).success) ||
-      !companies.includes(company)
-    )
-      return null;
+    if (!mailCompanyEnabled(env, "ESTIMATE", company)) return null;
     return {
       mode: "send",
       from: address.parse(env.MAIL_FROM_ADDRESS),

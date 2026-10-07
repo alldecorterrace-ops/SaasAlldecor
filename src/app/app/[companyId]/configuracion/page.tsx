@@ -19,6 +19,11 @@ export default async function Settings({
   const { companyId } = await params;
   const { db, company, member } = await requireModule(companyId, "config");
   const manager = ["owner", "admin"].includes(member.role);
+  const { data: canInviteUsers, error: invitePermissionError } = manager
+    ? await db.rpc("can_invite_company_users", { p_company: companyId })
+    : { data: false, error: null };
+  if (invitePermissionError)
+    throw new Error("No se pudo comprobar quién puede invitar al equipo.");
   const { data, error } = manager
     ? await db
         .from("memberships")
@@ -31,7 +36,7 @@ export default async function Settings({
     ? await db
         .from("company_invitations")
         .select(
-          "id,email,status,created_at,expires_at,invitation_email_attempts(status,created_at)",
+          "id,email,role,permissions,status,created_at,expires_at,invitation_email_attempts(status,created_at)",
         )
         .eq("company_id", companyId)
         .order("created_at", { ascending: false })
@@ -76,11 +81,12 @@ export default async function Settings({
           company={company}
           writable={canAccess(member, "config", "write")}
         />
-        {manager && (
+        {canInviteUsers === true && (
           <InviteMember
             companyId={companyId}
             requestId={randomUUID()}
             mailEnabled={mailEnabled}
+            canInviteAdmin={member.role === "owner"}
           />
         )}
       </div>
@@ -102,6 +108,11 @@ export default async function Settings({
                   >
                     <div>
                       <p className="font-semibold break-all">{i.email}</p>
+                      <p className="mt-1 text-xs">
+                        {i.role === "admin"
+                          ? "Administrador de empresa"
+                          : `Miembro · ${Object.keys(i.permissions ?? {}).length} módulos`}
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         {i.status === "pending" && expired
                           ? "Vencida"

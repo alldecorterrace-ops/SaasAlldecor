@@ -74,11 +74,13 @@ export function AuthForm({
           </Link>
           <p className="eyebrow">Tu espacio de trabajo</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight">
-            {registering ? "Crea tu acceso" : "Bienvenido de nuevo"}
+            {registering
+              ? "Crea tu cuenta con invitación"
+              : "Bienvenido de nuevo"}
           </h1>
           <p className="mt-3 mb-8 text-sm leading-6 text-muted-foreground">
             {registering
-              ? "Registra tu cuenta para crear una empresa o unirte a tu equipo."
+              ? "Necesitas una invitación vigente del administrador del SaaS o del gerente de tu empresa. Regístrate con el correo al que te invitaron."
               : "Inicia sesión y continúa donde lo dejaste."}
           </p>
           <Feedback error={state.error ?? error} success={state.success} />
@@ -127,12 +129,14 @@ export function AuthForm({
             </Link>
           )}
           <p className="mt-7 text-center text-sm text-muted-foreground">
-            {registering ? "¿Ya tienes una cuenta?" : "¿Primera vez aquí?"}{" "}
+            {registering
+              ? "¿Ya tienes una cuenta?"
+              : "¿Recibiste una invitación?"}{" "}
             <Link
               className="font-semibold text-primary underline-offset-4 hover:underline"
               href={registering ? "/login" : "/registro"}
             >
-              {registering ? "Inicia sesión" : "Crear cuenta"}
+              {registering ? "Inicia sesión" : "Crear cuenta con invitación"}
             </Link>
           </p>
           <p className="mt-12 text-center text-xs leading-5 text-muted-foreground">
