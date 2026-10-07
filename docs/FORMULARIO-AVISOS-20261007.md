@@ -41,16 +41,82 @@ y processing/unknown nunca se reenvían automáticamente. Queued significa MTA
 aceptado, no recibido. El contenido usa estructura inglesa y texto libre exacto;
 no se añade traducción automática al haber excluido IA.
 
-## Verificación actual
+## Publicación y comprobaciones
 
-npm run check completo aprobado: lint, tipos, 910 pruebas sin fallos ni saltos y
-build Next. Dentro de ellas, 11 pruebas focalizadas locales aprobadas: modo/configuración por empresa,
-transacción y repetición de entrada anónima, destinatario congelado, recuperación
-explícita, MIME/HTML seguro y descarga privada, respuesta perdida, queued/failed/
-unknown, actor del worker, estados de Lead/archivo/restauración/conversión repetida,
-roles/revocación/empresa ajena. MTA y Storage se simulan localmente. Sin venta,
-factura, proyecto ni pago. La función auth.role del doble de pruebas reproduce
-solo el contrato mínimo; no acredita emisión de JWT o Auth real.
+Aplicación final 676a6585e9d34c29a684d420212f377ee5154439 en staging, con
+087 aplicada. La implementación de avisos es 92584ab; 676a658 añade las
+excepciones no-referrer de Estimados y Avisos después de la regla global Next.
+La verificación HTTP detectó que la regla general sobrescribía la cabecera
+privada; el ajuste conserva el contrato también en respuestas de error.
 
-CI completo, SQL nativo, publicación, sesión web y regreso quedan abiertos hasta
-su acta. No presentar la implementación local como recepción o función publicada.
+Local y [CI 37664859382](https://github.com/alldecorterrace-ops/SaasAlldecor/actions/runs/37664859382)
+aprobados: lint, tipos, 910 pruebas sin fallos ni omitidas, build, comparadores
+ADT, Deno, concurrencia y recuperación. Las 11 pruebas focalizadas cubren
+configuración, transacción/repetición, destinatario congelado, recuperación,
+MIME seguro, descargas, respuesta perdida, queued/failed/unknown, worker,
+estados/archivo/conversión de Lead y permisos actuales. MTA y Storage se simulan
+localmente; auth.role reproduce su contrato mínimo, sin acreditar emisión de JWT.
+
+SQL nativo de Supabase, con roles reales y contextos de identidad de prueba:
+entrada anónima crea dos eventos privados en la misma transacción; anon no puede
+leer ni reclamar. Configuración cambiada rechaza confirmación obsoleta; asignación
+explícita recupera el aviso bloqueado. Se verificaron cierre inmutable, actor,
+empresa ajena, worker send sin captura, estados finales y repetición. Los datos
+transaccionales del contrato terminan en rollback y no invocan el MTA.
+
+## Recorrido de pantalla y conservación
+
+Cuenta ficticia administradora, rol Propietario, empresa QA Mapa Presentacion 20260926. Un formulario nuevo recibió una solicitud ficticia con acentos,
+medidas 24 × 6 × 6 y texto con caracteres HTML. Dos avisos: solicitante pendiente
+e interno bloqueado por faltar dirección. Se guardó una dirección A ficticia,
+se confirmó su asignación y se conservaron ambos MIME. Después se cambió la
+configuración a B; el mensaje anterior mantuvo A y sus bytes originales.
+
+La solicitud se convirtió en un Lead. Se guardaron Contactado, Cotizando,
+Ganado y Perdido; se archivó y restauró; finalmente se convirtió en un único
+cliente. PostgreSQL acredita las ocho entradas de auditoría, Cliente versión 8,
+relación única y campos de contacto/fecha/preferencia íntegros. Repetir revisión,
+conversión, entrada y finalización devuelve los mismos registros; el ensayo
+nativo del caso persistido terminó en rollback, sin otro archivo ni envío.
+
+| Mensaje privado | Bytes | SHA-256                                                          |
+| --------------- | ----: | ---------------------------------------------------------------- |
+| Solicitante     | 1.764 | 6944c1ba71a75a1922e35be22fcff39e8318d05ef3b7756f7ba7a3b72f7659c3 |
+| Interno         | 3.602 | 78fd979abebdd978bd9f6c2b4a72bd4007c1a7b6f948197aa356438b924f1707 |
+
+Ambos tienen texto/HTML seguros, destinatario congelado y cero adjuntos. Los dos
+se descargaron en candidato y final con bytes idénticos; el aviso del solicitante
+también fue idéntico en el regreso. Cuatro GET anónimos de las rutas Avisos y
+Estimados, en namespace propio/ajeno, rechazaron la descarga con private/no-store,
+nosniff y no-referrer. Avisos responde 404 genérico y Estimados 401 genérico sin
+sesión; no se afirma identidad de contratos entre rutas distintas.
+
+087 conservó las 1.442 filas de 92 tablas y los grants de las funciones anteriores;
+sin backfill. Tras el recorrido y desactivar el formulario, 94 tablas y 1.474
+filas: todas las filas anteriores mantienen su huella. No se cambiaron facturas,
+pagos, gastos, proyectos, horas, trabajadores o membresías. La entrada pública
+revocada dejó de admitir solicitudes. El ensayo posterior de catálogo, con un
+contador legítimo de numeración, se documenta por separado en
+[CATALOGO-CAPTURA-20261007](CATALOGO-CAPTURA-20261007.md).
+
+## Hosting y límites
+
+Regresos reales 92584ab → e25191b → 92584ab y 676a658 → 92584ab → 676a658.
+Configuración, grupos, procesos y salud 200 comprobados. El primer regreso
+conservó esquema 087 y todas sus filas, aunque e25191b carece de la nueva interfaz.
+La comprobación final detectó un proceso anterior rezagado: se retiró únicamente
+el proceso de staging de esa raíz y se renovó su configuración; la prueba final
+acredita solo el proceso 676a658. No se rebajó el criterio de comprobación.
+
+Fuente exacta, rutas compiladas, entorno privado y lockfile conservados, archivos
+del conversor HEIC trazados y cero paquetes nuevos. Producción mantiene su
+configuración y salud. Retención: 64 carpetas, diez protegidas por versiones o
+dependencias y 54 por revisar; cero eliminaciones. MTA de Avisos/Estimados/Facturas,
+credencial del worker y proveedores IA siguen desactivados o sin configurar.
+
+[PR 17](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/17) contiene código
+público y acta. Evidencia privada en saas-cierre-gastos-comercial/20261007; código
+ADT, originales, SQL/JSON y MIME privados permanecen fuera del repositorio. La
+sesión pública de pantalla usó el navegador autenticado; la entrada anónima se
+acredita por SQL nativo, no por esa sesión. No se acredita recepción externa,
+todos los perfiles web, dispositivo físico, paridad de los 20 módulos o traspaso.

@@ -108,7 +108,7 @@ conservados. Contrato y límites en
 [PR 15](https://github.com/alldecorterrace-ops/SaasAlldecor/pull/15).
 No implica el cierre de todos los avisos o del módulo comercial completo.
 
-### Pendientes activos después de estas entregas
+### Pendientes registrados antes de la continuación del 7 de octubre
 
 1. Gastos y costos: completar conciliación/reembolsos por los perfiles vigentes
    y comprobar los consumidores de horas/gastos/costos de proyecto y periodos.
@@ -137,3 +137,27 @@ regreso real y 1.434 filas pre-captura conservadas. Contrato y límites en
 catálogo y renderizado del PDF de esta revisión acreditados; no declarar todo
 catálogo o todas las plantillas revisadas. Continúa el contraste de avisos y
 estados Leads/formulario, sin reabrir funciones ya acreditadas.
+
+## Estado después de Avisos y captura de catálogo
+
+Avisos del formulario por empresa publicados en staging, 087 sin backfill,
+910 pruebas CI, permisos/repetición SQL nativos, dos MIME privados y recorrido
+visual de los seis estados de Lead, archivo/restauración y conversión única.
+Configuración interna elegida por el propietario, destinatario anterior
+congelado y formulario ficticio desactivado. Regresos reales y privacidad
+no-referrer de Avisos/Estimados comprobados. Acta:
+[FORMULARIO-AVISOS-20261007](FORMULARIO-AVISOS-20261007.md), PR 17.
+
+Captura de catálogo, cambio/archivo de ficha y revisión conservada comprobados
+en la misma entrega: EST-2026-0017, total 239.09, dos revisiones, PDF y captura
+MIME idénticos a sus hashes guardados. El ajuste de opción no se añade fuera
+del configurador, según el editor general contrastado. Acta:
+[CATALOGO-CAPTURA-20261007](CATALOGO-CAPTURA-20261007.md).
+
+Los faltantes concretos de lote/consumidores de costos, correo de Estimados,
+avisos por empresa, estados/conversión del Lead y captura aquí descrita dejan
+de figurar como funciones ausentes. Los ensayos de permisos nativos y la sesión
+administradora no sustituyen todos los perfiles web. Los escenarios comerciales
+sin acta específica conservan su límite de prueba; no se declara cerrado todo
+Comercial ni los 20 módulos por el número de tests. Los otros cuatro bloques,
+IA, GPS físico, importación y traspaso siguen fuera de esta continuación.
