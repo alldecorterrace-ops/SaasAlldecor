@@ -63,6 +63,8 @@ export function assertDeploymentEnvironment(env: Environment) {
     env.INVITATION_MAIL_ENABLED === "true" ||
     env.INVOICE_MAIL_ENABLED === "true" ||
     env.ESTIMATE_MAIL_ENABLED === "true" ||
+    env.WEB_NOTICE_MAIL_ENABLED === "true" ||
+    env.WEB_NOTICE_SUPABASE_SERVICE_KEY ||
     env.OPENAI_API_KEY
   )
     throw new Error("External email and AI must be disabled in staging");

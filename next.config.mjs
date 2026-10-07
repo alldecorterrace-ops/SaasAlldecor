@@ -50,6 +50,8 @@ const config = {
       ...[
         "/api/commercial-documents/:path*",
         "/api/invoice-email/:path*",
+        "/api/estimate-email/:path*",
+        "/api/web-notices/:path*",
         "/api/customers/:path*",
         "/api/work-documents/:path*",
         "/api/history-files/:path*",
