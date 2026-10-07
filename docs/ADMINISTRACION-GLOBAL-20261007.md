@@ -91,13 +91,26 @@ La evidencia con identidad y asignación de la cuenta permanece fuera del reposi
 Tras el alta global, la comparación de solo lectura volvió a confirmar las 48
 tablas y 2.621 filas protegidas, con una cuenta de plataforma y ninguna invitación.
 
-Los avisos web automáticos requieren la clave privada de servicio de producción.
-Su almacenamiento en la configuración privada del hosting ya fue autorizado;
-queda pendiente su entrada directa por el propietario en un terminal con entrada
-oculta. No se guarda esa credencial en código ni en evidencia. Las invitaciones
-de gerente/empresa y los envíos comerciales usan el transporte local configurado.
-No se han enviado invitaciones reales ni se acredita la aceptación por un nuevo
-gerente o recepción de un nuevo correo en estas pruebas.
+El propietario introdujo directamente la clave de servicio de producción en el
+terminal con entrada oculta. El configurador la validó contra el proyecto correcto,
+conservó la configuración privada previa y habilitó los avisos web. El archivo de
+entorno mantiene permisos 0600; la credencial no figura en código ni en evidencia.
+Después del reinicio se comprobó el proceso de la revisión e797ee7, salud/login 200
+y la configuración habilitada. Cada empresa sigue eligiendo su destinatario interno
+y la activación del formulario; esta comprobación no envió avisos web externos.
+
+Se creó la primera invitación real de gerente, para el destinatario indicado por
+el propietario, y el transporte local aceptó el aviso. La identidad permanece en
+evidencia privada. El destinatario confirmó la recepción del aviso. La aceptación
+y el acceso del gerente siguen pendientes de su sesión auténtica; la recepción
+del correo por sí sola no concede el rol ni demuestra la creación de empresas.
+
+El ensayo transaccional adicional en la base nativa de staging pasó 45
+comprobaciones: alta privada, invitación ligada al correo, aceptación confirmada,
+varias empresas aisladas, permisos del equipo, suspensión, repetición y límites de
+intentos de correo. El rollback dejó cero cuentas de plataforma y cero usuarios
+ficticios persistentes. La comparación posterior confirmó las 90 tablas y 1.446
+filas protegidas de staging. El ensayo no envió correo ni modificó producción.
 
 El hosting puede elegir explícitamente `*_MAIL_COMPANY_SCOPE=all` para empresas
 creadas por gerentes. La omisión conserva la lista previa de empresas. Esto no
