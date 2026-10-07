@@ -91,6 +91,9 @@ begin
  insert into public.billing_event_receipts(event_id,body_hash,order_id) values(p_event,p_hash,oid);
  -- Out-of-order delivery cannot resurrect an older canceled/unpaid snapshot.
  if p_created<old.event_created then return; end if;
+ -- Stripe terminal subscriptions cannot be reactivated. A stale provider read
+ -- from a concurrent delivery may share the cancellation event's second.
+ if old.status in ('canceled','incomplete_expired') and current_status<>old.status then return; end if;
  update public.billing_orders set plan_code=code,subscription_id=p_snapshot->>'subscription_id',customer_id=p_snapshot->>'customer_id',
  status=current_status,payment_verified=old.payment_verified or coalesce((p_snapshot->>'paid')::boolean,false),
  paid_through=case when coalesce((p_snapshot->>'paid')::boolean,false) then (p_snapshot->>'paid_through')::timestamptz else old.paid_through end,

@@ -569,69 +569,6 @@ test("paid onboarding, team roles, reserved seats, owner protection and inactive
       },
     );
     await t.test(
-      "paid snapshot retries do not duplicate events, old events cannot resurrect a canceled company",
-      async () => {
-        await apply({ initial: false, status: "canceled", paid: false });
-        const current = sequence;
-        await service();
-        await db.query("select apply_billing_snapshot($1,$2,$3,$4)", [
-          `evt_${current}`,
-          current,
-          "a".repeat(64),
-          JSON.stringify(
-            snapshot({ initial: false, status: "canceled", paid: false }),
-          ),
-        ]);
-        await assert.rejects(
-          db.query("select apply_billing_snapshot($1,$2,$3,$4)", [
-            `evt_${current}`,
-            current,
-            "b".repeat(64),
-            JSON.stringify(snapshot({ initial: false })),
-          ]),
-          /billing_event_conflict/,
-        );
-        await db.query("select apply_billing_snapshot('evt_old',1,$1,$2)", [
-          "a".repeat(64),
-          JSON.stringify(snapshot({ initial: false })),
-        ]);
-        await as(buyer);
-        const result = (
-          await db.query<{ summary: { status: string; writable: boolean } }>(
-            "select company_subscription_summary($1) summary",
-            [order],
-          )
-        ).rows[0].summary;
-        assert.equal(result.status, "canceled");
-        assert.equal(result.writable, false);
-        assert.equal(
-          (await db.query("select * from companies")).rows.length,
-          1,
-        );
-        await assert.rejects(
-          db.query("select update_company($1,'Changed','UTC')", [order]),
-          /permission_denied|subscription_inactive/,
-        );
-        await assert.rejects(
-          db.query(
-            "select invite_company_user($1,$2,'new@saasalldecor.invalid','member','{}')",
-            [order, randomUUID()],
-          ),
-          /permission_denied|subscription_inactive/,
-        );
-        await db.exec("reset role");
-        await assert.rejects(
-          db.query("update companies set name='Legacy bypass' where id=$1", [
-            order,
-          ]),
-          /subscription_inactive/,
-        );
-        await apply({ initial: false, status: "active", paid: true });
-        await as(buyer);
-        await db.query("select update_company($1,'Restored','UTC')", [order]);
-      },
-    );
-    await t.test(
       "an unpaid renewal never extends the previously paid period and expiration remains readable",
       async () => {
         await apply({
@@ -673,6 +610,78 @@ test("paid onboarding, team roles, reserved seats, owner protection and inactive
             )
           ).rows[0].summary,
           null,
+        );
+      },
+    );
+    await t.test(
+      "paid snapshot retries do not duplicate events, old events cannot resurrect a canceled company",
+      async () => {
+        await apply({ initial: false, status: "canceled", paid: false });
+        const current = sequence;
+        await service();
+        await db.query("select apply_billing_snapshot($1,$2,$3,$4)", [
+          `evt_${current}`,
+          current,
+          "a".repeat(64),
+          JSON.stringify(
+            snapshot({ initial: false, status: "canceled", paid: false }),
+          ),
+        ]);
+        await assert.rejects(
+          db.query("select apply_billing_snapshot($1,$2,$3,$4)", [
+            `evt_${current}`,
+            current,
+            "b".repeat(64),
+            JSON.stringify(snapshot({ initial: false })),
+          ]),
+          /billing_event_conflict/,
+        );
+        await db.query("select apply_billing_snapshot('evt_old',1,$1,$2)", [
+          "a".repeat(64),
+          JSON.stringify(snapshot({ initial: false })),
+        ]);
+        // Different events can share one Stripe created-second; cancellation is terminal.
+        await db.query(
+          "select apply_billing_snapshot('evt_same_second', $1, $2, $3)",
+          [
+            current,
+            "c".repeat(64),
+            JSON.stringify(
+              snapshot({ initial: false, status: "active", paid: true }),
+            ),
+          ],
+        );
+        await apply({ initial: false, status: "active", paid: true });
+        await as(buyer);
+        const result = (
+          await db.query<{ summary: { status: string; writable: boolean } }>(
+            "select company_subscription_summary($1) summary",
+            [order],
+          )
+        ).rows[0].summary;
+        assert.equal(result.status, "canceled");
+        assert.equal(result.writable, false);
+        assert.equal(
+          (await db.query("select * from companies")).rows.length,
+          1,
+        );
+        await assert.rejects(
+          db.query("select update_company($1,'Changed','UTC')", [order]),
+          /permission_denied|subscription_inactive/,
+        );
+        await assert.rejects(
+          db.query(
+            "select invite_company_user($1,$2,'new@saasalldecor.invalid','member','{}')",
+            [order, randomUUID()],
+          ),
+          /permission_denied|subscription_inactive/,
+        );
+        await db.exec("reset role");
+        await assert.rejects(
+          db.query("update companies set name='Legacy bypass' where id=$1", [
+            order,
+          ]),
+          /subscription_inactive/,
         );
       },
     );

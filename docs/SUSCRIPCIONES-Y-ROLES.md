@@ -86,7 +86,10 @@ Las empresas con suscripción vencida, impaga o cancelada conservan lectura.
 La autorización común y disparadores de escritura cubren los escritores antiguos;
 las escrituras y nuevas invitaciones se rechazan. Cancelación al final del período
 mantiene acceso mientras el estado siga activo y el período pagado esté vigente.
-Una renovación impaga no prolonga el período previamente pagado.
+Una renovación impaga no prolonga el período previamente pagado. Una suscripción
+cancelada o incomplete_expired es terminal y no se reactiva por un evento retrasado,
+incluso con la misma marca temporal. Vincular una nueva suscripción a una empresa
+cancelada requiere un flujo de recontratación que esta candidata aún no implementa.
 
 ## Preparar sandbox de Stripe
 
