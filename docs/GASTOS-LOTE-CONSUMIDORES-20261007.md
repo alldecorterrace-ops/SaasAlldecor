@@ -40,8 +40,8 @@ ficticia existente; aprobación de Oficina mediante la sesión administradora.
 - Gastos, proyecto, cliente y CSV: USD 630.33 antes/después; seis costos únicos.
   Los únicos cambios del CSV son PENDIENTE → PAGADO en los dos gastos ficticios.
 - Periodos en pantalla/CSV: 1 oct = 350.00 (100.01 histórico + 149.99 suplemento
-  + 100.00 Workforce); 5 oct = 250.00; 7 oct = 30.33. El resumen mensual conserva
-  su alcance de empresa y no adopta el filtro de la lista.
+  - 100.00 Workforce); 5 oct = 250.00; 7 oct = 30.33. El resumen mensual conserva
+    su alcance de empresa y no adopta el filtro de la lista.
 - 33 pruebas locales pertinentes aprobadas: roles, archivos/revisión revocada,
   conjunto y versión obsoletos, reparto por centavos, conflictos de Labor,
   histórico y consumidores/CSV. No sustituyen sesiones web de todos los perfiles.
@@ -55,3 +55,10 @@ Evidencia privada: saas-cierre-gastos-comercial/20261007, manifiesto
 cost-closure-proof.json, SQL, CSV e imágenes de sesión. Este acta cierra el
 lote sin IA, reintentos y consumidores/periodos descritos; no pretende certificar
 un dispositivo físico ni todas las combinaciones posibles de negocio.
+
+## Referencia pura de Labor vigente
+
+El 7 de octubre una lectura SSH firmada confirmó el SHA-256 de LaborCostModel.php:
+847ea58cedf5bb8f85069df8176824ab342a0a4ddd0e833eb79e5ed9f12bfbb6.
+Coincide con la referencia pura aislada del harness CI. No se descargó otra copia
+privada ni se trasladaron IDs/tarifas reales del ProjectLaborLedger.

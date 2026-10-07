@@ -44,7 +44,7 @@ La implementación y el CI no equivalen al cierre completo de un módulo.
 | Estimados             | Plantillas/disparadores, revisiones y comunicaciones restantes                                                                    |
 | Facturas              | Escenarios/perfiles restantes, documentos privados y estados vinculados tras anulación; el PDF de correo requerido ya se comprobó |
 | Proyectos             | Estados y acciones actuales; ausencia de cancelación automática por anulación contrastada con ADT vigente                         |
-| Gastos                | Revisión visual sin IA publicada; reembolso/conciliación y consumidores restantes sin duplicación                |
+| Gastos                | Revisión visual sin IA publicada; reembolso/conciliación y consumidores restantes sin duplicación                                 |
 | Trabajadores          | Escenarios restantes de perfiles, asignaciones y costos; no repetir acciones ya comprobadas arriba                                |
 | Horas y solicitudes   | Escenarios restantes de jornadas, permisos, costos y periodos; catálogo ampliado por 083 y GPS físico aplazado                    |
 | Permisos              | Contraste de acciones vigentes y perfiles restantes                                                                               |
@@ -53,7 +53,7 @@ La implementación y el CI no equivalen al cierre completo de un módulo.
 | Manual de fabricación | Recorrido y documentos operativos; generación desde 3D excluida                                                                   |
 | Mapa de zonas         | Filtros/categorías/centros, contrato multibyte, exportación y perfiles; cartografía real/caché ya probadas parcialmente           |
 | Portal del cliente    | Contrastar/completar documentos, fotos, mensajes, enlaces, revocación y aislamiento                                               |
-| IA Assistant          | Excluido por decisión del propietario; conservar historial, sin activación |
+| IA Assistant          | Excluido por decisión del propietario; conservar historial, sin activación                                                        |
 
 Estos pendientes mezclan diferencias de implementación y comprobaciones faltantes.
 No se afirma que cada función esté ausente: hay que contrastar el origen y el
@@ -130,8 +130,10 @@ conservadas, sin pagos ni segunda ficha. Acta:
 Este recorrido deja de figurar como implementación ausente. Los niveles SQL,
 pruebas locales y sesión administradora están distinguidos en el acta.
 
-Correo de Estimados: faltante confirmado e implementado; contrato y pruebas en
-[ESTIMADOS-CORREO-20261007](ESTIMADOS-CORREO-20261007.md). Publicación y sesión
-seguirán abiertas hasta comprobar la entrega. Avisos de Leads/formulario,
-recorridos de catálogo/precios y contraste visual restante de plantillas
-comerciales continúan en el bloque Comercial; no reabrir funciones ya acreditadas.
+Correo de Estimados publicado y comprobado: aplicación e25191b, contrato 086,
+899 pruebas CI, estados/repetición SQL nativos, captura MIME/PDF en sesión,
+regreso real y 1.434 filas pre-captura conservadas. Contrato y límites en
+[ESTIMADOS-CORREO-20261007](ESTIMADOS-CORREO-20261007.md), PR 16. Captura desde
+catálogo y renderizado del PDF de esta revisión acreditados; no declarar todo
+catálogo o todas las plantillas revisadas. Continúa el contraste de avisos y
+estados Leads/formulario, sin reabrir funciones ya acreditadas.
