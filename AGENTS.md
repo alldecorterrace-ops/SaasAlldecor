@@ -40,6 +40,11 @@
 - Aclaración del propietario: el administrador global solo gestiona gerentes;
   no crea ni opera empresas. Solo los gerentes invitados, confirmados y activos
   crean empresas y gestionan sus equipos y permisos.
+- Aclaración posterior: toda cuenta nueva requiere una invitación vigente.
+  El administrador global invita gerentes; solo gerentes invitados, confirmados y
+  activos invitan a usuarios de sus empresas. El equipo, incluido su administrador
+  de empresa, no crea empresas ni invita gerentes. Bloquear también el alta directa
+  en Supabase Auth; no basta ocultar el formulario. Preservar cuentas existentes.
 - Mantener IA, GPS físico y configuradores/3D excluidos.
 
 ## Versionado y despliegues

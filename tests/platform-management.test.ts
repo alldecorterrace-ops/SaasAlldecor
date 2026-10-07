@@ -391,6 +391,28 @@ test("Platform invitations enforce administrator -> manager -> companies -> scop
           /permission_denied/,
         );
         await assert.rejects(
+          db.query(
+            "select invite_company_user($1,$2,'new-member@saasalldecor.invalid','member','{}')",
+            [company, randomUUID()],
+          ),
+          /permission_denied/,
+        );
+        assert.equal(
+          (
+            await db.query<{ allowed: boolean }>(
+              "select can_invite_company_users($1) allowed",
+              [company],
+            )
+          ).rows[0].allowed,
+          false,
+        );
+        await assert.rejects(
+          db.query("select create_company($1,'Team admin company')", [
+            randomUUID(),
+          ]),
+          /manager_invitation_required/,
+        );
+        await assert.rejects(
           invite("new-manager@saasalldecor.invalid"),
           /permission_denied/,
         );
@@ -549,7 +571,7 @@ test("manager notice names the actual manager onboarding flow and never uses a b
   const mail = await composeInvitationMail(config, {
     attempt_id: randomUUID(),
     email: "manager@saasalldecor.invalid",
-    company_name: "Administración del SaaS",
+    company_name: "AdministraciÃ³n del SaaS",
     expires_at: new Date(Date.now() + 86400000).toISOString(),
     kind: "manager",
   });
@@ -572,7 +594,7 @@ test("disabled manager mail never claims or sends, and uncertain handoffs are ne
               {
                 attempt_id: randomUUID(),
                 email: "manager@saasalldecor.invalid",
-                company_name: "Administración del SaaS",
+                company_name: "AdministraciÃ³n del SaaS",
                 expires_at: new Date().toISOString(),
               },
             ]

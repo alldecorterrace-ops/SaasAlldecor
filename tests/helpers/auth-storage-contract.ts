@@ -1,6 +1,6 @@
 // Minimal test doubles for Supabase-owned schemas, not Auth/Storage services.
 export const authStorageContract = `
-create role anon; create role authenticated; create role service_role;
+create role anon; create role authenticated; create role service_role; create role supabase_auth_admin;
 create schema auth;
 create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
 create function auth.uid() returns uuid language sql stable as

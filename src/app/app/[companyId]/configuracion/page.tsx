@@ -19,6 +19,11 @@ export default async function Settings({
   const { companyId } = await params;
   const { db, company, member } = await requireModule(companyId, "config");
   const manager = ["owner", "admin"].includes(member.role);
+  const { data: canInviteUsers, error: invitePermissionError } = manager
+    ? await db.rpc("can_invite_company_users", { p_company: companyId })
+    : { data: false, error: null };
+  if (invitePermissionError)
+    throw new Error("No se pudo comprobar quién puede invitar al equipo.");
   const { data, error } = manager
     ? await db
         .from("memberships")
@@ -76,7 +81,7 @@ export default async function Settings({
           company={company}
           writable={canAccess(member, "config", "write")}
         />
-        {manager && (
+        {canInviteUsers === true && (
           <InviteMember
             companyId={companyId}
             requestId={randomUUID()}

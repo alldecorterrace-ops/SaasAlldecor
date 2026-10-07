@@ -21,7 +21,8 @@ La identidad de la cuenta inicial permanece en el canal privado del propietario.
   El administrador global no puede aceptar invitaciones del equipo ni operar
   empresas, incluso con una membresía antigua.
 - El propietario invita un administrador de empresa o un miembro con permisos
-  de lectura/escritura por módulo. Un administrador de empresa solo invita miembros.
+  de lectura/escritura por módulo. Solo el gerente de plataforma activo invita al equipo;
+  un administrador del equipo conserva sus otros permisos, sin crear cuentas por invitación.
   La aceptación aplica el rol y los permisos elegidos. Repetirla no sobrescribe
   cambios posteriores ni reactiva miembros suspendidos. No se invita un propietario
   ni se concede administración global mediante invitaciones del equipo.
@@ -150,3 +151,25 @@ de creación al administrador global, la creación por gerente aceptado y el
 bloqueo de invitación empresarial, lectura y edición con membresía global antigua.
 La publicación exige CI de la revisión exacta, ensayo SQL nativo con rollback,
 aplicación de 091 con preservación de filas y verificación de la sesión global.
+
+## Registro exclusivamente por invitación
+
+La migración 092 añade una comprobación de invitación vigente por correo y el hook
+`public.require_signup_invitation(jsonb)`. Debe activarse en cada proyecto, en
+Authentication > Hooks > Before User Created, tipo Postgres. El hook deniega alta
+directa sin invitación; el formulario consulta la misma regla antes de llamar Auth.
+No confiar en metadata, un rol elegido por el destinatario o una invitación vencida.
+La invitación no se consume al registrarse: después de confirmar el correo se acepta
+explícitamente y solo entonces se aplica el rol de gerente o de equipo.
+
+El emisor debe seguir activo y confirmado: administrador global para gerentes,
+gerente de plataforma con membresía de administración en la empresa para equipos.
+Se mantienen las cuentas existentes y los datos de negocio. Esta regla no borra
+cuentas de prueba creadas anteriormente. El hook no concede roles ni membresías.
+El callback informa un fallo de sesión sin asegurar que el enlace haya caducado;
+la confirmación del correo puede haber terminado antes del intercambio de sesión.
+
+Antes de publicar: probar el hook SQL como `supabase_auth_admin`, registrar una
+petición directa rechazada sin usuario ni correo, y probar en staging la invitación
+de gerente y equipo. Verificar la configuración del hook en ambos proyectos;
+la migración por sí sola no activa la configuración del servicio Auth.
