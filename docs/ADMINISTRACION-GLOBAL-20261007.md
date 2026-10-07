@@ -10,15 +10,16 @@ La identidad de la cuenta inicial permanece en el canal privado del propietario.
 - `/administracion-saas` exige administrador global activo y cuenta confirmada.
   Invita gerentes por correo, consulta invitaciones y su intento de envío,
   revoca las pendientes y puede suspender/reactivar gerentes con confirmación
-  y control de versión. La vista global muestra empresas y cantidad de miembros;
-  no concede acceso a sus datos operativos por el solo rol global.
+  y control de versión. La vista global se centra en gerentes e invitaciones;
+  cada gerente conserva la administración operativa de sus empresas.
 - El destinatario entra o se registra con el mismo correo, confirma su cuenta
   y acepta la invitación en `/empresas`. La invitación vence a los siete días;
   su aceptación repetida no reactiva una cuenta suspendida.
 - Solo un gerente invitado, confirmado y activo puede crear empresas. Puede crear
   más de una. Cada empresa conserva propietario, miembros y datos aislados.
-  Los propietarios actuales conservan sus empresas; no se promueven automáticamente
-  a gerentes de plataforma ni se modifica su membresía.
+  No se promueven automáticamente propietarios a gerentes de plataforma.
+  El administrador global no puede aceptar invitaciones del equipo ni operar
+  empresas, incluso con una membresía antigua.
 - El propietario invita un administrador de empresa o un miembro con permisos
   de lectura/escritura por módulo. Un administrador de empresa solo invita miembros.
   La aceptación aplica el rol y los permisos elegidos. Repetirla no sobrescribe
@@ -42,7 +43,7 @@ Los procesos privilegiados históricos y funciones públicas con enlaces ya emit
 no quedan certificados como una revocación integral de todos los servicios externos.
 La app conserva la exclusión de IA y no activa sus credenciales en la candidata.
 
-## Validación y publicación
+## Historial de validación y publicación
 
 Comprobación local: lint, tipos, 930 pruebas y compilación correctos. Tras cerrar
 la edición antigua de permisos para cuentas suspendidas, las 12 pruebas del nuevo
@@ -101,9 +102,11 @@ y la activación del formulario; esta comprobación no envió avisos web externo
 
 Se creó la primera invitación real de gerente, para el destinatario indicado por
 el propietario, y el transporte local aceptó el aviso. La identidad permanece en
-evidencia privada. El destinatario confirmó la recepción del aviso. La aceptación
-y el acceso del gerente siguen pendientes de su sesión auténtica; la recepción
-del correo por sí sola no concede el rol ni demuestra la creación de empresas.
+evidencia privada. El destinatario confirmó la recepción y posteriormente accedió
+a su cuenta. El restablecimiento solicitado después por el propietario retiró
+las empresas, usuarios e invitaciones anteriores y conservó únicamente la cuenta
+global y los respaldos privados. La recepción de un correo por sí sola no concede
+el rol ni demuestra la creación de empresas.
 
 El ensayo transaccional adicional en la base nativa de staging pasó 45
 comprobaciones: alta privada, invitación ligada al correo, aceptación confirmada,
@@ -125,3 +128,25 @@ authenticated o service_role. Es una copia para esta entrega, no un respaldo
 externo completo ni prueba de recuperación de todos los binarios de Storage.
 Los controles de aplicación preservan columnas originales y permiten únicamente
 los cambios normales de fecha de inicio de sesión de Auth ajenos al esquema.
+
+## Separación de administrador global y gerente
+
+Aclaración del propietario: el administrador del SaaS invita y administra el acceso
+de los gerentes. Cada gerente invitado crea sus empresas y gestiona sus equipos,
+roles y permisos. La cuenta global no crea empresas ni opera como miembro de una.
+
+La entrada `/empresas` redirige al administrador activo a `/administracion-saas`,
+cuyo panel se centra en gerentes e invitaciones. Los gerentes y sus equipos
+mantienen su entrada empresarial. El formulario y el RPC de creación exigen un
+gerente invitado, confirmado y activo; el administrador global queda excluido.
+
+La migración 091 restringe los controles comunes de autorización empresarial
+para cuentas globales, incluso si conservaran una membresía antigua. También
+unifica la consulta antigua de invitaciones y el acceso a preferencias de avisos
+con los controles actuales. No elimina ni reescribe cuentas, empresas o membresías.
+Validación local de la corrección: lint, tipos, 931 pruebas y compilación
+correctos. Las 13 comprobaciones del flujo de plataforma incluyen la denegación
+de creación al administrador global, la creación por gerente aceptado y el
+bloqueo de invitación empresarial, lectura y edición con membresía global antigua.
+La publicación exige CI de la revisión exacta, ensayo SQL nativo con rollback,
+aplicación de 091 con preservación de filas y verificación de la sesión global.

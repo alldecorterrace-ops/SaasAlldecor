@@ -91,6 +91,10 @@ test("Platform invitations enforce administrator -> manager -> companies -> scop
           /permission_denied/,
         );
         await as(admin);
+        assert.deepEqual(
+          (await db.query("select * from platform_context()")).rows,
+          [{ role: "administrator", active: true, can_create_company: false }],
+        );
         await assert.rejects(
           db.query("select create_company($1,'Global account')", [company]),
           /manager_invitation_required/,
@@ -131,10 +135,9 @@ test("Platform invitations enforce administrator -> manager -> companies -> scop
         );
         await accept(invitation);
         await accept(invitation);
-        assert.equal(
-          (await db.query<{ role: string }>("select * from platform_context()"))
-            .rows[0].role,
-          "manager",
+        assert.deepEqual(
+          (await db.query("select * from platform_context()")).rows,
+          [{ role: "manager", active: true, can_create_company: true }],
         );
       },
     );
@@ -182,6 +185,84 @@ test("Platform invitations enforce administrator -> manager -> companies -> scop
         assert.deepEqual(
           (await db.query("select * from memberships")).rows,
           [],
+        );
+      },
+    );
+    await t.test(
+      "the global administrator cannot join or operate a company even through an invitation or old membership",
+      async () => {
+        await as(manager);
+        const globalTeamInvitation = randomUUID();
+        await db.query(
+          "select invite_company_user($1,$2,'admin@saasalldecor.invalid','admin','{}')",
+          [company, globalTeamInvitation],
+        );
+        await as(admin);
+        assert.deepEqual(
+          (await db.query("select * from my_company_invitations()")).rows,
+          [],
+        );
+        assert.deepEqual(
+          (await db.query("select * from my_company_role_invitations()")).rows,
+          [],
+        );
+        await assert.rejects(
+          db.query("select respond_company_invitation($1,true)", [
+            globalTeamInvitation,
+          ]),
+          /account_suspended/,
+        );
+        await db.exec("reset role");
+        await db.query(
+          "insert into memberships(company_id,user_id,email,role) values($1,$2,'admin@saasalldecor.invalid','admin')",
+          [company, admin],
+        );
+        await db.query(
+          "insert into web_notice_settings(company_id,staff_email,updated_by) values($1,'notice@saasalldecor.invalid',$2)",
+          [company, manager],
+        );
+        await as(admin);
+        assert.deepEqual((await db.query("select * from companies")).rows, []);
+        assert.deepEqual(
+          (await db.query("select * from memberships")).rows,
+          [],
+        );
+        assert.deepEqual(
+          (await db.query("select * from web_notice_settings")).rows,
+          [],
+        );
+        assert.equal(
+          (
+            await db.query<{ allowed: boolean }>(
+              "select app_private.can_access($1,'clientes','write') allowed",
+              [company],
+            )
+          ).rows[0].allowed,
+          false,
+        );
+        await assert.rejects(
+          db.query(
+            "select invite_company_user($1,$2,'new@saasalldecor.invalid','member','{}')",
+            [company, randomUUID()],
+          ),
+          /permission_denied/,
+        );
+        await assert.rejects(
+          db.query("select set_member_access($1,$2,'member',true,'{}')", [
+            company,
+            worker,
+          ]),
+          /permission_denied/,
+        );
+        await db.exec("reset role");
+        await db.query(
+          "delete from memberships where company_id=$1 and user_id=$2",
+          [company, admin],
+        );
+        await as(manager);
+        assert.equal(
+          (await db.query("select * from web_notice_settings")).rows.length,
+          1,
         );
       },
     );

@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { randomUUID } from "node:crypto";
+import { LogOut } from "lucide-react";
+import { signOut } from "@/app/auth/actions";
+import { Button } from "@/components/ui/button";
 import { requirePlatformAdministrator } from "@/lib/platform";
 import { invitationMailConfig } from "@/lib/manager-mail";
 import {
@@ -12,7 +15,6 @@ export default async function PlatformAdministration() {
   const { db, user } = await requirePlatformAdministrator();
   const results = await Promise.all([
     db.rpc("platform_manager_overview"),
-    db.rpc("platform_company_overview"),
     db
       .from("manager_invitations")
       .select(
@@ -35,13 +37,7 @@ export default async function PlatformAdministration() {
     version: number;
     company_count: number;
   }[];
-  const companies = (results[1].data ?? []) as {
-    id: string;
-    name: string;
-    manager_email: string;
-    member_count: number;
-  }[];
-  const invitations = (results[2].data ?? []) as {
+  const invitations = (results[1].data ?? []) as {
     id: string;
     email: string;
     status: string;
@@ -70,14 +66,26 @@ export default async function PlatformAdministration() {
   };
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
-      <Link href="/empresas" className="text-sm text-primary underline">
-        Tus empresas
-      </Link>
+      <header className="flex flex-wrap items-center justify-between gap-4">
+        <Link
+          href="/administracion-saas"
+          className="text-2xl font-bold tracking-tight"
+        >
+          all decor<span className="text-primary">.</span>
+        </Link>
+        <form action={signOut}>
+          <Button variant="ghost" size="sm">
+            <LogOut size={14} />
+            Cerrar sesión
+          </Button>
+        </form>
+      </header>
       <p className="eyebrow mt-8">Administrador global</p>
       <h1 className="page-title mt-3">Administración del SaaS</h1>
       <p className="mt-3 mb-8 text-muted-foreground">
-        Sesión de {user.email}. Invita gerentes y consulta sus empresas y
-        equipos.
+        Sesión de {user.email}. Invita y administra el acceso de los gerentes.
+        Cada gerente crea sus empresas y gestiona sus usuarios, roles y
+        permisos.
       </p>
       <div className="grid gap-6 lg:grid-cols-[1fr_1.5fr]">
         <InviteManager requestId={randomUUID()} mailEnabled={mail} />
@@ -147,34 +155,6 @@ export default async function PlatformAdministration() {
             Los gerentes aparecerán cuando acepten la invitación.
           </p>
         )}
-      </section>
-      <section className="mt-10">
-        <h2 className="mb-4 text-lg font-semibold">Empresas</h2>
-        <div className="card overflow-x-auto">
-          <table>
-            <thead>
-              <tr>
-                <th>Empresa</th>
-                <th>Gerente</th>
-                <th>Usuarios activos</th>
-              </tr>
-            </thead>
-            <tbody>
-              {companies.map((c) => (
-                <tr key={c.id}>
-                  <td>{c.name}</td>
-                  <td className="break-all">{c.manager_email}</td>
-                  <td>{c.member_count}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {!companies.length && (
-            <p className="text-sm text-muted-foreground">
-              Los gerentes crearán sus empresas desde Tus empresas.
-            </p>
-          )}
-        </div>
       </section>
     </main>
   );

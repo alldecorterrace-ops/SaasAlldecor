@@ -1,12 +1,16 @@
 "use server";
 import { redirect } from "next/navigation";
-import { requireUser } from "@/lib/auth";
+import { platformContext } from "@/lib/platform";
 import { companySchema, uuid } from "@/lib/validation";
 export async function createCompany(
   _: { error?: string },
   form: FormData,
 ): Promise<{ error?: string }> {
-  const { db } = await requireUser();
+  const { db, platform } = await platformContext();
+  if (platform?.role !== "manager" || !platform.can_create_company)
+    return {
+      error: "Solo los gerentes invitados y activos pueden crear empresas.",
+    };
   const data = companySchema.safeParse({ name: form.get("name") }),
     id = uuid.safeParse(form.get("request_id"));
   if (!data.success || !id.success)

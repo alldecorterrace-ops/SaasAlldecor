@@ -37,6 +37,9 @@
   ni asignaciones privadas en GitHub.
 - Implementar y probar administrador global -> invitación de gerente -> creación
   de empresas -> invitaciones de equipo con rol y permisos; conservar aislamiento.
+- Aclaración del propietario: el administrador global solo gestiona gerentes;
+  no crea ni opera empresas. Solo los gerentes invitados, confirmados y activos
+  crean empresas y gestionan sus equipos y permisos.
 - Mantener IA, GPS físico y configuradores/3D excluidos.
 
 ## Versionado y despliegues

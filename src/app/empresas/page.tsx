@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { randomUUID } from "node:crypto";
 import { Building2, ArrowUpRight, LogOut } from "lucide-react";
 
@@ -11,6 +12,8 @@ import { IncomingInvitation } from "@/components/invitation-forms";
 export const dynamic = "force-dynamic";
 export default async function Companies() {
   const { db, user, platform } = await platformContext();
+  if (platform?.role === "administrator" && platform.active)
+    redirect("/administracion-saas");
   const { data: managerInvitations, error: managerInvitationError } =
     await db.rpc("my_manager_invitations");
   if (managerInvitationError)
@@ -49,14 +52,6 @@ export default async function Companies() {
           Selecciona dónde quieres trabajar. Sesión de {user.email}.
         </p>
       </div>
-      {platform?.role === "administrator" && platform.active && (
-        <Link
-          href="/administracion-saas"
-          className="card mb-8 block font-semibold text-primary"
-        >
-          Administración del SaaS · Gerentes y empresas
-        </Link>
-      )}
       {platform && !platform.active && (
         <p role="status" className="card mb-8">
           Tu acceso al SaaS está suspendido. Contacta al administrador global.
@@ -121,10 +116,15 @@ export default async function Companies() {
           ) : (
             <div className="card py-12 text-center">
               <Building2 className="mx-auto mb-4 text-primary" />
-              <h2 className="font-semibold">Tu primera empresa empieza aquí</h2>
+              <h2 className="font-semibold">
+                {platform?.can_create_company
+                  ? "Crea tu primera empresa"
+                  : "Tu acceso a una empresa"}
+              </h2>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                Acepta una invitación de gerente para crear tus empresas, o pide
-                al gerente de tu empresa que te invite al equipo.
+                {platform?.can_create_company
+                  ? "Como gerente invitado, puedes crear tus empresas y añadir a sus usuarios con los roles y permisos que definas."
+                  : "Acepta una invitación de gerente para crear tus empresas, o pide al gerente de tu empresa que te invite al equipo."}
               </p>
             </div>
           )}
