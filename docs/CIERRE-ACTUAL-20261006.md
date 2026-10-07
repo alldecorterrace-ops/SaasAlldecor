@@ -14,12 +14,42 @@ GPS físico continúa aplazado.
 Nuevos imports de negocio y traspaso siguen suspendidos. ADT mantiene la operación.
 La implementación y el CI no equivalen al cierre completo de un módulo.
 
+## Matriz vigente de los dos bloques: cierre del 7 de octubre
+
+Esta matriz sustituye los pendientes genéricos de las notas anteriores para
+el alcance solicitado. Los inventarios restantes se mantienen como historia,
+sin ampliar el trabajo a los otros cuatro bloques.
+
+| Acción acordada | Estado y nivel de evidencia | Acta |
+| --- | --- | --- |
+| Recibos/manual sin IA, HEIC, lote y reembolso sin duplicar costo | Publicado; CI, SQL nativo y sesión administradora. Registro ficticio, sin pago real | [Gastos sin IA](GASTOS-SIN-IA-20261006.md), [Lote y consumidores](GASTOS-LOTE-CONSUMIDORES-20261007.md) |
+| Labor/gastos por proyecto, cliente, exportación y periodo | 630.33 reconciliado por consumidores; periodos 350 / 250 / 30.33 y filas originales conservadas | [Lote y consumidores](GASTOS-LOTE-CONSUMIDORES-20261007.md) |
+| Formulario web, fecha/preferencia, seis estados de Lead, archivo/restauración y cliente único | Publicado; referencia del CRM renovada, SQL nativo, sesión y dos MIME privados | [Contacto web](COMERCIAL-CONTACTO-WEB-20261006.md), [Avisos](FORMULARIO-AVISOS-20261007.md) |
+| Aviso interno configurable por empresa, destinatario congelado y repetición | 087; CI, denegaciones y capturas privadas. Entrega externa desactivada | [Avisos](FORMULARIO-AVISOS-20261007.md) |
+| Productos/precios, seis bases, ajuste descriptivo, captura y ficha archivada | 18 combinaciones contrastadas, sesión del catálogo, revisión/PDF/MIME 239.09 conservados tras cambio de ficha | [Catálogo](CATALOGO-CAPTURA-20261007.md), restauración 074 acreditada el 5 de octubre |
+| Estimados: revisión, estados, condiciones, correo y perfil restringido | 086; CI, SQL nativo, sesión owner y member, MIME/PDF exactos e históricos de solo lectura | [Correo](ESTIMADOS-CORREO-20261007.md), [Identidad y perfil restringido](IDENTIDAD-COMERCIAL-20261007.md) |
+| Factura, pagos/saldo, métodos de ADT, anulación y vínculos del expediente | Fuente actual, CI, SQL nativo, sesiones y documentos privados; sin cancelar Proyecto automáticamente | [Anulación/expediente](COMERCIAL-ANULACION-EXPEDIENTE-20261006.md), [Métodos](EXPEDIENTE-PAGOS-METODOS-20261006.md) |
+| PDF de Enviar por email e identidad/contacto/pie por empresa | 088, 917 pruebas CI, SQL nativo, owner/member, PDF/MIME, versiones y retorno real. Recibo solicitado ya aclarado; no recibo independiente pendiente | [Identidad](IDENTIDAD-COMERCIAL-20261007.md) |
+
+No quedan funciones pendientes de implementación identificadas en estos
+recorridos contrastados de Gastos/costos y Comercial. Se conservan los límites
+de prueba por acción; no se certifican todas las combinaciones imaginables
+de perfiles ni el conjunto de 20 módulos por esta matriz o por el CI.
+Correos actuales se probaron como captura privada; el único correo técnico
+real previo tiene recepción y apertura del PDF confirmadas por el propietario.
+Identidad y operación reales, IA, GPS, los otros cuatro bloques, imports y
+traspaso no se convierten en pendientes de esta continuación.
+
+Entrega activa de aplicación: 2f73ee0, esquema 088. Retorno validado: 676a658.
+Documentación posterior no requiere volver a compilar la aplicación si el
+diff respecto de ese commit se limita a docs.
+
 ## Avances comprobados por acción
 
 | Recorrido                                                   | Evidencia de entrega                                                                                             | Estado de cierre                                                                                 |
 | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | Factura, abonos, saldo, anulación y PDF de Enviar por email | 072 y continuación comercial del 5 de octubre; correo técnico recibido y PDF abierto, confirmado por propietario | Recorrido probado; no queda recibo separado por desarrollar                                      |
-| Estimados y expediente con perfil comercial restringido     | Sesiones, revisiones, aprobación restringida, PDFs y repetición del 5 de octubre                                 | Parcial; permisos/escenarios completos aún abiertos                                              |
+| Estimados y expediente con perfil comercial restringido     | Sesiones, revisiones, aprobación restringida, PDFs y repetición del 5 de octubre                                 | Recorridos específicos acreditados; ver matriz vigente y límites de prueba                                              |
 | Restauración de Precios                                     | 074, historial, cancelar, restaurar, aislamiento y retorno del 5 de octubre                                      | Acción comprobada; no certifica todo el catálogo                                                 |
 | Horas administrativas y costos diarios                      | Sesión del 5 de octubre: descansos, solicitudes, cierre/reapertura, Labor sin duplicar por segundo turno         | Parcial; resto de incidencias y consumidores abiertos                                            |
 | Resumen de días y horas, propio/equipo                      | Contratos PARIDAD-HORAS-RESUMEN y PARIDAD-HORAS-EQUIPO y actas del 5 de octubre                                  | Acciones comprobadas con límites de perfil                                                       |
@@ -154,10 +184,8 @@ MIME idénticos a sus hashes guardados. El ajuste de opción no se añade fuera
 del configurador, según el editor general contrastado. Acta:
 [CATALOGO-CAPTURA-20261007](CATALOGO-CAPTURA-20261007.md).
 
-Los faltantes concretos de lote/consumidores de costos, correo de Estimados,
-avisos por empresa, estados/conversión del Lead y captura aquí descrita dejan
-de figurar como funciones ausentes. Los ensayos de permisos nativos y la sesión
-administradora no sustituyen todos los perfiles web. Los escenarios comerciales
-sin acta específica conservan su límite de prueba; no se declara cerrado todo
-Comercial ni los 20 módulos por el número de tests. Los otros cuatro bloques,
-IA, GPS físico, importación y traspaso siguen fuera de esta continuación.
+El contraste posterior convirtió el pendiente de plantillas en una diferencia
+concreta: identidad comercial por empresa. 088 la resuelve y tiene acta propia,
+incluida la sesión comercial restringida. La matriz vigente al principio de
+este registro reúne los recorridos comprobados y sus límites. No usar las
+listas históricas como una nueva lista de funciones ausentes.
