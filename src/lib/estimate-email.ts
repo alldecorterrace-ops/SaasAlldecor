@@ -1,3 +1,8 @@
+import {
+  commercialCompanyName,
+  commercialContactLines,
+  commercialFooterLines,
+} from "./commercial-identity";
 import nodemailer from "nodemailer";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -108,7 +113,9 @@ export function estimateEmailBody(
   synthetic: boolean,
 ) {
   const r = doc.snapshot.record,
-    company = doc.snapshot.company.name;
+    company = commercialCompanyName(doc.snapshot.company);
+  const contact = commercialContactLines(doc.snapshot.company).join("\n"),
+    footer = commercialFooterLines(doc.snapshot.company).join("\n");
   const rows = r.items
     .map(
       (i) =>
@@ -149,10 +156,12 @@ export function estimateEmailBody(
     r.notes,
     "The estimate PDF is attached. This estimate does not confirm payment or a customer signature.",
     company,
+    contact,
+    footer,
   ]
     .filter(Boolean)
     .join("\n\n");
-  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"></head><body style="font:14px Arial,sans-serif;color:#18324b"><div style="max-width:680px;margin:auto"><h2>Estimate ${escape(doc.number)}</h2>${synthetic ? "<p>PRUEBA · DATOS FICTICIOS · SIN ENVÍO EXTERNO</p>" : ""}<p>Hello ${escape(r.customer_snapshot.full_name)},</p><p>Thank you for choosing ${escape(company)}. Here is your estimate:</p><table style="width:100%;border-collapse:collapse">${rows}${totals.map(([k, v]) => `<tr><td style="padding:10px">${escape(k)}</td><td style="padding:10px;text-align:right">${escape(v)}</td></tr>`).join("")}</table>${schedule ? `<h3>Payment schedule</h3><p>${escape(schedule).replace(/\n/g, "<br>")}</p>` : ""}${terms?.conditions ? `<p>${escape(terms.conditions).replace(/\n/g, "<br>")}</p>` : ""}${r.notes ? `<p>${escape(r.notes).replace(/\n/g, "<br>")}</p>` : ""}<p>The estimate PDF is attached. This estimate does not confirm payment or a customer signature.</p><p>${escape(company)}</p></div></body></html>`;
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"></head><body style="font:14px Arial,sans-serif;color:#18324b"><div style="max-width:680px;margin:auto"><h2>Estimate ${escape(doc.number)}</h2>${synthetic ? "<p>PRUEBA · DATOS FICTICIOS · SIN ENVÍO EXTERNO</p>" : ""}<p>Hello ${escape(r.customer_snapshot.full_name)},</p><p>Thank you for choosing ${escape(company)}. Here is your estimate:</p><table style="width:100%;border-collapse:collapse">${rows}${totals.map(([k, v]) => `<tr><td style="padding:10px">${escape(k)}</td><td style="padding:10px;text-align:right">${escape(v)}</td></tr>`).join("")}</table>${schedule ? `<h3>Payment schedule</h3><p>${escape(schedule).replace(/\n/g, "<br>")}</p>` : ""}${terms?.conditions ? `<p>${escape(terms.conditions).replace(/\n/g, "<br>")}</p>` : ""}${r.notes ? `<p>${escape(r.notes).replace(/\n/g, "<br>")}</p>` : ""}<p>The estimate PDF is attached. This estimate does not confirm payment or a customer signature.</p><p>${escape(company)}</p>${contact ? `<p>${escape(contact).replace(/\n/g, "<br>")}</p>` : ""}${footer ? `<p>${escape(footer).replace(/\n/g, "<br>")}</p>` : ""}</div></body></html>`;
   return { text, html };
 }
 
@@ -196,7 +205,10 @@ export async function composeEstimateMail(
   });
   const body = estimateEmailBody(d, config.mode === "capture");
   const result = await composer.sendMail({
-    from: { name: headerText(d.snapshot.company.name), address: config.from },
+    from: {
+      name: headerText(commercialCompanyName(d.snapshot.company)),
+      address: config.from,
+    },
     to: {
       name: headerText(d.snapshot.record.customer_snapshot.full_name),
       address: a.recipient,
@@ -204,7 +216,7 @@ export async function composeEstimateMail(
     envelope: { from: config.from, to: [a.recipient] },
     messageId: `<estimate-${a.id}@${site.hostname}>`,
     date: new Date(a.created_at),
-    subject: `Estimate ${headerText(d.number)} · ${headerText(d.snapshot.company.name)}`,
+    subject: `Estimate ${headerText(d.number)} · ${headerText(commercialCompanyName(d.snapshot.company))}`,
     ...body,
     attachments: [
       {

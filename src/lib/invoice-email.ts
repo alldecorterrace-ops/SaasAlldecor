@@ -1,3 +1,8 @@
+import {
+  commercialCompanyName,
+  commercialContactLines,
+  commercialFooterLines,
+} from "./commercial-identity";
 import nodemailer from "nodemailer";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -109,7 +114,12 @@ export function invoiceEmailBody(
   synthetic: boolean,
 ) {
   const r = doc.snapshot.record,
-    company = doc.snapshot.company.name;
+    company = commercialCompanyName(doc.snapshot.company);
+  const contact = commercialContactLines(doc.snapshot.company).join("\n"),
+    footer = commercialFooterLines(doc.snapshot.company).join("\n"),
+    instructions =
+      doc.snapshot.company.commercial?.payment_instructions ||
+      `Zelle / Wire transfer / Check / Cash. Reference: ${doc.number}.`;
   const totals = [
     ["Subtotal", usd(r.subtotal)],
     ["Discount", `-${usd(r.discount)}`],
@@ -155,13 +165,15 @@ export function invoiceEmailBody(
       ? "Factura anulada. Los pagos asociados a la anulación no se presentan como aplicados."
       : "",
     r.notes,
-    `Payment methods: Zelle / Wire transfer / Check / Cash. Reference: ${doc.number}.`,
+    `Payment methods: ${instructions}`,
     "The PDF is attached to this email.",
     company,
+    contact,
+    footer,
   ]
     .filter(Boolean)
     .join("\n\n");
-  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#eef1f4;font:14px Arial,Helvetica,sans-serif;color:#3a4654"><table role="presentation" style="width:100%"><tr><td align="center" style="padding:24px 12px"><table role="presentation" style="width:100%;max-width:600px;background:white;border-collapse:collapse"><tr><td style="padding:28px 32px;background:#0d2a4a;border-bottom:4px solid #ab8045;color:white;font-size:24px">${escape(company)}</td></tr><tr><td style="padding:26px 32px">${synthetic ? '<p style="color:#a34118">PRUEBA · DATOS FICTICIOS · SIN ENVÍO EXTERNO</p>' : ""}<p style="color:#ab8045">Invoice ${escape(doc.number)} · ${escape(r.invoice_date ?? "")}</p><h1 style="font-size:23px;color:#0d2a4a">Hello ${escape(r.customer_snapshot.full_name)},</h1><p>Here is your invoice from ${escape(company)}. The PDF is attached, with the payments and balance at revision ${doc.record_version}.</p><p>Status: ${escape(status)}</p><table style="width:100%;border-collapse:collapse">${heading(["Service / Product", "Qty", "Amount"])}${items}</table><table style="width:100%;margin-top:12px;border-collapse:collapse">${totals.map(([k, v]) => row([k, v])).join("")}</table>${payments}${r.status === "VOID" ? "<p>Factura anulada. Los pagos asociados a la anulación no se presentan como aplicados.</p>" : ""}${r.notes ? `<p>${escape(r.notes).replace(/\n/g, "<br>")}</p>` : ""}<p><strong>Payment methods:</strong> Zelle / Wire transfer / Check / Cash. Reference: ${escape(doc.number)}.</p><p>You can open or save the attached PDF.</p></td></tr><tr><td style="padding:18px 32px;background:#0d2a4a;color:#aecbe9">${escape(company)}</td></tr></table></td></tr></table></body></html>`;
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;background:#eef1f4;font:14px Arial,Helvetica,sans-serif;color:#3a4654"><table role="presentation" style="width:100%"><tr><td align="center" style="padding:24px 12px"><table role="presentation" style="width:100%;max-width:600px;background:white;border-collapse:collapse"><tr><td style="padding:28px 32px;background:#0d2a4a;border-bottom:4px solid #ab8045;color:white;font-size:24px">${escape(company)}</td></tr><tr><td style="padding:26px 32px">${synthetic ? '<p style="color:#a34118">PRUEBA · DATOS FICTICIOS · SIN ENVÍO EXTERNO</p>' : ""}<p style="color:#ab8045">Invoice ${escape(doc.number)} · ${escape(r.invoice_date ?? "")}</p><h1 style="font-size:23px;color:#0d2a4a">Hello ${escape(r.customer_snapshot.full_name)},</h1><p>Here is your invoice from ${escape(company)}. The PDF is attached, with the payments and balance at revision ${doc.record_version}.</p><p>Status: ${escape(status)}</p><table style="width:100%;border-collapse:collapse">${heading(["Service / Product", "Qty", "Amount"])}${items}</table><table style="width:100%;margin-top:12px;border-collapse:collapse">${totals.map(([k, v]) => row([k, v])).join("")}</table>${payments}${r.status === "VOID" ? "<p>Factura anulada. Los pagos asociados a la anulación no se presentan como aplicados.</p>" : ""}${r.notes ? `<p>${escape(r.notes).replace(/\n/g, "<br>")}</p>` : ""}<p><strong>Payment methods:</strong> ${escape(instructions).replace(/\n/g, "<br>")}</p><p>You can open or save the attached PDF.</p></td></tr><tr><td style="padding:18px 32px;background:#0d2a4a;color:#aecbe9">${escape(company)}${contact ? `<p>${escape(contact).replace(/\n/g, "<br>")}</p>` : ""}${footer ? `<p>${escape(footer).replace(/\n/g, "<br>")}</p>` : ""}</td></tr></table></td></tr></table></body></html>`;
   return { text, html };
 }
 
@@ -205,7 +217,10 @@ export async function composeInvoiceMail(
   });
   const body = invoiceEmailBody(d, config.mode === "capture");
   const result = await composer.sendMail({
-    from: { name: headerText(d.snapshot.company.name), address: config.from },
+    from: {
+      name: headerText(commercialCompanyName(d.snapshot.company)),
+      address: config.from,
+    },
     to: {
       name: headerText(d.snapshot.record.customer_snapshot.full_name),
       address: a.recipient,
@@ -213,7 +228,7 @@ export async function composeInvoiceMail(
     envelope: { from: config.from, to: [a.recipient] },
     messageId: `<invoice-${a.id}@${site.hostname}>`,
     date: new Date(a.created_at),
-    subject: `Invoice ${headerText(d.number)} · ${headerText(d.snapshot.company.name)}`,
+    subject: `Invoice ${headerText(d.number)} · ${headerText(commercialCompanyName(d.snapshot.company))}`,
     ...body,
     attachments: [
       {

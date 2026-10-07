@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { storedPaymentTerms } from "./payment-terms";
+import { capturedCommercialIdentity } from "./commercial-identity";
 const money = z.union([
   z.number().finite().nonnegative(),
   z.string().regex(/^\d{1,12}(\.\d{1,2})?$/),
@@ -7,7 +8,11 @@ const money = z.union([
 const text = z.string().max(10000);
 export const commercialKind = z.enum(["estimate", "invoice"]);
 export const commercialSnapshot = z.object({
-  company: z.object({ name: z.string(), timezone: z.string() }),
+  company: z.object({
+    name: z.string(),
+    timezone: z.string(),
+    commercial: capturedCommercialIdentity.nullable().optional(),
+  }),
   record: z.object({
     number: z.string(),
     version: z.number().int().positive(),
