@@ -51,10 +51,44 @@ ROLLBACK_OK y las 34 tablas públicas originales; no persistió platform_account
 La consulta incluye comparación de todas las filas/columnas originales de public,
 app_private, auth.users y storage.objects, y controla cambios de buckets aparte.
 
-Pendiente antes de declarar operativo: CI del commit publicado, respaldo privado
-previo a la aplicación persistente, publicación de la candidata, asignación de la
-cuenta global solicitada y recorrido con sesión auténtica. No se han enviado
-invitaciones reales ni se acredita recepción de un nuevo correo en estas pruebas.
+Versión funcional publicada en staging y producción:
+`e797ee7178fb56534166ccd09af0f577756d92fc`. CI 37684772239 terminó con success
+(check, concurrencia nativa y recuperación). El hosting compiló separadamente
+ambos entornos y comprobó 722 archivos contra el archivo oficial de esa revisión;
+`next-env.d.ts` se excluye de esa comparación porque lo genera Next durante el build.
+Ambas rutas de salud e inicio de sesión devolvieron 200 y el proceso real ejecuta
+la revisión esperada. Staging conserva envíos externos desactivados; producción
+conserva IA y cola operativa desactivadas, sin credenciales de IA en su entorno activo.
+
+La aplicación persistente terminó con UPGRADE_OK en ambos proyectos. Los controles
+compararon las columnas originales de 90 tablas/1.446 filas de staging y 48 tablas/
+2.621 filas de producción; permiten solo cambios normales de fechas de login de
+Auth y el límite revisado de expense-receipts. Son los conjuntos protegidos de esta
+entrega, no una afirmación de inmovilidad de todas las tablas gestionadas por Supabase.
+La comparación posterior se ejecuta además en una transacción de solo lectura.
+Los dos esquemas terminan en 090 y conservan puntos privados previos.
+
+El historial registra 90 identificadores de versión. Producción no tenía registro:
+001–025 se anotan como metadatos de la base manual existente, con hashes de los
+archivos que coinciden con su revisión 3c0c412; no se vuelven a ejecutar.
+Staging conservó sus 83 entradas originales y registra cinco versiones históricas
+035–039 cuyos objetos ya existían, además de 089–090. Esto es historial de esquema,
+no traslado de información de ADT. Todo ocurre dentro de la transacción del upgrade.
+
+Se probó el retorno de código de staging a 2f73ee0 y la vuelta a la candidata, con
+salud 200, revisión del proceso y sesión auténtica. Fue necesario retirar un proceso
+rezagado de Passenger tras el cambio de grupo; la verificación no confundió la
+configuración escrita con el proceso que realmente atiende. La lista de empresas
+funcionó en ambas versiones. El retorno de código conserva el nuevo esquema; no
+se acredita un downgrade de base ni un ensayo de retorno de producción.
+
+Pendiente humano: conceder el rol global a la cuenta confirmada solicitada, tras
+confirmación en el momento de ampliar ese acceso; después verificar su panel.
+Los avisos web automáticos requieren la clave privada de servicio de producción,
+aún ausente y pendiente de autorización/entrada directa del propietario. Las
+invitaciones de gerente/empresa y los envíos comerciales usan el transporte local
+configurado. No se han enviado invitaciones reales ni se acredita la aceptación
+por un nuevo gerente o recepción de un nuevo correo en estas pruebas.
 
 El hosting puede elegir explícitamente `*_MAIL_COMPANY_SCOPE=all` para empresas
 creadas por gerentes. La omisión conserva la lista previa de empresas. Esto no
