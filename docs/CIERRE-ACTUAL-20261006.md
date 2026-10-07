@@ -120,3 +120,18 @@ No implica el cierre de todos los avisos o del módulo comercial completo.
    anteriores. Fecha/preferencia del formulario ya no son pendientes.
 
 Los otros cuatro bloques y la IA no forman parte de esta continuación.
+
+## Continuación del 7 de octubre
+
+Lote sin IA y consumidores/periodos de costos comprobados en staging; referencias
+ADT vigentes renovadas y privadas, 33 pruebas pertinentes, 1.405 filas originales
+conservadas, sin pagos ni segunda ficha. Acta:
+[GASTOS-LOTE-CONSUMIDORES-20261007](GASTOS-LOTE-CONSUMIDORES-20261007.md).
+Este recorrido deja de figurar como implementación ausente. Los niveles SQL,
+pruebas locales y sesión administradora están distinguidos en el acta.
+
+Correo de Estimados: faltante confirmado e implementado; contrato y pruebas en
+[ESTIMADOS-CORREO-20261007](ESTIMADOS-CORREO-20261007.md). Publicación y sesión
+seguirán abiertas hasta comprobar la entrega. Avisos de Leads/formulario,
+recorridos de catálogo/precios y contraste visual restante de plantillas
+comerciales continúan en el bloque Comercial; no reabrir funciones ya acreditadas.
