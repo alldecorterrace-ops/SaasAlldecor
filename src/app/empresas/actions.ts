@@ -17,8 +17,9 @@ export async function createCompany(
   });
   if (error)
     return {
-      error:
-        "No pudimos crear la empresa. Comprueba que tu correo esté confirmado e inténtalo de nuevo.",
+      error: error.message.includes("manager_invitation_required")
+        ? "Solo los gerentes invitados y activos pueden crear empresas."
+        : "No pudimos crear la empresa. Comprueba que tu correo esté confirmado e inténtalo de nuevo.",
     };
   redirect(`/app/${company}`);
 }

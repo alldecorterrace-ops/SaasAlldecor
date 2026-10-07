@@ -189,3 +189,10 @@ concreta: identidad comercial por empresa. 088 la resuelve y tiene acta propia,
 incluida la sesión comercial restringida. La matriz vigente al principio de
 este registro reúne los recorridos comprobados y sus límites. No usar las
 listas históricas como una nueva lista de funciones ausentes.
+
+## Solicitud posterior de puesta en marcha, 7 de octubre
+
+El propietario solicita el alta de administrador global -> gerentes invitados ->
+empresas propias -> equipo con roles. Es un flujo posterior al cierre de Gastos
+y Comercial, con validación y publicación independientes. El traslado de datos
+de ADT sigue descartado. Véase [Administración global](ADMINISTRACION-GLOBAL-20261007.md).

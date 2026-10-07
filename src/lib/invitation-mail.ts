@@ -9,6 +9,7 @@ const address = z
   .pipe(z.email())
   .refine((value) => !value.startsWith("-") && !/[\r\n]/.test(value));
 export type InvitationNotice = {
+  kind?: "manager";
   attempt_id: string;
   email: string;
   company_name: string;
@@ -75,8 +76,14 @@ export async function composeInvitationMail(
     to: { name: "", address: to },
     envelope: { from: config.from, to: [to] },
     messageId: `<invitation-${id}@${site.hostname}>`,
-    subject: `Invitación a ${company} · SaasAlldecor`,
-    text: `Te invitaron a formar parte de ${company} en SaasAlldecor.\n\nAbre ${site.origin}/empresas e inicia sesión con ${to}. Si todavía no tienes una cuenta, regístrate con ese mismo correo y confírmalo. En Tus empresas encontrarás la invitación para aceptarla o rechazarla.\n\nLa invitación vence el ${expires} UTC. Al aceptar entrarás sin módulos asignados; el administrador definirá tus permisos.\n\nEste aviso no cambia tu contraseña ni otorga acceso por sí solo. Si no esperabas esta invitación, puedes ignorarla.\n\nSaasAlldecor`,
+    subject:
+      notice.kind === "manager"
+        ? "Invitación como gerente · SaasAlldecor"
+        : `Invitación a ${company} · SaasAlldecor`,
+    text:
+      notice.kind === "manager"
+        ? `Te invitaron como gerente de empresas en SaasAlldecor.\n\nAbre ${site.origin}/empresas e inicia sesión o regístrate con ${to}, confirma ese correo y acepta la invitación. Podrás crear tus propias empresas e invitar a sus equipos con los roles y permisos que definas. No tendrás acceso a empresas de otros gerentes.\n\nVence el ${expires} UTC. Este aviso no cambia contraseñas ni concede acceso por sí solo.\n\nSaasAlldecor`
+        : `Te invitaron a formar parte de ${company} en SaasAlldecor.\n\nAbre ${site.origin}/empresas e inicia sesión con ${to}. Si todavía no tienes una cuenta, regístrate con ese mismo correo y confírmalo. En Tus empresas encontrarás la invitación para aceptarla o rechazarla.\n\nLa invitación vence el ${expires} UTC. Al aceptar tendrás el rol y los permisos definidos por el administrador de esa empresa.\n\nEste aviso no cambia tu contraseña ni otorga acceso por sí solo. Si no esperabas esta invitación, puedes ignorarla.\n\nSaasAlldecor`,
     disableFileAccess: true,
     disableUrlAccess: true,
   });

@@ -26,6 +26,19 @@
   los cambios propios de esta app se tratarán después con el propietario.
 - El traspaso operativo sigue aplazado. ADT conserva la operación principal.
 
+## Puesta en marcha solicitada el 7 de octubre
+
+- El propietario descarta migrar datos de ADT. No realizar imports, sincronización,
+  backfill de negocio ni eliminación de datos ya existentes.
+- Autoriza preparar y activar producción y el correo del SaaS. El alta de empresas
+  la realizan gerentes invitados por un administrador global, no el operador.
+- Cuenta global designada por el propietario en el canal privado. La contraseña
+  se introduce directamente en el navegador; no publicar identidad, credenciales
+  ni asignaciones privadas en GitHub.
+- Implementar y probar administrador global -> invitación de gerente -> creación
+  de empresas -> invitaciones de equipo con rol y permisos; conservar aislamiento.
+- Mantener IA, GPS físico y configuradores/3D excluidos.
+
 ## Versionado y despliegues
 
 - GitHub es la fuente oficial del código y de su historial. Antes de desplegar,

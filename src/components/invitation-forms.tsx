@@ -7,6 +7,7 @@ import {
   resendInvitation,
   type InvitationState,
 } from "@/app/empresas/invitation-actions";
+import { modules } from "@/lib/modules";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { SubmitButton } from "./submit-button";
@@ -16,15 +17,18 @@ export function InviteMember({
   companyId,
   requestId,
   mailEnabled,
+  canInviteAdmin,
 }: {
   companyId: string;
   requestId: string;
   mailEnabled: boolean;
+  canInviteAdmin: boolean;
 }) {
   const [state, action, pending] = useActionState(
     createInvitation.bind(null, companyId),
     {} as InvitationState,
   );
+  const [role, setRole] = useState("member");
   const [copied, setCopied] = useState(false);
   return (
     <section className="card grid gap-4">
@@ -32,7 +36,8 @@ export function InviteMember({
       <p className="text-sm leading-6 text-muted-foreground">
         La invitación vence en siete días. El destinatario debe registrarse o
         iniciar sesión con ese correo confirmado y aceptar en Tus empresas.
-        Entrará sin módulos; asigna sus permisos después.
+        Selecciona el rol y sus permisos antes de enviar; se aplican cuando
+        acepte.
       </p>
       <Feedback {...state} />
       <form action={action} className="grid gap-4">
@@ -48,6 +53,61 @@ export function InviteMember({
             disabled={pending}
           />
         </label>
+        <label className="field">
+          Rol en la empresa
+          <select
+            name="role"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            disabled={pending}
+          >
+            <option value="member">Miembro con permisos definidos</option>
+            {canInviteAdmin && (
+              <option value="admin">Administrador de empresa</option>
+            )}
+          </select>
+        </label>
+        {role === "member" && (
+          <details>
+            <summary className="cursor-pointer text-sm font-semibold">
+              Definir permisos del usuario
+            </summary>
+            <div className="mt-4 overflow-x-auto">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Módulo</th>
+                    <th>Consultar</th>
+                    <th>Editar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {modules
+                    .filter((m) => m.ready)
+                    .map((m) => (
+                      <tr key={m.id}>
+                        <td>{m.label}</td>
+                        <td>
+                          <input
+                            type="checkbox"
+                            name={`read:${m.id}`}
+                            aria-label={`Invitar con consulta ${m.label}`}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="checkbox"
+                            name={`write:${m.id}`}
+                            aria-label={`Invitar con edición ${m.label}`}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        )}
         <div>
           <SubmitButton>
             {mailEnabled ? "Crear y enviar invitación" : "Crear invitación"}
@@ -123,10 +183,14 @@ export function IncomingInvitation({
   id,
   name,
   expires,
+  role,
+  permissions,
 }: {
   id: string;
   name: string;
   expires: string;
+  role: string;
+  permissions: Record<string, string[]>;
 }) {
   const [accepted, acceptAction, accepting] = useActionState(
     respondInvitation.bind(null, id, true),
@@ -140,8 +204,11 @@ export function IncomingInvitation({
     <article className="card">
       <h3 className="font-semibold break-words">{name}</h3>
       <p className="my-3 text-sm text-muted-foreground">
-        Vence: {expires}. Al aceptar entrarás sin módulos asignados. El
-        administrador configurará tus permisos.
+        Vence: {expires}. Rol:{" "}
+        {role === "admin" ? "Administrador de empresa" : "Miembro con permisos"}
+        .{" "}
+        {role === "member" &&
+          `${Object.keys(permissions).length} módulos asignados.`}
       </p>
       <Feedback {...accepted} />
       <Feedback {...declined} />

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { companyContext, requireUser } from "@/lib/auth";
 import { uuid } from "@/lib/validation";
+import { modules } from "@/lib/modules";
 import { invitationMailConfig, notifyInvitation } from "@/lib/invitation-mail";
 
 export type InvitationState = { error?: string; success?: string };
@@ -19,14 +20,26 @@ export async function createInvitation(
     .object({ id: uuid, email: z.string().trim().max(254).pipe(z.email()) })
     .safeParse({ id: form.get("request_id"), email: form.get("email") });
   if (!parsed.success) return { error: "Revisa el correo del destinatario." };
-  const { data: invitationId, error } = await db.rpc(
-    "create_company_invitation",
-    {
-      p_company: companyId,
-      p_id: parsed.data.id,
-      p_email: parsed.data.email,
-    },
-  );
+  const permissions: Record<string, string[]> = {};
+  for (const m of modules.filter((m) => m.ready)) {
+    const actions = [
+      ...(form.get(`read:${m.id}`) === "on" ? ["read"] : []),
+      ...(form.get(`write:${m.id}`) === "on" ? ["write"] : []),
+    ];
+    if (actions.length) permissions[m.id] = actions;
+  }
+  const role = z
+    .enum(["admin", "member"])
+    .safeParse(form.get("role") ?? "member");
+  if (!role.success || (role.data === "admin" && member.role !== "owner"))
+    return { error: "No puedes invitar con ese rol." };
+  const { data: invitationId, error } = await db.rpc("invite_company_user", {
+    p_company: companyId,
+    p_id: parsed.data.id,
+    p_email: parsed.data.email,
+    p_role: role.data,
+    p_permissions: role.data === "admin" ? {} : permissions,
+  });
   if (error)
     return {
       error: error.message.includes("member_exists")
