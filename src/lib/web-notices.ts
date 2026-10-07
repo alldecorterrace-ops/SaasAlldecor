@@ -1,3 +1,4 @@
+import { mailCompanyEnabled } from "./mail-company-scope";
 import { createHash } from "node:crypto";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -44,16 +45,7 @@ export function webNoticeConfig(
       };
     if (!externalEffectsAllowed(env) || env.WEB_NOTICE_MAIL_ENABLED !== "true")
       return null;
-    const companies = (env.WEB_NOTICE_MAIL_COMPANY_IDS ?? "")
-      .split(",")
-      .map((x) => x.trim())
-      .filter(Boolean);
-    if (
-      !companies.length ||
-      companies.some((x) => !z.uuid().safeParse(x).success) ||
-      !companies.includes(company)
-    )
-      return null;
+    if (!mailCompanyEnabled(env, "WEB_NOTICE", company)) return null;
     return {
       mode: "send",
       from: noticeAddress.parse(env.MAIL_FROM_ADDRESS),

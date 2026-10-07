@@ -44,7 +44,7 @@ La app conserva la exclusión de IA y no activa sus credenciales en la candidata
 
 ## Validación y publicación
 
-Comprobación local: lint, tipos, 929 pruebas y compilación correctos. Tras cerrar
+Comprobación local: lint, tipos, 930 pruebas y compilación correctos. Tras cerrar
 la edición antigua de permisos para cuentas suspendidas, las 12 pruebas del nuevo
 flujo volvieron a pasar. El ensayo SQL nativo de producción 026–090 terminó con
 ROLLBACK_OK y las 34 tablas públicas originales; no persistió platform_accounts.
@@ -55,3 +55,17 @@ Pendiente antes de declarar operativo: CI del commit publicado, respaldo privado
 previo a la aplicación persistente, publicación de la candidata, asignación de la
 cuenta global solicitada y recorrido con sesión auténtica. No se han enviado
 invitaciones reales ni se acredita recepción de un nuevo correo en estas pruebas.
+
+El hosting puede elegir explícitamente `*_MAIL_COMPANY_SCOPE=all` para empresas
+creadas por gerentes. La omisión conserva la lista previa de empresas. Esto no
+concede permisos de envío: los RPC siguen comprobando empresa, módulo, destinatario
+y acción confirmada; avisos web requieren además la preferencia de cada empresa.
+Staging conserva sus bloqueos y captura sintética.
+
+Se conserva además un punto privado previo dentro de cada proyecto de Supabase,
+con filas de public/app_private, auth.users, metadatos de buckets/objetos y las
+definiciones de funciones existentes. Tiene RLS y ningún permiso para anon,
+authenticated o service_role. Es una copia para esta entrega, no un respaldo
+externo completo ni prueba de recuperación de todos los binarios de Storage.
+Los controles de aplicación preservan columnas originales y permiten únicamente
+los cambios normales de fecha de inicio de sesión de Auth ajenos al esquema.
