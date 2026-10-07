@@ -5,18 +5,22 @@ import { CommercialDocumentForm } from "./commercial-document-form";
 import { randomUUID } from "node:crypto";
 import { InvoiceEmailForm } from "./invoice-email-form";
 import { invoiceEmailConfig } from "@/lib/invoice-email";
+import { EstimateEmailForm } from "./estimate-email-form";
+import { estimateEmailConfig } from "@/lib/estimate-email";
 export async function CommercialDocumentPanel({
   companyId,
   kind,
   record,
   version,
   canGenerate,
+  canEmail = true,
 }: {
   companyId: string;
   kind: "estimate" | "invoice";
   record: string;
   version: number;
   canGenerate: boolean;
+  canEmail?: boolean;
 }) {
   const { db, member } = await requireModule(companyId, commercialModule(kind));
   const { data, error } = await db
@@ -30,31 +34,36 @@ export async function CommercialDocumentPanel({
     .limit(20);
   if (error) throw new Error("No se pudieron cargar los PDF conservados.");
   const emailConfig =
-    kind === "invoice" && canGenerate
-      ? invoiceEmailConfig(process.env, companyId)
+    canGenerate && canEmail
+      ? kind === "invoice"
+        ? invoiceEmailConfig(process.env, companyId)
+        : estimateEmailConfig(process.env, companyId)
       : null;
-  const attempts =
-    kind === "invoice"
-      ? await db
-          .from("invoice_email_attempts")
-          .select("id,recipient,status,created_at,record_version")
-          .eq("company_id", companyId)
-          .eq("invoice_id", record)
-          .order("created_at", { ascending: false })
-          .order("id")
-          .limit(20)
-      : { data: [], error: null };
+  const attempts = await db
+    .from(
+      kind === "invoice" ? "invoice_email_attempts" : "estimate_email_attempts",
+    )
+    .select("id,recipient,status,created_at,record_version")
+    .eq("company_id", companyId)
+    .eq(kind === "invoice" ? "invoice_id" : "estimate_id", record)
+    .order("created_at", { ascending: false })
+    .order("id")
+    .limit(20);
   if (attempts.error)
     throw new Error("No se pudo cargar el historial de envíos.");
-  const recipient =
-    kind === "invoice" && emailConfig
-      ? await db.rpc("invoice_email_recipient", {
+  const recipient = emailConfig
+    ? await db.rpc(
+        kind === "invoice"
+          ? "invoice_email_recipient"
+          : "estimate_email_recipient",
+        {
           p_company: companyId,
-          p_invoice: record,
-        })
-      : { data: null, error: null };
+          [kind === "invoice" ? "p_invoice" : "p_estimate"]: record,
+        },
+      )
+    : { data: null, error: null };
   if (recipient.error)
-    throw new Error("No se pudo comprobar el destinatario de la factura.");
+    throw new Error("No se pudo comprobar el destinatario del documento.");
   return (
     <section className="card print:hidden space-y-4 mb-6">
       <h2 className="font-semibold">PDF comerciales conservados</h2>
@@ -95,20 +104,34 @@ export async function CommercialDocumentPanel({
       {data?.length === 20 && (
         <p className="text-sm">Se muestran las 20 revisiones más recientes.</p>
       )}
-      {emailConfig && canAccess(member, "fin-invoices", "write") && (
+      {emailConfig && canAccess(member, commercialModule(kind), "write") && (
         <div className="border-t pt-4">
           <h3 className="font-semibold mb-3">Enviar por email</h3>
-          <InvoiceEmailForm
-            key={`email:${record}:${version}`}
-            companyId={companyId}
-            invoice={record}
-            version={version}
-            request={randomUUID()}
-            capture={emailConfig.mode === "capture"}
-            recipient={
-              typeof recipient.data === "string" ? recipient.data : null
-            }
-          />
+          {kind === "invoice" ? (
+            <InvoiceEmailForm
+              key={`email:${record}:${version}`}
+              companyId={companyId}
+              invoice={record}
+              version={version}
+              request={randomUUID()}
+              capture={emailConfig.mode === "capture"}
+              recipient={
+                typeof recipient.data === "string" ? recipient.data : null
+              }
+            />
+          ) : (
+            <EstimateEmailForm
+              key={`email:${record}:${version}`}
+              companyId={companyId}
+              estimate={record}
+              version={version}
+              request={randomUUID()}
+              capture={emailConfig.mode === "capture"}
+              recipient={
+                typeof recipient.data === "string" ? recipient.data : null
+              }
+            />
+          )}
         </div>
       )}
       {kind === "invoice" &&
@@ -152,7 +175,7 @@ export async function CommercialDocumentPanel({
                 {a.status === "captured" && (
                   <a
                     className="underline"
-                    href={`/api/invoice-email/${companyId}/${a.id}`}
+                    href={`/api/${kind}-email/${companyId}/${a.id}`}
                   >
                     Descargar mensaje de prueba
                   </a>
