@@ -1,3 +1,8 @@
+import {
+  commercialCompanyName,
+  commercialContactLines,
+  commercialFooterLines,
+} from "./commercial-identity";
 import { PDFDocument, rgb, type PDFFont } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import { readFile } from "node:fs/promises";
@@ -108,7 +113,10 @@ export async function renderCommercialPdf(
       9,
       rgb(0.55, 0.19, 0.08),
     );
-  text(doc.snapshot.company.name, 14);
+  text(commercialCompanyName(doc.snapshot.company), 14);
+  const contactLines = commercialContactLines(doc.snapshot.company);
+  contactLines.forEach((line) => text(line, 9));
+  if (contactLines.length) y -= 10;
   text(`${title} ${doc.number}`, 22);
   text(`Revisión conservada: ${doc.record_version} · Moneda: USD`);
   text(
@@ -185,6 +193,7 @@ export async function renderCommercialPdf(
     heading("Notas", r.notes);
     text(r.notes);
   }
+  commercialFooterLines(doc.snapshot.company).forEach((line) => text(line, 9));
   rule();
   text(
     doc.kind === "estimate"

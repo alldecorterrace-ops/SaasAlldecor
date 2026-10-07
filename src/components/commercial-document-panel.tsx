@@ -7,6 +7,7 @@ import { InvoiceEmailForm } from "./invoice-email-form";
 import { invoiceEmailConfig } from "@/lib/invoice-email";
 import { EstimateEmailForm } from "./estimate-email-form";
 import { estimateEmailConfig } from "@/lib/estimate-email";
+import Link from "next/link";
 export async function CommercialDocumentPanel({
   companyId,
   kind,
@@ -67,6 +68,14 @@ export async function CommercialDocumentPanel({
   return (
     <section className="card print:hidden space-y-4 mb-6">
       <h2 className="font-semibold">PDF comerciales conservados</h2>
+      {member.role !== "member" && (
+        <Link
+          className="underline text-sm"
+          href={`/app/${companyId}/documentos/empresa`}
+        >
+          Datos comerciales de la empresa
+        </Link>
+      )}
       <p className="text-sm text-muted-foreground">
         Cada PDF conserva los datos de su revisión. Los cambios posteriores no
         reemplazan el archivo.
