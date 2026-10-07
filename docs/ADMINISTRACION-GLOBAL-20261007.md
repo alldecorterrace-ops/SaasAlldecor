@@ -82,13 +82,22 @@ configuración escrita con el proceso que realmente atiende. La lista de empresa
 funcionó en ambas versiones. El retorno de código conserva el nuevo esquema; no
 se acredita un downgrade de base ni un ensayo de retorno de producción.
 
-Pendiente humano: conceder el rol global a la cuenta confirmada solicitada, tras
-confirmación en el momento de ampliar ese acceso; después verificar su panel.
-Los avisos web automáticos requieren la clave privada de servicio de producción,
-aún ausente y pendiente de autorización/entrada directa del propietario. Las
-invitaciones de gerente/empresa y los envíos comerciales usan el transporte local
-configurado. No se han enviado invitaciones reales ni se acredita la aceptación
-por un nuevo gerente o recepción de un nuevo correo en estas pruebas.
+El propietario confirmó la ampliación de acceso de la cuenta inicial. El alta
+global se aplicó por la función privada de operador y quedó registrada en auditoría.
+La sesión auténtica de esa cuenta abrió `/administracion-saas`, mostró la vista de
+empresas existentes y el formulario para invitar gerentes. No se modificaron las
+membresías de esas empresas ni se promovieron sus propietarios automáticamente.
+La evidencia con identidad y asignación de la cuenta permanece fuera del repositorio.
+Tras el alta global, la comparación de solo lectura volvió a confirmar las 48
+tablas y 2.621 filas protegidas, con una cuenta de plataforma y ninguna invitación.
+
+Los avisos web automáticos requieren la clave privada de servicio de producción.
+Su almacenamiento en la configuración privada del hosting ya fue autorizado;
+queda pendiente su entrada directa por el propietario en un terminal con entrada
+oculta. No se guarda esa credencial en código ni en evidencia. Las invitaciones
+de gerente/empresa y los envíos comerciales usan el transporte local configurado.
+No se han enviado invitaciones reales ni se acredita la aceptación por un nuevo
+gerente o recepción de un nuevo correo en estas pruebas.
 
 El hosting puede elegir explícitamente `*_MAIL_COMPANY_SCOPE=all` para empresas
 creadas por gerentes. La omisión conserva la lista previa de empresas. Esto no
