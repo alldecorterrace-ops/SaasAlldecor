@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient, isConfigured } from "@/lib/supabase/server";
-import { externalEffectsAllowed } from "@/lib/deployment-environment";
+import { authRecoveryAllowed } from "@/lib/deployment-environment";
 import {
   checkRegistrationInvitation,
   invitationRequiredMessage,
@@ -15,11 +15,6 @@ export async function authenticate(
 ): Promise<AuthState> {
   if (!isConfigured())
     return { error: "La conexión de este entorno está pendiente." };
-  if (mode === "register" && !externalEffectsAllowed(process.env))
-    return {
-      error:
-        "El registro por correo está desactivado en el entorno de pruebas. Usa una cuenta de prueba preparada.",
-    };
   const parsed = z
     .object({
       email: z.email(),
@@ -38,6 +33,14 @@ export async function authenticate(
         mode === "register"
           ? "Revisa el correo y usa una contraseña de al menos 12 caracteres."
           : "Escribe tu correo y contraseña.",
+    };
+  if (
+    mode === "register" &&
+    !authRecoveryAllowed(process.env, parsed.data.email)
+  )
+    return {
+      error:
+        "En pruebas solo se permite registrar correos ficticios cuando la captura privada de correo está verificada.",
     };
   const db = await createClient();
   if (mode === "login") {

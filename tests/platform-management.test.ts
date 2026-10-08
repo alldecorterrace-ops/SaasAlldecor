@@ -6,7 +6,9 @@ import { composeInvitationMail } from "../src/lib/invitation-mail";
 import { notifyManagerInvitation } from "../src/lib/manager-mail";
 
 test("Platform invitations enforce administrator -> manager -> companies -> scoped teams", async (t) => {
-  const { db } = await fullDatabase(undefined, { managedOnboarding: true });
+  const { db } = await fullDatabase("202610070092_invitation_only_signup.sql", {
+    managedOnboarding: true,
+  });
   const admin = randomUUID(),
     manager = randomUUID(),
     other = randomUUID(),

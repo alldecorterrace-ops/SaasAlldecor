@@ -47,6 +47,21 @@
   en Supabase Auth; no basta ocultar el formulario. Preservar cuentas existentes.
 - Mantener IA, GPS físico y configuradores/3D excluidos.
 
+## Suscripciones solicitadas el 7 de octubre
+
+- Nuevo modelo: quien paga un plan y confirma su correo obtiene una empresa y
+  queda como gerente/propietario principal. El pago se verifica en el servidor.
+- Empleados entran por invitación a su correo, crean su contraseña y confirman
+  el correo. Administradores de empresa con acceso total también invitan y
+  gestionan equipo, sin quitar, suspender ni degradar al propietario principal.
+- Preparar únicamente pruebas: el propietario aún no tiene cuenta Stripe.
+  Conservar cuentas, empresas e invitaciones previas. No efectuar cobros reales.
+- Cuatro planes por empresa, USD mensuales, todos los módulos activos incluidos:
+  Inicial 29/3 usuarios, Equipo 59/5, Profesional 99/10, Crecimiento 179/25.
+  El propietario cuenta y las invitaciones pendientes reservan plazas.
+- Esta decisión sustituye la restricción anterior que impedía invitar a los
+  administradores de empresa. No introduce IA, GPS ni importaciones de ADT.
+
 ## Versionado y despliegues
 
 - GitHub es la fuente oficial del código y de su historial. Antes de desplegar,

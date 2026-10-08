@@ -83,7 +83,7 @@ export async function composeInvitationMail(
     text:
       notice.kind === "manager"
         ? `Te invitaron como gerente de empresas en SaasAlldecor.\n\nAbre ${site.origin}/empresas e inicia sesión o regístrate con ${to}, confirma ese correo y acepta la invitación. Podrás crear tus propias empresas e invitar a sus equipos con los roles y permisos que definas. No tendrás acceso a empresas de otros gerentes.\n\nVence el ${expires} UTC. Este aviso no cambia contraseñas ni concede acceso por sí solo.\n\nSaasAlldecor`
-        : `Te invitaron a formar parte de ${company} en SaasAlldecor.\n\nAbre ${site.origin}/empresas e inicia sesión con ${to}. Si todavía no tienes una cuenta, regístrate con ese mismo correo y confírmalo. En Tus empresas encontrarás la invitación para aceptarla o rechazarla.\n\nLa invitación vence el ${expires} UTC. Al aceptar tendrás el rol y los permisos definidos por el administrador de esa empresa.\n\nEste aviso no cambia tu contraseña ni otorga acceso por sí solo. Si no esperabas esta invitación, puedes ignorarla.\n\nSaasAlldecor`,
+        : `Te invitaron a formar parte de ${company} en SaasAlldecor.\n\nCrea tu contraseña en ${site.origin}/registro usando ${to} y confirma ese correo. Si ya tienes cuenta, inicia sesión. Después abre ${site.origin}/empresas y acepta la invitación para entrar con el rol y los permisos asignados. Tu contraseña es personal: nadie de la empresa necesita conocerla.\n\nLa invitación vence el ${expires} UTC. Al aceptar tendrás el rol y los permisos definidos por el administrador de esa empresa.\n\nEste aviso no cambia tu contraseña ni otorga acceso por sí solo. Si no esperabas esta invitación, puedes ignorarla.\n\nSaasAlldecor`,
     disableFileAccess: true,
     disableUrlAccess: true,
   });

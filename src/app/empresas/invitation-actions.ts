@@ -31,8 +31,7 @@ export async function createInvitation(
   const role = z
     .enum(["admin", "member"])
     .safeParse(form.get("role") ?? "member");
-  if (!role.success || (role.data === "admin" && member.role !== "owner"))
-    return { error: "No puedes invitar con ese rol." };
+  if (!role.success) return { error: "No puedes invitar con ese rol." };
   const { data: invitationId, error } = await db.rpc("invite_company_user", {
     p_company: companyId,
     p_id: parsed.data.id,
