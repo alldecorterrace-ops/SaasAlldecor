@@ -2,6 +2,9 @@ import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { assertDeploymentEnvironment } from "./deployment-environment";
 
+// Pin REST responses and webhook endpoints to the same tested provider contract.
+export const stripeApiVersion = "2026-09-30.endive";
+
 export const subscriptionPlans = [
   {
     code: "inicial",
@@ -67,8 +70,12 @@ export function billingConfig(
     )
       return null;
     const secret = env.SAAS_STRIPE_SECRET_KEY ?? "";
+    const allowedKey =
+      mode === "test"
+        ? secret.startsWith("sk_test_") || secret.startsWith("rkcs_test_")
+        : secret.startsWith("sk_live_");
     if (
-      !secret.startsWith(`sk_${mode}_`) ||
+      !allowedKey ||
       !env.SAAS_STRIPE_WEBHOOK_SECRET?.startsWith("whsec_") ||
       !env.SAAS_BILLING_SUPABASE_SERVICE_KEY
     )

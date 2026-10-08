@@ -44,6 +44,21 @@ test("billing is disabled by default and test credentials cannot run against pro
     ),
   };
   assert.equal(billingConfig(env)?.mode, "test");
+  assert.equal(
+    billingConfig({ ...env, SAAS_STRIPE_SECRET_KEY: "rkcs_test_SYNTHETIC" })
+      ?.mode,
+    "test",
+  );
+  assert.equal(
+    billingConfig({
+      ...env,
+      SAAS_BILLING_MODE: "live",
+      APP_ENVIRONMENT: "production",
+      SAAS_STRIPE_SECRET_KEY: "rkcs_test_SYNTHETIC",
+    }),
+    null,
+  );
+
   for (const change of [
     { APP_ENVIRONMENT: "production" },
     { SAAS_STRIPE_SECRET_KEY: "sk_live_SYNTHETIC" },

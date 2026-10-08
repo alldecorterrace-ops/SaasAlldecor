@@ -1,7 +1,11 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
-import { billingConfig, type BillingConfig } from "./subscriptions";
+import {
+  billingConfig,
+  stripeApiVersion,
+  type BillingConfig,
+} from "./subscriptions";
 export function requireBilling() {
   const config = billingConfig(process.env);
   if (!config) throw new Error("billing_not_configured");
@@ -32,6 +36,7 @@ export async function stripeRequest(
     method: params ? "POST" : "GET",
     headers: {
       Authorization: `Bearer ${config.secret}`,
+      "Stripe-Version": stripeApiVersion,
       ...(params
         ? { "Content-Type": "application/x-www-form-urlencoded" }
         : {}),

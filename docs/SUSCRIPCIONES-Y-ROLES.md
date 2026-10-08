@@ -2,7 +2,7 @@
 
 Decisión del propietario, 7 de octubre de 2026: autoservicio por suscripción para
 dueños, e invitación por correo para su equipo. Implementación candidata;
-el cobro permanece desactivado por defecto. No existe una cuenta Stripe
+el cobro permanece desactivado por defecto. El ensayo anterior no tenía una cuenta Stripe
 configurada ni evidencia de una transacción en su sandbox. No activar producción
 con pruebas locales como sustituto de esa verificación.
 
@@ -103,7 +103,9 @@ prorrateo, impuestos y recibos antes de una futura apertura comercial.
 Variables solo de servidor: `SAAS_STRIPE_SECRET_KEY`, `SAAS_STRIPE_WEBHOOK_SECRET`,
 `SAAS_BILLING_SUPABASE_SERVICE_KEY`, y los cuatro `SAAS_STRIPE_PRICE_*`.
 Nunca introducir valores privados en GitHub, Next public env, capturas o chat.
-Modo `test` exige APP_ENVIRONMENT staging y clave sk_test. Modo live exige producción
+Modo `test` exige APP_ENVIRONMENT staging y clave sk_test o la clave temporal restringida rkcs_test de Stripe CLI.
+Esta última nunca es válida en modo live. REST y endpoint de webhook deben usar
+la misma versión 2026-09-30.endive. Modo live exige producción
 y clave sk_live. No copiar claves de producción a staging.
 
 Endpoint: `/api/subscriptions/webhook`. Eventos snapshot soportados:
@@ -130,3 +132,12 @@ Referencias oficiales:
 [Invitaciones de Intuit](https://quickbooks.intuit.com/learn-support/en-us/help-article/manage-users/add-manage-users-quickbooks-online/L1welhiJZ_US_en_US),
 [Stripe Checkout](https://docs.stripe.com/api/checkout/sessions/create),
 [Verificación y reintentos de eventos](https://docs.stripe.com/events/manage-webhook-endpoints).
+
+## Sandbox temporal de desarrollo
+
+Stripe CLI permite provisionar un sandbox temporal sin cuenta comercial, con
+credenciales de prueba restringidas. Caduca a los siete días; conservarlo requiere
+que el propietario reclame la cuenta directamente en Stripe. No publicar las
+claves ni la URL privada de reclamación. Crear productos, precios y endpoints en
+ese sandbox no acredita todavía un pago, alta o entrega real de webhook.
+[Sandbox de Stripe CLI](https://docs.stripe.com/cli/sandbox).
