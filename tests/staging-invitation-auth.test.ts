@@ -29,6 +29,15 @@ test("optional staging capture admits only the approved unconfirmed employee sig
     ]);
   };
   try {
+    await db.exec(
+      "set saas.install_staging_mail_sink='verified-empty-staging'",
+    );
+    await db.exec(
+      await readFile(
+        new URL("../supabase/staging/auth-mail-sink.sql", import.meta.url),
+        "utf8",
+      ),
+    );
     await db.query(
       "insert into auth.users values($1,'owner@saasalldecor.invalid',now()),($2,$4,null),($3,'other@example.test',null)",
       [owner, recipient, foreign, email],
@@ -67,13 +76,8 @@ test("optional staging capture admits only the approved unconfirmed employee sig
       [order, invitation, email],
     );
     await db.exec(`reset role;
-      create schema staging_private;
-      create table staging_private.auth_mail(user_id uuid,recipient text,new_recipient text,email_data jsonb);
       create table staging_private.reactivation_activation_20261013(key text,value jsonb);
       insert into staging_private.reactivation_activation_20261013 values('release','{"project_ref":"ejeuxzukutzzlbzjnyio"}');
-      grant usage on schema staging_private to supabase_auth_admin;
-      grant insert on staging_private.auth_mail to supabase_auth_admin;
-      create function public.staging_capture_auth_email(jsonb) returns jsonb language sql as $$select '{}'::jsonb$$;
     `);
     await db.exec(
       await readFile(
@@ -97,6 +101,10 @@ test("optional staging capture admits only the approved unconfirmed employee sig
         /permission denied/,
       );
       await assert.rejects(
+        db.query("select * from staging_private.invitation_auth_mail"),
+        /permission denied/,
+      );
+      await assert.rejects(
         db.query(
           "select staging_invitation_signup_capture_allowed($1,$2,'signup')",
           [email, recipient],
@@ -105,6 +113,20 @@ test("optional staging capture admits only the approved unconfirmed employee sig
       );
     }
     await capture(payload());
+    await assert.rejects(
+      db.query(
+        "insert into staging_private.auth_mail(user_id,recipient,email_data) values($1,$2,$3)",
+        [recipient, email, JSON.stringify({ email_action_type: "signup" })],
+      ),
+      /check constraint/,
+    );
+    await assert.rejects(
+      db.query(
+        "insert into staging_private.invitation_auth_mail(user_id,recipient,email_data) values($1,$2,$3)",
+        [foreign, email, JSON.stringify({ email_action_type: "signup" })],
+      ),
+      /check constraint/,
+    );
     await assert.rejects(
       capture(payload({ email_data: { email_action_type: "recovery" } })),
       /synthetic_recipient_required/,
@@ -138,7 +160,15 @@ test("optional staging capture admits only the approved unconfirmed employee sig
           "select count(*)::int n from staging_private.auth_mail",
         )
       ).rows[0].n,
-      2,
+      1,
+    );
+    assert.equal(
+      (
+        await db.query<{ n: number }>(
+          "select count(*)::int n from staging_private.invitation_auth_mail",
+        )
+      ).rows[0].n,
+      1,
     );
     await db.query(
       'update company_invitations set permissions=\'{"clientes":["read","write"]}\' where id=$1',
@@ -172,7 +202,15 @@ test("optional staging capture admits only the approved unconfirmed employee sig
           "select count(*)::int n from staging_private.auth_mail",
         )
       ).rows[0].n,
-      2,
+      1,
+    );
+    assert.equal(
+      (
+        await db.query<{ n: number }>(
+          "select count(*)::int n from staging_private.invitation_auth_mail",
+        )
+      ).rows[0].n,
+      1,
     );
   } finally {
     await db.close();

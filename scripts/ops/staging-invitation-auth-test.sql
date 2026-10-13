@@ -33,6 +33,19 @@ $$;
 revoke all on function public.staging_invitation_signup_capture_allowed(text,uuid,text) from public,anon,authenticated,service_role;
 grant execute on function public.staging_invitation_signup_capture_allowed(text,uuid,text) to supabase_auth_admin;
 
+-- Preserve the synthetic-only constraints on the existing capture table.
+-- The approved real signup has separate private custody and an enforced scope.
+create table staging_private.invitation_auth_mail (
+ id uuid primary key default gen_random_uuid(),created_at timestamptz not null default now(),
+ user_id uuid not null,recipient text not null,email_data jsonb not null,
+ check(jsonb_typeof(email_data)='object' and octet_length(email_data::text)<=16384),
+ check(public.staging_invitation_signup_capture_allowed(recipient,user_id,email_data->>'email_action_type'))
+);
+alter table staging_private.invitation_auth_mail enable row level security;
+revoke all on staging_private.invitation_auth_mail from public,anon,authenticated,service_role,supabase_auth_admin;
+grant insert(user_id,recipient,email_data) on staging_private.invitation_auth_mail to supabase_auth_admin;
+create policy invitation_auth_capture on staging_private.invitation_auth_mail for insert to supabase_auth_admin with check(true);
+
 CREATE OR REPLACE FUNCTION public.staging_capture_auth_email(event jsonb)
  RETURNS jsonb LANGUAGE plpgsql SET search_path TO '' AS $function$
 declare
@@ -60,8 +73,13 @@ begin
       raise exception 'synthetic_recipient_required';
     end if;
   end loop;
-  insert into staging_private.auth_mail(user_id, recipient, new_recipient, email_data)
-    values ((event #>> '{user,id}')::uuid, recipient, new_recipient, mail_data);
+  if recipient ~ '^[a-z0-9][a-z0-9._+-]{0,63}@saasalldecor[.]invalid$' then
+    insert into staging_private.auth_mail(user_id, recipient, new_recipient, email_data)
+      values ((event #>> '{user,id}')::uuid, recipient, new_recipient, mail_data);
+  else
+    insert into staging_private.invitation_auth_mail(user_id, recipient, email_data)
+      values ((event #>> '{user,id}')::uuid, recipient, mail_data);
+  end if;
   -- Only capture. No external authentication message is sent by this function.
   return '{}'::jsonb;
 end;

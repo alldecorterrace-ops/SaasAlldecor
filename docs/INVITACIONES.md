@@ -80,7 +80,10 @@ autoriza ningún correo. Antes de activar una fila deben aprobarse el destinatar
 la invitación y los permisos concretos. Solo el operador puede modificar esa
 política; los clientes y la clave de servicio no tienen acceso a ella.
 
-La confirmación original de Auth se captura de forma privada durante este ensayo:
+La confirmación original de Auth se captura en la tabla privada separada
+`staging_private.invitation_auth_mail`; la tabla anterior conserva su restricción
+a direcciones ficticias. El ensayo instala y prueba esa restricción original.
+La captura autorizada admite
 solo `signup`, para el usuario aún sin confirmar y la invitación exacta de consulta.
 Cambios de correo, recuperaciones, invitaciones revocadas, roles ampliados y
 ventanas vencidas se rechazan. Esta prueba puede acreditar la entrega de la
