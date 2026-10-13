@@ -1,4 +1,8 @@
 type Environment = Record<string, string | undefined>;
+import {
+  configuredStagingInvitationTest,
+  stagingInvitationTest,
+} from "./staging-invitation-test";
 // Destination identity, not a credential. Prevent a staging configuration from
 // pointing to the live project even if someone copies the production env file.
 const productionProject = "loqbmrlkhskqzozknehx";
@@ -23,6 +27,22 @@ export function authRecoveryAllowed(env: Environment, email: string) {
     !/^[a-z0-9][a-z0-9._+-]{0,63}@saasalldecor[.]invalid$/.test(
       email.toLowerCase(),
     )
+  )
+    return false;
+  try {
+    assertDeploymentEnvironment(env);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function authRegistrationAllowed(env: Environment, email: string) {
+  if (authRecoveryAllowed(env, email)) return true;
+  if (
+    env.APP_ENVIRONMENT !== "staging" ||
+    env.STAGING_AUTH_EMAIL_CAPTURE_VERIFIED !== "true" ||
+    stagingInvitationTest(env)?.email !== email.toLowerCase()
   )
     return false;
   try {
@@ -68,4 +88,13 @@ export function assertDeploymentEnvironment(env: Environment) {
     env.OPENAI_API_KEY
   )
     throw new Error("External email and AI must be disabled in staging");
+  if (
+    env.STAGING_INVITATION_TEST_ENABLED === "true" &&
+    (!configuredStagingInvitationTest(env)?.success ||
+      env.STAGING_AUTH_EMAIL_CAPTURE_VERIFIED !== "true" ||
+      site.protocol !== "https:")
+  )
+    throw new Error(
+      "Staging invitation test requires a complete private scope and verified Auth capture",
+    );
 }

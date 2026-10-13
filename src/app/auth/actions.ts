@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient, isConfigured } from "@/lib/supabase/server";
-import { authRecoveryAllowed } from "@/lib/deployment-environment";
+import { authRegistrationAllowed } from "@/lib/deployment-environment";
 import {
   checkRegistrationInvitation,
   invitationRequiredMessage,
@@ -36,11 +36,11 @@ export async function authenticate(
     };
   if (
     mode === "register" &&
-    !authRecoveryAllowed(process.env, parsed.data.email)
+    !authRegistrationAllowed(process.env, parsed.data.email)
   )
     return {
       error:
-        "En pruebas solo se permite registrar correos ficticios cuando la captura privada de correo está verificada.",
+        "En este entorno solo se permite registrar cuentas de prueba autorizadas.",
     };
   const db = await createClient();
   if (mode === "login") {

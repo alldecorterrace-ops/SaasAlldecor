@@ -1,7 +1,15 @@
 import nodemailer from "nodemailer";
 import { spawn } from "node:child_process";
 import { z } from "zod";
-import { externalEffectsAllowed } from "./deployment-environment";
+import {
+  assertDeploymentEnvironment,
+  externalEffectsAllowed,
+} from "./deployment-environment";
+import {
+  stagingInvitationTest,
+  stagingInvitationTestMatches,
+  type StagingInvitationTest,
+} from "./staging-invitation-test";
 
 const address = z
   .string()
@@ -15,17 +23,27 @@ export type InvitationNotice = {
   company_name: string;
   expires_at: string;
 };
-export type MailConfig = { from: string; name: string; site: string };
+export type MailConfig = {
+  from: string;
+  name: string;
+  site: string;
+  stagingTest?: StagingInvitationTest;
+};
 export type MailOutcome = "queued" | "failed" | "unknown";
 
 export function invitationMailConfig(
   env: Record<string, string | undefined>,
 ): MailConfig | null {
-  if (!externalEffectsAllowed(env) || env.INVITATION_MAIL_ENABLED !== "true")
+  const qa = stagingInvitationTest(env);
+  if (
+    (!externalEffectsAllowed(env) || env.INVITATION_MAIL_ENABLED !== "true") &&
+    !qa
+  )
     return null;
   const from = address.safeParse(env.MAIL_FROM_ADDRESS);
   const name = env.MAIL_FROM_NAME ?? "SaasAlldecor";
   try {
+    if (qa) assertDeploymentEnvironment(env);
     const site = new URL(env.NEXT_PUBLIC_SITE_URL ?? "");
     if (
       !from.success ||
@@ -37,7 +55,12 @@ export function invitationMailConfig(
       site.password
     )
       return null;
-    return { from: from.data, name, site: site.origin };
+    return {
+      from: from.data,
+      name,
+      site: site.origin,
+      ...(qa ? { stagingTest: qa } : {}),
+    };
   } catch {
     return null;
   }
@@ -50,6 +73,17 @@ export async function composeInvitationMail(
   notice: InvitationNotice,
 ) {
   const to = address.parse(notice.email);
+  if (
+    config.stagingTest &&
+    (notice.kind === "manager" ||
+      to !== config.stagingTest.email ||
+      !stagingInvitationTestMatches(
+        config.stagingTest,
+        config.stagingTest.companyId,
+        config.stagingTest.invitationId,
+      ))
+  )
+    throw new Error("staging_invitation_outside_scope");
   address.parse(config.from);
   const id = z.uuid().parse(notice.attempt_id);
   const site = new URL(config.site);
@@ -152,6 +186,15 @@ export async function notifyInvitation(
       error:
         "Invitación guardada. El correo no está habilitado en este entorno; puedes compartir el acceso al SaaS.",
     };
+  if (
+    config.stagingTest &&
+    (retry ||
+      !stagingInvitationTestMatches(config.stagingTest, company, invitation))
+  )
+    return {
+      error:
+        "Invitación guardada. La prueba permite solo el primer aviso de la invitación prevista.",
+    };
   const claimed = await db.rpc("claim_invitation_email", {
     p_company: company,
     p_invitation: invitation,
@@ -170,6 +213,21 @@ export async function notifyInvitation(
         "La invitación ya tiene un intento de envío. Revisa su estado antes de reenviar.",
     };
   const notice = rows[0];
+  if (
+    config.stagingTest &&
+    (notice.email !== config.stagingTest.email ||
+      !stagingInvitationTestMatches(config.stagingTest, company, invitation))
+  ) {
+    await db.rpc("finish_invitation_email", {
+      p_company: company,
+      p_attempt: notice.attempt_id,
+      p_status: "failed",
+    });
+    return {
+      error:
+        "Invitación guardada. Este destinatario no está autorizado para el envío de prueba.",
+    };
+  }
   let outcome: MailOutcome;
   try {
     outcome = await send(config, notice);

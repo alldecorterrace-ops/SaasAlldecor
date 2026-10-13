@@ -6,6 +6,10 @@ import { companyContext, requireUser } from "@/lib/auth";
 import { uuid } from "@/lib/validation";
 import { workspaceModules } from "@/lib/modules";
 import { invitationMailConfig, notifyInvitation } from "@/lib/invitation-mail";
+import {
+  stagingInvitationTest,
+  stagingInvitationTestFormAllowed,
+} from "@/lib/staging-invitation-test";
 
 export type InvitationState = { error?: string; success?: string };
 export async function createInvitation(
@@ -32,6 +36,21 @@ export async function createInvitation(
     .enum(["admin", "member"])
     .safeParse(form.get("role") ?? "member");
   if (!role.success) return { error: "No puedes invitar con ese rol." };
+  const qa = stagingInvitationTest(process.env);
+  if (
+    qa &&
+    !stagingInvitationTestFormAllowed(qa, {
+      company: companyId,
+      invitation: parsed.data.id,
+      email: parsed.data.email,
+      role: role.data,
+      permissions,
+    })
+  )
+    return {
+      error:
+        "La invitación de prueba está limitada al empleado y los permisos de consulta previstos.",
+    };
   const { data: invitationId, error } = await db.rpc("invite_company_user", {
     p_company: companyId,
     p_id: parsed.data.id,
