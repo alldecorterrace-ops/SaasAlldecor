@@ -52,7 +52,8 @@ Las cuentas/empresas actuales y los gerentes invitados existentes se conservan.
 El origen `invitation` mantiene su alta manual previa; nuevos compradores tienen
 origen `subscription` y no pueden usar `create_company` para crear empresas gratis.
 Las pruebas históricas de reglas anteriores están fijadas a la migración 092.
-La nueva matriz se prueba con la migración 093.
+La nueva matriz se prueba con la migración 093; la reactivación de la misma empresa,
+con la migración 094.
 
 El dueño principal no se puede quitar, suspender, degradar ni cambiar por estas
 pantallas/RPC, y un disparador protege su membresía. No se implementa transferencia
@@ -88,8 +89,29 @@ las escrituras y nuevas invitaciones se rechazan. Cancelación al final del per�
 mantiene acceso mientras el estado siga activo y el período pagado esté vigente.
 Una renovación impaga no prolonga el período previamente pagado. Una suscripción
 cancelada o incomplete_expired es terminal y no se reactiva por un evento retrasado,
-incluso con la misma marca temporal. Vincular una nueva suscripción a una empresa
-cancelada requiere un flujo de recontratación que esta candidata aún no implementa.
+incluso con la misma marca temporal.
+
+## Reactivación de una empresa cancelada
+
+El dueño principal confirmado puede iniciar una nueva suscripción desde la
+configuración de su empresa cuando la anterior está cancelada o su pago inicial
+ha vencido. Una cancelación programada todavía activa se gestiona en el portal;
+no permite contratar otra suscripción simultánea.
+
+El servidor conserva la empresa, dueño, cliente de Stripe, equipo, permisos e
+historial. Cada intento se registra en `billing_reactivations`, con un único
+intento pendiente por orden. Solicitudes simultáneas y reintentos reutilizan el
+mismo Checkout. Una sesión completada o pagada permanece en verificación; no
+crea otro pago. Solo una sesión que Stripe confirma vencida e impaga permite
+reservar otro intento. El plan debe cubrir usuarios activos e invitaciones
+pendientes antes de abrir el pago y de activar la nueva suscripción.
+
+Checkout y la suscripción incluyen la misma orden e identificador de intento
+en sus metadatos. Tras verificar un pago vigente, la base promueve la nueva
+suscripción en la orden existente y conserva una copia inmutable del estado
+anterior. Los eventos de suscripciones retiradas quedan registrados, pero no
+pueden alterar la suscripción actual ni resucitar una cancelación. El dueño
+principal sigue protegido frente a eliminación, suspensión o degradación.
 
 ## Preparar sandbox de Stripe
 
@@ -114,7 +136,7 @@ Endpoint: `/api/subscriptions/webhook`. Eventos snapshot soportados:
 `invoice.payment_failed`. Registrar la entrega fallida en Stripe y reintentar tras
 resolver la causa; la persistencia se completa antes de responder 200.
 
-Aplicar migraciones 092 y 093 con respaldo/verificación en staging antes del código.
+Aplicar migraciones 092, 093 y 094 con respaldo/verificación en staging antes del código.
 Configurar Authentication > Hooks > Before User Created -> Postgres
 `public.require_signup_invitation`. La función 093 conserva el hook y permite
 invitación vigente o compra verificada; editar el formulario no sustituye este hook.
@@ -126,6 +148,23 @@ sintéticas. Verifican permisos, aislamiento, reservas, firma, pago y transaccio
 no acreditan emisión real de JWT, correo, tarjeta, entrega de webhook de Stripe,
 prorrateo, recuperación de conexión ni impuestos. Antes de publicar, verificar
 esas partes en los servicios reales, con datos y tarjetas de prueba.
+
+La validación de staging del 13 de octubre de 2026 comprobó el alta del comprador,
+administrador y empleado, confirmaciones originales capturadas, permisos y cuotas.
+La reactivación atravesó Checkout y los eventos firmados de Stripe, conservando
+la misma empresa, tres miembros y una ficha de cliente con su historial. Salir y
+retomar el pago reutilizó la sesión de Checkout.
+
+Para probar facturas recurrentes en el sandbox temporal se cerró un breve período
+de prueba ficticio: Stripe emitió una factura mensual completa pagada. Otro intento
+con un método oficial de rechazo produjo `past_due`; el SaaS bloqueó cambios y
+conservó el período pagado. Pagar esa misma factura ficticia restauró el acceso.
+Esta prueba verifica facturación, entrega firmada, rechazo y recuperación; no
+equivale a avanzar un mes con un reloj de Stripe. El sandbox sin reclamar rechaza
+el endpoint de relojes. La cuenta permanente queda aplazada por el propietario,
+y la entrega externa real de invitaciones de empleados sigue sin acreditarse.
+La evidencia privada permanece fuera de GitHub; producción mantiene facturación
+deshabilitada.
 
 Referencias oficiales:
 [Roles de Intuit](https://quickbooks.intuit.com/learn-support/en-global/help-article/access-permissions/user-roles-access-rights-quickbooks-online/L66POfRrI_ROW_en),
