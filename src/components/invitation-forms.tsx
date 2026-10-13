@@ -7,7 +7,7 @@ import {
   resendInvitation,
   type InvitationState,
 } from "@/app/empresas/invitation-actions";
-import { modules } from "@/lib/modules";
+import { workspaceModules } from "@/lib/modules";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { SubmitButton } from "./submit-button";
@@ -84,7 +84,7 @@ export function InviteMember({
                   </tr>
                 </thead>
                 <tbody>
-                  {modules
+                  {workspaceModules
                     .filter((m) => m.ready)
                     .map((m) => (
                       <tr key={m.id}>
