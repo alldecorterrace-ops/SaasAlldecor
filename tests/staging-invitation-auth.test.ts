@@ -125,7 +125,7 @@ test("optional staging capture admits only the approved unconfirmed employee sig
         "insert into staging_private.invitation_auth_mail(user_id,recipient,email_data) values($1,$2,$3)",
         [foreign, email, JSON.stringify({ email_action_type: "signup" })],
       ),
-      /check constraint/,
+      /row-level security/,
     );
     await assert.rejects(
       capture(payload({ email_data: { email_action_type: "recovery" } })),
