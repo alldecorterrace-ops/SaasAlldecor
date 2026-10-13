@@ -169,7 +169,10 @@ const subscription = z.object({
     "paused",
     "trialing",
   ]),
-  metadata: z.object({ saas_order: z.uuid() }),
+  metadata: z.object({
+    saas_order: z.uuid(),
+    saas_reactivation: z.uuid().optional(),
+  }),
   cancel_at_period_end: z.boolean(),
   cancel_at: z.number().int().positive().nullish(),
   items: z.object({
@@ -234,6 +237,7 @@ export async function verifiedBillingSnapshot(
         subscription: string;
         email: string;
         order: string;
+        reactivation?: string;
         paid: boolean;
       }
     | undefined;
@@ -269,7 +273,10 @@ export async function verifiedBillingSnapshot(
         subscription: reference("sub"),
         payment_status: z.string(),
         client_reference_id: z.uuid(),
-        metadata: z.object({ saas_order: z.uuid() }),
+        metadata: z.object({
+          saas_order: z.uuid(),
+          saas_reactivation: z.uuid().optional(),
+        }),
         customer_details: z.object({ email: z.email() }),
       })
       .parse(
@@ -289,6 +296,7 @@ export async function verifiedBillingSnapshot(
       subscription: data.subscription,
       email: data.customer_details.email.toLowerCase(),
       order: data.client_reference_id,
+      reactivation: data.metadata.saas_reactivation,
       paid: data.payment_status === "paid",
     };
     subscriptionId = data.subscription;
@@ -305,7 +313,8 @@ export async function verifiedBillingSnapshot(
   if (
     session &&
     (session.customer !== current.customer ||
-      session.order !== current.metadata.saas_order)
+      session.order !== current.metadata.saas_order ||
+      session.reactivation !== current.metadata.saas_reactivation)
   )
     throw new Error("billing_checkout_mismatch");
   const item = current.items.data[0];
@@ -337,6 +346,7 @@ export async function verifiedBillingSnapshot(
     created: event.created,
     snapshot: {
       order_id: current.metadata.saas_order,
+      reactivation_id: current.metadata.saas_reactivation ?? null,
       subscription_id: current.id,
       customer_id: current.customer,
       mode: config.mode,
@@ -369,5 +379,34 @@ export function checkoutParameters(
     "metadata[saas_order]": order.id,
     "subscription_data[metadata][saas_order]": order.id,
   });
+  return params;
+}
+
+export function reactivationCheckoutParameters(
+  config: BillingConfig,
+  offer: {
+    id: string;
+    order_id: string;
+    company_id: string;
+    email: string;
+    plan_code: PlanCode;
+    customer_id: string;
+  },
+) {
+  z.uuid().parse(offer.id);
+  z.uuid().parse(offer.company_id);
+  id("cus").parse(offer.customer_id);
+  const params = checkoutParameters(config, {
+    id: offer.order_id,
+    email: offer.email,
+    code: offer.plan_code,
+  });
+  params.delete("customer_email");
+  params.set("customer", offer.customer_id);
+  params.set("metadata[saas_reactivation]", offer.id);
+  params.set("subscription_data[metadata][saas_reactivation]", offer.id);
+  const destination = `${config.site}/app/${offer.company_id}/configuracion`;
+  params.set("success_url", destination);
+  params.set("cancel_url", destination);
   return params;
 }

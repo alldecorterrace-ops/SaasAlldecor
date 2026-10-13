@@ -178,6 +178,40 @@ test("verified provider state rejects unpaid grants, substituted customer, plan/
   );
   assert.equal(valid?.snapshot.paid, true);
   assert.equal(valid?.snapshot.order_id, oid);
+  const reactivation = randomUUID();
+  const reactivated = await verifiedBillingSnapshot(
+    JSON.stringify(event),
+    config,
+    async (path) =>
+      path.startsWith("/checkout/")
+        ? {
+            ...session,
+            metadata: { ...session.metadata, saas_reactivation: reactivation },
+          }
+        : {
+            ...current,
+            metadata: { ...current.metadata, saas_reactivation: reactivation },
+          },
+  );
+  assert.equal(reactivated?.snapshot.reactivation_id, reactivation);
+  for (const replacement of [undefined, randomUUID(), "not-a-uuid"]) {
+    await assert.rejects(
+      verifiedBillingSnapshot(JSON.stringify(event), config, async (path) =>
+        path.startsWith("/checkout/")
+          ? {
+              ...session,
+              metadata: {
+                ...session.metadata,
+                saas_reactivation: reactivation,
+              },
+            }
+          : {
+              ...current,
+              metadata: { ...current.metadata, saas_reactivation: replacement },
+            },
+      ),
+    );
+  }
   const periodEnd = current.items.data[0].current_period_end;
   for (const [cancelAt, endsThisPeriod, paidUntil] of [
     [null, false, periodEnd],

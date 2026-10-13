@@ -9,6 +9,7 @@ import {
 } from "@/lib/subscription-server";
 import { checkoutParameters, type PlanCode } from "@/lib/subscriptions";
 import { companyContext } from "@/lib/auth";
+import { startCompanyReactivation } from "@/lib/subscription-reactivation";
 export type PurchaseState = { error?: string };
 export async function beginSubscription(
   _: PurchaseState,
@@ -107,6 +108,96 @@ export async function openSubscriptionPortal(
     return {
       error:
         "No se pudo abrir la gestión de la suscripción. Inténtalo más tarde.",
+    };
+  }
+  redirect(destination);
+}
+
+export async function beginCompanyReactivation(
+  companyId: string,
+  _: PurchaseState,
+  form: FormData,
+): Promise<PurchaseState> {
+  const { db, member } = await companyContext(companyId);
+  if (member.role !== "owner")
+    return { error: "La reactivación la gestiona el dueño principal." };
+  const parsed = z
+    .object({
+      id: z.uuid(),
+      code: z.enum(["inicial", "equipo", "profesional", "crecimiento"]),
+    })
+    .safeParse({ id: form.get("request_id"), code: form.get("plan") });
+  if (!parsed.success) return { error: "Selecciona un plan válido." };
+  let destination: string;
+  try {
+    const config = requireBilling();
+    const service = billingDatabase(config);
+    destination = await startCompanyReactivation(
+      config,
+      companyId,
+      parsed.data.id,
+      parsed.data.code,
+      {
+        async prepare(id, code) {
+          const { data, error } = await db.rpc("prepare_company_reactivation", {
+            p_company: companyId,
+            p_id: id,
+            p_code: code,
+            p_mode: config.mode,
+          });
+          if (error) throw new Error(error.message);
+          return data;
+        },
+        read: (id) => stripeRequest(config, `/checkout/sessions/${id}`),
+        create: (offer, params) =>
+          stripeRequest(
+            config,
+            "/checkout/sessions",
+            params,
+            `saas-reactivation-${offer.id}`,
+          ),
+        async attach(offer, checkout) {
+          const { error } = await service.rpc("attach_reactivation_checkout", {
+            p_id: offer.id,
+            p_checkout: checkout.id,
+            p_expires_at: new Date(checkout.expires_at * 1000).toISOString(),
+          });
+          if (error) throw new Error("billing_reactivation_unavailable");
+        },
+        async expire(offer) {
+          const { error } = await service.rpc("expire_reactivation_checkout", {
+            p_id: offer.id,
+            p_checkout: offer.checkout_id,
+          });
+          if (error) throw new Error("billing_reactivation_unavailable");
+        },
+      },
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    if (message.includes("subscription_user_limit"))
+      return {
+        error:
+          "Este plan no tiene plazas suficientes para tu equipo y sus invitaciones pendientes. Elige un plan con más usuarios.",
+      };
+    if (message.includes("billing_reactivation_verifying"))
+      return {
+        error:
+          "El pago ya fue completado y está en verificación. Actualiza la configuración en unos momentos; no necesitas pagar otra vez.",
+      };
+    if (message.includes("billing_reactivation_conflict"))
+      return {
+        error:
+          "Hay una reactivación en curso con otro plan. Continúa ese pago o espera a que su sesión venza antes de cambiar de plan.",
+      };
+    if (message.includes("billing_reactivation_not_needed"))
+      return {
+        error:
+          "La suscripción todavía no está cancelada. Revisa su estado en configuración y gestiona el pago actual desde el portal.",
+      };
+    return {
+      error:
+        "No pudimos iniciar la reactivación. Actualiza la configuración y vuelve a intentarlo. Tu empresa y equipo se conservan.",
     };
   }
   redirect(destination);

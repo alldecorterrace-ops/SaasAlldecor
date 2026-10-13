@@ -1,9 +1,12 @@
 import { z } from "zod";
+import { randomUUID } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { SubscriptionPortal } from "./subscription-checkout";
-import { billingConfig } from "@/lib/subscriptions";
+import { billingConfig, subscriptionPlans } from "@/lib/subscriptions";
+import { SubscriptionReactivation } from "./subscription-reactivation";
 const summary = z.object({
   plan: z.string(),
+  plan_code: z.string(),
   amount_cents: z.number(),
   user_limit: z.number(),
   status: z.string(),
@@ -13,6 +16,8 @@ const summary = z.object({
   active_users: z.number(),
   pending_invitations: z.number(),
   writable: z.boolean(),
+  can_reactivate: z.boolean().optional().default(false),
+  reactivation_plan: z.string().nullable().optional().default(null),
 });
 export async function SubscriptionSummary({
   companyId,
@@ -28,6 +33,7 @@ export async function SubscriptionSummary({
   if (error) throw new Error("No se pudo comprobar la suscripción.");
   if (!data) return null;
   const value = summary.parse(data);
+  const config = billingConfig(process.env);
   const labels: Record<string, string> = {
     active: "Activa",
     past_due: "Pago pendiente",
@@ -87,9 +93,23 @@ export async function SubscriptionSummary({
           conservan; libera plazas o amplía el plan antes de invitar.
         </p>
       )}
-      {owner && billingConfig(process.env) && (
-        <SubscriptionPortal companyId={companyId} />
+      {owner && config && value.can_reactivate && (
+        <SubscriptionReactivation
+          companyId={companyId}
+          requestId={randomUUID()}
+          planCode={value.plan_code}
+          pendingPlan={value.reactivation_plan}
+          usedSeats={value.active_users + value.pending_invitations}
+          testMode={config.mode === "test"}
+          plans={subscriptionPlans.map(({ code, name, amount, users }) => ({
+            code,
+            name,
+            amount,
+            users,
+          }))}
+        />
       )}
+      {owner && config && <SubscriptionPortal companyId={companyId} />}
     </section>
   );
 }
