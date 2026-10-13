@@ -171,6 +171,7 @@ const subscription = z.object({
   ]),
   metadata: z.object({ saas_order: z.uuid() }),
   cancel_at_period_end: z.boolean(),
+  cancel_at: z.number().int().positive().nullish(),
   items: z.object({
     data: z
       .array(
@@ -320,6 +321,12 @@ export async function verifiedBillingSnapshot(
     throw new Error("billing_price_mismatch");
   const until = item.current_period_end ?? current.current_period_end;
   if (!until) throw new Error("billing_period_missing");
+  // The portal can schedule cancellation with a timestamp while leaving the
+  // boolean false. A cancellation within this paid period also bounds access.
+  const paidUntil = Math.min(until, current.cancel_at ?? until);
+  const endsThisPeriod =
+    current.cancel_at_period_end ||
+    (current.cancel_at != null && current.cancel_at <= until);
   const paid = session
     ? session.paid
     : current.latest_invoice?.status === "paid" &&
@@ -336,8 +343,8 @@ export async function verifiedBillingSnapshot(
       plan_code: plan.code,
       status: current.status,
       paid: !!paid,
-      paid_through: new Date(until * 1000).toISOString(),
-      cancel_at_period_end: current.cancel_at_period_end,
+      paid_through: new Date(paidUntil * 1000).toISOString(),
+      cancel_at_period_end: endsThisPeriod,
       initial: !!session,
       checkout_id: session?.id ?? null,
       email: session?.email ?? null,

@@ -178,6 +178,38 @@ test("verified provider state rejects unpaid grants, substituted customer, plan/
   );
   assert.equal(valid?.snapshot.paid, true);
   assert.equal(valid?.snapshot.order_id, oid);
+  const periodEnd = current.items.data[0].current_period_end;
+  for (const [cancelAt, endsThisPeriod, paidUntil] of [
+    [null, false, periodEnd],
+    [periodEnd, true, periodEnd],
+    [periodEnd - 86400, true, periodEnd - 86400],
+    [periodEnd + 86400, false, periodEnd],
+  ] as const) {
+    const cancellation = await verifiedBillingSnapshot(
+      JSON.stringify({
+        ...event,
+        type: "customer.subscription.updated",
+        data: { object: { id: current.id } },
+      }),
+      config,
+      async () => ({ ...current, cancel_at: cancelAt }),
+    );
+    assert.equal(cancellation?.snapshot.cancel_at_period_end, endsThisPeriod);
+    assert.equal(
+      cancellation?.snapshot.paid_through,
+      new Date(paidUntil * 1000).toISOString(),
+    );
+    assert.equal(cancellation?.snapshot.paid, true);
+  }
+  const booleanCancellation = await verifiedBillingSnapshot(
+    JSON.stringify(event),
+    config,
+    async (path) =>
+      path.startsWith("/checkout/")
+        ? session
+        : { ...current, cancel_at_period_end: true, cancel_at: null },
+  );
+  assert.equal(booleanCancellation?.snapshot.cancel_at_period_end, true);
   const unpaid = await verifiedBillingSnapshot(
     JSON.stringify(event),
     config,
