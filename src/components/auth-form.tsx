@@ -74,52 +74,54 @@ export function AuthForm({
           </Link>
           <p className="eyebrow">Tu espacio de trabajo</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight">
-            {registering
-              ? "Crea tu cuenta con invitación"
-              : "Bienvenido de nuevo"}
+            {registering ? "Crea tu cuenta" : "Bienvenido de nuevo"}
           </h1>
           <p className="mt-3 mb-8 text-sm leading-6 text-muted-foreground">
             {registering
-              ? "Necesitas una invitación vigente del administrador del SaaS o del gerente de tu empresa. Regístrate con el correo al que te invitaron."
+              ? "Necesitas una invitación vigente. Usa el correo al que te invitaron, crea tu propia contraseña y confirma el correo."
               : "Inicia sesión y continúa donde lo dejaste."}
           </p>
           <Feedback error={state.error ?? error} success={state.success} />
-          <form action={action} className="grid gap-5">
-            <label className="field">
-              Correo electrónico
-              <Input
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@empresa.com"
-              />
-            </label>
-            <label className="field">
-              Contraseña
-              <Input
-                name="password"
-                type="password"
-                autoComplete={registering ? "new-password" : "current-password"}
-                minLength={registering ? 12 : 1}
-                maxLength={128}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              {registering && <small>Al menos 12 caracteres.</small>}
-            </label>
-            <div className="mt-2 [&>button]:w-full">
-              <SubmitButton
-                pending={registering ? "Creando acceso…" : "Ingresando…"}
-              >
-                {registering ? "Crear cuenta" : "Iniciar sesión"}
-                <ArrowUpRight size={16} />
-              </SubmitButton>
-            </div>
-          </form>
+          {!(registering && state.success) && (
+            <form action={action} className="grid gap-5">
+              <label className="field">
+                Correo electrónico
+                <Input
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="tu@empresa.com"
+                />
+              </label>
+              <label className="field">
+                Contraseña
+                <Input
+                  name="password"
+                  type="password"
+                  autoComplete={
+                    registering ? "new-password" : "current-password"
+                  }
+                  minLength={registering ? 12 : 1}
+                  maxLength={128}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                {registering && <small>Al menos 12 caracteres.</small>}
+              </label>
+              <div className="mt-2 [&>button]:w-full">
+                <SubmitButton
+                  pending={registering ? "Creando acceso…" : "Ingresando…"}
+                >
+                  {registering ? "Crear cuenta" : "Iniciar sesión"}
+                  <ArrowUpRight size={16} />
+                </SubmitButton>
+              </div>
+            </form>
+          )}
           {!registering && (
             <Link
               className="mt-5 block text-center text-sm font-semibold text-primary underline"
