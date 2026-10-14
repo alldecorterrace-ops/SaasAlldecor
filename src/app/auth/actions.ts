@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createClient, isConfigured } from "@/lib/supabase/server";
 import { authRegistrationAllowed } from "@/lib/deployment-environment";
 import { checkRegistrationInvitation } from "@/lib/registration";
+import { stagingAuthSmtpTest } from "@/lib/staging-auth-smtp-test";
 import {
   authFailureMessage,
   registrationConfirmationMessage,
@@ -73,6 +74,8 @@ export async function authenticate(
   return {
     success: registrationConfirmationMessage(
       process.env.APP_ENVIRONMENT === "staging",
+      stagingAuthSmtpTest(process.env)?.email ===
+        parsed.data.email.toLowerCase(),
     ),
   };
 }

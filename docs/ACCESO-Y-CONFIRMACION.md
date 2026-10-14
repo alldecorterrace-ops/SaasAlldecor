@@ -39,5 +39,23 @@ persistencia de sesión, destinos limitados, entradas inválidas y mensajes segu
 Esto no sustituye una prueba de enlace y cookies contra Auth nativo en el hosting,
 ni prueba entrega SMTP de confirmación o recuperación a un destinatario real.
 
+## Ensayo dirigido de entrega real
+
+El ensayo SMTP de staging queda apagado por defecto. Su configuración privada
+autoriza una dirección exacta durante un máximo de dos horas; permite registro
+y recuperación para esa dirección y mantiene el filtro de invitación o compra.
+No activa los correos de negocio ni permite las cuentas ficticias mientras usa
+SMTP. Confirmación y recuperación indican revisar el buzón únicamente en ese modo.
+
+Las variables `STAGING_AUTH_SMTP_TEST_*` describen el alcance; la marca
+`STAGING_AUTH_SMTP_CONFIG_VERIFIED` registra una verificación del operador y no
+configura Supabase. La captura privada y SMTP deben ser modos excluyentes.
+El límite de la aplicación no se debe presentar como un filtro de destinatarios
+del SMTP: revisar también las cuentas existentes y las invitaciones de Auth,
+mantener Before User Created activo, conservar la cuota original y restaurar el
+hook de captura y el entorno al terminar o al vencer el ensayo. La configuración
+no constituye evidencia de entrega: comprobar correo original, enlace nativo,
+sesión, rol y empresa; el usuario crea y cambia la contraseña en el navegador.
+
 Referencias: [intercambio de código de Supabase](https://supabase.com/docs/reference/javascript/auth-exchangecodeforsession)
 y [redirecciones de Auth](https://supabase.com/docs/guides/auth/redirect-urls).

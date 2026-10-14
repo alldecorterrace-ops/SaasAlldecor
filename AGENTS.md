@@ -62,6 +62,16 @@
 - Esta decisión sustituye la restricción anterior que impedía invitar a los
   administradores de empresa. No introduce IA, GPS ni importaciones de ADT.
 
+## Prioridad de cierre del registro, 14 de octubre
+
+- Completar, en orden: entrega real y recorrido de confirmación del registro;
+  entrega real y cambio de contraseña por el usuario; publicación del acceso
+  verificado en producción. Conservar contraseñas, datos y membresías existentes.
+- Después de cerrar esos tres puntos, trabajar la diferenciación entre planes
+  mediante capacidades y límites reales, además del precio y las plazas.
+  No modificar esa diferenciación durante el cierre del registro.
+- La cuenta definitiva de Stripe y los cobros reales siguen aplazados.
+
 ## Versionado y despliegues
 
 - GitHub es la fuente oficial del código y de su historial. Antes de desplegar,

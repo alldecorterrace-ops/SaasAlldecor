@@ -3,6 +3,10 @@ import {
   configuredStagingInvitationTest,
   stagingInvitationTest,
 } from "./staging-invitation-test";
+import {
+  configuredStagingAuthSmtpTest,
+  stagingAuthSmtpTest,
+} from "./staging-auth-smtp-test";
 // Destination identity, not a credential. Prevent a staging configuration from
 // pointing to the live project even if someone copies the production env file.
 const productionProject = "loqbmrlkhskqzozknehx";
@@ -21,6 +25,15 @@ export function externalEffectsAllowed(env: Environment) {
 // configure that hook; the private capture must already be installed and tested.
 export function authRecoveryAllowed(env: Environment, email: string) {
   if (externalEffectsAllowed(env)) return true;
+  if (env.STAGING_AUTH_SMTP_TEST_ENABLED === "true") {
+    if (stagingAuthSmtpTest(env)?.email !== email.toLowerCase()) return false;
+    try {
+      assertDeploymentEnvironment(env);
+      return true;
+    } catch {
+      return false;
+    }
+  }
   if (
     env.APP_ENVIRONMENT !== "staging" ||
     env.STAGING_AUTH_EMAIL_CAPTURE_VERIFIED !== "true" ||
@@ -96,5 +109,16 @@ export function assertDeploymentEnvironment(env: Environment) {
   )
     throw new Error(
       "Staging invitation test requires a complete private scope and verified Auth capture",
+    );
+  if (
+    env.STAGING_AUTH_SMTP_TEST_ENABLED === "true" &&
+    (!configuredStagingAuthSmtpTest(env)?.success ||
+      env.STAGING_AUTH_SMTP_CONFIG_VERIFIED !== "true" ||
+      env.STAGING_AUTH_EMAIL_CAPTURE_VERIFIED === "true" ||
+      env.STAGING_INVITATION_TEST_ENABLED === "true" ||
+      site.protocol !== "https:")
+  )
+    throw new Error(
+      "Staging SMTP rehearsal requires a single private scope and exclusive verified transport",
     );
 }

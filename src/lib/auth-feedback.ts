@@ -29,8 +29,11 @@ export function authFailureMessage(
     : "No pudimos completar el registro. Inténtalo más tarde o consulta con el administrador de tu invitación.";
 }
 
-export function registrationConfirmationMessage(staging: boolean) {
-  return staging
+export function registrationConfirmationMessage(
+  staging: boolean,
+  smtpTest = false,
+) {
+  return staging && !smtpTest
     ? "Si tu cuenta está pendiente de confirmación, el enlace quedará en el receptor privado de pruebas. No se enviará un correo externo. Después de confirmar podrás iniciar sesión."
     : "Revisa tu correo y abre el enlace de confirmación en este mismo navegador. Si ya tienes una cuenta, inicia sesión.";
 }
