@@ -48,6 +48,12 @@ const config = {
       // Specific private routes must follow the general rule: Next uses the
       // last matching header, including when a download returns an error.
       ...[
+        "/",
+        "/auth/:path*",
+        "/login",
+        "/registro",
+        "/recuperar-contrasena",
+        "/actualizar-contrasena",
         "/api/commercial-documents/:path*",
         "/api/invoice-email/:path*",
         "/api/estimate-email/:path*",

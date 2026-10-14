@@ -22,6 +22,9 @@ Parámetros ambiguos o identificadores mal formados se rechazan antes de constru
 el cliente. Fallos del proveedor se traducen a mensajes limitados; no se imprimen
 códigos de acceso, cookies, cuerpos de error ni verificadores. La respuesta de
 confirmación lleva `private, no-store` y `no-referrer`.
+La excepción de cabeceras para las páginas de Auth y la entrada por Site URL se
+aplica después de la regla general de Next; de lo contrario esa regla reemplaza
+la política declarada en el handler. Una regresión usa el matcher real de Next.
 
 El formulario distingue correo pendiente de confirmación, límite de intentos,
 contraseña débil y servicio no disponible. Un correo inexistente y una contraseña
