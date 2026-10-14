@@ -162,7 +162,12 @@ conservó el período pagado. Pagar esa misma factura ficticia restauró el acce
 Esta prueba verifica facturación, entrega firmada, rechazo y recuperación; no
 equivale a avanzar un mes con un reloj de Stripe. El sandbox sin reclamar rechaza
 el endpoint de relojes. La cuenta permanente queda aplazada por el propietario,
-y la entrega externa real de invitaciones de empleados sigue sin acreditarse.
+La prueba posterior de invitación a un destinatario autorizado confirmó llegada a
+Recibidos, registro, confirmación nativa desde la captura privada, inicio de sesión
+y aceptación con acceso solo de consulta a Clientes. La ruta de administración
+rechazó ese acceso. Se restauraron todos los ajustes temporales; se conservan las
+cuatro membresías activas, el propietario y los datos anteriores. Esta evidencia
+no acredita entrega SMTP de confirmaciones o recuperación de contraseña.
 La evidencia privada permanece fuera de GitHub; producción mantiene facturación
 deshabilitada.
 
