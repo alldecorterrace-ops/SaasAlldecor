@@ -68,8 +68,11 @@ vinculadas a órdenes previas. No hay importación de ADT ni modificación de fa
   acceso básico, pero no muestra la agrupación ni sus límites nuevos.
 - Sandbox permanente autorizado el 16 de octubre: cuatro Prices comprobados y
   compra ficticia de Equipo por 99.99 USD con Checkout, eventos firmados y orden
-  activa en el SaaS. Ver `SUSCRIPCIONES-Y-ROLES.md` para los límites de evidencia
-  y la comprobación pendiente en la sesión del comprador. No hubo cobros reales.
+  activa en el SaaS. La sesión del comprador confirmó activación, propietario
+  protegido, portal, cancelación al final del período y restauración. La creación
+  de tres empresas compartió una plaza del dueño y cerró el alta al llegar al
+  cupo. Ver `SUSCRIPCIONES-Y-ROLES.md` para los límites de evidencia. No hubo
+  cobros reales.
 
 La atención por email/teléfono, sitio web y cambios de módulos son prestaciones
 incluidas en el catálogo. Se deben acordar contactos y alcance con el operador

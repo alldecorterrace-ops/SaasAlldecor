@@ -208,8 +208,18 @@ antes del evento de Checkout y obtuvo 500; el reintento automático fue aceptado
 con 200. Un webhook sin firma se rechazó con 400.
 El portal está configurado para consultar facturas, actualizar el medio de pago
 y cancelar al final del período; el cambio de plan desde Stripe está desactivado.
-Esta evidencia de pago no sustituye la comprobación pendiente en la sesión del
-comprador de la activación de su nueva empresa y del portal del nuevo sandbox.
+La comprobación posterior con la sesión real del comprador confirmó la activación
+de una única empresa y su membresía de propietario. La pantalla protege esa
+membresía y muestra el plan Equipo con cinco plazas, tres empresas y cien facturas
+mensuales compartidas. El portal se abrió desde el botón del SaaS, mostró la factura
+pagada y permitió programar la cancelación al final del período. El SaaS recibió
+el cambio; después se retiró la cancelación y ambas pantallas volvieron a mostrar
+la suscripción activa, sin generar otro cobro.
+Se crearon la segunda y la tercera empresa mediante la sesión del dueño. El
+resumen mantuvo una sola plaza ocupada y mostró tres empresas de tres; el
+formulario de creación dejó de ofrecerse al completar el cupo. Se conservaron
+las empresas ficticias como evidencia. Esto completa el recorrido de compra,
+activación y gestión del portal en pruebas; no acredita cobros de producción.
 
 El historial del sandbox temporal se conserva. Sus clientes y suscripciones
 pertenecen a otra cuenta Stripe: conservar sus Prices permite identificar el
