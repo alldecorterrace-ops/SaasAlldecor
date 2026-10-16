@@ -1,7 +1,7 @@
 # Suscripciones compartidas entre empresas
 
-Estado: implementado en la candidata del 16 de octubre de 2026; requiere verificar
-la publicación y el nuevo Checkout en Stripe antes de declarar activación comercial.
+Estado: publicado en staging y verificado con un pago ficticio en el sandbox
+permanente el 16 de octubre de 2026. La apertura comercial sigue pendiente.
 
 ## Problema y decisión
 
@@ -66,9 +66,10 @@ vinculadas a órdenes previas. No hay importación de ADT ni modificación de fa
   facturación: desconoce ese catálogo. Deshabilitar compras, conservar datos y
   corregir hacia delante. Antes de nuevas compras, el código anterior conserva
   acceso básico, pero no muestra la agrupación ni sus límites nuevos.
-- Cuenta permanente Stripe aplazada: los Prices y el recorrido de pago nuevo
-  siguen requiriendo una prueba en su sandbox autorizado. El catálogo y sus
-  comprobaciones locales no acreditan un cobro o entrega real.
+- Sandbox permanente autorizado el 16 de octubre: cuatro Prices comprobados y
+  compra ficticia de Equipo por 99.99 USD con Checkout, eventos firmados y orden
+  activa en el SaaS. Ver `SUSCRIPCIONES-Y-ROLES.md` para los límites de evidencia
+  y la comprobación pendiente en la sesión del comprador. No hubo cobros reales.
 
 La atención por email/teléfono, sitio web y cambios de módulos son prestaciones
 incluidas en el catálogo. Se deben acordar contactos y alcance con el operador

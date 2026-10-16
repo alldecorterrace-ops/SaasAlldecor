@@ -3,8 +3,8 @@
 Decisiones del propietario, 7 y 16 de octubre de 2026: autoservicio por
 suscripción para dueños e invitación por correo para su equipo. El catálogo del
 16 de octubre permite varias empresas dentro de la misma suscripción. El cobro
-permanece desactivado por defecto; la cuenta permanente de Stripe está aplazada.
-Las pruebas del catálogo anterior no acreditan un pago del catálogo nuevo.
+permanece desactivado por defecto. El 16 de octubre el propietario autorizó
+conectar su sandbox permanente a staging, sin activar cobros reales.
 
 ## Planes por suscripción
 
@@ -189,7 +189,7 @@ con un método oficial de rechazo produjo `past_due`; el SaaS bloqueó cambios y
 conservó el período pagado. Pagar esa misma factura ficticia restauró el acceso.
 Esta prueba verifica facturación, entrega firmada, rechazo y recuperación; no
 equivale a avanzar un mes con un reloj de Stripe. El sandbox sin reclamar rechaza
-el endpoint de relojes. La cuenta permanente queda aplazada por el propietario,
+el endpoint de relojes. La cuenta permanente estaba aplazada en esa prueba.
 La prueba posterior de invitación a un destinatario autorizado confirmó llegada a
 Recibidos, registro, confirmación nativa desde la captura privada, inicio de sesión
 y aceptación con acceso solo de consulta a Clientes. La ruta de administración
@@ -198,6 +198,24 @@ cuatro membresías activas, el propietario y los datos anteriores. Esta evidenci
 no acredita entrega SMTP de confirmaciones o recuperación de contraseña.
 La evidencia privada permanece fuera de GitHub; producción mantiene facturación
 deshabilitada.
+
+La conexión del 16 de octubre verificó los cuatro Prices del catálogo 20261016
+en el sandbox permanente: USD mensuales, activos y con importes exactos. Se abrió
+Checkout desde `/planes` y se completó una compra ficticia de Equipo por 99.99 USD.
+Stripe entregó `checkout.session.completed` y `invoice.paid`; la orden quedó
+activa, con pago verificado y catálogo 20261016. El primer `invoice.paid` llegó
+antes del evento de Checkout y obtuvo 500; el reintento automático fue aceptado
+con 200. Un webhook sin firma se rechazó con 400.
+El portal está configurado para consultar facturas, actualizar el medio de pago
+y cancelar al final del período; el cambio de plan desde Stripe está desactivado.
+Esta evidencia de pago no sustituye la comprobación pendiente en la sesión del
+comprador de la activación de su nueva empresa y del portal del nuevo sandbox.
+
+El historial del sandbox temporal se conserva. Sus clientes y suscripciones
+pertenecen a otra cuenta Stripe: conservar sus Prices permite identificar el
+catálogo, pero no hace accesible su portal con la clave de la cuenta nueva.
+No sobrescribir esos identificadores ni simular una migración de suscripciones.
+Producción conserva facturación deshabilitada y su entorno sin modificaciones.
 
 Referencias oficiales:
 [Roles de Intuit](https://quickbooks.intuit.com/learn-support/en-global/help-article/access-permissions/user-roles-access-rights-quickbooks-online/L66POfRrI_ROW_en),

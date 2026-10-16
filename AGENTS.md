@@ -92,6 +92,17 @@
   y comprobar primero en local/staging. No trasladar esta entrega a producción
   ni enviar correos reales por una instrucción genérica de continuar.
 
+## Conexión del sandbox permanente, 16 de octubre
+
+- El propietario autoriza conectar su sandbox existente de Stripe a staging,
+  instalar sus claves de prueba de forma privada en el hosting y crear el webhook
+  de los seis eventos de pago. Esto sustituye el aplazamiento de esa conexión.
+- Usar los precios y límites del catálogo 20261016. Probar pagos ficticios;
+  mantener producción, cobros reales, correo externo y datos anteriores intactos.
+- Conservar el historial del sandbox temporal. Sus identificadores de cliente y
+  suscripción pertenecen a otra cuenta Stripe; no reasignarlos al sandbox nuevo
+  ni presentar su portal antiguo como operativo con las claves nuevas.
+
 ## Versionado y despliegues
 
 - GitHub es la fuente oficial del código y de su historial. Antes de desplegar,
