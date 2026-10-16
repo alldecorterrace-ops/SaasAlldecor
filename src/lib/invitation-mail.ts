@@ -1,7 +1,15 @@
 import nodemailer from "nodemailer";
 import { spawn } from "node:child_process";
 import { z } from "zod";
-import { externalEffectsAllowed } from "./deployment-environment";
+import {
+  assertDeploymentEnvironment,
+  externalEffectsAllowed,
+} from "./deployment-environment";
+import {
+  stagingInvitationTest,
+  stagingInvitationTestMatches,
+  type StagingInvitationTest,
+} from "./staging-invitation-test";
 
 const address = z
   .string()
@@ -15,17 +23,27 @@ export type InvitationNotice = {
   company_name: string;
   expires_at: string;
 };
-export type MailConfig = { from: string; name: string; site: string };
+export type MailConfig = {
+  from: string;
+  name: string;
+  site: string;
+  stagingTest?: StagingInvitationTest;
+};
 export type MailOutcome = "queued" | "failed" | "unknown";
 
 export function invitationMailConfig(
   env: Record<string, string | undefined>,
 ): MailConfig | null {
-  if (!externalEffectsAllowed(env) || env.INVITATION_MAIL_ENABLED !== "true")
+  const qa = stagingInvitationTest(env);
+  if (
+    (!externalEffectsAllowed(env) || env.INVITATION_MAIL_ENABLED !== "true") &&
+    !qa
+  )
     return null;
   const from = address.safeParse(env.MAIL_FROM_ADDRESS);
   const name = env.MAIL_FROM_NAME ?? "SaasAlldecor";
   try {
+    if (qa) assertDeploymentEnvironment(env);
     const site = new URL(env.NEXT_PUBLIC_SITE_URL ?? "");
     if (
       !from.success ||
@@ -37,7 +55,12 @@ export function invitationMailConfig(
       site.password
     )
       return null;
-    return { from: from.data, name, site: site.origin };
+    return {
+      from: from.data,
+      name,
+      site: site.origin,
+      ...(qa ? { stagingTest: qa } : {}),
+    };
   } catch {
     return null;
   }
@@ -50,6 +73,17 @@ export async function composeInvitationMail(
   notice: InvitationNotice,
 ) {
   const to = address.parse(notice.email);
+  if (
+    config.stagingTest &&
+    (notice.kind === "manager" ||
+      to !== config.stagingTest.email ||
+      !stagingInvitationTestMatches(
+        config.stagingTest,
+        config.stagingTest.companyId,
+        config.stagingTest.invitationId,
+      ))
+  )
+    throw new Error("staging_invitation_outside_scope");
   address.parse(config.from);
   const id = z.uuid().parse(notice.attempt_id);
   const site = new URL(config.site);
@@ -83,7 +117,7 @@ export async function composeInvitationMail(
     text:
       notice.kind === "manager"
         ? `Te invitaron como gerente de empresas en SaasAlldecor.\n\nAbre ${site.origin}/empresas e inicia sesión o regístrate con ${to}, confirma ese correo y acepta la invitación. Podrás crear tus propias empresas e invitar a sus equipos con los roles y permisos que definas. No tendrás acceso a empresas de otros gerentes.\n\nVence el ${expires} UTC. Este aviso no cambia contraseñas ni concede acceso por sí solo.\n\nSaasAlldecor`
-        : `Te invitaron a formar parte de ${company} en SaasAlldecor.\n\nAbre ${site.origin}/empresas e inicia sesión con ${to}. Si todavía no tienes una cuenta, regístrate con ese mismo correo y confírmalo. En Tus empresas encontrarás la invitación para aceptarla o rechazarla.\n\nLa invitación vence el ${expires} UTC. Al aceptar tendrás el rol y los permisos definidos por el administrador de esa empresa.\n\nEste aviso no cambia tu contraseña ni otorga acceso por sí solo. Si no esperabas esta invitación, puedes ignorarla.\n\nSaasAlldecor`,
+        : `Te invitaron a formar parte de ${company} en SaasAlldecor.\n\nCrea tu contraseña en ${site.origin}/registro usando ${to} y confirma ese correo. Si ya tienes cuenta, inicia sesión. Después abre ${site.origin}/empresas y acepta la invitación para entrar con el rol y los permisos asignados. Tu contraseña es personal: nadie de la empresa necesita conocerla.\n\nLa invitación vence el ${expires} UTC. Al aceptar tendrás el rol y los permisos definidos por el administrador de esa empresa.\n\nEste aviso no cambia tu contraseña ni otorga acceso por sí solo. Si no esperabas esta invitación, puedes ignorarla.\n\nSaasAlldecor`,
     disableFileAccess: true,
     disableUrlAccess: true,
   });
@@ -152,6 +186,15 @@ export async function notifyInvitation(
       error:
         "Invitación guardada. El correo no está habilitado en este entorno; puedes compartir el acceso al SaaS.",
     };
+  if (
+    config.stagingTest &&
+    (retry ||
+      !stagingInvitationTestMatches(config.stagingTest, company, invitation))
+  )
+    return {
+      error:
+        "Invitación guardada. La prueba permite solo el primer aviso de la invitación prevista.",
+    };
   const claimed = await db.rpc("claim_invitation_email", {
     p_company: company,
     p_invitation: invitation,
@@ -170,6 +213,21 @@ export async function notifyInvitation(
         "La invitación ya tiene un intento de envío. Revisa su estado antes de reenviar.",
     };
   const notice = rows[0];
+  if (
+    config.stagingTest &&
+    (notice.email !== config.stagingTest.email ||
+      !stagingInvitationTestMatches(config.stagingTest, company, invitation))
+  ) {
+    await db.rpc("finish_invitation_email", {
+      p_company: company,
+      p_attempt: notice.attempt_id,
+      p_status: "failed",
+    });
+    return {
+      error:
+        "Invitación guardada. Este destinatario no está autorizado para el envío de prueba.",
+    };
+  }
   let outcome: MailOutcome;
   try {
     outcome = await send(config, notice);

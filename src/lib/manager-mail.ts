@@ -1,10 +1,13 @@
 import {
-  invitationMailConfig,
+  invitationMailConfig as companyInvitationMailConfig,
   sendInvitationMail,
   type InvitationNotice,
   type MailConfig,
 } from "./invitation-mail";
-export { invitationMailConfig };
+export function invitationMailConfig(env: Record<string, string | undefined>) {
+  const config = companyInvitationMailConfig(env);
+  return config?.stagingTest ? null : config;
+}
 type MailDb = {
   rpc(
     name: string,
@@ -18,7 +21,7 @@ export async function notifyManagerInvitation(
   config: MailConfig | null,
   send = sendInvitationMail,
 ) {
-  if (!config)
+  if (!config || config.stagingTest)
     return {
       success:
         "Invitación guardada. El destinatario puede entrar al SaaS con su correo confirmado y aceptarla. El correo está desactivado en este entorno.",

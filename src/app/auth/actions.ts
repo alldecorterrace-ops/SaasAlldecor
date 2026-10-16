@@ -2,11 +2,13 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient, isConfigured } from "@/lib/supabase/server";
-import { externalEffectsAllowed } from "@/lib/deployment-environment";
+import { authRegistrationAllowed } from "@/lib/deployment-environment";
+import { checkRegistrationInvitation } from "@/lib/registration";
+import { stagingAuthSmtpTest } from "@/lib/staging-auth-smtp-test";
 import {
-  checkRegistrationInvitation,
-  invitationRequiredMessage,
-} from "@/lib/registration";
+  authFailureMessage,
+  registrationConfirmationMessage,
+} from "@/lib/auth-feedback";
 export type AuthState = { error?: string; success?: string };
 export async function authenticate(
   mode: "login" | "register",
@@ -15,11 +17,6 @@ export async function authenticate(
 ): Promise<AuthState> {
   if (!isConfigured())
     return { error: "La conexión de este entorno está pendiente." };
-  if (mode === "register" && !externalEffectsAllowed(process.env))
-    return {
-      error:
-        "El registro por correo está desactivado en el entorno de pruebas. Usa una cuenta de prueba preparada.",
-    };
   const parsed = z
     .object({
       email: z.email(),
@@ -39,14 +36,18 @@ export async function authenticate(
           ? "Revisa el correo y usa una contraseña de al menos 12 caracteres."
           : "Escribe tu correo y contraseña.",
     };
+  if (
+    mode === "register" &&
+    !authRegistrationAllowed(process.env, parsed.data.email)
+  )
+    return {
+      error:
+        "En este entorno solo se permite registrar cuentas de prueba autorizadas.",
+    };
   const db = await createClient();
   if (mode === "login") {
     const { error } = await db.auth.signInWithPassword(parsed.data);
-    if (error)
-      return {
-        error:
-          "No pudimos iniciar sesión. Revisa tus datos y confirma tu correo.",
-      };
+    if (error) return { error: authFailureMessage("login", error) };
     redirect("/empresas");
   }
   const invitation = await checkRegistrationInvitation(() =>
@@ -60,14 +61,22 @@ export async function authenticate(
   });
   if (error)
     return {
-      error: error.message.includes("signup_invitation_required")
-        ? invitationRequiredMessage
-        : "No pudimos completar el registro. Inténtalo más tarde o contacta al administrador.",
+      error: authFailureMessage("register", {
+        ...error,
+        // The Before User Created hook reports its safe denial as its message.
+        code:
+          error.message === "signup_invitation_required"
+            ? "signup_invitation_required"
+            : error.code,
+      }),
     };
   if (data.session) redirect("/empresas");
   return {
-    success:
-      "Revisa tu correo para confirmar el acceso. Si ya tienes una cuenta, puedes iniciar sesión.",
+    success: registrationConfirmationMessage(
+      process.env.APP_ENVIRONMENT === "staging",
+      stagingAuthSmtpTest(process.env)?.email ===
+        parsed.data.email.toLowerCase(),
+    ),
   };
 }
 export async function signOut() {

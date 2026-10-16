@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { authRecoveryAllowed } from "./deployment-environment";
+import { stagingAuthSmtpTest } from "./staging-auth-smtp-test";
 
 export type RecoveryState = { error?: string; success?: string };
 export const recoveryEmailSchema = z.string().trim().max(254).pipe(z.email());
@@ -37,7 +38,7 @@ export async function sendRecoveryRequest(
   if (!authRecoveryAllowed(environment, parsed.data))
     return {
       error:
-        "La recuperación de pruebas requiere una cuenta ficticia y el receptor privado verificado.",
+        "En este entorno solo se permite recuperar cuentas de prueba autorizadas.",
     };
   try {
     const callback = new URL("/auth/callback", site);
@@ -53,7 +54,8 @@ export async function sendRecoveryRequest(
     // Do not distinguish unknown accounts from provider/account-specific errors.
     return {
       success:
-        environment.APP_ENVIRONMENT === "staging"
+        environment.APP_ENVIRONMENT === "staging" &&
+        !stagingAuthSmtpTest(environment)
           ? "Si la cuenta ficticia está habilitada, el enlace quedará en el receptor privado de pruebas. No se enviará correo externo."
           : "Si el correo corresponde a una cuenta habilitada, recibirás un enlace para cambiar tu contraseña. Ábrelo en este mismo navegador.",
     };

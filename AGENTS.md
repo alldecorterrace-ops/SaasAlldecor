@@ -47,6 +47,62 @@
   en Supabase Auth; no basta ocultar el formulario. Preservar cuentas existentes.
 - Mantener IA, GPS físico y configuradores/3D excluidos.
 
+## Suscripciones solicitadas el 7 de octubre
+
+- Nuevo modelo: quien paga un plan y confirma su correo obtiene una empresa y
+  queda como gerente/propietario principal. El pago se verifica en el servidor.
+- Empleados entran por invitación a su correo, crean su contraseña y confirman
+  el correo. Administradores de empresa con acceso total también invitan y
+  gestionan equipo, sin quitar, suspender ni degradar al propietario principal.
+- Preparar únicamente pruebas: el propietario aún no tiene cuenta Stripe.
+  Conservar cuentas, empresas e invitaciones previas. No efectuar cobros reales.
+- Cuatro planes por empresa, USD mensuales, todos los módulos activos incluidos:
+  Inicial 29/3 usuarios, Equipo 59/5, Profesional 99/10, Crecimiento 179/25.
+  El propietario cuenta y las invitaciones pendientes reservan plazas.
+- Esta decisión sustituye la restricción anterior que impedía invitar a los
+  administradores de empresa. No introduce IA, GPS ni importaciones de ADT.
+
+## Prioridad de cierre del registro, 14 de octubre
+
+- Completar, en orden: entrega real y recorrido de confirmación del registro;
+  entrega real y cambio de contraseña por el usuario; publicación del acceso
+  verificado en producción. Conservar contraseñas, datos y membresías existentes.
+- Después de cerrar esos tres puntos, trabajar la diferenciación entre planes
+  mediante capacidades y límites reales, además del precio y las plazas.
+  No modificar esa diferenciación durante el cierre del registro.
+- La cuenta definitiva de Stripe y los cobros reales siguen aplazados.
+
+## Diferenciación de planes, 16 de octubre
+
+- Sustituye los precios y límites propuestos el 7 de octubre para nuevas compras:
+  Inicial 29.99 USD, 1 usuario dueño, 1 empresa, 10 facturas/mes; Equipo 99.99 USD,
+  dueño + 4 usuarios, hasta 3 empresas, 100 facturas/mes; Profesional 299.99 USD,
+  dueño + 20 usuarios, empresas y facturas ilimitadas, soporte por email;
+  Crecimiento 499.99 USD, usuarios/empresas/facturas ilimitados, email y teléfono,
+  creación de sitio web personalizado y cambios personalizados en módulos.
+- El propietario confirmó expresamente: cupo de facturas compartido por
+  suscripción. Las personas y empresas también se cuentan por suscripción;
+  la misma persona en varias empresas ocupa una plaza. Cada empresa conserva
+  datos y permisos independientes. Solo el dueño crea empresas con su plan.
+- Contar facturas al crearlas, por mes natural UTC; anulación, eliminación o
+  fecha retroactiva no restituyen cupo. Reintentos no duplican el consumo.
+- Conservar las condiciones del catálogo anterior en suscripciones existentes.
+  Los servicios personalizados se coordinan con personas; no simular su entrega.
+- La cuenta permanente de Stripe y los cobros reales siguen aplazados. Preparar
+  y comprobar primero en local/staging. No trasladar esta entrega a producción
+  ni enviar correos reales por una instrucción genérica de continuar.
+
+## Conexión del sandbox permanente, 16 de octubre
+
+- El propietario autoriza conectar su sandbox existente de Stripe a staging,
+  instalar sus claves de prueba de forma privada en el hosting y crear el webhook
+  de los seis eventos de pago. Esto sustituye el aplazamiento de esa conexión.
+- Usar los precios y límites del catálogo 20261016. Probar pagos ficticios;
+  mantener producción, cobros reales, correo externo y datos anteriores intactos.
+- Conservar el historial del sandbox temporal. Sus identificadores de cliente y
+  suscripción pertenecen a otra cuenta Stripe; no reasignarlos al sandbox nuevo
+  ni presentar su portal antiguo como operativo con las claves nuevas.
+
 ## Versionado y despliegues
 
 - GitHub es la fuente oficial del código y de su historial. Antes de desplegar,

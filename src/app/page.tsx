@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
+import { forwardAuthCallback } from "@/lib/auth-callback";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ code?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { code } = await searchParams;
-  if (code) redirect(`/auth/callback?code=${encodeURIComponent(code)}`);
+  const callback = forwardAuthCallback(await searchParams);
+  if (callback) redirect(callback);
   redirect("/empresas");
 }

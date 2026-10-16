@@ -52,8 +52,6 @@ test("private client access pages retain their existing privacy and indexing con
 
 test("ordinary pages and non-document APIs retain the general security policy", async () => {
   for (const path of [
-    "/",
-    "/login",
     "/empresas",
     "/app/company/horas",
     "/api/health",
@@ -72,5 +70,22 @@ test("ordinary pages and non-document APIs retain the general security policy", 
       "camera=(), microphone=(), geolocation=()",
       path,
     );
+  }
+});
+
+test("Auth pages and callback redirects retain no-referrer after the general Next header", async () => {
+  for (const path of [
+    "/?code=synthetic&sb_flow_id=synthetic-flow",
+    "/auth/callback?code=synthetic&sb_flow_id=synthetic-flow",
+    "/auth/callback?error=access_denied&error_code=otp_expired",
+    "/login?error=synthetic",
+    "/registro",
+    "/recuperar-contrasena",
+    "/actualizar-contrasena",
+  ]) {
+    const result = await response(path);
+    assert.equal(result.headers.get("Referrer-Policy"), "no-referrer", path);
+    assert.equal(result.headers.get("X-Content-Type-Options"), "nosniff", path);
+    assert.equal(result.headers.get("X-Frame-Options"), "DENY", path);
   }
 });

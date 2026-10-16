@@ -40,7 +40,9 @@ test("registration lookup fails closed and returns only a safe invitation messag
 });
 
 test("Auth hook permits only live administrator-to-manager or manager-to-team invitations", async (t) => {
-  const { db } = await fullDatabase(undefined, { managedOnboarding: true });
+  const { db } = await fullDatabase("202610070092_invitation_only_signup.sql", {
+    managedOnboarding: true,
+  });
   const admin = randomUUID(),
     manager = randomUUID(),
     team = randomUUID(),

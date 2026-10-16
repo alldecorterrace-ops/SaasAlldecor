@@ -1,3 +1,4 @@
+import { SubscriptionSummary } from "@/components/subscription-summary";
 import { requireModule } from "@/lib/auth";
 import { randomUUID } from "node:crypto";
 import {
@@ -49,7 +50,10 @@ export default async function Settings({
     : { data: [], error: null };
   if (inviteError) throw new Error("Invitaciones no disponibles");
   const renderedAt = new Date().getTime();
-  const mailEnabled = Boolean(invitationMailConfig(process.env));
+  const mailConfig = invitationMailConfig(process.env);
+  const mailEnabled =
+    !!mailConfig &&
+    (!mailConfig.stagingTest || mailConfig.stagingTest.companyId === companyId);
   const deliveryLabels: Record<string, string> = {
     processing: "Envío iniciado; resultado sin confirmar",
     queued: "Aceptado por el servidor de correo",
@@ -76,6 +80,12 @@ export default async function Settings({
       <p className="mt-3 mb-7 text-sm text-muted-foreground">
         Ajusta tu espacio y define cómo participa cada persona.
       </p>
+      {manager && (
+        <SubscriptionSummary
+          companyId={companyId}
+          owner={member.role === "owner"}
+        />
+      )}
       <div className="mb-8 grid items-start gap-5 xl:grid-cols-2">
         <CompanySettings
           company={company}
@@ -84,9 +94,13 @@ export default async function Settings({
         {canInviteUsers === true && (
           <InviteMember
             companyId={companyId}
-            requestId={randomUUID()}
+            requestId={
+              mailEnabled && mailConfig?.stagingTest
+                ? mailConfig.stagingTest.invitationId
+                : randomUUID()
+            }
             mailEnabled={mailEnabled}
-            canInviteAdmin={member.role === "owner"}
+            canInviteAdmin={manager}
           />
         )}
       </div>
@@ -127,7 +141,7 @@ export default async function Settings({
                     </div>
                     {i.status === "pending" && !expired && (
                       <div className="grid gap-3">
-                        {mailEnabled && (
+                        {mailEnabled && !mailConfig?.stagingTest && (
                           <ResendInvitation companyId={companyId} id={i.id} />
                         )}
                         <RevokeInvitation companyId={companyId} id={i.id} />

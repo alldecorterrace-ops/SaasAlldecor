@@ -27,7 +27,7 @@ Cada registro de negocio tendrá empresa obligatoria. Las relaciones y restricci
 
 Se configurarán privilegios y políticas RLS por operación y se probará aislamiento entre dos empresas. Las credenciales privilegiadas, que pueden eludir RLS, se limitarán al servidor y a operaciones expresamente autorizadas. Véase [Supabase: RLS](https://supabase.com/docs/guides/database/postgres/row-level-security).
 
-Todos los módulos estarán incluidos; los permisos del usuario controlarán sus acciones. La creación de planes de cobro o restricciones comerciales por módulo no se presume autorizada por pedir varias empresas.
+Todos los módulos estarán incluidos; los permisos del usuario controlarán sus acciones. El 7 de octubre de 2026 se autorizó el modelo de suscripciones por empresa, diferenciado por plazas de usuarios, manteniendo todos los módulos activos incluidos. Véase [Suscripciones y roles](SUSCRIPCIONES-Y-ROLES.md).
 
 ## Datos y archivos
 
