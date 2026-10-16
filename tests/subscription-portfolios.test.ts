@@ -484,19 +484,32 @@ test("portfolio limits, protected ownership, invoice issuance and tenant isolati
         for (let i = 0; i < 4; i++) await create(pro.id);
         for (let i = 0; i < 101; i++) await invoice(pro.id);
         const s = await summary(pro.id);
+        assert.equal(s.active_users, 1);
+        assert.equal(s.pending_invitations, 20);
+        assert.equal(s.user_limit, 21);
         assert.equal(s.companies, 5);
         assert.equal(s.invoices_this_month, 101);
+        assert.equal(s.company_limit, null);
+        assert.equal(s.invoice_limit, null);
         assert.equal(s.support, "email");
       },
     );
     const growth = await paid("crecimiento");
     await t.test(
-      "Growth has no numeric seat or company cap and includes the requested services",
+      "Growth permits thirty employees, five companies and 101 shared invoices with the requested services",
       async () => {
         for (let i = 0; i < 30; i++)
           await invite(growth.id, `growth-${i}@example.test`);
-        for (let i = 0; i < 4; i++) await create(growth.id);
+        const growthCompanies = [growth.id];
+        for (let i = 0; i < 4; i++)
+          growthCompanies.push(await create(growth.id));
+        for (let i = 0; i < 101; i++)
+          await invoice(growthCompanies[i % growthCompanies.length]);
         const s = await summary(growth.id);
+        assert.equal(s.active_users, 1);
+        assert.equal(s.pending_invitations, 30);
+        assert.equal(s.companies, 5);
+        assert.equal(s.invoices_this_month, 101);
         assert.equal(s.user_limit, null);
         assert.equal(s.company_limit, null);
         assert.equal(s.invoice_limit, null);

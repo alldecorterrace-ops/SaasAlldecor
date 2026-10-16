@@ -227,6 +227,31 @@ catálogo, pero no hace accesible su portal con la clave de la cuenta nueva.
 No sobrescribir esos identificadores ni simular una migración de suscripciones.
 Producción conserva facturación deshabilitada y su entorno sin modificaciones.
 
+La matriz ampliada del catálogo 20261016 comprobó las cuatro compras ficticias:
+Inicial y Equipo con tarjeta, Profesional con Cash App Pay y Crecimiento con
+Klarna Playground. Los importes cobrados en pruebas coinciden con 29.99, 99.99,
+299.99 y 499.99 USD. El rechazo de tarjeta y el rechazo simulado de Cash App
+mantuvieron la orden pendiente, sin propietario ni empresa; el reintento aprobado
+activó la misma orden. La invitación de una segunda persona en Inicial fue
+rechazada también en la interfaz publicada.
+
+Las 34 pruebas automatizadas de suscripciones, reactivación y portfolios incluyen
+los límites compartidos, aislamiento, protección del dueño y consumo mensual.
+Profesional acepta al dueño y veinte invitaciones, cinco empresas y 101 facturas;
+Crecimiento acepta al dueño y treinta invitaciones, cinco empresas y 101 facturas.
+Estos ejemplos de planes ilimitados no constituyen una prueba de carga.
+La concurrencia de PostgreSQL verifica que solicitudes simultáneas no superan
+tres empresas, cinco personas ni cien facturas en Equipo, y que una aprobación
+rechazada revierte la factura y el proyecto sin consumir cupo adicional.
+
+En el retorno de un método externo, otra pestaña o el aviso de Stripe pueden
+completar la activación antes de renderizar la confirmación. Cuando ya existe
+una sesión confirmada, esa pantalla ofrece continuar a Tus empresas sin pedir
+otra contraseña. No concede acceso por la URL: la activación sigue dependiendo
+del pago verificado en servidor. Las pruebas de métodos de pago se documentan
+por separado de su simple aparición en Checkout; una cartera sin autorización
+completa no se considera validada.
+
 Referencias oficiales:
 [Roles de Intuit](https://quickbooks.intuit.com/learn-support/en-global/help-article/access-permissions/user-roles-access-rights-quickbooks-online/L66POfRrI_ROW_en),
 [Invitaciones de Intuit](https://quickbooks.intuit.com/learn-support/en-us/help-article/manage-users/add-manage-users-quickbooks-online/L1welhiJZ_US_en_US),
