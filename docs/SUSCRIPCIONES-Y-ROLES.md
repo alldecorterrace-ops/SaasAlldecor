@@ -1,23 +1,27 @@
 # Suscripciones y roles
 
-Decisión del propietario, 7 de octubre de 2026: autoservicio por suscripción para
-dueños, e invitación por correo para su equipo. Implementación candidata;
-el cobro permanece desactivado por defecto. El ensayo anterior no tenía una cuenta Stripe
-configurada ni evidencia de una transacción en su sandbox. No activar producción
-con pruebas locales como sustituto de esa verificación.
+Decisiones del propietario, 7 y 16 de octubre de 2026: autoservicio por
+suscripción para dueños e invitación por correo para su equipo. El catálogo del
+16 de octubre permite varias empresas dentro de la misma suscripción. El cobro
+permanece desactivado por defecto; la cuenta permanente de Stripe está aplazada.
+Las pruebas del catálogo anterior no acreditan un pago del catálogo nuevo.
 
-## Planes por empresa
+## Planes por suscripción
 
-| Plan        | USD por mes | Usuarios, incluido el dueño |
-| ----------- | ----------: | --------------------------: |
-| Inicial     |          29 |                           3 |
-| Equipo      |          59 |                           5 |
-| Profesional |          99 |                          10 |
-| Crecimiento |         179 |                          25 |
+| Plan        | USD/mes | Usuarios totales | Empresas   | Facturas/mes compartidas | Servicios incluidos                                                                      |
+| ----------- | ------: | ---------------- | ---------- | ------------------------ | ---------------------------------------------------------------------------------------- |
+| Inicial     |   29.99 | 1: dueño         | 1          | 10                       | Módulos activos                                                                          |
+| Equipo      |   99.99 | 5: dueño + 4     | 3          | 100                      | Módulos activos                                                                          |
+| Profesional |  299.99 | 21: dueño + 20   | Ilimitadas | Ilimitadas               | Atención por email                                                                       |
+| Crecimiento |  499.99 | Ilimitados       | Ilimitadas | Ilimitadas               | Email, teléfono, creación de sitio web personalizado y cambios personalizados en módulos |
 
-Precios de lanzamiento propuestos por el desarrollador a petición del propietario.
+Precios y capacidades definidos por el propietario.
 Todos incluyen los módulos activos del SaaS; no añaden IA, GPS ni configuradores.
-Cada empresa adicional requiere otro plan. No se prometen contabilidad fiscal,
+El dueño añade empresas a la suscripción desde Tus empresas, hasta su límite.
+Cada empresa conserva permisos, información e historial separados. Los servicios
+de web y módulos se coordinan con el equipo; este catálogo registra el derecho
+al servicio, no acredita que un sitio o una personalización estén entregados.
+No se prometen contabilidad fiscal,
 integraciones bancarias, recepción de pagos de clientes ni prestaciones de terceros
 por semejanza visual con QuickBooks. Las tarifas no son un cálculo de rentabilidad.
 
@@ -31,14 +35,22 @@ Comparación consultada el 7 de octubre de 2026:
 - [Housecall Pro](https://www.housecallpro.com/pricing/): Basic 59 USD/mes
   facturado anualmente y 79 USD mensual; un usuario.
 
-Estos productos cubren prestaciones y soporte diferentes. Los planes del SaaS
-se diferencian por capacidad de equipo para preservar el alcance funcional existente.
+La comparación anterior es contexto histórico del primer catálogo. Los importes
+y capacidades vigentes son la decisión explícita posterior del propietario.
+
+Las facturas se cuentan al crearlas, sumadas entre todas las empresas del plan,
+por mes natural UTC. El contador se renueva a las 00:00 UTC del primer día del
+mes. Reenviar, pagar o reintentar una factura existente no consume otra unidad.
+Anularla, eliminarla o fecharla retroactivamente no libera cupo. Al alcanzar el
+límite se conserva la consulta, cobro y edición de lo existente; una aprobación
+que requiere otra factura se rechaza completa, sin aprobar el estimado ni dejar
+un proyecto parcial. Las cuotas son restricciones en la base, no solo en pantalla.
 
 ## Roles y límites
 
 | Rol                                     | Empresa                                               | Equipo                                                      | Suscripción                                | Crear otra empresa              |
 | --------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------ | ------------------------------- |
-| Dueño principal / gerente comprador     | Acceso total a su empresa                             | Invita y administra roles                                   | Portal del pagador                         | Con una nueva compra verificada |
+| Dueño principal / gerente comprador     | Acceso total a sus empresas del plan                  | Invita y administra roles por empresa                       | Portal del pagador                         | Dentro de la capacidad del plan |
 | Administrador de empresa / acceso total | Acceso total a esa empresa                            | Invita miembros y administradores; cambia o suspende equipo | Consulta estado; el pagador gestiona pagos | No por ser administrador        |
 | Empleado                                | Módulos y acciones asignados                          | Sin invitaciones                                            | Sin datos del pagador                      | No por ser empleado             |
 | Solo consulta                           | Acciones de lectura asignadas                         | Sin invitaciones                                            | Sin datos del pagador                      | No por ser lector               |
@@ -51,22 +63,26 @@ puede pertenecer a varias empresas con permisos independientes.
 Las cuentas/empresas actuales y los gerentes invitados existentes se conservan.
 El origen `invitation` mantiene su alta manual previa; nuevos compradores tienen
 origen `subscription` y no pueden usar `create_company` para crear empresas gratis.
-Las pruebas históricas de reglas anteriores están fijadas a la migración 092.
-La nueva matriz se prueba con la migración 093; la reactivación de la misma empresa,
-con la migración 094.
+Las pruebas históricas de reglas anteriores están fijadas a las migraciones
+092/094. La matriz de suscripciones compartidas se prueba con la migración 095.
 
 El dueño principal no se puede quitar, suspender, degradar ni cambiar por estas
 pantallas/RPC, y un disparador protege su membresía. No se implementa transferencia
 de titularidad; requeriría un proceso separado, con aceptación de ambos titulares.
-Suspender un empleado conserva sus datos e historial y libera su plaza; no borra
-su identidad de otras empresas. Las invitaciones duran siete días y reservan plazas.
+Suspender un empleado conserva sus datos e historial. Su plaza se libera cuando
+ya no tiene acceso activo ni otra invitación pendiente en ninguna empresa de esa
+suscripción; no borra su identidad de otras empresas. Las invitaciones duran siete
+días y reservan plazas. Una persona invitada a varias empresas del mismo plan
+cuenta una sola vez; el dueño siempre cuenta.
 Una reducción de plan no elimina empleados: bloquea nuevas altas cuando no hay cupo.
 
 ## Compra y activación
 
 1. `/planes` recoge plan, correo del dueño y nombre de empresa. Importe y Stripe
    Price se resuelven en el servidor, sin aceptar importes del navegador.
-2. El servidor guarda una orden y abre Stripe Checkout en modo suscripción.
+2. El servidor consulta el Price de Stripe y comprueba que esté activo, en el modo
+   esperado, con el importe exacto, moneda USD y recurrencia mensual del catálogo.
+   Después guarda una orden y abre Stripe Checkout en modo suscripción.
    El mismo request UUID conserva la clave de idempotencia.
 3. El webhook usa el cuerpo sin modificar, firma v1 y tolerancia de cinco minutos.
    Consulta Checkout/subscription vigentes en Stripe y verifica modo, cliente,
@@ -91,20 +107,22 @@ Una renovación impaga no prolonga el período previamente pagado. Una suscripci
 cancelada o incomplete_expired es terminal y no se reactiva por un evento retrasado,
 incluso con la misma marca temporal.
 
-## Reactivación de una empresa cancelada
+## Reactivación de una suscripción cancelada
 
 El dueño principal confirmado puede iniciar una nueva suscripción desde la
 configuración de su empresa cuando la anterior está cancelada o su pago inicial
 ha vencido. Una cancelación programada todavía activa se gestiona en el portal;
 no permite contratar otra suscripción simultánea.
 
-El servidor conserva la empresa, dueño, cliente de Stripe, equipo, permisos e
+El servidor conserva todas las empresas, dueño, cliente de Stripe, equipo, permisos e
 historial. Cada intento se registra en `billing_reactivations`, con un único
 intento pendiente por orden. Solicitudes simultáneas y reintentos reutilizan el
 mismo Checkout. Una sesión completada o pagada permanece en verificación; no
 crea otro pago. Solo una sesión que Stripe confirma vencida e impaga permite
-reservar otro intento. El plan debe cubrir usuarios activos e invitaciones
-pendientes antes de abrir el pago y de activar la nueva suscripción.
+reservar otro intento. El plan debe cubrir las empresas y personas distintas
+activas o invitadas antes de abrir el pago y de activar la nueva suscripción.
+La reactivación desde cualquier empresa conserva la orden principal y no reinicia
+el uso mensual de facturas.
 
 Checkout y la suscripción incluyen la misma orden e identificador de intento
 en sus metadatos. Tras verificar un pago vigente, la base promueve la nueva
@@ -124,6 +142,12 @@ prorrateo, impuestos y recibos antes de una futura apertura comercial.
 
 Variables solo de servidor: `SAAS_STRIPE_SECRET_KEY`, `SAAS_STRIPE_WEBHOOK_SECRET`,
 `SAAS_BILLING_SUPABASE_SERVICE_KEY`, y los cuatro `SAAS_STRIPE_PRICE_*`.
+El catálogo nuevo exige `SAAS_BILLING_CATALOG_VERSION=20261016` y cuatro Prices
+nuevos con 2999/9999/29999/49999 centavos. Conservar los identificadores anteriores
+en `SAAS_STRIPE_LEGACY_PRICE_*` mientras existan suscripciones de prueba del catálogo 20261007. No cambiar su precio ni vincularlo al nuevo catálogo. Si no se configura
+la versión nueva, se bloquean las compras nuevas y se conservan los webhooks y el
+portal del catálogo anterior. Una configuración sin versión se interpreta como
+20261007 por compatibilidad. Crear Prices nuevos no es cambiar cobros existentes.
 Nunca introducir valores privados en GitHub, Next public env, capturas o chat.
 Modo `test` exige APP_ENVIRONMENT staging y clave sk_test o la clave temporal restringida rkcs_test de Stripe CLI.
 Esta última nunca es válida en modo live. REST y endpoint de webhook deben usar
@@ -136,7 +160,11 @@ Endpoint: `/api/subscriptions/webhook`. Eventos snapshot soportados:
 `invoice.payment_failed`. Registrar la entrega fallida en Stripe y reintentar tras
 resolver la causa; la persistencia se completa antes de responder 200.
 
-Aplicar migraciones 092, 093 y 094 con respaldo/verificación en staging antes del código.
+Aplicar hasta la migración 095 con respaldo/verificación en staging antes del código.
+La 095 agrega vínculos y un registro de consumo; indexa facturas SaaS ya existentes
+sin modificarlas ni importar información de ADT. Las órdenes previas mantienen
+el catálogo 20261007 y sus condiciones originales. Una reactivación elegida por el
+dueño puede pasar al catálogo nuevo, conservando el consumo del mes.
 Configurar Authentication > Hooks > Before User Created -> Postgres
 `public.require_signup_invitation`. La función 093 conserva el hook y permite
 invitación vigente o compra verificada; editar el formulario no sustituye este hook.

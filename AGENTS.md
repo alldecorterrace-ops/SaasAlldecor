@@ -72,6 +72,26 @@
   No modificar esa diferenciación durante el cierre del registro.
 - La cuenta definitiva de Stripe y los cobros reales siguen aplazados.
 
+## Diferenciación de planes, 16 de octubre
+
+- Sustituye los precios y límites propuestos el 7 de octubre para nuevas compras:
+  Inicial 29.99 USD, 1 usuario dueño, 1 empresa, 10 facturas/mes; Equipo 99.99 USD,
+  dueño + 4 usuarios, hasta 3 empresas, 100 facturas/mes; Profesional 299.99 USD,
+  dueño + 20 usuarios, empresas y facturas ilimitadas, soporte por email;
+  Crecimiento 499.99 USD, usuarios/empresas/facturas ilimitados, email y teléfono,
+  creación de sitio web personalizado y cambios personalizados en módulos.
+- El propietario confirmó expresamente: cupo de facturas compartido por
+  suscripción. Las personas y empresas también se cuentan por suscripción;
+  la misma persona en varias empresas ocupa una plaza. Cada empresa conserva
+  datos y permisos independientes. Solo el dueño crea empresas con su plan.
+- Contar facturas al crearlas, por mes natural UTC; anulación, eliminación o
+  fecha retroactiva no restituyen cupo. Reintentos no duplican el consumo.
+- Conservar las condiciones del catálogo anterior en suscripciones existentes.
+  Los servicios personalizados se coordinan con personas; no simular su entrega.
+- La cuenta permanente de Stripe y los cobros reales siguen aplazados. Preparar
+  y comprobar primero en local/staging. No trasladar esta entrega a producción
+  ni enviar correos reales por una instrucción genérica de continuar.
+
 ## Versionado y despliegues
 
 - GitHub es la fuente oficial del código y de su historial. Antes de desplegar,

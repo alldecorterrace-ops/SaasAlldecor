@@ -3,11 +3,12 @@ import { randomUUID } from "node:crypto";
 import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import { subscriptionPlans, billingConfig } from "@/lib/subscriptions";
 import { SubscriptionPlanPicker } from "@/components/subscription-plan-picker";
+import { billingCatalogVersion } from "@/lib/subscription-catalog";
 export const dynamic = "force-dynamic";
 const roleRows = [
   [
     "Dueño principal / gerente",
-    "Todos los módulos de su empresa, equipo e invitaciones. Gestiona el plan. Su cuenta está protegida.",
+    "Crea las empresas que permite su plan y gestiona sus módulos, equipo e invitaciones. Administra la suscripción. Su cuenta está protegida.",
   ],
   [
     "Administrador · acceso total",
@@ -35,17 +36,16 @@ export default function Plans() {
         </Link>
       </header>
       <section className="mx-auto mt-16 max-w-3xl text-center">
-        <p className="eyebrow">Una empresa. Un equipo. Accesos claros.</p>
+        <p className="eyebrow">Tus empresas. Tu equipo. Un solo plan.</p>
         <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">
           El plan para la próxima etapa de tu empresa.
         </h1>
         <p className="mt-6 text-base leading-7 text-muted-foreground">
-          Clientes, estimados, facturas, proyectos y equipo en un espacio
-          independiente. Elige según cuántas personas necesitan trabajar
-          contigo.
+          Clientes, estimados, facturas, proyectos y equipo. Elige la capacidad
+          para tus empresas y el acompañamiento que necesitas para crecer.
         </p>
         <p className="mt-5 text-sm font-semibold">
-          USD · mensual · una empresa por suscripción
+          USD · mensual · límites compartidos por suscripción
         </p>
         {config?.mode === "test" && (
           <p role="status" className="mt-4 rounded-xl bg-accent p-3">
@@ -58,14 +58,16 @@ export default function Plans() {
           ...plan,
           requestId: randomUUID(),
         }))}
-        enabled={!!config}
+        enabled={config?.catalogVersion === billingCatalogVersion}
         testMode={config?.mode === "test"}
       />
       <p className="mt-5 text-sm text-muted-foreground">
-        Los límites incluyen al dueño, administradores y empleados. Una
-        invitación vigente reserva una plaza hasta que se acepta, vence o se
-        revoca. Cada empresa adicional requiere su propio plan. Precios base en
-        USD, antes de impuestos aplicables.
+        El dueño, administradores y empleados cuentan una sola vez por
+        suscripción, aunque trabajen en varias empresas. Las invitaciones
+        vigentes reservan plazas. Las facturas se cuentan al crearlas y el cupo
+        se renueva el primer día de cada mes a las 00:00 UTC; anularlas no
+        devuelve el cupo. Los datos y permisos de cada empresa permanecen
+        separados. Precios en USD, antes de impuestos aplicables.
       </p>
       <section className="mt-16 grid gap-8 lg:grid-cols-[.8fr_1.2fr]">
         <div>

@@ -306,7 +306,12 @@ test("verified provider state rejects unpaid grants, substituted customer, plan/
 });
 
 test("paid onboarding, team roles, reserved seats, owner protection and inactive subscriptions compose under RLS", async (t) => {
-  const { db } = await fullDatabase(undefined, { managedOnboarding: true });
+  // Historical single-company contract; portfolios and migration preservation
+  // are exercised against the current schema in subscription-portfolios.test.ts.
+  const { db } = await fullDatabase(
+    "202610130094_subscription_reactivation.sql",
+    { managedOnboarding: true },
+  );
   const buyer = randomUUID(),
     admin = randomUUID(),
     worker = randomUUID(),

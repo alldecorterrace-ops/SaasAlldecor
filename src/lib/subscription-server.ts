@@ -27,10 +27,12 @@ export async function stripeRequest(
   requestId?: string,
 ): Promise<unknown> {
   if (
-    !/^\/(checkout\/sessions|subscriptions|billing_portal\/sessions)(\/|\?|$)/.test(
+    !/^\/(checkout\/sessions|subscriptions|billing_portal\/sessions|prices)(\/|\?|$)/.test(
       path,
     )
   )
+    throw new Error("invalid_stripe_path");
+  if (path.startsWith("/prices") && params)
     throw new Error("invalid_stripe_path");
   const response = await fetch(`https://api.stripe.com/v1${path}`, {
     method: params ? "POST" : "GET",

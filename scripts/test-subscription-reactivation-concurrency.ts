@@ -39,6 +39,7 @@ async function main() {
   };
   const snapshot = {
     order_id: order,
+    catalog_version: "20261016",
     mode: "test",
     plan_code: "inicial",
     customer_id: `cus_${order.replaceAll("-", "")}`,

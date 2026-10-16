@@ -58,6 +58,7 @@ test("optional staging capture admits only the approved unconfirmed employee sig
           order_id: order,
           mode: "test",
           plan_code: "equipo",
+          catalog_version: "20261016",
           subscription_id: "sub_mail",
           customer_id: "cus_mail",
           checkout_id: "cs_test_mail",

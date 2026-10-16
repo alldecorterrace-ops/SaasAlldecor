@@ -164,7 +164,11 @@ test("only an expired unpaid checkout permits a new attempt; provider substituti
 });
 
 test("RLS reactivation preserves the original company, team, history and owner through multiple subscription epochs", async (t) => {
-  const { db } = await fullDatabase(undefined, { managedOnboarding: true });
+  // Preserve the original single-company reactivation regression suite.
+  const { db } = await fullDatabase(
+    "202610130094_subscription_reactivation.sql",
+    { managedOnboarding: true },
+  );
   const owner = randomUUID(),
     admin = randomUUID(),
     worker = randomUUID(),

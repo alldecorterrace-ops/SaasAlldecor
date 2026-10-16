@@ -1,24 +1,10 @@
-import { z } from "zod";
 import { randomUUID } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { SubscriptionPortal } from "./subscription-checkout";
 import { billingConfig, subscriptionPlans } from "@/lib/subscriptions";
 import { SubscriptionReactivation } from "./subscription-reactivation";
-const summary = z.object({
-  plan: z.string(),
-  plan_code: z.string(),
-  amount_cents: z.number(),
-  user_limit: z.number(),
-  status: z.string(),
-  paid_through: z.string().nullable(),
-  mode: z.string(),
-  cancel_at_period_end: z.boolean(),
-  active_users: z.number(),
-  pending_invitations: z.number(),
-  writable: z.boolean(),
-  can_reactivate: z.boolean().optional().default(false),
-  reactivation_plan: z.string().nullable().optional().default(null),
-});
+import { subscriptionSummarySchema } from "@/lib/subscription-summary";
+import { billingCatalogVersion } from "@/lib/subscription-catalog";
 export async function SubscriptionSummary({
   companyId,
   owner,
@@ -32,7 +18,7 @@ export async function SubscriptionSummary({
   });
   if (error) throw new Error("No se pudo comprobar la suscripción.");
   if (!data) return null;
-  const value = summary.parse(data);
+  const value = subscriptionSummarySchema.parse(data);
   const config = billingConfig(process.env);
   const labels: Record<string, string> = {
     active: "Activa",
@@ -47,7 +33,7 @@ export async function SubscriptionSummary({
   return (
     <section
       className="card mb-8 grid gap-3"
-      aria-label="Suscripción de la empresa"
+      aria-label="Suscripción compartida por tus empresas"
     >
       <h2 className="text-lg font-semibold">
         Plan {value.plan} ·{" "}
@@ -63,9 +49,40 @@ export async function SubscriptionSummary({
       </p>
       <p className="text-sm text-muted-foreground">
         {value.active_users} usuarios activos + {value.pending_invitations}{" "}
-        invitaciones pendientes de {value.user_limit} plazas. El dueño cuenta
-        como un usuario.
+        invitaciones de personas adicionales pendientes.{" "}
+        {value.user_limit === null
+          ? "Usuarios ilimitados."
+          : `${value.user_limit} plazas en total.`}{" "}
+        El dueño cuenta y cada persona ocupa una sola plaza entre todas las
+        empresas.
       </p>
+      <p className="text-sm">
+        {value.companies} empresas
+        {value.company_limit === null
+          ? " · sin límite"
+          : ` de ${value.company_limit} disponibles en el plan`}
+        .
+      </p>
+      <p className="text-sm">
+        {value.invoices_this_month} facturas creadas este mes
+        {value.invoice_limit === null
+          ? " · sin límite"
+          : ` de ${value.invoice_limit}`}
+        . Cupo compartido; se renueva el {value.invoice_period_end} a las 00:00
+        UTC.
+      </p>
+      {(value.support === "email" || value.support === "phone") && (
+        <p className="text-sm">
+          Atención incluida por email
+          {value.support === "phone" ? " y teléfono" : ""}.
+        </p>
+      )}
+      {(value.custom_website || value.custom_modules) && (
+        <p className="text-sm">
+          Incluye creación de sitio web y cambios personalizados en módulos,
+          coordinados con nuestro equipo.
+        </p>
+      )}
       {value.paid_through && (
         <p className="text-sm">
           Período pagado hasta{" "}
@@ -87,28 +104,35 @@ export async function SubscriptionSummary({
           suscripción para habilitar cambios e invitaciones.
         </p>
       )}
-      {value.active_users + value.pending_invitations > value.user_limit && (
-        <p role="status">
-          El equipo supera el límite del plan. Los accesos existentes se
-          conservan; libera plazas o amplía el plan antes de invitar.
-        </p>
-      )}
-      {owner && config && value.can_reactivate && (
-        <SubscriptionReactivation
-          companyId={companyId}
-          requestId={randomUUID()}
-          planCode={value.plan_code}
-          pendingPlan={value.reactivation_plan}
-          usedSeats={value.active_users + value.pending_invitations}
-          testMode={config.mode === "test"}
-          plans={subscriptionPlans.map(({ code, name, amount, users }) => ({
-            code,
-            name,
-            amount,
-            users,
-          }))}
-        />
-      )}
+      {value.user_limit !== null &&
+        value.active_users + value.pending_invitations > value.user_limit && (
+          <p role="status">
+            El equipo supera el límite del plan. Los accesos existentes se
+            conservan; libera plazas o amplía el plan antes de invitar.
+          </p>
+        )}
+      {owner &&
+        config?.catalogVersion === billingCatalogVersion &&
+        value.can_reactivate && (
+          <SubscriptionReactivation
+            companyId={companyId}
+            requestId={randomUUID()}
+            planCode={value.plan_code}
+            pendingPlan={value.reactivation_plan}
+            usedSeats={value.active_users + value.pending_invitations}
+            usedCompanies={value.companies}
+            testMode={config.mode === "test"}
+            plans={subscriptionPlans.map(
+              ({ code, name, amount, users, companies }) => ({
+                code,
+                name,
+                amount,
+                users,
+                companies,
+              }),
+            )}
+          />
+        )}
       {owner && config && <SubscriptionPortal companyId={companyId} />}
     </section>
   );

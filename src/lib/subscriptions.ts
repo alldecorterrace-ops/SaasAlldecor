@@ -1,41 +1,18 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { assertDeploymentEnvironment } from "./deployment-environment";
+import {
+  billingCatalogVersion,
+  legacyBillingCatalogVersion,
+  legacySubscriptionPlans,
+  subscriptionPlans,
+  type PlanCode,
+} from "./subscription-catalog";
+export { subscriptionPlans, type PlanCode } from "./subscription-catalog";
 
 // Pin REST responses and webhook endpoints to the same tested provider contract.
 export const stripeApiVersion = "2026-09-30.endive";
 
-export const subscriptionPlans = [
-  {
-    code: "inicial",
-    name: "Inicial",
-    amount: 2900,
-    users: 3,
-    description: "Para empezar con tu equipo",
-  },
-  {
-    code: "equipo",
-    name: "Equipo",
-    amount: 5900,
-    users: 5,
-    description: "Para una empresa que está creciendo",
-  },
-  {
-    code: "profesional",
-    name: "Profesional",
-    amount: 9900,
-    users: 10,
-    description: "Para coordinar oficina y campo",
-  },
-  {
-    code: "crecimiento",
-    name: "Crecimiento",
-    amount: 17900,
-    users: 25,
-    description: "Para equipos con más personas",
-  },
-] as const;
-export type PlanCode = (typeof subscriptionPlans)[number]["code"];
 export type BillingConfig = {
   mode: "test" | "live";
   secret: string;
@@ -44,6 +21,8 @@ export type BillingConfig = {
   site: string;
   database: string;
   prices: Record<PlanCode, string>;
+  catalogVersion?: string;
+  legacyPrices?: Partial<Record<PlanCode, string>>;
 };
 export function billingConfig(
   env: Record<string, string | undefined>,
@@ -86,11 +65,31 @@ export function billingConfig(
         env[`SAAS_STRIPE_PRICE_${p.code.toUpperCase()}`],
       ]),
     ) as Record<PlanCode, string>;
+    const catalogVersion =
+      env.SAAS_BILLING_CATALOG_VERSION ?? legacyBillingCatalogVersion;
+    if (
+      ![billingCatalogVersion, legacyBillingCatalogVersion].includes(
+        catalogVersion,
+      )
+    )
+      return null;
+    const legacyPrices = Object.fromEntries(
+      subscriptionPlans.flatMap((p) => {
+        const price = env[`SAAS_STRIPE_LEGACY_PRICE_${p.code.toUpperCase()}`];
+        return price ? [[p.code, price]] : [];
+      }),
+    ) as Partial<Record<PlanCode, string>>;
     if (
       Object.values(prices).some(
         (v) => !v || !/^price_[A-Za-z0-9]+$/.test(v),
       ) ||
-      new Set(Object.values(prices)).size !== subscriptionPlans.length
+      new Set(Object.values(prices)).size !== subscriptionPlans.length ||
+      Object.values(legacyPrices).some(
+        (p) => !/^price_[A-Za-z0-9]+$/.test(p),
+      ) ||
+      new Set([...Object.values(prices), ...Object.values(legacyPrices)])
+        .size !==
+        subscriptionPlans.length + Object.keys(legacyPrices).length
     )
       return null;
     return {
@@ -101,6 +100,8 @@ export function billingConfig(
       site: site.origin,
       database: database.origin,
       prices,
+      catalogVersion,
+      legacyPrices,
     };
   } catch {
     return null;
@@ -205,6 +206,38 @@ const subscription = z.object({
     .nullable(),
 });
 type StripeReader = (path: string) => Promise<unknown>;
+
+// Verify the provider price BEFORE opening a payable Checkout. A stale price ID
+// must never charge the previous catalog while advertising the new amount.
+export async function verifyCheckoutPrice(
+  config: BillingConfig,
+  code: PlanCode,
+  read: StripeReader,
+) {
+  if (config.catalogVersion !== billingCatalogVersion)
+    throw new Error("billing_catalog_not_configured");
+  const plan = subscriptionPlans.find((p) => p.code === code);
+  if (!plan) throw new Error("billing_price_mismatch");
+  const price = z
+    .object({
+      id: id("price"),
+      active: z.literal(true),
+      livemode: z.boolean(),
+      currency: z.literal("usd"),
+      unit_amount: z.number().int(),
+      recurring: z.object({
+        interval: z.literal("month"),
+        interval_count: z.literal(1),
+      }),
+    })
+    .parse(await read(`/prices/${encodeURIComponent(config.prices[code])}`));
+  if (
+    price.id !== config.prices[code] ||
+    price.unit_amount !== plan.amount ||
+    price.livemode !== (config.mode === "live")
+  )
+    throw new Error("billing_price_mismatch");
+}
 
 export async function verifiedBillingSnapshot(
   body: string,
@@ -318,9 +351,21 @@ export async function verifiedBillingSnapshot(
   )
     throw new Error("billing_checkout_mismatch");
   const item = current.items.data[0];
-  const plan = subscriptionPlans.find(
+  const catalogVersion = config.catalogVersion ?? legacyBillingCatalogVersion;
+  const catalog =
+    catalogVersion === billingCatalogVersion
+      ? subscriptionPlans
+      : legacySubscriptionPlans;
+  const currentPlan = catalog.find(
     (p) => config.prices[p.code] === item.price.id,
   );
+  const legacyPlan = legacySubscriptionPlans.find(
+    (p) => config.legacyPrices?.[p.code] === item.price.id,
+  );
+  const plan = currentPlan ?? legacyPlan;
+  const verifiedCatalogVersion = currentPlan
+    ? catalogVersion
+    : legacyBillingCatalogVersion;
   if (
     !plan ||
     item.quantity !== 1 ||
@@ -351,6 +396,7 @@ export async function verifiedBillingSnapshot(
       customer_id: current.customer,
       mode: config.mode,
       plan_code: plan.code,
+      catalog_version: verifiedCatalogVersion,
       status: current.status,
       paid: !!paid,
       paid_through: new Date(paidUntil * 1000).toISOString(),

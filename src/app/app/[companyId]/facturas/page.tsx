@@ -4,6 +4,7 @@ import { paymentStatuses, usd } from "@/lib/finance";
 import { ListPagination } from "@/components/list-pagination";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { InvoiceAllowance } from "@/components/invoice-allowance";
 export default async function Invoices({
   params,
   searchParams,
@@ -62,6 +63,7 @@ export default async function Invoices({
           registran por separado.
         </p>
       </div>
+      <InvoiceAllowance companyId={companyId} />
       <form className="card mb-5 flex flex-wrap gap-4 items-end">
         <label className="field grow">
           Número

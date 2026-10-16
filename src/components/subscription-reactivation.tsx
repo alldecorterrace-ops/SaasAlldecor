@@ -6,6 +6,7 @@ import {
 } from "@/app/planes/actions";
 import { Feedback } from "./feedback";
 import { SubmitButton } from "./submit-button";
+import { planUsersLabel } from "@/lib/subscription-catalog";
 
 export function SubscriptionReactivation({
   companyId,
@@ -13,6 +14,7 @@ export function SubscriptionReactivation({
   planCode,
   pendingPlan,
   usedSeats,
+  usedCompanies,
   testMode,
   plans,
 }: {
@@ -21,8 +23,15 @@ export function SubscriptionReactivation({
   planCode: string;
   pendingPlan: string | null;
   usedSeats: number;
+  usedCompanies: number;
   testMode: boolean;
-  plans: Array<{ code: string; name: string; amount: number; users: number }>;
+  plans: Array<{
+    code: string;
+    name: string;
+    amount: number;
+    users: number | null;
+    companies: number | null;
+  }>;
 }) {
   const [state, action, pending] = useActionState(
     beginCompanyReactivation.bind(null, companyId),
@@ -30,9 +39,9 @@ export function SubscriptionReactivation({
   );
   return (
     <form action={action} className="mt-4 grid gap-3 border-t pt-4">
-      <h3 className="font-semibold">Reactivar esta empresa</h3>
+      <h3 className="font-semibold">Reactivar la suscripción</h3>
       <p className="text-sm text-muted-foreground">
-        Conservas la misma empresa, su equipo y su historial. Solo el dueño
+        Conservas tus empresas, su equipo y su historial. Solo el dueño
         principal puede contratar el nuevo plan; el acceso se habilita al
         verificar el pago.
       </p>
@@ -57,12 +66,19 @@ export function SubscriptionReactivation({
               key={plan.code}
               value={plan.code}
               disabled={
-                plan.users < usedSeats ||
+                (plan.users !== null && plan.users < usedSeats) ||
+                (plan.companies !== null && plan.companies < usedCompanies) ||
                 (!!pendingPlan && pendingPlan !== plan.code)
               }
             >
-              {plan.name} · ${plan.amount / 100}/mes · {plan.users} usuarios
-              {plan.users < usedSeats ? " · plazas insuficientes" : ""}
+              {plan.name} · ${(plan.amount / 100).toFixed(2)}/mes ·{" "}
+              {planUsersLabel(plan.users)}
+              {plan.users !== null && plan.users < usedSeats
+                ? " · plazas insuficientes"
+                : ""}
+              {plan.companies !== null && plan.companies < usedCompanies
+                ? " · empresas excedidas"
+                : ""}
             </option>
           ))}
         </select>
@@ -72,7 +88,7 @@ export function SubscriptionReactivation({
           ? "Continuar pago de reactivación"
           : testMode
             ? "Reactivar con pago de prueba"
-            : "Reactivar empresa"}
+            : "Reactivar suscripción"}
       </SubmitButton>
     </form>
   );

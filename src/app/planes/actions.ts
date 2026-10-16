@@ -7,7 +7,11 @@ import {
   stripeRequest,
   hostedBillingUrl,
 } from "@/lib/subscription-server";
-import { checkoutParameters, type PlanCode } from "@/lib/subscriptions";
+import {
+  checkoutParameters,
+  verifyCheckoutPrice,
+  type PlanCode,
+} from "@/lib/subscriptions";
 import { companyContext } from "@/lib/auth";
 import { startCompanyReactivation } from "@/lib/subscription-reactivation";
 export type PurchaseState = { error?: string };
@@ -35,6 +39,9 @@ export async function beginSubscription(
   let destination: string;
   try {
     const config = requireBilling();
+    await verifyCheckoutPrice(config, value.data.code, (path) =>
+      stripeRequest(config, path),
+    );
     const db = billingDatabase(config);
     const { error } = await db.rpc("prepare_billing_order", {
       p_id: value.data.id,
@@ -132,6 +139,9 @@ export async function beginCompanyReactivation(
   try {
     const config = requireBilling();
     const service = billingDatabase(config);
+    await verifyCheckoutPrice(config, parsed.data.code, (path) =>
+      stripeRequest(config, path),
+    );
     destination = await startCompanyReactivation(
       config,
       companyId,
@@ -175,6 +185,11 @@ export async function beginCompanyReactivation(
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
+    if (message.includes("subscription_company_limit"))
+      return {
+        error:
+          "Este plan no cubre todas tus empresas. Elige uno con capacidad suficiente; tus empresas se conservan.",
+      };
     if (message.includes("subscription_user_limit"))
       return {
         error:
