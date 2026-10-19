@@ -160,6 +160,15 @@ Endpoint: `/api/subscriptions/webhook`. Eventos snapshot soportados:
 `invoice.payment_failed`. Registrar la entrega fallida en Stripe y reintentar tras
 resolver la causa; la persistencia se completa antes de responder 200.
 
+Una cuenta Stripe puede compartir eventos con otras aplicaciones. El webhook
+confirma la recepción sin aplicar permisos para Checkout de pago único o de
+configuración ajenos, facturas sin suscripción y suscripciones que no tienen
+metadatos ni precios del SaaS. Comprueba en Stripe la identidad y el entorno antes
+de clasificar una sesión o suscripción. Un precio actual o histórico del SaaS con
+metadatos ausentes o dañados conserva el error y el reintento: no se descarta como
+ajeno. Antes de compartir una cuenta real, revisar también los filtros de los
+otros destinos de eventos para que no procesen las suscripciones del SaaS.
+
 Aplicar hasta la migración 095 con respaldo/verificación en staging antes del código.
 La 095 agrega vínculos y un registro de consumo; indexa facturas SaaS ya existentes
 sin modificarlas ni importar información de ADT. Las órdenes previas mantienen

@@ -212,6 +212,43 @@ const subscription = z.object({
 });
 type StripeReader = (path: string) => Promise<unknown>;
 
+async function readScopedSubscription(
+  subscriptionId: string,
+  config: BillingConfig,
+  read: StripeReader,
+) {
+  const raw = await read(
+    `/subscriptions/${encodeURIComponent(subscriptionId)}?expand[]=latest_invoice`,
+  );
+  const routing = z
+    .object({
+      id: id("sub"),
+      livemode: z.boolean(),
+      metadata: z.record(z.string(), z.string()),
+      items: z.object({
+        data: z.array(z.object({ price: z.object({ id: id("price") }) })),
+      }),
+    })
+    .parse(raw);
+  if (
+    routing.id !== subscriptionId ||
+    routing.livemode !== (config.mode === "live")
+  )
+    throw new Error("billing_subscription_mismatch");
+  const prices = new Set([
+    ...Object.values(config.prices),
+    ...Object.values(config.legacyPrices ?? {}),
+  ]);
+  // One Stripe account can serve other applications. A known SaaS price still
+  // requires strict validation when its ownership metadata is missing or damaged.
+  if (
+    !Object.hasOwn(routing.metadata, "saas_order") &&
+    !routing.items.data.some((item) => prices.has(item.price.id))
+  )
+    return null;
+  return subscription.parse(raw);
+}
+
 // Verify the provider price BEFORE opening a payable Checkout. A stale price ID
 // must never charge the previous catalog while advertising the new amount.
 export async function verifyCheckoutPrice(
@@ -280,6 +317,7 @@ export async function verifiedBillingSnapshot(
       }
     | undefined;
   let subscriptionId = event.data.object.id;
+  let fetchedSubscription: z.infer<typeof subscription> | undefined;
   if (invoiceEvent) {
     const invoice = z
       .object({
@@ -293,14 +331,46 @@ export async function verifiedBillingSnapshot(
           })
           .nullable()
           .optional(),
+        metadata: z.record(z.string(), z.string()).nullish(),
       })
       .parse(event.data.object);
     subscriptionId =
       invoice.subscription ??
       invoice.parent?.subscription_details?.subscription ??
       "";
+    // A paid one-off invoice from another application has no subscription.
+    if (!subscriptionId && !Object.hasOwn(invoice.metadata ?? {}, "saas_order"))
+      return null;
   }
   if (checkout) {
+    const raw = await read(
+      `/checkout/sessions/${encodeURIComponent(event.data.object.id)}`,
+    );
+    const routing = z
+      .object({
+        id: id("cs"),
+        livemode: z.boolean(),
+        mode: z.enum(["payment", "setup", "subscription"]),
+        metadata: z.record(z.string(), z.string()),
+        subscription: reference("sub").nullish(),
+      })
+      .parse(raw);
+    if (
+      routing.id !== event.data.object.id ||
+      routing.livemode !== event.livemode
+    )
+      throw new Error("billing_checkout_mismatch");
+    if (!Object.hasOwn(routing.metadata, "saas_order")) {
+      if (routing.mode !== "subscription") return null;
+      if (!routing.subscription) throw new Error("invalid_subscription");
+      const scoped = await readScopedSubscription(
+        routing.subscription,
+        config,
+        read,
+      );
+      if (!scoped) return null;
+      fetchedSubscription = scoped;
+    }
     const data = z
       .object({
         id: id("cs"),
@@ -317,11 +387,7 @@ export async function verifiedBillingSnapshot(
         }),
         customer_details: z.object({ email: z.email() }),
       })
-      .parse(
-        await read(
-          `/checkout/sessions/${encodeURIComponent(event.data.object.id)}`,
-        ),
-      );
+      .parse(raw);
     if (
       data.livemode !== event.livemode ||
       data.metadata.saas_order !== data.client_reference_id ||
@@ -341,11 +407,13 @@ export async function verifiedBillingSnapshot(
   }
   if (!/^sub_[A-Za-z0-9_]+$/.test(subscriptionId))
     throw new Error("invalid_subscription");
-  const current = subscription.parse(
-    await read(
-      `/subscriptions/${encodeURIComponent(subscriptionId)}?expand[]=latest_invoice`,
-    ),
-  );
+  const current =
+    fetchedSubscription ??
+    (await readScopedSubscription(subscriptionId, config, read));
+  if (!current) {
+    if (session) throw new Error("billing_checkout_mismatch");
+    return null;
+  }
   if (current.id !== subscriptionId || current.livemode !== event.livemode)
     throw new Error("billing_subscription_mismatch");
   if (
