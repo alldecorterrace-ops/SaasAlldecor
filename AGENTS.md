@@ -103,6 +103,18 @@
   suscripción pertenecen a otra cuenta Stripe; no reasignarlos al sandbox nuevo
   ni presentar su portal antiguo como operativo con las claves nuevas.
 
+## Publicación de suscripciones, 19 de octubre
+
+- El propietario pide expresamente pasar esta entrega a producción. Preparar y
+  publicar catálogo, esquema y cobro por suscripción conservando datos y acceso.
+  Esta autorización sustituye el aplazamiento de la entrega, no autoriza compras
+  ni cargos reales de prueba ni nuevos mensajes a destinatarios externos.
+- Respaldar antes de aplicar el esquema y conservar un retorno de código
+  compatible. Separar los eventos del SaaS del flujo de ADT en Stripe/Make.
+- Las credenciales se instalan de forma privada; no publicar claves ni pedirlas
+  por chat. Preferir una clave Stripe restringida al uso del SaaS.
+- Apple Pay y Amazon Pay conservan su comprobación de cartera pendiente.
+
 ## Versionado y despliegues
 
 - GitHub es la fuente oficial del código y de su historial. Antes de desplegar,

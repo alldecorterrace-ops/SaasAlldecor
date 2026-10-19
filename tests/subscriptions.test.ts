@@ -72,6 +72,51 @@ test("billing is disabled by default and test credentials cannot run against pro
   ])
     assert.equal(billingConfig({ ...env, ...change }), null);
 });
+test("restricted Stripe keys retain environment separation and never accept publishable keys", () => {
+  const base = {
+    APP_ENVIRONMENT: "production",
+    NEXT_PUBLIC_SITE_URL: "https://app.example.invalid",
+    NEXT_PUBLIC_SUPABASE_URL: config.database,
+    SAAS_BILLING_MODE: "live",
+    SAAS_STRIPE_WEBHOOK_SECRET: config.webhookSecret,
+    SAAS_BILLING_SUPABASE_SERVICE_KEY: config.serviceKey,
+    ...Object.fromEntries(
+      subscriptionPlans.map((p) => [
+        `SAAS_STRIPE_PRICE_${p.code.toUpperCase()}`,
+        config.prices[p.code],
+      ]),
+    ),
+  };
+  for (const [mode, accepted, rejected] of [
+    [
+      "live",
+      "rk_live_SYNTHETIC",
+      ["rk_test_SYNTHETIC", "pk_live_SYNTHETIC", "rkcs_test_SYNTHETIC"],
+    ],
+    [
+      "test",
+      "rk_test_SYNTHETIC",
+      ["rk_live_SYNTHETIC", "pk_test_SYNTHETIC", "sk_live_SYNTHETIC"],
+    ],
+  ] as const) {
+    const env = {
+      ...base,
+      SAAS_BILLING_MODE: mode,
+      APP_ENVIRONMENT: mode === "live" ? "production" : "staging",
+      STAGING_SUPABASE_PROJECT_REF: "abcdefghijklmnopqrst",
+    };
+    assert.equal(
+      billingConfig({ ...env, SAAS_STRIPE_SECRET_KEY: accepted })?.mode,
+      mode,
+    );
+    for (const key of rejected)
+      assert.equal(
+        billingConfig({ ...env, SAAS_STRIPE_SECRET_KEY: key }),
+        null,
+      );
+  }
+});
+
 test("webhook signature rejects tampering, stale/future timestamps, missing headers and oversized bodies", () => {
   const stamp = 1900000000,
     body = '{"synthetic":true}';

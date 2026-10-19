@@ -51,8 +51,10 @@ export function billingConfig(
     const secret = env.SAAS_STRIPE_SECRET_KEY ?? "";
     const allowedKey =
       mode === "test"
-        ? secret.startsWith("sk_test_") || secret.startsWith("rkcs_test_")
-        : secret.startsWith("sk_live_");
+        ? secret.startsWith("sk_test_") ||
+          secret.startsWith("rk_test_") ||
+          secret.startsWith("rkcs_test_")
+        : secret.startsWith("sk_live_") || secret.startsWith("rk_live_");
     if (
       !allowedKey ||
       !env.SAAS_STRIPE_WEBHOOK_SECRET?.startsWith("whsec_") ||
