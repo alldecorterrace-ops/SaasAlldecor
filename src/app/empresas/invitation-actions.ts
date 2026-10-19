@@ -58,6 +58,11 @@ export async function createInvitation(
     p_role: role.data,
     p_permissions: role.data === "admin" ? {} : permissions,
   });
+  if (error?.message.includes("subscription_pending_user_limit"))
+    return {
+      error:
+        "La bajada programada no permite más personas. Libera una plaza o pide al dueño que cancele la bajada antes de invitar.",
+    };
   if (error?.message.includes("subscription_user_limit"))
     return {
       error:

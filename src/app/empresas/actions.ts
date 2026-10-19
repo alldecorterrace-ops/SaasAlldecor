@@ -29,13 +29,15 @@ export async function createCompany(
   );
   if (error)
     return {
-      error: error.message.includes("subscription_company_limit")
-        ? "El plan ya cubre el máximo de empresas. Elige una suscripción con capacidad disponible."
-        : error.message.includes("subscription_inactive")
-          ? "La suscripción debe estar activa para crear otra empresa."
-          : error.message.includes("manager_invitation_required")
-            ? "Solo los gerentes invitados y activos pueden crear empresas."
-            : "No pudimos crear la empresa. Comprueba que tu correo esté confirmado e inténtalo de nuevo.",
+      error: error.message.includes("subscription_pending_company_limit")
+        ? "La bajada programada no permite más empresas. El dueño puede cancelarla antes de añadir otra empresa."
+        : error.message.includes("subscription_company_limit")
+          ? "El plan ya cubre el máximo de empresas. Elige una suscripción con capacidad disponible."
+          : error.message.includes("subscription_inactive")
+            ? "La suscripción debe estar activa para crear otra empresa."
+            : error.message.includes("manager_invitation_required")
+              ? "Solo los gerentes invitados y activos pueden crear empresas."
+              : "No pudimos crear la empresa. Comprueba que tu correo esté confirmado e inténtalo de nuevo.",
     };
   redirect(`/app/${company}`);
 }
