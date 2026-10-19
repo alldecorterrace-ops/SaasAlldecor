@@ -27,7 +27,7 @@ export async function stripeRequest(
   requestId?: string,
 ): Promise<unknown> {
   if (
-    !/^\/(checkout\/sessions|subscriptions|billing_portal\/sessions|prices)(\/|\?|$)/.test(
+    !/^\/(checkout\/sessions|subscriptions|subscription_schedules|invoices|billing_portal\/sessions|prices)(\/|\?|$)/.test(
       path,
     )
   )

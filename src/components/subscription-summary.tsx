@@ -5,6 +5,7 @@ import { billingConfig, subscriptionPlans } from "@/lib/subscriptions";
 import { SubscriptionReactivation } from "./subscription-reactivation";
 import { subscriptionSummarySchema } from "@/lib/subscription-summary";
 import { billingCatalogVersion } from "@/lib/subscription-catalog";
+import { SubscriptionPlanChange } from "./subscription-plan-change";
 export async function SubscriptionSummary({
   companyId,
   owner,
@@ -131,6 +132,24 @@ export async function SubscriptionSummary({
                 companies,
               }),
             )}
+          />
+        )}
+      {owner &&
+        config?.catalogVersion === billingCatalogVersion &&
+        value.catalog_version === billingCatalogVersion &&
+        (value.plan_change ||
+          (value.writable &&
+            value.status === "active" &&
+            !value.cancel_at_period_end)) && (
+          <SubscriptionPlanChange
+            key={value.plan_change?.id ?? value.plan_code}
+            companyId={companyId}
+            requestId={randomUUID()}
+            currentCode={value.plan_code}
+            usedSeats={value.active_users + value.pending_invitations}
+            usedCompanies={value.companies}
+            change={value.plan_change}
+            testMode={config.mode === "test"}
           />
         )}
       {owner && config && <SubscriptionPortal companyId={companyId} />}

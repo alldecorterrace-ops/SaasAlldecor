@@ -173,9 +173,11 @@ const subscription = z.object({
   metadata: z.object({
     saas_order: z.uuid(),
     saas_reactivation: z.uuid().optional(),
+    saas_plan_change: z.uuid().optional(),
   }),
   cancel_at_period_end: z.boolean(),
   cancel_at: z.number().int().positive().nullish(),
+  pending_update: z.unknown().nullish(),
   items: z.object({
     data: z
       .array(
@@ -202,6 +204,9 @@ const subscription = z.object({
       status: z.string(),
       amount_paid: z.number().int().nonnegative(),
       currency: z.string(),
+      id: z.string().optional(),
+      amount_remaining: z.number().int().nonnegative().optional(),
+      created: z.number().int().positive().optional(),
     })
     .nullable(),
 });
@@ -392,6 +397,13 @@ export async function verifiedBillingSnapshot(
     snapshot: {
       order_id: current.metadata.saas_order,
       reactivation_id: current.metadata.saas_reactivation ?? null,
+      plan_change_id: current.metadata.saas_plan_change ?? null,
+      invoice_created: current.latest_invoice?.created ?? null,
+      has_pending_update: current.pending_update != null,
+      invoice_paid:
+        current.latest_invoice?.status === "paid" &&
+        current.latest_invoice.currency === "usd" &&
+        current.latest_invoice.amount_remaining === 0,
       subscription_id: current.id,
       customer_id: current.customer,
       mode: config.mode,
