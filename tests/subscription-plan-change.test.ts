@@ -185,6 +185,7 @@ test("upgrade requires confirmation, shows the exact preview, uses pending payme
     records: string[] = [];
   let syncs = 0;
   const ports: ChangePorts = {
+    beforeMutation: async () => {},
     stripe: async (path, params, key) => {
       if (path.startsWith("/prices/")) return price("equipo");
       if (path === "/invoices/create_preview")
@@ -261,6 +262,7 @@ test("a failed-payment retry opens only its verified invoice and does not create
     hosted_invoice_url: "https://invoice.stripe.com/i/test",
   };
   const ports: ChangePorts = {
+    beforeMutation: async () => {},
     stripe: async (path, params) => {
       assert.equal(params, undefined);
       return path.startsWith("/subscriptions/")
@@ -316,6 +318,7 @@ test("downgrade schedules next renewal without an immediate charge; release pres
   let released = false;
   const calls: string[] = [];
   const ports: ChangePorts = {
+    beforeMutation: async () => {},
     stripe: async (path, params) => {
       calls.push(path);
       if (path.startsWith("/prices/")) return price("inicial");
@@ -375,6 +378,7 @@ test("pending upgrade cancellation voids only its own invoice and a paid race is
       voided = false,
       syncs = 0;
     const ports: ChangePorts = {
+      beforeMutation: async () => {},
       stripe: async (path, params) => {
         if (path.endsWith("/void")) {
           assert.equal(paidRace, false);
@@ -443,6 +447,49 @@ test("a completed paid downgrade can release its final schedule phase before ano
   });
   assert.equal(released, true);
   assert.equal(q.due_cents, 500);
+});
+test("a disconnected provider request must be reconciled before it can be canceled", async () => {
+  const o = offer();
+  o.status = "processing";
+  o.confirmed_at = new Date(now * 1000).toISOString();
+  o.quote = {
+    currency: "usd",
+    due_cents: 500,
+    item_id: "si_test",
+    period_start: now - 86400,
+    period_end: now + 29 * 86400,
+    proration_date: now,
+  };
+  let canceled = false,
+    attempted = false;
+  const ports: ChangePorts = {
+    beforeMutation: async () => {
+      o.provider_started_at = new Date().toISOString();
+    },
+    stripe: async (path, params) => {
+      if (path.startsWith("/prices/")) return price("equipo");
+      if (path === "/invoices/create_preview")
+        return { currency: "usd", amount_due: 500 };
+      if (params) {
+        attempted = true;
+        assert.ok(o.provider_started_at);
+        throw new Error("connection_lost");
+      }
+      return current(o);
+    },
+    record: async (status) => {
+      canceled = status === "canceled";
+    },
+    sync: async () => {},
+  };
+  await assert.rejects(executePlanChange(config, o, ports), /connection_lost/);
+  assert.equal(attempted, true);
+  await assert.rejects(cancelPlanChange(config, o, ports), /reconcile_first/);
+  assert.equal(canceled, false);
+  // A validation failure before a provider request remains safe to discard.
+  o.provider_started_at = null;
+  await cancelPlanChange(config, o, ports);
+  assert.equal(canceled, true);
 });
 test("prorated payment evidence requires a paid USD invoice with no remaining balance", async () => {
   const o = offer();
@@ -617,6 +664,20 @@ test("plan-change ownership, verified payments, future quotas and history are en
     await attach(request);
     await as(initial.buyer);
     await confirm(initial.id, request);
+    await service();
+    await assert.rejects(
+      db.query("select start_plan_change_provider($1)", [request]),
+      /operation_busy/,
+    );
+    const paymentLease = randomUUID();
+    await db.query("select lease_plan_change($1,$2)", [request, paymentLease]);
+    await db.query("select start_plan_change_provider($1)", [request]);
+    await db.query("select start_plan_change_provider($1)", [request]);
+    await db.query("select lease_plan_change($1,$2,true)", [
+      request,
+      paymentLease,
+    ]);
+    await as(initial.buyer);
     await t.test(
       "upgrade does not grant seats before payment and accepts only the confirmed prorated invoice",
       async () => {

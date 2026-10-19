@@ -44,6 +44,7 @@ export const planChangeOfferSchema = z.object({
   schedule_id: providerId("sub_sched").nullable(),
   invoice_id: providerId("in").nullable(),
   completed_schedule_id: providerId("sub_sched").nullish(),
+  provider_started_at: z.string().nullish(),
 });
 export type PlanChangeOffer = z.infer<typeof planChangeOfferSchema>;
 export type PlanQuote = z.infer<typeof planQuoteSchema>;
@@ -54,6 +55,7 @@ export type StripeCall = (
 ) => Promise<unknown>;
 export type ChangePorts = {
   stripe: StripeCall;
+  beforeMutation(): Promise<void>;
   record(
     status: "processing" | "pending_payment" | "scheduled" | "canceled",
     schedule?: string,
@@ -415,6 +417,7 @@ export async function executePlanChange(
         offer.quote.due_cents
     )
       throw new Error("billing_plan_quote_changed");
+    await ports.beforeMutation();
     const result = currentSchema.parse(
       await ports.stripe(
         `/subscriptions/${offer.subscription_id}`,
@@ -444,6 +447,7 @@ export async function executePlanChange(
     throw new Error("billing_plan_change_conflict");
   // from_subscription cannot be combined with phases. Persist its ID before the
   // second request so a disconnect can resume/release precisely this schedule.
+  if (!offer.schedule_id) await ports.beforeMutation();
   const schedule = verifySchedule(
     offer.schedule_id
       ? await ports.stripe(`/subscription_schedules/${offer.schedule_id}`)
@@ -494,6 +498,8 @@ export async function cancelPlanChange(
   }
   if (current.items.data[0].price.id !== config.prices[offer.from_code])
     throw new Error("billing_plan_change_conflict");
+  if (offer.provider_started_at && !offer.invoice_id && !offer.schedule_id)
+    throw new Error("billing_plan_reconcile_first");
   if (offer.direction === "downgrade") {
     if (current.schedule && !offer.schedule_id)
       throw new Error("billing_plan_reconcile_first");
@@ -563,5 +569,7 @@ export function planChangeError(error: unknown) {
     return "Esta solicitud necesita reconciliarse. Comprueba o cancela el cambio antes de crear otra propuesta.";
   if (message.includes("operation_busy"))
     return "Hay una comprobación en curso. Espera unos momentos y actualiza el estado; no necesitas confirmar otra compra.";
+  if (message.includes("reconcile_first"))
+    return "Stripe todavía debe confirmar el resultado de la operación. Usa «Comprobar cambio» antes de cancelar; se conserva la misma solicitud.";
   return "No se pudo completar el cambio. Comprueba su estado antes de volver a intentarlo; las empresas y facturas se conservan.";
 }

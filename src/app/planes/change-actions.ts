@@ -78,6 +78,12 @@ export async function changeSubscriptionPlan(
       const offer = planChangeOfferSchema.parse(result.data);
       const ports: ChangePorts = {
         stripe: (path, params, key) => stripeRequest(config, path, params, key),
+        async beforeMutation() {
+          const result = await service.rpc("start_plan_change_provider", {
+            p_id: id,
+          });
+          if (result.error) throw new Error(result.error.message);
+        },
         async record(status, schedule, invoice) {
           const result = await service.rpc("record_plan_change_result", {
             p_id: id,

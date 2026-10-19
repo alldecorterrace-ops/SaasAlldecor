@@ -9,6 +9,7 @@ create table public.billing_plan_changes (
  quote jsonb, expires_at timestamptz not null default now()+interval '15 minutes',
  confirmed_at timestamptz, effective_at timestamptz, schedule_id text, invoice_id text,
  operation_id uuid, operation_until timestamptz,
+ provider_started_at timestamptz,
  created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
  foreign key(catalog_version,from_code) references public.billing_plan_catalog(catalog_version,code),
  foreign key(catalog_version,to_code) references public.billing_plan_catalog(catalog_version,code),
@@ -75,6 +76,17 @@ begin
   if c.operation_until>now() and c.operation_id<>p_operation then raise exception 'billing_plan_operation_busy'; end if;
   update public.billing_plan_changes set operation_id=p_operation,operation_until=now()+interval '5 minutes' where id=p_id;
  end if;
+end; $$;
+
+create function public.start_plan_change_provider(p_id uuid) returns void
+language plpgsql security definer set search_path='' as $$
+declare oid uuid;
+begin
+ select order_id into oid from public.billing_plan_changes where id=p_id;
+ perform 1 from public.billing_orders where id=oid for update;
+ update public.billing_plan_changes set provider_started_at=coalesce(provider_started_at,now())
+ where id=p_id and status='processing' and confirmed_at is not null and operation_until>now();
+ if not found then raise exception 'billing_plan_operation_busy'; end if;
 end; $$;
 
 create function public.attach_plan_change_quote(p_id uuid,p_quote jsonb) returns void
@@ -228,8 +240,8 @@ language sql stable security definer set search_path='' as $$
 $$;
 revoke all on function public.prepare_company_plan_change(uuid,uuid,text,text),public.company_plan_change(uuid,uuid,boolean),public.create_subscription_company(uuid,uuid,text) from public,anon,service_role;
 grant execute on function public.prepare_company_plan_change(uuid,uuid,text,text),public.company_plan_change(uuid,uuid,boolean),public.create_subscription_company(uuid,uuid,text) to authenticated;
-revoke all on function public.lease_plan_change(uuid,uuid,boolean),public.attach_plan_change_quote(uuid,jsonb),public.record_plan_change_result(uuid,text,text,text),public.apply_billing_snapshot(text,bigint,text,jsonb) from public,anon,authenticated;
-grant execute on function public.lease_plan_change(uuid,uuid,boolean),public.attach_plan_change_quote(uuid,jsonb),public.record_plan_change_result(uuid,text,text,text),public.apply_billing_snapshot(text,bigint,text,jsonb) to service_role;
+revoke all on function public.start_plan_change_provider(uuid),public.lease_plan_change(uuid,uuid,boolean),public.attach_plan_change_quote(uuid,jsonb),public.record_plan_change_result(uuid,text,text,text),public.apply_billing_snapshot(text,bigint,text,jsonb) from public,anon,authenticated;
+grant execute on function public.start_plan_change_provider(uuid),public.lease_plan_change(uuid,uuid,boolean),public.attach_plan_change_quote(uuid,jsonb),public.record_plan_change_result(uuid,text,text,text),public.apply_billing_snapshot(text,bigint,text,jsonb) to service_role;
 revoke all on function app_private.plan_change_offer(uuid),app_private.reserve_company_seat(uuid,text),app_private.reserve_company_seat_v095(uuid,text),
  app_private.create_subscription_company_v095(uuid,uuid,text),app_private.apply_billing_snapshot_v095(text,bigint,text,jsonb),app_private.subscription_summary(uuid),app_private.subscription_summary_v095(uuid)
  from public,anon,authenticated,service_role;
