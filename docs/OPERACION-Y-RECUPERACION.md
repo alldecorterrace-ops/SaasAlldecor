@@ -140,6 +140,32 @@ El archivo se mantiene fuera del repositorio, con permisos restringidos; contien
 - `drive`: `rcloneConfig` privado, `remote` de tipo Drive y `folderId` privado
   comprobado en la cuenta acordada. La autorización OAuth sigue pendiente.
 
+Para cron, `scripts/run-scheduled-backup.ts LANZADOR_PRIVADO.json --check`
+valida la configuración sin iniciar una copia; `--run` ejecuta el mismo recorrido
+ya verificado. El lanzador requiere `projectRef`, `appRoot`, `appRevision`,
+`webConfiguration` (archivo con `PassengerAppRoot`), `databaseConnectionFile`,
+`backupConfigurationFile`, `sourceInventoryFile`, `libraryDirectory` y `logRoot`.
+Las rutas son absolutas. Mantener este JSON y los registros fuera de la web y de Git.
+La configuración PostgreSQL contiene solo las variables PG de conexión y rutas
+a su archivo de contraseña y CA; se exige `verify-full`, puerto de sesión 5432 y
+el usuario del proyecto revisado. No copiar contraseñas a la línea de cron.
+
+El lanzador usa un entorno nuevo y transmite únicamente las credenciales del
+respaldo. Comprueba la entrega activa, su revisión, la huella del inventario y las
+selecciones de documentos/configuración antes de arrancar. Si un despliegue cambia
+la entrega, **actualizar y revisar ese inventario y el lanzador como parte del
+despliegue**, ejecutar `--check` y una copia verificada, y comprobar el monitor.
+De lo contrario el calendario se detiene; no vuelve silenciosamente a una entrega
+antigua. Conserva el bloqueo de una copia fallida para investigación.
+
+Programar únicamente después del ensayo funcional y de verificar la custodia de
+la llave. Guardar el crontab previo, añadir una sola entrada identificada y comprobar
+que al retirarla se recuperan exactamente los bytes anteriores. Usar rutas absolutas
+de Node, tsx, lanzador y configuración. Comprobar primero la zona horaria del hosting.
+Las salidas completas permanecen en `logRoot`; la línea de cron solo registra un
+resultado genérico y no envía correos. Los recibos verificados del exportador siguen
+siendo la evidencia que utiliza el monitor, no el código de salida del lanzador.
+
 La conexión usa `PGHOST`, `PGPORT=5432`, `PGDATABASE=postgres`, `PGUSER`,
 `PGSSLMODE=verify-full` y el canal privado de contraseña de PostgreSQL. Rechaza el
 pooler transaccional y referencias ajenas. Storage usa `BACKUP_STORAGE_SERVICE_KEY`
