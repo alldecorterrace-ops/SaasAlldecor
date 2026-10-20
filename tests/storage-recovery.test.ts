@@ -131,6 +131,8 @@ function storageMock(
     loseUploadResponse?: boolean;
     corruptReadback?: boolean;
     authFailure?: boolean;
+    legacyMissing?: boolean;
+    legacyMissingCode?: boolean;
   } = {},
 ) {
   const buckets = new Map<string, Record<string, unknown>>();
@@ -163,7 +165,19 @@ function storageMock(
       method === "GET"
     ) {
       const item = buckets.get(bucket.id);
-      return item ? Response.json(item) : new Response(null, { status: 404 });
+      return item
+        ? Response.json(item)
+        : options.legacyMissing
+          ? Response.json(
+              {
+                statusCode: "404",
+                error: "Bucket not found",
+                message: "Bucket not found",
+                ...(options.legacyMissingCode ? { code: "NoSuchBucket" } : {}),
+              },
+              { status: 400 },
+            )
+          : new Response(null, { status: 404 });
     }
     if (url.pathname === "/storage/v1/bucket" && method === "POST") {
       const item = JSON.parse(String(init?.body));
@@ -195,7 +209,18 @@ function storageMock(
       method === "GET"
     ) {
       const item = objects.get(name);
-      if (!item) return new Response(null, { status: 404 });
+      if (!item)
+        return options.legacyMissing
+          ? Response.json(
+              {
+                statusCode: "404",
+                error: "not_found",
+                message: "Object not found",
+                ...(options.legacyMissingCode ? { code: "NoSuchKey" } : {}),
+              },
+              { status: 400 },
+            )
+          : new Response(null, { status: 404 });
       return new Response(
         new Uint8Array(
           options.corruptReadback ? Buffer.from("bad bytes") : item,
@@ -226,6 +251,115 @@ test("recovery restores private bytes, encoded paths and mime; repeat has no wri
     assert.equal(repeat.uploaded, 0);
     assert.equal(repeat.reused, 1);
     assert.equal(remote.calls.filter((x) => x.method !== "GET").length, 0);
+  } finally {
+    await f.dispose();
+  }
+});
+
+test("legacy HTTP 400 resource-not-found responses restore and resume without overwrite", async () => {
+  for (const legacyMissingCode of [false, true]) {
+    const f = await fixture(),
+      remote = storageMock({ legacyMissing: true, legacyMissingCode });
+    try {
+      const receipt = await restoreStorageObjects(f, remote.fetcher);
+      assert.equal(receipt.uploaded, 1);
+      assert.equal(receipt.storageBytesVerified, true);
+      remote.calls.length = 0;
+      const repeat = await restoreStorageObjects(f, remote.fetcher);
+      assert.equal(repeat.reused, 1);
+      assert.equal(remote.calls.filter((x) => x.method !== "GET").length, 0);
+    } finally {
+      await f.dispose();
+    }
+  }
+});
+
+test("legacy-looking authorization, ambiguous and invalid errors never permit writes", async () => {
+  const f = await fixture();
+  try {
+    const cases = [
+      {
+        status: 403,
+        body: {
+          statusCode: "404",
+          error: "Bucket not found",
+          message: "Bucket not found",
+        },
+      },
+      {
+        status: 400,
+        body: {
+          statusCode: "403",
+          error: "Bucket not found",
+          message: "Bucket not found",
+        },
+      },
+      {
+        status: 400,
+        body: {
+          statusCode: "404",
+          error: "AccessDenied",
+          message: "Bucket not found",
+        },
+      },
+      {
+        status: 400,
+        body: {
+          statusCode: "404",
+          error: "Bucket not found",
+          message: "Permission denied",
+        },
+      },
+      {
+        status: 400,
+        body: {
+          statusCode: "404",
+          error: "not_found",
+          message: "Object not found",
+        },
+      },
+      {
+        status: 400,
+        body: {
+          statusCode: "404",
+          error: "Bucket not found",
+          message: "Bucket not found",
+          code: "AccessDenied",
+        },
+      },
+      { status: 400, body: "invalid JSON" },
+      { status: 400, body: "x".repeat(2049) },
+    ];
+    for (const item of cases) {
+      const methods: string[] = [];
+      const fetcher: typeof fetch = async (_input, init) => {
+        methods.push(init?.method ?? "GET");
+        return typeof item.body === "string"
+          ? new Response(item.body, { status: item.status })
+          : Response.json(item.body, { status: item.status });
+      };
+      await assert.rejects(restoreStorageObjects(f, fetcher));
+      assert.equal(methods.filter((method) => method !== "GET").length, 0);
+    }
+    const remote = storageMock();
+    remote.buckets.set(bucket.id, bucket);
+    const fetcher: typeof fetch = async (input, init) => {
+      if (String(input).includes("/object/authenticated/"))
+        return Response.json(
+          {
+            statusCode: "404",
+            error: "Bucket not found",
+            message: "Bucket not found",
+          },
+          { status: 400 },
+        );
+      return remote.fetcher(input, init);
+    };
+    await assert.rejects(restoreStorageObjects(f, fetcher));
+    assert.equal(
+      remote.calls.filter((call) => call.method !== "GET").length,
+      0,
+    );
   } finally {
     await f.dispose();
   }
