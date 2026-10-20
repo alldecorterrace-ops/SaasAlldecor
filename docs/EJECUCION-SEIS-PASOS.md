@@ -1,5 +1,7 @@
 # Ejecución y auditoría de los seis pasos
 
+> Seguimiento vigente: [Cierre actual del 6 de octubre](CIERRE-ACTUAL-20261006.md). Los conteos y entregas de este documento son antecedentes; no representan el cierre actual.
+
 **Entrega vigente del 30 de septiembre: 518447a, esquema 057, solo staging.**
 
 Registro unificado de Gastos publicado y comprobado: Administración y costos de

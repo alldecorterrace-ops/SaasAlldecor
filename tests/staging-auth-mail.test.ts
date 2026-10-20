@@ -23,8 +23,7 @@ const event = {
 async function emptyDatabase() {
   const db = new PGlite();
   await db.exec(
-    authStorageContract +
-      "create role supabase_auth_admin; create table public.companies(id uuid);",
+    authStorageContract + "create table public.companies(id uuid);",
   );
   return db;
 }

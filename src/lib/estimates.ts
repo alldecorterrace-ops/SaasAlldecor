@@ -3,6 +3,8 @@ import { decimal, priceBases } from "./commercial";
 import { paymentTermsInput } from "./payment-terms";
 export const estimateStatuses = {
   ENVIADO: "Enviado",
+  PENDIENTE_ENVIO: "Envío pendiente",
+  ERROR_ENVIO: "Error de envío",
   APROBADO: "Aprobado",
   BORRADOR: "Borrador",
   PENDIENTE: "Pendiente",
@@ -69,6 +71,9 @@ export const estimateSchema = z
       "RECHAZADO",
       "ANULADA",
       "APROBADO",
+      "ENVIADO",
+      "ERROR_ENVIO",
+      "PENDIENTE_ENVIO",
     ]),
     notes: z.string().max(10000),
     commercial_terms: paymentTermsInput.nullable().optional(),

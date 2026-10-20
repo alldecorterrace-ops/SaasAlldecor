@@ -173,7 +173,12 @@ export function EstimateForm({
             }
           >
             {Object.entries(estimateStatuses)
-              .filter(([key]) => key !== "ENVIADO")
+              .filter(
+                ([key]) =>
+                  !["ENVIADO", "ERROR_ENVIO", "PENDIENTE_ENVIO"].includes(
+                    key,
+                  ) || key === v.status,
+              )
               .filter(([key]) => key !== "APROBADO" || readOnly)
               .map(([key, label]) => (
                 <option key={key} value={key}>

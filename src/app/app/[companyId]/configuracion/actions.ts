@@ -74,6 +74,16 @@ export async function updateMember(
     p_active: form.get("active") === "on",
     p_permissions: permissions,
   });
+  if (error?.message.includes("subscription_pending_user_limit"))
+    return {
+      error:
+        "La bajada programada no permite reactivar a otra persona. Libera una plaza o pide al dueño que cancele la bajada.",
+    };
+  if (error?.message.includes("subscription_user_limit"))
+    return {
+      error:
+        "Las plazas de la suscripción están ocupadas entre sus empresas. Libera una plaza o amplía el plan para reactivar a esta persona.",
+    };
   if (error)
     return {
       error:

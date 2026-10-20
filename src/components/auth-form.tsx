@@ -6,6 +6,7 @@ import { authenticate, type AuthState } from "@/app/auth/actions";
 import { Input } from "./ui/input";
 import { Feedback } from "./feedback";
 import { SubmitButton } from "./submit-button";
+import { Brand } from "./brand";
 export function AuthForm({
   mode,
   error,
@@ -21,23 +22,13 @@ export function AuthForm({
     [password, setPassword] = useState("");
   const registering = mode === "register";
   return (
-    <main className="grid min-h-screen lg:grid-cols-[1.1fr_1fr]">
-      <section className="relative hidden overflow-hidden bg-[#123e31] p-14 text-white lg:flex lg:flex-col lg:justify-between">
+    <main className="grid min-h-screen lg:grid-cols-[1fr_1.05fr]">
+      <section className="auth-art relative hidden overflow-hidden p-12 text-white lg:flex lg:flex-col lg:justify-between xl:p-16">
         <div className="absolute -bottom-48 -right-36 size-[600px] rounded-full border border-white/10" />
         <div className="absolute -bottom-24 -right-12 size-[400px] rounded-full border border-white/10" />
-        <div className="relative flex items-center gap-3">
-          <span className="flex size-11 items-center justify-center rounded-xl border border-white/25 text-xl font-bold">
-            a.
-          </span>
-          <span className="text-xl font-semibold tracking-tight">
-            all decor
-            <span className="ml-2 text-sm font-normal text-white/50">
-              workspace
-            </span>
-          </span>
-        </div>
+        <Brand light className="relative z-10 self-start" />
         <div className="relative max-w-lg">
-          <p className="mb-6 text-xs font-semibold uppercase tracking-[.22em] text-[#c5d99b]">
+          <p className="mb-6 text-xs font-semibold uppercase tracking-[.22em] text-indigo-200">
             Un espacio para avanzar
           </p>
           <h2 className="text-5xl leading-[1.12] font-semibold tracking-[-.05em]">
@@ -45,7 +36,7 @@ export function AuthForm({
             <br />
             de tu empresa.
           </h2>
-          <p className="mt-7 max-w-sm text-base leading-7 text-white/65">
+          <p className="mt-7 max-w-sm text-base leading-7 text-indigo-100">
             Clientes, equipo y proyectos conectados. Cada empresa con su propio
             espacio para trabajar.
           </p>
@@ -60,64 +51,63 @@ export function AuthForm({
             </span>
           </div>
         </div>
-        <p className="relative text-xs text-white/45">
+        <p className="relative text-xs text-indigo-200">
           ALL DECOR TERRACE · PLATAFORMA DE GESTIÓN
         </p>
       </section>
-      <section className="flex items-center justify-center px-6 py-16">
-        <div className="w-full max-w-sm">
-          <Link
-            href="/"
-            className="mb-12 block text-xl font-bold tracking-tight lg:hidden"
-          >
-            all decor<span className="text-primary">.</span>
-          </Link>
+      <section className="flex items-center justify-center bg-white px-5 py-12 sm:px-10 lg:bg-transparent">
+        <div className="w-full max-w-md lg:rounded-2xl lg:border lg:border-border lg:bg-white lg:p-9 lg:shadow-sm">
+          <Brand className="mb-10 lg:hidden" />
           <p className="eyebrow">Tu espacio de trabajo</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight">
-            {registering ? "Crea tu acceso" : "Bienvenido de nuevo"}
+            {registering ? "Crea tu cuenta" : "Bienvenido de nuevo"}
           </h1>
           <p className="mt-3 mb-8 text-sm leading-6 text-muted-foreground">
             {registering
-              ? "Registra tu cuenta para crear una empresa o unirte a tu equipo."
+              ? "Necesitas una invitación vigente o un plan pagado y verificado. Usa ese mismo correo y crea tu propia contraseña; después confirma el correo."
               : "Inicia sesión y continúa donde lo dejaste."}
           </p>
           <Feedback error={state.error ?? error} success={state.success} />
-          <form action={action} className="grid gap-5">
-            <label className="field">
-              Correo electrónico
-              <Input
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@empresa.com"
-              />
-            </label>
-            <label className="field">
-              Contraseña
-              <Input
-                name="password"
-                type="password"
-                autoComplete={registering ? "new-password" : "current-password"}
-                minLength={registering ? 12 : 1}
-                maxLength={128}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              {registering && <small>Al menos 12 caracteres.</small>}
-            </label>
-            <div className="mt-2 [&>button]:w-full">
-              <SubmitButton
-                pending={registering ? "Creando acceso…" : "Ingresando…"}
-              >
-                {registering ? "Crear cuenta" : "Iniciar sesión"}
-                <ArrowUpRight size={16} />
-              </SubmitButton>
-            </div>
-          </form>
+          {!(registering && state.success) && (
+            <form action={action} className="grid gap-5">
+              <label className="field">
+                Correo electrónico
+                <Input
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="tu@empresa.com"
+                />
+              </label>
+              <label className="field">
+                Contraseña
+                <Input
+                  name="password"
+                  type="password"
+                  autoComplete={
+                    registering ? "new-password" : "current-password"
+                  }
+                  minLength={registering ? 12 : 1}
+                  maxLength={128}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                {registering && <small>Al menos 12 caracteres.</small>}
+              </label>
+              <div className="mt-2 [&>button]:w-full">
+                <SubmitButton
+                  pending={registering ? "Creando acceso…" : "Ingresando…"}
+                >
+                  {registering ? "Crear cuenta" : "Iniciar sesión"}
+                  <ArrowUpRight size={16} />
+                </SubmitButton>
+              </div>
+            </form>
+          )}
           {!registering && (
             <Link
               className="mt-5 block text-center text-sm font-semibold text-primary underline"
@@ -127,12 +117,14 @@ export function AuthForm({
             </Link>
           )}
           <p className="mt-7 text-center text-sm text-muted-foreground">
-            {registering ? "¿Ya tienes una cuenta?" : "¿Primera vez aquí?"}{" "}
+            {registering
+              ? "¿Ya tienes una cuenta?"
+              : "¿Recibiste una invitación?"}{" "}
             <Link
               className="font-semibold text-primary underline-offset-4 hover:underline"
               href={registering ? "/login" : "/registro"}
             >
-              {registering ? "Inicia sesión" : "Crear cuenta"}
+              {registering ? "Inicia sesión" : "Crear cuenta con invitación"}
             </Link>
           </p>
           <p className="mt-12 text-center text-xs leading-5 text-muted-foreground">

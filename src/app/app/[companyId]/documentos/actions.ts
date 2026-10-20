@@ -10,6 +10,11 @@ import {
   deliverInvoiceEmail,
   type InvoiceEmailResult,
 } from "@/lib/invoice-email";
+import {
+  estimateEmailConfig,
+  deliverEstimateEmail,
+  type EstimateEmailResult,
+} from "@/lib/estimate-email";
 export type CommercialState = { error?: string; documentId?: string };
 export async function generatePdf(
   companyId: string,
@@ -129,6 +134,93 @@ export async function sendInvoiceEmail(
     }
   }
   const result = await deliverInvoiceEmail(
+    db,
+    companyId,
+    record.data,
+    version,
+    documentId,
+    request.data,
+    config,
+    undefined,
+    recipient,
+  );
+  revalidatePath(`/app/${companyId}`, "layout");
+  return result;
+}
+
+export async function sendEstimateEmail(
+  companyId: string,
+  _: EstimateEmailResult,
+  form: FormData,
+): Promise<EstimateEmailResult> {
+  const record = uuid.safeParse(form.get("record")),
+    request = uuid.safeParse(form.get("request")),
+    version = Number(form.get("version"));
+  if (
+    !record.success ||
+    !request.success ||
+    !Number.isSafeInteger(version) ||
+    version < 1
+  )
+    return { error: "Recarga el estimado antes de preparar el correo." };
+  const { db } = await requireModule(companyId, "fin-estimados", "write");
+  const config = estimateEmailConfig(process.env, companyId);
+  if (!config)
+    return {
+      error: "El envío de estimados no está habilitado en este entorno.",
+    };
+  const recipient = String(form.get("recipient") ?? "");
+  if (!recipient.trim() || recipient.length > 254 || /[\r\n]/.test(recipient))
+    return { error: "El cliente no tiene un correo válido. Revisa su ficha." };
+  if (config.mode === "send" && form.get("confirmed") !== "yes")
+    return { error: "Confirma el destinatario y el envío de este estimado." };
+  // A retry after a lost response must consult the durable attempt first. The
+  // estimate may have changed since that request; never generate/send it again.
+  const prior = await db
+    .from("estimate_email_attempts")
+    .select("document_id,record_version,estimate_id,mode")
+    .eq("company_id", companyId)
+    .eq("request_id", request.data)
+    .maybeSingle();
+  if (prior.error)
+    return {
+      error:
+        "No se pudo comprobar el envío anterior. Revisa el historial antes de repetirlo.",
+    };
+  let documentId: string;
+  if (prior.data) {
+    if (
+      prior.data.estimate_id !== record.data ||
+      prior.data.record_version !== version ||
+      prior.data.mode !== config.mode
+    )
+      return {
+        error: "La solicitud corresponde a otro envío. Recarga la ficha.",
+      };
+    documentId = prior.data.document_id;
+  } else {
+    try {
+      documentId = await generateCommercialDocument(
+        db,
+        companyId,
+        "estimate",
+        record.data,
+        version,
+        (d) => renderCommercialPdf(d, config.mode === "capture"),
+      );
+    } catch (error) {
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? String(error.message)
+          : "";
+      return {
+        error: message.includes("record_conflict")
+          ? "El estimado cambió. Recarga la ficha antes de enviar."
+          : "No se pudo conservar el PDF adjunto. No se envió el correo; puedes revisar el estimado y reintentar.",
+      };
+    }
+  }
+  const result = await deliverEstimateEmail(
     db,
     companyId,
     record.data,

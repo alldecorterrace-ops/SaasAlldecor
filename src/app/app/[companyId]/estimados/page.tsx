@@ -5,6 +5,7 @@ import { estimateStatuses } from "@/lib/estimates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ListPagination } from "@/components/list-pagination";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { z } from "zod";
 export default async function Estimates({
   params,
@@ -99,9 +100,17 @@ export default async function Estimates({
         </label>
         <Button className="self-end">Filtrar</Button>
       </form>
-      <div className="card overflow-x-auto p-0">
+      <div
+        className="card overflow-x-auto p-0"
+        role="region"
+        aria-label="Listado de estimados"
+        tabIndex={0}
+      >
         {data?.length ? (
           <table>
+            <caption className="sr-only">
+              Estimados, estado, importe y revisión
+            </caption>
             <thead>
               <tr>
                 <th>Estimado</th>
@@ -131,13 +140,31 @@ export default async function Estimates({
                   <td>{r.customer_snapshot.full_name}</td>
                   <td>{r.estimate_date}</td>
                   <td>
-                    {
-                      estimateStatuses[
-                        r.status as keyof typeof estimateStatuses
-                      ]
-                    }
+                    <StatusBadge
+                      tone={
+                        r.status === "APROBADO"
+                          ? "success"
+                          : r.status === "ENVIADO"
+                            ? "info"
+                            : r.status === "ERROR_ENVIO" ||
+                                r.status === "RECHAZADO"
+                              ? "danger"
+                              : r.status === "PENDIENTE" ||
+                                  r.status === "PENDIENTE_ENVIO"
+                                ? "warning"
+                                : "neutral"
+                      }
+                    >
+                      {
+                        estimateStatuses[
+                          r.status as keyof typeof estimateStatuses
+                        ]
+                      }
+                    </StatusBadge>
                   </td>
-                  <td>{money.format(Number(r.total))}</td>
+                  <td className="whitespace-nowrap font-semibold">
+                    {money.format(Number(r.total))}
+                  </td>
                   <td>{r.version}</td>
                 </tr>
               ))}

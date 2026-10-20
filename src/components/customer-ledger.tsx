@@ -1,10 +1,6 @@
 import Link from "next/link";
-import { usd } from "@/lib/finance";
-import {
-  expenseStatuses,
-  reimbursements,
-  expenseMethods,
-} from "@/lib/operations";
+import { paymentMethods, usd } from "@/lib/finance";
+import { expenseStatuses, reimbursements } from "@/lib/operations";
 import type { CustomerLedgerResult } from "@/lib/customer-ledger";
 
 export function CustomerLedger({
@@ -97,7 +93,7 @@ export function CustomerLedger({
                       ? "Registrado"
                       : expenseStatuses[r.status]}
                   </td>
-                  <td>{expenseMethods[r.method]}</td>
+                  <td>{paymentMethods[r.method]}</td>
                   <td className="max-w-sm whitespace-pre-wrap break-words">
                     {payments ? (
                       <>

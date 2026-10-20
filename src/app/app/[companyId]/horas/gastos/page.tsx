@@ -2,6 +2,7 @@ import {
   WorkforceReceiptReview,
   receiptReviewHistorySchema,
 } from "@/components/workforce-receipt-review";
+import { aiFeaturesIncluded } from "@/lib/product-scope";
 import { receiptProviderConfig } from "@/lib/receipt-review-provider";
 import Link from "next/link";
 import { z } from "zod";
@@ -23,6 +24,7 @@ import {
   WorkforceGeneralForm,
 } from "@/components/workforce-expenses";
 import { ListPagination } from "@/components/list-pagination";
+import { Button } from "@/components/ui/button";
 export default async function WorkforceExpenses({
   params,
   searchParams,
@@ -129,6 +131,7 @@ export default async function WorkforceExpenses({
     throw new Error("No se pudo consultar el historial de análisis.");
   const receiptReviews = receiptReviewHistorySchema.parse(reviewsResult.data);
   const reviewAvailable =
+    aiFeaturesIncluded &&
     receiptProviderConfig(process.env, companyId).length > 0;
   const format = new Intl.DateTimeFormat("es", {
     timeZone: company.timezone,
@@ -233,7 +236,7 @@ export default async function WorkforceExpenses({
             <option value="UNKNOWN">Sin declarar</option>
           </select>
         </label>
-        <button className="underline">Filtrar</button>
+        <Button>Filtrar</Button>
       </form>
       <div className="grid gap-5">
         {data?.map((e) => {
@@ -342,6 +345,14 @@ export default async function WorkforceExpenses({
                 rel="noopener noreferrer"
               >
                 Abrir recibo privado
+              </a>
+              <a
+                className="underline block mb-3"
+                href={`/api/workforce/${companyId}/expenses/${e.id}/receipt?preview=1`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Vista para revisión visual · HEIC/HEIF convertido a JPG
               </a>
               <Link
                 className="underline block mb-3"

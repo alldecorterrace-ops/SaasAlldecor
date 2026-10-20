@@ -1,5 +1,7 @@
 "use server";
 import { createClient } from "@/lib/supabase/server";
+import { after } from "next/server";
+import { processSubmittedWebNotices } from "@/lib/web-notice-worker";
 import type { ActionState } from "@/components/action-form";
 export async function submitInquiry(
   formId: string,
@@ -17,6 +19,8 @@ export async function submitInquiry(
       "postal_code",
       "message",
       "service",
+      "contact_preference",
+      "appointment_date",
       "length",
       "width",
       "height",
@@ -33,8 +37,10 @@ export async function submitInquiry(
   if (error)
     return {
       error:
-        "No se pudo registrar. Revisa nombre, correo y medidas (0–200 ft). El formulario puede haber vencido o alcanzado su límite diario.",
+        "No se pudo registrar. Revisa nombre, correo, fecha de cita y medidas (0–200 ft). El formulario puede haber vencido o alcanzado su límite diario.",
     };
+  const requestId = String(form.get("request_id") ?? "");
+  after(() => processSubmittedWebNotices(formId, requestId));
   return {
     success:
       "Solicitud recibida. La empresa revisará tus datos para preparar el estimado. Esta solicitud no es una cotización ni genera un cobro.",

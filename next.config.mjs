@@ -3,10 +3,32 @@
 /** @type {import('next').NextConfig} */
 const config = {
   poweredByHeader: false,
-  outputFileTracingIncludes: { "/*": ["./assets/fonts/NotoSans-Regular.ttf"] },
+  outputFileTracingIncludes: {
+    "/*": [
+      "./assets/fonts/NotoSans-Regular.ttf",
+      "./scripts/receipt-heic-convert.cjs",
+      "./node_modules/heic-convert/**/*",
+      "./node_modules/heic-decode/**/*",
+      "./node_modules/libheif-js/**/*",
+      "./node_modules/jpeg-js/**/*",
+      "./node_modules/pngjs/**/*",
+    ],
+  },
   experimental: { cpus: 1, serverActions: { bodySizeLimit: "6mb" } },
   async headers() {
     return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
+      },
       {
         source: "/cliente",
         headers: [
@@ -23,18 +45,28 @@ const config = {
           { key: "Referrer-Policy", value: "no-referrer" },
         ],
       },
-      {
-        source: "/(.*)",
-        headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "DENY" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
-          },
-        ],
-      },
+      // Specific private routes must follow the general rule: Next uses the
+      // last matching header, including when a download returns an error.
+      ...[
+        "/",
+        "/auth/:path*",
+        "/login",
+        "/registro",
+        "/recuperar-contrasena",
+        "/actualizar-contrasena",
+        "/api/commercial-documents/:path*",
+        "/api/invoice-email/:path*",
+        "/api/estimate-email/:path*",
+        "/api/web-notices/:path*",
+        "/api/customers/:path*",
+        "/api/work-documents/:path*",
+        "/api/history-files/:path*",
+        "/api/expenses/:path*",
+        "/api/workforce/:path*",
+      ].map((source) => ({
+        source,
+        headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
+      })),
     ];
   },
 };

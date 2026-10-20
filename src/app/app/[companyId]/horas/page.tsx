@@ -3,7 +3,9 @@ import { randomUUID } from "node:crypto";
 import { requireModule } from "@/lib/auth";
 import { canAccess } from "@/lib/modules";
 import { TimeForm } from "@/components/time-form";
-import { EntitySelect } from "@/components/entity-select";
+import { PunchForm } from "@/components/punch-form";
+import { punchProjectsSchema } from "@/lib/time-visits";
+import { workforceScopeSchema } from "@/lib/workforce";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ListPagination } from "@/components/list-pagination";
@@ -42,6 +44,20 @@ export default async function Hours({
         .maybeSingle()
     : { data: null, error: null };
   if (current.error) throw new Error("No se pudo consultar tu marcación.");
+  const scope = await db.rpc("workforce_scope", { p_company: companyId });
+  if (scope.error)
+    throw new Error("No se pudo consultar el alcance del equipo.");
+  const workforce = workforceScopeSchema.parse(scope.data);
+  const punchCatalog =
+    mine && write && !current.data
+      ? await db.rpc("time_punch_projects", { p_company: companyId })
+      : { data: [], error: null };
+  if (punchCatalog.error)
+    throw new Error("No se pudieron consultar los proyectos del reloj.");
+  const punchProjects = punchProjectsSchema.parse(punchCatalog.data);
+  const hasTeamReport = ["ADMIN", "FOREMAN", "OFFICE"].includes(
+    workforce.role ?? "",
+  );
   const statuses =
       view === "requests"
         ? {
@@ -125,33 +141,14 @@ export default async function Hours({
                   ? ` · Entrada: ${format.format(new Date(current.data.starts_at))}`
                   : " · Sin jornada abierta"}
               </p>
-              <TimeForm
+              <PunchForm
                 key={`${current.data?.id ?? "new"}:${current.data?.version ?? 0}`}
                 companyId={companyId}
-                operation="punch"
-                label={current.data ? "Marcar salida" : "Marcar entrada"}
-              >
-                <input
-                  type="hidden"
-                  name="id"
-                  value={current.data?.id ?? randomUUID()}
-                />
-                <input
-                  type="hidden"
-                  name="action"
-                  value={current.data ? "OUT" : "IN"}
-                />
-                {!current.data && (
-                  <EntitySelect
-                    companyId={companyId}
-                    kind="projects"
-                    name="project_id"
-                    label="Proyecto"
-                    initial={null}
-                    canSearch={canAccess(member, "fin-proyectos")}
-                  />
-                )}
-              </TimeForm>
+                id={current.data?.id ?? randomUUID()}
+                exit={Boolean(current.data)}
+                projects={punchProjects}
+                preferredProjectId={workforce.preferred_project_id}
+              />
             </>
           ) : (
             <p>
@@ -162,6 +159,14 @@ export default async function Hours({
         </section>
       )}
       <nav className="flex flex-wrap gap-5 mb-5">
+        <Link className="underline" href={`${base}/resumen`}>
+          Días trabajados por proyecto
+        </Link>
+        {hasTeamReport && (
+          <Link className="underline" href={`${base}/equipo/resumen`}>
+            Horas del equipo
+          </Link>
+        )}
         <Link className="underline" href={`/app/${companyId}/horas/gastos`}>
           Gastos de Workforce
         </Link>

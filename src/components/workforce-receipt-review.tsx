@@ -1,3 +1,4 @@
+import { aiFeaturesIncluded } from "@/lib/product-scope";
 import { randomUUID } from "node:crypto";
 import { WorkforceReceiptReviewForm } from "./workforce-receipt-review-form";
 export { receiptReviewHistorySchema } from "@/lib/receipt-review";
@@ -60,11 +61,19 @@ export function WorkforceReceiptReview({
   return (
     <section className="border-t mt-4 pt-4 min-w-0">
       <h3 className="font-semibold">Revisión del recibo</h3>
-      <p className="text-sm mt-2">
-        El análisis compara el recibo con el gasto y las obras de la jornada. La
-        confirmación humana se registra por separado; no aprueba ni paga el
-        gasto.
-      </p>
+      {!aiFeaturesIncluded && (
+        <p className="text-sm mt-2">
+          Administración comprueba el recibo y registra su revisión. Revisar no
+          aprueba el gasto ni registra un reembolso.
+        </p>
+      )}
+      {aiFeaturesIncluded && (
+        <p className="text-sm mt-2">
+          El análisis compara el recibo con el gasto y las obras de la jornada.
+          La confirmación humana se registra por separado; no aprueba ni paga el
+          gasto.
+        </p>
+      )}
       {attention === "ADMIN_CORRECTION" && (
         <p role="status" className="mt-2 font-medium">
           Administración debe corregir este gasto. Ya se utilizó el reenvío del
@@ -88,40 +97,57 @@ export function WorkforceReceiptReview({
           intento; el anterior se conservará.
         </p>
       )}
-      {!history.length && (
+      {aiFeaturesIncluded && !history.length && (
         <p className="text-sm mt-2">
           Este recibo todavía no tiene un análisis registrado.
         </p>
       )}
-      {canReview && eligible && current?.status !== "DONE" && !running && (
-        <>
-          {!available && (
-            <p className="text-sm mt-2">
-              No hay un proveedor de IA habilitado para esta empresa.
-            </p>
-          )}
-          <WorkforceReceiptReviewForm
-            key={`analyze:${id}:${version}`}
-            company={company}
-            id={id}
-            version={version}
-            request={randomUUID()}
-            mode="analyze"
-            available={available}
-          />
-        </>
-      )}
-      {canReview && eligible && !reviewed && current?.status === "DONE" && (
+      {aiFeaturesIncluded &&
+        canReview &&
+        eligible &&
+        current?.status !== "DONE" &&
+        !running && (
+          <>
+            {!available && (
+              <p className="text-sm mt-2">
+                No hay un proveedor de IA habilitado para esta empresa.
+              </p>
+            )}
+            <WorkforceReceiptReviewForm
+              key={`analyze:${id}:${version}`}
+              company={company}
+              id={id}
+              version={version}
+              request={randomUUID()}
+              mode="analyze"
+              available={available}
+            />
+          </>
+        )}
+      {canReview && eligible && !reviewed && !aiFeaturesIncluded && (
         <WorkforceReceiptReviewForm
-          key={`confirm:${id}:${version}`}
           company={company}
           id={id}
           version={version}
           request={randomUUID()}
-          mode="confirm"
-          job={current.id}
+          mode="manual"
         />
       )}
+      {aiFeaturesIncluded &&
+        canReview &&
+        eligible &&
+        !reviewed &&
+        current?.status === "DONE" && (
+          <WorkforceReceiptReviewForm
+            key={`confirm:${id}:${version}`}
+            company={company}
+            id={id}
+            version={version}
+            request={randomUUID()}
+            mode="confirm"
+            job={current.id}
+          />
+        )}
       {history.length > 0 && (
         <details className="mt-3">
           <summary className="cursor-pointer font-semibold">

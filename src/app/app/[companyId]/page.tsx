@@ -48,16 +48,16 @@ export default async function Dashboard({
           </Button>
         )}
       </div>
-      <section className="relative mb-7 overflow-hidden rounded-2xl bg-[#174b3b] p-7 text-white sm:p-9">
+      <section className="workspace-hero mb-7 p-7 sm:p-9">
         <div className="absolute right-[-50px] bottom-[-120px] size-80 rounded-full border border-white/10" />
         <div className="absolute right-[-10px] bottom-[-160px] size-80 rounded-full border border-white/10" />
-        <p className="text-[10px] font-semibold tracking-[.18em] text-[#c8dbab] uppercase">
+        <p className="text-[10px] font-semibold tracking-[.18em] text-indigo-200 uppercase">
           El comienzo de una nueva etapa
         </p>
         <h2 className="relative mt-4 text-2xl font-semibold tracking-tight">
           Tu espacio ya tiene una base.
         </h2>
-        <p className="relative mt-3 max-w-lg text-sm leading-6 text-white/70">
+        <p className="relative mt-3 max-w-lg text-sm leading-6 text-indigo-100">
           Organiza tus leads, conviértelos en clientes y prepara tu catálogo de
           productos. Configura el acceso de cada integrante del equipo.
         </p>
@@ -128,7 +128,7 @@ export default async function Dashboard({
               <Link
                 href={moduleHref(companyId, m.id)}
                 key={m.id}
-                className="flex items-center justify-between gap-2 rounded-lg bg-background p-3 text-xs"
+                className="flex min-h-11 items-center justify-between gap-2 rounded-lg border border-border bg-background p-3 text-xs transition-colors hover:border-indigo-200 hover:bg-accent"
               >
                 <span>{m.label}</span>
                 <span

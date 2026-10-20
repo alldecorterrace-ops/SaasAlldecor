@@ -1,5 +1,9 @@
 "use server";
 import {
+  reviewReceiptManually,
+  manualReceiptReviewSchema,
+} from "@/lib/manual-receipt-review";
+import {
   receiptReviewFormSchema,
   receiptConfirmationSchema,
 } from "@/lib/receipt-review";
@@ -321,5 +325,33 @@ export async function confirmWorkforceReceipt(
   return {
     success:
       "Revisión humana registrada con tu cuenta y fecha. No se aprobó ni pagó el gasto.",
+  };
+}
+
+export async function reviewWorkforceReceiptManually(
+  company: string,
+  _: WorkforceExpenseState,
+  form: FormData,
+): Promise<WorkforceExpenseState> {
+  const { db } = await requireModule(company, "horasfix", "write");
+  const parsed = manualReceiptReviewSchema.safeParse(Object.fromEntries(form));
+  if (!parsed.success)
+    return {
+      error:
+        "Confirma la revisión visual y escribe una nota de 5 a 500 caracteres.",
+    };
+  try {
+    await reviewReceiptManually(db, company, parsed.data);
+  } catch (e) {
+    return { error: receiptReviewError(e) };
+  }
+  revalidatePath(`/app/${company}/horas/gastos`);
+  revalidatePath(`/app/${company}/horas/reembolsos`);
+  revalidatePath(
+    `/app/${company}/historial/workforce_expenses/${parsed.data.id}`,
+  );
+  return {
+    success:
+      "Revisión manual registrada. Se conservan el gasto y sus aprobaciones; no se registra un pago.",
   };
 }

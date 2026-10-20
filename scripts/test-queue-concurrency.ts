@@ -4,6 +4,7 @@ import { readFile, readdir } from "node:fs/promises";
 import { Pool, type PoolClient } from "pg";
 import { authStorageContract } from "../tests/helpers/auth-storage-contract";
 import { stagingBootstrap } from "./ops/staging-bootstrap";
+import { syntheticManagerFixtures } from "../tests/helpers/synthetic-managers";
 
 async function main() {
   const connection = process.env.QUEUE_TEST_DATABASE_URL;
@@ -77,6 +78,8 @@ async function main() {
         })),
     );
     await pool.query(stagingBootstrap(migrations));
+    // Dedicated loopback database only: legacy business fixtures are preapproved managers.
+    await pool.query(syntheticManagerFixtures);
     assert.equal(
       (
         await pool.query(

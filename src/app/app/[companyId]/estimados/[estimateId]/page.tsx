@@ -116,11 +116,12 @@ export default async function EstimatePage({
     !canAccess(context.member, "fin-estimados", "write") ||
     !!search.revision ||
     initial.status === "ANULADA" ||
-    initial.status === "APROBADO";
+    initial.status === "APROBADO" ||
+    (initial.status as string) === "PENDIENTE_ENVIO";
   const canApprove =
     !isNew &&
     !search.revision &&
-    ["BORRADOR", "PENDIENTE"].includes(initial.status) &&
+    ["BORRADOR", "PENDIENTE", "ENVIADO"].includes(initial.status) &&
     ["fin-estimados", "fin-invoices", "fin-proyectos"].every((m) =>
       canAccess(context.member, m, "write"),
     );
@@ -176,6 +177,9 @@ export default async function EstimatePage({
           kind="estimate"
           record={id}
           version={version}
+          canEmail={["PENDIENTE", "ENVIADO", "ERROR_ENVIO"].includes(
+            initial.status,
+          )}
           canGenerate={
             !search.revision &&
             !["BORRADOR", "ANULADA"].includes(initial.status)

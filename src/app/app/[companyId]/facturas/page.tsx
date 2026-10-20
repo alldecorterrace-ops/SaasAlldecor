@@ -4,6 +4,8 @@ import { paymentStatuses, usd } from "@/lib/finance";
 import { ListPagination } from "@/components/list-pagination";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { InvoiceAllowance } from "@/components/invoice-allowance";
+import { StatusBadge } from "@/components/ui/status-badge";
 export default async function Invoices({
   params,
   searchParams,
@@ -62,6 +64,7 @@ export default async function Invoices({
           registran por separado.
         </p>
       </div>
+      <InvoiceAllowance companyId={companyId} />
       <form className="card mb-5 flex flex-wrap gap-4 items-end">
         <label className="field grow">
           Número
@@ -80,9 +83,17 @@ export default async function Invoices({
         </label>
         <Button>Filtrar</Button>
       </form>
-      <div className="card overflow-x-auto">
+      <div
+        className="card overflow-x-auto p-0"
+        role="region"
+        aria-label="Listado de facturas"
+        tabIndex={0}
+      >
         {data?.length ? (
           <table>
+            <caption className="sr-only">
+              Facturas, importes y estado de pago
+            </caption>
             <thead>
               <tr>
                 <th>Factura</th>
@@ -108,24 +119,44 @@ export default async function Invoices({
                   <td>{i.customer_snapshot.full_name}</td>
                   <td>
                     {i.invoice_date}
-                    <p>{i.due_date ?? "Sin vencimiento"}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {i.due_date ?? "Sin vencimiento"}
+                    </p>
                   </td>
-                  <td>{usd(i.total)}</td>
-                  <td>{usd(i.paid_amount)}</td>
-                  <td>{usd(i.balance_due)}</td>
+                  <td className="whitespace-nowrap font-semibold">
+                    {usd(i.total)}
+                  </td>
+                  <td className="whitespace-nowrap">{usd(i.paid_amount)}</td>
+                  <td className="whitespace-nowrap font-semibold">
+                    {usd(i.balance_due)}
+                  </td>
                   <td>
-                    {
-                      paymentStatuses[
-                        i.payment_status as keyof typeof paymentStatuses
-                      ]
-                    }
+                    <StatusBadge
+                      tone={
+                        i.payment_status === "PAID"
+                          ? "success"
+                          : i.payment_status === "PARTIAL"
+                            ? "info"
+                            : i.payment_status === "UNPAID"
+                              ? "warning"
+                              : "neutral"
+                      }
+                    >
+                      {
+                        paymentStatuses[
+                          i.payment_status as keyof typeof paymentStatuses
+                        ]
+                      }
+                    </StatusBadge>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p>No hay facturas en esta vista.</p>
+          <p className="p-10 text-center text-muted-foreground">
+            No hay facturas en esta vista.
+          </p>
         )}
       </div>
       <ListPagination

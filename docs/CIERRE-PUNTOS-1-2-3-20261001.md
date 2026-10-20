@@ -1,5 +1,7 @@
 # Cierre de los puntos 1, 2 y 3 — 1 de octubre de 2026
 
+> Seguimiento vigente: [Cierre actual del 6 de octubre](CIERRE-ACTUAL-20261006.md). Los conteos y entregas de este documento son antecedentes; no representan el cierre actual.
+
 ## Alcance y criterio
 
 Comercial/finanzas, Trabajadores/Campo y operaciones. Nuevas migraciones de datos,

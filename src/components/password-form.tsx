@@ -9,6 +9,7 @@ import type { RecoveryState } from "@/lib/password-recovery";
 import { Input } from "./ui/input";
 import { Feedback } from "./feedback";
 import { SubmitButton } from "./submit-button";
+import { Brand } from "./brand";
 
 export function PasswordForm({ mode }: { mode: "request" | "update" }) {
   const requesting = mode === "request";
@@ -19,6 +20,7 @@ export function PasswordForm({ mode }: { mode: "request" | "update" }) {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-16">
       <section className="w-full max-w-md card">
+        <Brand className="mb-8" />
         <p className="eyebrow">All Decor · Tu cuenta</p>
         <h1 className="page-title mt-3">
           {requesting ? "Recuperar contraseña" : "Elige tu nueva contraseña"}

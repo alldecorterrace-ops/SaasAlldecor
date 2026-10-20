@@ -3,8 +3,10 @@
 Los propietarios y administradores crean una invitación desde Configuración con
 el correo del destinatario. Puede crearse antes de que exista la cuenta. La
 persona inicia sesión o se registra y confirma ese correo; en Tus empresas puede
-aceptar o rechazar la invitación. El acceso inicial es de miembro sin módulos.
-El administrador asigna después los permisos en Miembros y permisos.
+aceptar o rechazar la invitación. El emisor define el rol y los permisos antes
+de enviarla; la aceptación aplica esos permisos sin sustituir accesos existentes.
+Un administrador puede invitar empleados, pero no eliminar ni degradar al
+propietario que compró la suscripción. Los empleados no pueden crear empresas.
 
 La invitación vence a los siete días. Los administradores pueden revocar las
 pendientes, consultar sus estados y crear otra cuando la anterior haya vencido,
@@ -53,3 +55,43 @@ La entrega `d6fe007` incluye los avisos automáticos. Un correo técnico enviado
 por el mismo transporte llegó a Recibidos, según confirmación del propietario.
 Queda comprobar una invitación nueva desde Configuración con sesión real,
 incluido su estado de envío. El ensayo técnico no creó invitaciones ficticias.
+
+## Ensayo externo acotado en staging
+
+El envío general sigue desactivado en staging. Para comprobar una invitación
+nueva con un destinatario autorizado existe una opción privada y temporal:
+`STAGING_INVITATION_TEST_ENABLED=true`, junto con `STAGING_INVITATION_TEST_COMPANY`,
+`STAGING_INVITATION_TEST_INVITATION`, `STAGING_INVITATION_TEST_EMAIL` y
+`STAGING_INVITATION_TEST_EXPIRES_AT`. La vigencia máxima es de dos horas. Exige
+el destino de staging, HTTPS y la captura de Auth previamente verificada; no
+permite habilitar los demás envíos, apuntar al backend de producción ni enviar
+invitaciones de gerente. Solo admite el primer aviso de la invitación indicada,
+al destinatario que devuelve la base. Los reenvíos quedan bloqueados.
+
+El formulario limita esa invitación a miembro con `clientes:read`. El registro
+de ese correo sigue exigiendo la invitación vigente y una empresa con pago válido;
+no habilita recuperación de contraseñas para direcciones reales en staging.
+La cuota del plan sigue contando miembros activos e invitaciones pendientes.
+
+`scripts/ops/staging-invitation-auth-test.sql` es un procedimiento opcional del
+operador, exclusivo del proyecto de staging verificado, sin datos de destinatario.
+No forma parte de las migraciones de producción. Su tabla privada vacía no
+autoriza ningún correo. Antes de activar una fila deben aprobarse el destinatario,
+la invitación y los permisos concretos. Solo el operador puede modificar esa
+política; los clientes y la clave de servicio no tienen acceso a ella.
+
+La confirmación original de Auth se captura en la tabla privada separada
+`staging_private.invitation_auth_mail`; la tabla anterior conserva su restricción
+a direcciones ficticias. El ensayo instala y prueba esa restricción original.
+La captura autorizada admite
+solo `signup`, para el usuario aún sin confirmar y la invitación exacta de consulta.
+Cambios de correo, recuperaciones, invitaciones revocadas, roles ampliados y
+ventanas vencidas se rechazan. Esta prueba puede acreditar la entrega de la
+invitación; no acredita entrega SMTP del correo de confirmación de Auth.
+
+Al terminar, desactivar la fila privada y la opción del entorno, reiniciar staging
+y comprobar que los envíos vuelven a quedar bloqueados. Conservar los registros
+y resultados del ensayo, sin incluir correos reales ni tokens en Git. Las pruebas
+`staging-invitation-mail.test.ts` y `staging-invitation-auth.test.ts` comprueban esos
+límites, MIME, duplicados y permisos de la captura. La recepción y aceptación
+reales se documentan después de realizarlas; el código preparado no las acredita.

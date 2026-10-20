@@ -1,3 +1,4 @@
+import { SubscriptionSummary } from "@/components/subscription-summary";
 import { requireModule } from "@/lib/auth";
 import { randomUUID } from "node:crypto";
 import {
@@ -19,6 +20,11 @@ export default async function Settings({
   const { companyId } = await params;
   const { db, company, member } = await requireModule(companyId, "config");
   const manager = ["owner", "admin"].includes(member.role);
+  const { data: canInviteUsers, error: invitePermissionError } = manager
+    ? await db.rpc("can_invite_company_users", { p_company: companyId })
+    : { data: false, error: null };
+  if (invitePermissionError)
+    throw new Error("No se pudo comprobar quién puede invitar al equipo.");
   const { data, error } = manager
     ? await db
         .from("memberships")
@@ -31,7 +37,7 @@ export default async function Settings({
     ? await db
         .from("company_invitations")
         .select(
-          "id,email,status,created_at,expires_at,invitation_email_attempts(status,created_at)",
+          "id,email,role,permissions,status,created_at,expires_at,invitation_email_attempts(status,created_at)",
         )
         .eq("company_id", companyId)
         .order("created_at", { ascending: false })
@@ -44,7 +50,10 @@ export default async function Settings({
     : { data: [], error: null };
   if (inviteError) throw new Error("Invitaciones no disponibles");
   const renderedAt = new Date().getTime();
-  const mailEnabled = Boolean(invitationMailConfig(process.env));
+  const mailConfig = invitationMailConfig(process.env);
+  const mailEnabled =
+    !!mailConfig &&
+    (!mailConfig.stagingTest || mailConfig.stagingTest.companyId === companyId);
   const deliveryLabels: Record<string, string> = {
     processing: "Envío iniciado; resultado sin confirmar",
     queued: "Aceptado por el servidor de correo",
@@ -71,16 +80,27 @@ export default async function Settings({
       <p className="mt-3 mb-7 text-sm text-muted-foreground">
         Ajusta tu espacio y define cómo participa cada persona.
       </p>
+      {manager && (
+        <SubscriptionSummary
+          companyId={companyId}
+          owner={member.role === "owner"}
+        />
+      )}
       <div className="mb-8 grid items-start gap-5 xl:grid-cols-2">
         <CompanySettings
           company={company}
           writable={canAccess(member, "config", "write")}
         />
-        {manager && (
+        {canInviteUsers === true && (
           <InviteMember
             companyId={companyId}
-            requestId={randomUUID()}
+            requestId={
+              mailEnabled && mailConfig?.stagingTest
+                ? mailConfig.stagingTest.invitationId
+                : randomUUID()
+            }
             mailEnabled={mailEnabled}
+            canInviteAdmin={manager}
           />
         )}
       </div>
@@ -102,6 +122,11 @@ export default async function Settings({
                   >
                     <div>
                       <p className="font-semibold break-all">{i.email}</p>
+                      <p className="mt-1 text-xs">
+                        {i.role === "admin"
+                          ? "Administrador de empresa"
+                          : `Miembro · ${Object.keys(i.permissions ?? {}).length} módulos`}
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         {i.status === "pending" && expired
                           ? "Vencida"
@@ -116,7 +141,7 @@ export default async function Settings({
                     </div>
                     {i.status === "pending" && !expired && (
                       <div className="grid gap-3">
-                        {mailEnabled && (
+                        {mailEnabled && !mailConfig?.stagingTest && (
                           <ResendInvitation companyId={companyId} id={i.id} />
                         )}
                         <RevokeInvitation companyId={companyId} id={i.id} />

@@ -3,6 +3,7 @@ import { usePreservedActionState } from "./use-preserved-action-state";
 import {
   analyzeWorkforceReceipt,
   confirmWorkforceReceipt,
+  reviewWorkforceReceiptManually,
   type WorkforceExpenseState,
 } from "@/app/app/[companyId]/horas/gastos/actions";
 import { Feedback } from "./feedback";
@@ -21,14 +22,16 @@ export function WorkforceReceiptReviewForm({
   id: string;
   version: number;
   request: string;
-  mode: "analyze" | "confirm";
+  mode: "analyze" | "confirm" | "manual";
   job?: string;
   available?: boolean;
 }) {
   const [state, action, pending, onReset] = usePreservedActionState(
     (mode === "analyze"
       ? analyzeWorkforceReceipt
-      : confirmWorkforceReceipt
+      : mode === "manual"
+        ? reviewWorkforceReceiptManually
+        : confirmWorkforceReceipt
     ).bind(null, company),
     {} as WorkforceExpenseState,
   );
@@ -39,9 +42,17 @@ export function WorkforceReceiptReviewForm({
         <input type="hidden" name="id" value={id} />
         <input type="hidden" name="version" value={version} />
         <input type="hidden" name="request" value={request} />
-        {mode === "confirm" && (
+        {mode !== "analyze" && (
           <>
-            <input type="hidden" name="job" value={job} />
+            {mode === "confirm" && (
+              <input type="hidden" name="job" value={job} />
+            )}
+            {mode === "manual" && (
+              <label className="flex gap-2">
+                <input type="checkbox" name="reviewed_visually" required />
+                Comprobé el recibo, fecha, importe, pagador y obra del gasto.
+              </label>
+            )}
             <label className="field">
               Nota de revisión humana
               <Input name="note" required minLength={5} maxLength={500} />

@@ -1,23 +1,16 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { authCallbackPath } from "@/lib/password-recovery";
+import { completeAuthCallback } from "@/lib/auth-callback";
 export async function GET(request: Request) {
-  const url = new URL(request.url),
-    code = url.searchParams.get("code");
+  const url = new URL(request.url);
   // Use the configured public origin when running behind a reverse proxy.
   const origin = process.env.NEXT_PUBLIC_SITE_URL ?? url.origin;
-  if (code) {
-    const db = await createClient();
-    const { error } = await db.auth.exchangeCodeForSession(code);
-    if (!error)
-      return NextResponse.redirect(
-        new URL(authCallbackPath(url.searchParams.get("next")), origin),
-      );
-  }
-  return NextResponse.redirect(
-    new URL(
-      "/login?error=El%20enlace%20no%20es%20v%C3%A1lido%20o%20ya%20venci%C3%B3.",
-      origin,
-    ),
+  const path = await completeAuthCallback(
+    async () => (await createClient()).auth,
+    url.searchParams,
   );
+  const response = NextResponse.redirect(new URL(path, origin));
+  response.headers.set("Cache-Control", "private, no-store");
+  response.headers.set("Referrer-Policy", "no-referrer");
+  return response;
 }

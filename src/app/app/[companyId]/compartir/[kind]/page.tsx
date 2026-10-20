@@ -4,6 +4,8 @@ import { requireModule } from "@/lib/auth";
 import { canAccess } from "@/lib/modules";
 import { ActionForm } from "@/components/action-form";
 import { shareAction } from "../actions";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 export default async function Shares({
   params,
   searchParams,
@@ -67,7 +69,7 @@ export default async function Shares({
     base = `/app/${companyId}/compartir/${kind}`;
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">
+      <h1 className="page-title">
         {kind === "estimate" ? "Estimados web" : "Portal del cliente"}
       </h1>
       {kind === "estimate" && (
@@ -80,15 +82,20 @@ export default async function Shares({
           ? "Publica una revisión exacta y recibe la aceptación o solicitud de cambios del cliente. La aprobación financiera se registra después en Estimados."
           : "El enlace muestra únicamente proyectos y saldos de facturas del cliente seleccionado. No da acceso al equipo, costos ni notas internas."}
       </p>
-      <form className="flex gap-3">
-        <input
-          name="q"
-          placeholder={
-            kind === "estimate" ? "Buscar número de estimado" : "Buscar cliente"
-          }
-          defaultValue={q}
-        />
-        <button>Buscar</button>
+      <form className="card flex flex-wrap items-end gap-3">
+        <label className="field flex-1">
+          Buscar
+          <Input
+            name="q"
+            placeholder={
+              kind === "estimate"
+                ? "Buscar número de estimado"
+                : "Buscar cliente"
+            }
+            defaultValue={q}
+          />
+        </label>
+        <Button>Buscar</Button>
       </form>
       {write && (
         <ActionForm

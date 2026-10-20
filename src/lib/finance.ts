@@ -58,6 +58,10 @@ export const projectSchema = z
     "La fecha final debe ser posterior o igual al inicio.",
   );
 export function financeError(error: { code?: string; message: string }) {
+  if (error.message.includes("subscription_invoice_limit"))
+    return "Tu suscripción alcanzó el cupo mensual de facturas entre todas sus empresas. El estimado se conserva sin aprobar. Espera al próximo mes o solicita ampliar el plan.";
+  if (error.message.includes("subscription_inactive"))
+    return "La suscripción debe estar activa para guardar cambios. El dueño puede revisar su estado en Configuración.";
   if (error.message.includes("request_conflict"))
     return "La solicitud ya se usó con otros datos. Reabre la ficha antes de continuar.";
   if (error.message.includes("invalid_finance_request"))

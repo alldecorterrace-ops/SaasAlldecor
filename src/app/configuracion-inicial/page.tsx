@@ -1,6 +1,8 @@
+import { Brand } from "@/components/brand";
 export default function Setup() {
   return (
     <main className="mx-auto max-w-xl px-6 py-24">
+      <Brand className="mb-8" />
       <p className="eyebrow">All Decor · Instalación</p>
       <h1 className="page-title mt-4">Conexión pendiente</h1>
       <p className="my-5 text-muted-foreground">

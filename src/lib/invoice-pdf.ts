@@ -1,3 +1,8 @@
+import {
+  commercialCompanyName,
+  commercialContactLines,
+  commercialFooterLines,
+} from "./commercial-identity";
 import { rgb, type PDFDocument, type PDFFont, type PDFPage } from "pdf-lib";
 import type { StoredCommercialDocument } from "./commercial-documents";
 import { usd, paymentMethods, paymentStatuses } from "./finance";
@@ -87,7 +92,11 @@ export function drawInvoicePdf(
   function next(first = false) {
     if (pdf.getPageCount() >= 100) throw new Error("document_too_long");
     page = pdf.addPage([612, 792]);
-    const names = wrap(doc.snapshot.company.name, first ? 17 : 12, 303);
+    const names = wrap(
+      commercialCompanyName(doc.snapshot.company),
+      first ? 17 : 12,
+      303,
+    );
     const numbers = wrap(doc.number, first ? 11 : 9, 158);
     const headerHeight = first
       ? Math.max(98, names.length * 23 + 50, numbers.length * 15 + 66)
@@ -231,6 +240,9 @@ export function drawInvoicePdf(
     y -= 12;
   }
   next(true);
+  commercialContactLines(doc.snapshot.company).forEach((line) =>
+    paragraph(line, 9),
+  );
   const clientLines = [
     r.customer_snapshot.full_name,
     [
@@ -425,12 +437,28 @@ export function drawInvoicePdf(
     section("Notas completas");
     paragraph(r.notes);
   }
-  section("PAYMENT METHODS / MÉTODOS DE PAGO");
-  paragraph(`Zelle / Wire transfer / Check / Cash. Referencia: ${doc.number}.`);
-  paragraph(
-    "Documento conservado de la factura. Los pagos y el saldo corresponden al momento de generación.",
-    8,
+  const instructions =
+    doc.snapshot.company.commercial?.payment_instructions ||
+    `Zelle / Wire transfer / Check / Cash. Referencia: ${doc.number}.`;
+  const companyFooter = commercialFooterLines(doc.snapshot.company);
+  const notice =
+    "Documento conservado de la factura. Los pagos y el saldo corresponden al momento de generación.";
+  const tailHeight =
+    wrap(instructions, 9, width).length * 12.6 +
+    7 +
+    companyFooter.reduce(
+      (height, line) => height + wrap(line, 9, width).length * 12.6 + 7,
+      0,
+    ) +
+    wrap(notice, 8, width).length * 11.2 +
+    7;
+  section(
+    "PAYMENT METHODS / MÉTODOS DE PAGO",
+    doc.snapshot.company.commercial ? Math.min(tailHeight, 400) : 30,
   );
+  paragraph(instructions);
+  companyFooter.forEach((line) => paragraph(line, 9));
+  paragraph(notice, 8);
   pdf.getPages().forEach((p, n) => {
     p.drawLine({
       start: { x: left, y: 48 },

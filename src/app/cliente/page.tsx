@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { ActionForm } from "@/components/action-form";
 import { respondShare, leaveShare } from "../acceso/actions";
 import { PrintButton } from "@/components/print-button";
+import { Button } from "@/components/ui/button";
+import { Brand } from "@/components/brand";
 export const dynamic = "force-dynamic";
 export default async function ClientPage() {
   const token = (await cookies()).get("client_access")?.value,
@@ -13,7 +15,8 @@ export default async function ClientPage() {
   if (error || !data)
     return (
       <main className="max-w-lg mx-auto p-6">
-        <h1>Acceso no disponible</h1>
+        <Brand className="mb-8" />
+        <h1 className="page-title mb-4">Acceso no disponible</h1>
         <p>
           Abre el enlace privado que te entregó la empresa. Puede haber vencido
           o sido revocado.
@@ -23,10 +26,13 @@ export default async function ClientPage() {
   const doc = data.document;
   return (
     <main className="max-w-4xl mx-auto p-5 space-y-6">
-      <header className="flex justify-between gap-4">
-        <h1 className="text-2xl font-semibold">{data.company}</h1>
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border py-5">
+        <div>
+          <p className="eyebrow mb-2">Portal del cliente</p>
+          <h1 className="page-title">{data.company}</h1>
+        </div>
         <form action={leaveShare} className="print:hidden">
-          <button>Cerrar acceso</button>
+          <Button variant="outline">Cerrar acceso</Button>
         </form>
       </header>
       <PrintButton />

@@ -4,7 +4,12 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { companyContext, requireUser } from "@/lib/auth";
 import { uuid } from "@/lib/validation";
+import { workspaceModules } from "@/lib/modules";
 import { invitationMailConfig, notifyInvitation } from "@/lib/invitation-mail";
+import {
+  stagingInvitationTest,
+  stagingInvitationTestFormAllowed,
+} from "@/lib/staging-invitation-test";
 
 export type InvitationState = { error?: string; success?: string };
 export async function createInvitation(
@@ -19,14 +24,55 @@ export async function createInvitation(
     .object({ id: uuid, email: z.string().trim().max(254).pipe(z.email()) })
     .safeParse({ id: form.get("request_id"), email: form.get("email") });
   if (!parsed.success) return { error: "Revisa el correo del destinatario." };
-  const { data: invitationId, error } = await db.rpc(
-    "create_company_invitation",
-    {
-      p_company: companyId,
-      p_id: parsed.data.id,
-      p_email: parsed.data.email,
-    },
-  );
+  const permissions: Record<string, string[]> = {};
+  for (const m of workspaceModules.filter((m) => m.ready)) {
+    const actions = [
+      ...(form.get(`read:${m.id}`) === "on" ? ["read"] : []),
+      ...(form.get(`write:${m.id}`) === "on" ? ["write"] : []),
+    ];
+    if (actions.length) permissions[m.id] = actions;
+  }
+  const role = z
+    .enum(["admin", "member"])
+    .safeParse(form.get("role") ?? "member");
+  if (!role.success) return { error: "No puedes invitar con ese rol." };
+  const qa = stagingInvitationTest(process.env);
+  if (
+    qa &&
+    !stagingInvitationTestFormAllowed(qa, {
+      company: companyId,
+      invitation: parsed.data.id,
+      email: parsed.data.email,
+      role: role.data,
+      permissions,
+    })
+  )
+    return {
+      error:
+        "La invitación de prueba está limitada al empleado y los permisos de consulta previstos.",
+    };
+  const { data: invitationId, error } = await db.rpc("invite_company_user", {
+    p_company: companyId,
+    p_id: parsed.data.id,
+    p_email: parsed.data.email,
+    p_role: role.data,
+    p_permissions: role.data === "admin" ? {} : permissions,
+  });
+  if (error?.message.includes("subscription_pending_user_limit"))
+    return {
+      error:
+        "La bajada programada no permite más personas. Libera una plaza o pide al dueño que cancele la bajada antes de invitar.",
+    };
+  if (error?.message.includes("subscription_user_limit"))
+    return {
+      error:
+        "El plan ya tiene todas sus plazas ocupadas o reservadas. Revoca una invitación pendiente o libera una plaza antes de invitar.",
+    };
+  if (error?.message.includes("subscription_inactive"))
+    return {
+      error:
+        "La suscripción necesita regularizarse. El propietario puede revisar el pago para habilitar nuevas invitaciones.",
+    };
   if (error)
     return {
       error: error.message.includes("member_exists")

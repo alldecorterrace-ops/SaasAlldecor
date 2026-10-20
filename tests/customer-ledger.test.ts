@@ -9,6 +9,7 @@ import { fullDatabase } from "./helpers/full-database";
 import { emptyItem } from "../src/lib/estimates";
 import { loadCustomerRecords } from "../src/lib/customer-records";
 import { customerLedgerSchema } from "../src/lib/customer-ledger";
+import { expenseSchema } from "../src/lib/operations";
 import { CustomerRecords } from "../src/components/customer-records";
 import type { Membership } from "../src/lib/modules";
 
@@ -171,7 +172,7 @@ test("customer ledger preserves financial totals, identity and permissions", asy
         JSON.stringify({
           payment_date: "2026-09-29",
           amount: "10.01",
-          method: "OTRO",
+          method: n === 0 ? "SIN_METODO" : n === 1 ? "NOT_CHARGED" : "OTRO",
           reference: `QA-${n}`,
           notes: "<QA> sin dinero real",
         }),
@@ -245,6 +246,27 @@ test("customer ledger preserves financial totals, identity and permissions", asy
             customerId: client,
             records: a,
           }),
+        );
+        const allHtml =
+          html +
+          renderToStaticMarkup(
+            createElement(CustomerRecords, {
+              companyId: company,
+              customerId: client,
+              records: b,
+            }),
+          );
+        assert.match(allHtml, /Not charged\./);
+        assert.match(allHtml, /\(sin método\)/);
+        assert.equal(rows.find((r) => r.id === ids[0])?.status, "ANULADO");
+        assert.equal(rows.find((r) => r.id === ids[1])?.status, "REGISTRADO");
+        assert.equal(
+          expenseSchema.shape.method.safeParse("SIN_METODO").success,
+          false,
+        );
+        assert.equal(
+          expenseSchema.shape.method.safeParse("NOT_CHARGED").success,
+          false,
         );
         assert.match(html, /Total pagado.*210\.21/);
         assert.match(html, /facturas\//);
@@ -390,7 +412,9 @@ test("customer ledger preserves financial totals, identity and permissions", asy
     await t.test(
       "malformed and failed responses never render a false zero balance",
       async () => {
+        const valid = (await get("pagos")).ledger!;
         for (const data of [
+          { ...valid, rows: [{ ...valid.rows[0], method: "UNSUPPORTED" }] },
           null,
           {},
           { rows: [], count: 0, page: 1, total: "wrong" },

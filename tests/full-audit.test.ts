@@ -43,7 +43,7 @@ test("Full schema audit: financial workflow and access boundaries after every mi
       },
     );
     await t.test(
-      "only the four intended public-link/form functions permit anonymous execution",
+      "only intended public links, forms and the boolean invitation lookup permit anonymous execution",
       async () => {
         const result = await db.query<{ name: string }>(`
         select p.proname name from pg_proc p join pg_namespace n on n.oid=p.pronamespace
@@ -54,6 +54,7 @@ test("Full schema audit: financial workflow and access boundaries after every mi
           result.rows.map((r) => r.name),
           [
             "read_client_share",
+            "registration_invitation_available",
             "respond_client_share",
             "submit_web_request",
             "web_form_info",
