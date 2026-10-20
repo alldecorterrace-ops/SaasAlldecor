@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacidad de la conexión de respaldos | SaasAlldecor</title>
+    <meta
+      name="description"
+      content="Uso de Google Drive por la conexión privada de respaldos cifrados de SaasAlldecor."
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Arial, sans-serif;
+        color: #112b38;
+        background: #f5f7f8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        line-height: 1.7;
+      }
+      header,
+      main,
+      footer {
+        max-width: 850px;
+        margin: auto;
+        padding: 28px;
+      }
+      header {
+        border-bottom: 1px solid #d8e1e6;
+      }
+      header a {
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 20px;
+      }
+      main {
+        padding-top: 40px;
+        padding-bottom: 40px;
+      }
+      h1 {
+        font-size: clamp(28px, 5vw, 40px);
+        line-height: 1.2;
+        letter-spacing: -0.03em;
+      }
+      h2 {
+        font-size: 21px;
+        margin-top: 32px;
+        line-height: 1.4;
+      }
+      a {
+        color: #0b577f;
+        text-underline-offset: 3px;
+      }
+      a:focus-visible {
+        outline: 3px solid #087eb8;
+        outline-offset: 5px;
+      }
+      .date,
+      footer {
+        color: #4b616d;
+        font-size: 14px;
+      }
+      .intro {
+        font-size: 18px;
+      }
+      footer {
+        border-top: 1px solid #d8e1e6;
+      }
+      code {
+        overflow-wrap: anywhere;
+      }
+    </style>
+  </head>
+  <body>
+    <header><a href="/">SaasAlldecor</a></header>
+    <main>
+      <p class="date">
+        Conexión operativa privada · Actualizado el 20 de octubre de 2026
+      </p>
+      <h1>Privacidad de los respaldos en Google Drive</h1>
+      <p class="intro">
+        Este aviso explica cómo la aplicación «SaasAlldecor - Respaldos» utiliza
+        Google Drive para guardar y comprobar copias cifradas del servicio. La
+        conexión está destinada a los operadores autorizados del SaaS.
+      </p>
+
+      <h2>Acceso a Google Drive</h2>
+      <p>
+        La conexión solicita el permiso <code>drive.file</code>. Este permiso
+        permite gestionar los archivos creados por la aplicación o seleccionados
+        expresamente para usar con ella. No concede acceso general al resto de
+        los archivos de Drive ni al correo de Gmail.
+      </p>
+      <p>
+        El proceso de respaldo utiliza una carpeta privada designada por el
+        titular de la cuenta. Lee los metadatos de sus copias y la cuota
+        disponible, sube los paquetes cifrados y vuelve a descargarlos para
+        comprobar su integridad.
+      </p>
+
+      <h2>Finalidad y contenido</h2>
+      <p>
+        Las copias sirven para recuperar el SaaS ante pérdida de datos o fallos
+        del servicio. Pueden contener su base de datos, cuentas y permisos,
+        documentos, archivos y configuración de funcionamiento. El paquete se
+        cifra antes de enviarlo a Drive; los nombres originales y el inventario
+        de su contenido quedan dentro del paquete cifrado.
+      </p>
+      <p>
+        Los datos obtenidos mediante esta conexión se utilizan exclusivamente
+        para las operaciones de respaldo, comprobación y recuperación. No se
+        venden ni se utilizan para publicidad o para entrenar modelos de
+        inteligencia artificial.
+      </p>
+
+      <h2>Almacenamiento y protección</h2>
+      <p>
+        Google Drive almacena el paquete cifrado y su comprobante cifrado. El
+        servidor de respaldo conserva la autorización OAuth en una ubicación
+        privada para realizar las transferencias. La clave privada necesaria
+        para descifrar las copias se conserva por separado, bajo custodia del
+        titular, fuera del hosting, del repositorio de código y de la carpeta de
+        Drive.
+      </p>
+      <p>
+        La conexión no publica los archivos ni crea enlaces de acceso público.
+        El acceso a la cuenta de Google y la custodia de la clave de
+        recuperación siguen siendo necesarios para proteger las copias.
+      </p>
+
+      <h2>Conservación y eliminación</h2>
+      <p>
+        La conservación se administra según el calendario de respaldos
+        configurado por el operador. El titular puede revisar o eliminar los
+        archivos desde su Drive. Revocar la conexión detiene el acceso futuro,
+        pero no elimina por sí solo las copias que ya estén guardadas. Una copia
+        eliminada definitivamente o una clave privada perdida pueden impedir la
+        recuperación.
+      </p>
+
+      <h2>Control de la conexión y contacto</h2>
+      <p>
+        El titular puede retirar la autorización desde
+        <a href="https://myaccount.google.com/connections"
+          >las conexiones de su Cuenta de Google</a
+        >. Para consultas o solicitudes sobre esta conexión, puede utilizar el
+        correo de asistencia identificado en su pantalla de consentimiento de
+        Google.
+      </p>
+      <p>
+        Este aviso se limita a la conexión de respaldos. La disponibilidad de
+        una copia y la recuperación completa del servicio requieren
+        comprobaciones operativas independientes.
+      </p>
+    </main>
+    <footer><a href="/">Volver a SaasAlldecor</a></footer>
+  </body>
+</html>
