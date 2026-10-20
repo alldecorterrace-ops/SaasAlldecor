@@ -23,12 +23,20 @@ const roleRows = [
     "Empleado con permisos de consulta, sin modificaciones. También ocupa una plaza del plan.",
   ],
 ];
-export default function Plans() {
+export default async function Plans({
+  searchParams,
+}: {
+  searchParams: Promise<{ plan?: string | string[] }>;
+}) {
+  const requestedPlan = (await searchParams).plan;
+  const initialPlan =
+    subscriptionPlans.find((plan) => plan.code === requestedPlan)?.code ??
+    "equipo";
   const config = billingConfig(process.env);
   return (
     <main className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
       <header className="flex items-center justify-between gap-4">
-        <Link href="/planes" className="text-2xl font-bold tracking-tight">
+        <Link href="/" className="text-2xl font-bold tracking-tight">
           all decor<span className="text-primary">.</span>
         </Link>
         <Link href="/login" className="text-sm font-semibold text-primary">
@@ -54,6 +62,8 @@ export default function Plans() {
         )}
       </section>
       <SubscriptionPlanPicker
+        key={initialPlan}
+        initialPlan={initialPlan}
         plans={subscriptionPlans.map((plan) => ({
           ...plan,
           requestId: randomUUID(),

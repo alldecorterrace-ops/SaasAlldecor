@@ -115,6 +115,16 @@
   por chat. Preferir una clave Stripe restringida al uso del SaaS.
 - Apple Pay y Amazon Pay conservan su comprobación de cartera pendiente.
 
+## Portada pública solicitada el 20 de octubre
+
+- Crear y publicar una landing en la raíz de app.alldecorpatio.com con ventajas,
+  pantallas reales de demostración, roles, planes y preguntas frecuentes.
+- Aplicar el estilo Corporate Trust solicitado solo a la landing. Usar el
+  catálogo compartido y conservar los flujos de pago, login y enlaces de Auth.
+- Capturas exclusivamente de datos ficticios del entorno de pruebas. No publicar
+  información de clientes, credenciales ni evidencia privada.
+- Esta entrega no necesita cambios en la base de datos ni en Stripe.
+
 ## Versionado y despliegues
 
 - GitHub es la fuente oficial del código y de su historial. Antes de desplegar,
@@ -140,3 +150,13 @@
   estos materiales fuera del repositorio; `.local/` está ignorado por Git.
 - Un retorno de código no revierte los datos de Supabase. Revisar compatibilidad
   antes de cambiar de entrega y preservar los registros actuales.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

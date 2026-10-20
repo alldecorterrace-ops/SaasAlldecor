@@ -9,18 +9,21 @@ import {
   planInvoicesLabel,
   planServices,
   type SubscriptionPlan,
+  type PlanCode,
 } from "@/lib/subscription-catalog";
 type Plan = SubscriptionPlan & { requestId: string };
 export function SubscriptionPlanPicker({
   plans,
   enabled,
   testMode,
+  initialPlan = "equipo",
 }: {
   plans: Plan[];
   enabled: boolean;
   testMode: boolean;
+  initialPlan?: PlanCode;
 }) {
-  const [selected, setSelected] = useState("equipo");
+  const [selected, setSelected] = useState<PlanCode>(initialPlan);
   const current = plans.find((p) => p.code === selected)!;
   return (
     <>
