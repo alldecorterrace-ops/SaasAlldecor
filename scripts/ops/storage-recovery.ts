@@ -209,13 +209,45 @@ function recoveryTransport(
       throw new Error("Respuesta de inventario de Storage inválida");
     }
   }
+  async function missing(response: Response, resource: "bucket" | "object") {
+    if (response.status === 404) {
+      await response.body?.cancel();
+      return true;
+    }
+    if (response.status !== 400) return false;
+    // Supabase's legacy API returns HTTP 400 with a resource-specific 404 body.
+    // Only this exact bounded shape confirms absence; other failures stay fatal.
+    try {
+      const error = z
+        .object({
+          statusCode: z.union([z.literal("404"), z.literal(404)]),
+          error: z.string(),
+          message: z.string(),
+        })
+        .strict()
+        .parse(
+          JSON.parse((await boundedBody(response, 2048)).toString("utf8")),
+        );
+      if (
+        (resource === "bucket" &&
+          error.error === "Bucket not found" &&
+          error.message === "Bucket not found") ||
+        (resource === "object" &&
+          error.error === "not_found" &&
+          error.message === "Object not found")
+      )
+        return true;
+    } catch {
+      // Never expose provider response bodies or infer absence from parse errors.
+    }
+    throw new Error(
+      "Ausencia de recurso no confirmada; no se modifica Storage",
+    );
+  }
   return {
     async bucket(id: string) {
       const response = await request(`/bucket/${encodeURIComponent(id)}`);
-      if (response.status === 404) {
-        await response.body?.cancel();
-        return null;
-      }
+      if (await missing(response, "bucket")) return null;
       return bucketSchema.parse(await json(response));
     },
     async createBucket(bucket: Bucket) {
@@ -243,10 +275,7 @@ function recoveryTransport(
         base.length,
       );
       const response = await request(endpoint);
-      if (response.status === 404) {
-        await response.body?.cancel();
-        return null;
-      }
+      if (await missing(response, "object")) return null;
       if (!response.ok) {
         await response.body?.cancel();
         throw new Error("Lectura de objeto no confirmada");

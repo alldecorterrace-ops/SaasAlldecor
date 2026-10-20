@@ -60,9 +60,12 @@ privado que autoriza el ensayo; el script no configura Supabase Auth por sí sol
 Antes de la primera escritura, el ejecutor comprueba todos los buckets existentes
 y descarga todos los objetos ya presentes en las rutas esperadas. Una diferencia
 de contenido, MIME o configuración detiene el recorrido sin modificar esos datos.
-Solo una respuesta HTTP 404 confirma ausencia; errores de autorización, respuestas
-inciertas o formatos distintos detienen el ensayo. El comportamiento concreto de
-errores/ETag del Supabase real sigue pendiente de validación.
+Confirman ausencia HTTP 404 o el formato legado específico de Supabase: HTTP 400
+con `statusCode: "404"` y los textos exactos de bucket u objeto ausente. El cuerpo
+legado se limita a 2 KiB y rechaza campos o mensajes contradictorios. Errores de
+autorización, respuestas inciertas y otros formatos detienen el ensayo. Se añadió
+este caso tras observarlo en un proyecto aislado real; no acredita por sí solo
+una recuperación completa ni el comportamiento de ETag.
 
 Las subidas usan `x-upsert: false`, conforme al
 [contrato de subida de Supabase](https://supabase.com/docs/reference/javascript/file-buckets-upload).
