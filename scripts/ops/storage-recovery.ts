@@ -223,6 +223,7 @@ function recoveryTransport(
           statusCode: z.union([z.literal("404"), z.literal(404)]),
           error: z.string(),
           message: z.string(),
+          code: z.enum(["NoSuchBucket", "NoSuchKey"]).optional(),
         })
         .strict()
         .parse(
@@ -230,9 +231,11 @@ function recoveryTransport(
         );
       if (
         (resource === "bucket" &&
+          (!error.code || error.code === "NoSuchBucket") &&
           error.error === "Bucket not found" &&
           error.message === "Bucket not found") ||
         (resource === "object" &&
+          (!error.code || error.code === "NoSuchKey") &&
           error.error === "not_found" &&
           error.message === "Object not found")
       )

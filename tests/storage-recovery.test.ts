@@ -132,6 +132,7 @@ function storageMock(
     corruptReadback?: boolean;
     authFailure?: boolean;
     legacyMissing?: boolean;
+    legacyMissingCode?: boolean;
   } = {},
 ) {
   const buckets = new Map<string, Record<string, unknown>>();
@@ -172,6 +173,7 @@ function storageMock(
                 statusCode: "404",
                 error: "Bucket not found",
                 message: "Bucket not found",
+                ...(options.legacyMissingCode ? { code: "NoSuchBucket" } : {}),
               },
               { status: 400 },
             )
@@ -214,6 +216,7 @@ function storageMock(
                 statusCode: "404",
                 error: "not_found",
                 message: "Object not found",
+                ...(options.legacyMissingCode ? { code: "NoSuchKey" } : {}),
               },
               { status: 400 },
             )
@@ -254,18 +257,20 @@ test("recovery restores private bytes, encoded paths and mime; repeat has no wri
 });
 
 test("legacy HTTP 400 resource-not-found responses restore and resume without overwrite", async () => {
-  const f = await fixture(),
-    remote = storageMock({ legacyMissing: true });
-  try {
-    const receipt = await restoreStorageObjects(f, remote.fetcher);
-    assert.equal(receipt.uploaded, 1);
-    assert.equal(receipt.storageBytesVerified, true);
-    remote.calls.length = 0;
-    const repeat = await restoreStorageObjects(f, remote.fetcher);
-    assert.equal(repeat.reused, 1);
-    assert.equal(remote.calls.filter((x) => x.method !== "GET").length, 0);
-  } finally {
-    await f.dispose();
+  for (const legacyMissingCode of [false, true]) {
+    const f = await fixture(),
+      remote = storageMock({ legacyMissing: true, legacyMissingCode });
+    try {
+      const receipt = await restoreStorageObjects(f, remote.fetcher);
+      assert.equal(receipt.uploaded, 1);
+      assert.equal(receipt.storageBytesVerified, true);
+      remote.calls.length = 0;
+      const repeat = await restoreStorageObjects(f, remote.fetcher);
+      assert.equal(repeat.reused, 1);
+      assert.equal(remote.calls.filter((x) => x.method !== "GET").length, 0);
+    } finally {
+      await f.dispose();
+    }
   }
 });
 
