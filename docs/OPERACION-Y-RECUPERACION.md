@@ -4,6 +4,53 @@ Preparación del 22 de septiembre de 2026. Esta entrega incorpora herramientas;
 la creación del entorno y los ensayos reales tienen seguimiento independiente en
 [los seis puntos](EJECUCION-SEIS-PASOS.md).
 
+## Ensayo real de recuperación, 20 de octubre de 2026
+
+Esta actualización sustituye los estados pendientes históricos de transferencia,
+descifrado, base de datos y Storage que aparecen más abajo. Se verificaron copias
+cifradas en un Drive privado, su descarga y descifrado, los documentos y el código
+recuperados, y la restauración en un proyecto Supabase dedicado. La conciliación
+de filas mediante COPY, las relaciones, RLS y el inventario de archivos pasó.
+Las credenciales, identidades, documentos e informes detallados permanecen fuera
+del repositorio. Esto todavía no acredita el login real en la aplicación recuperada,
+la programación automática, la recepción de alertas ni un RPO/RTO garantizado.
+
+El ensayo encontró estos requisitos que deben conservarse en el procedimiento:
+
+- Usar un proyecto vacío distinto de producción y de staging de uso normal.
+  Mantener Data API, nuevos registros y proveedores de acceso desactivados durante
+  la importación. No iniciar trabajadores, correo, cobros ni tareas programadas.
+- Conectar con `sslmode=verify-full` y la CA del proveedor. En el pooler de sesión,
+  `pg_stat_ssl` describe el salto interno hacia PostgreSQL; verificar también el
+  canal del cliente mediante `psql` y `\conninfo`, sin desactivar TLS.
+- Conservar los esquemas y roles administrados por Supabase. Importar el esquema
+  de la aplicación, los datos seleccionados, el historial de migraciones y las
+  políticas de Storage en una transacción con `ON_ERROR_STOP`. No reactivar las
+  sesiones o tokens de acceso del origen; conservar usuarios, hashes e identidades.
+- El rol `postgres` no puede reasignar los privilegios por defecto de
+  `supabase_admin`. Compararlos con el destino antes de omitir exclusivamente
+  las instrucciones equivalentes. Una diferencia requiere revisión; no eliminar
+  en bloque los ACL del respaldo ni conceder permisos más amplios.
+- Comparar las filas exportadas con UTF-8 y los mismos ajustes de fecha, zona y
+  representación binaria. Windows `psql` emite terminadores físicos CRLF: se
+  normalizan a LF antes de comparar. COPY mantiene escapados los saltos dentro de
+  los valores; esos datos no deben modificarse.
+- Restaurar los binarios con `recover-storage.ts`, verificar su lectura posterior
+  y conciliar el inventario completo. El formato legado de errores del proveedor
+  está descrito en [Recuperación de Storage](RECUPERACION-STORAGE.md). Mantener los
+  IDs y fechas originales en el manifiesto; el proveedor genera otros al subir.
+- Antes de probar el acceso, instalar en el destino un Send Email hook de Postgres
+  que rechace los envíos y comprobar sus permisos. La aplicación recuperada se
+  compila desde la copia con un entorno limpio, sin archivos `.env` del origen,
+  claves de cobro ni correo externo, y se ejecuta solo en loopback.
+
+La comprobación SQL de permisos no sustituye un inicio de sesión con la contraseña
+existente. Habilitar el acceso al ensayo solo después de validar los controles,
+completar la prueba con el propietario y cerrar el entorno al terminar. Si fue
+necesario pausar staging para disponer de capacidad, reactivarlo y verificarlo.
+Conservar evidencia separada de la custodia declarada de la llave externa y de
+una prueba de descifrado; guardar un archivo no demuestra por sí solo su validez.
+
 ## Retención de entregas
 
 `npx tsx scripts/plan-release-retention.ts INVENTARIO.json PLAN.json` genera
