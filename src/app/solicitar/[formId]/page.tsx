@@ -16,8 +16,9 @@ export default async function Inquiry({
     { data, error } = await db.rpc("web_form_info", { p_form: formId });
   if (error || !data) notFound();
   return (
-    <main className="max-w-2xl mx-auto p-5 space-y-5">
-      <h1 className="text-2xl font-semibold">Solicitar estimado · {data}</h1>
+    <main className="max-w-2xl mx-auto px-5 py-10 space-y-5">
+      <p className="eyebrow">Un nuevo proyecto</p>
+      <h1 className="page-title">Solicitar estimado · {data}</h1>
       <p>
         Cuéntanos sobre tu proyecto. Las medidas pueden ser aproximadas; escribe
         0 si no las conoces.
@@ -79,7 +80,7 @@ export default async function Inquiry({
             <input name="appointment_date" type="date" />
           </label>
         </div>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid gap-3 sm:grid-cols-3">
           {Object.entries({
             length: "Largo (ft)",
             width: "Ancho (ft)",

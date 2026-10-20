@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Brand } from "@/components/brand";
+import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
 import { createClient, isConfigured } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
@@ -17,6 +19,7 @@ export default async function SubscriptionCompleted() {
   }
   return (
     <main className="mx-auto max-w-xl px-6 py-20">
+      <Brand className="mb-8" />
       <p className="eyebrow">El siguiente paso</p>
       <h1 className="page-title mt-4">
         {signedIn
@@ -33,19 +36,15 @@ export default async function SubscriptionCompleted() {
         correo. Regresar a esta página por sí solo no activa un plan.
       </p>
       <div className="mt-8 flex flex-wrap gap-4">
-        <Link
-          className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground"
-          href={signedIn ? "/empresas" : "/registro"}
-        >
-          {signedIn ? "Ir a mis empresas" : "Crear mi contraseña"}
-        </Link>
-        {!signedIn && (
-          <Link
-            className="rounded-xl border px-5 py-3 font-semibold"
-            href="/login"
-          >
-            Ya tengo cuenta
+        <Button asChild>
+          <Link href={signedIn ? "/empresas" : "/registro"}>
+            {signedIn ? "Ir a mis empresas" : "Crear mi contraseña"}
           </Link>
+        </Button>
+        {!signedIn && (
+          <Button asChild variant="outline">
+            <Link href="/login">Ya tengo cuenta</Link>
+          </Button>
         )}
       </div>
     </main>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Brand } from "@/components/brand";
 import { redirect } from "next/navigation";
 import { randomUUID } from "node:crypto";
 import { Building2, ArrowUpRight, LogOut } from "lucide-react";
@@ -61,9 +62,7 @@ export default async function Companies() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <Link href="/empresas" className="text-2xl font-bold tracking-tight">
-          all decor<span className="text-primary">.</span>
-        </Link>
+        <Brand href="/empresas" />
         <form action={signOut}>
           <Button variant="ghost" size="sm">
             <LogOut size={14} />
@@ -74,10 +73,10 @@ export default async function Companies() {
       <div className="mt-8 flex flex-wrap gap-4 text-sm font-semibold text-primary">
         <Link href="/planes">Comparar planes</Link>
       </div>
-      <div className="mt-16 mb-8">
-        <p className="eyebrow">Espacios de trabajo</p>
+      <div className="workspace-hero mt-8 mb-8 p-7 sm:p-9">
+        <p className="eyebrow text-indigo-200">Espacios de trabajo</p>
         <h1 className="page-title mt-3">Tus empresas</h1>
-        <p className="mt-3 text-muted-foreground">
+        <p className="mt-3 break-words text-sm text-indigo-100">
           Selecciona dónde quieres trabajar. Sesión de {user.email}.
         </p>
       </div>

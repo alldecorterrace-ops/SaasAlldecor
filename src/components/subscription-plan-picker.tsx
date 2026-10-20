@@ -42,7 +42,7 @@ export function SubscriptionPlanPicker({
         {plans.map((plan) => (
           <article
             key={plan.code}
-            className={`card flex flex-col gap-5 ${plan.code === selected ? "border-primary ring-1 ring-primary" : ""}`}
+            className={`card relative flex flex-col gap-5 transition-shadow ${plan.code === selected ? "border-primary ring-2 ring-primary shadow-lg shadow-indigo-100" : ""}`}
           >
             <div className="flex min-h-14 flex-col items-start gap-2">
               <h2 className="text-sm font-bold uppercase tracking-wider">
@@ -58,10 +58,12 @@ export function SubscriptionPlanPicker({
               {plan.description}
             </p>
             <p>
-              <span className="text-4xl font-bold tracking-tight">
+              <span className="text-3xl font-extrabold tracking-tight">
                 ${(plan.amount / 100).toFixed(2)}
               </span>
-              <span className="text-muted-foreground"> USD/mes</span>
+              <span className="ml-1 whitespace-nowrap text-xs text-muted-foreground">
+                USD/mes
+              </span>
             </p>
             <p className="font-semibold">{planUsersLabel(plan.users)}</p>
             <Button

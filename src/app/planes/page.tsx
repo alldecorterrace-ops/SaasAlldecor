@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Brand } from "@/components/brand";
 import { randomUUID } from "node:crypto";
 import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import { subscriptionPlans, billingConfig } from "@/lib/subscriptions";
@@ -36,10 +37,11 @@ export default async function Plans({
   return (
     <main className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
       <header className="flex items-center justify-between gap-4">
-        <Link href="/" className="text-2xl font-bold tracking-tight">
-          all decor<span className="text-primary">.</span>
-        </Link>
-        <Link href="/login" className="text-sm font-semibold text-primary">
+        <Brand />
+        <Link
+          href="/login"
+          className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary"
+        >
           Iniciar sesión <ArrowUpRight className="inline size-4" />
         </Link>
       </header>

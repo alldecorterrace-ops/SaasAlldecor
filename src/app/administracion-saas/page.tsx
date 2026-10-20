@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Brand } from "@/components/brand";
 import { randomUUID } from "node:crypto";
 import { LogOut } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
@@ -67,12 +67,7 @@ export default async function PlatformAdministration() {
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <Link
-          href="/administracion-saas"
-          className="text-2xl font-bold tracking-tight"
-        >
-          all decor<span className="text-primary">.</span>
-        </Link>
+        <Brand href="/administracion-saas" />
         <form action={signOut}>
           <Button variant="ghost" size="sm">
             <LogOut size={14} />
@@ -80,13 +75,15 @@ export default async function PlatformAdministration() {
           </Button>
         </form>
       </header>
-      <p className="eyebrow mt-8">Administrador global</p>
-      <h1 className="page-title mt-3">Administración del SaaS</h1>
-      <p className="mt-3 mb-8 text-muted-foreground">
-        Sesión de {user.email}. Invita y administra el acceso de los gerentes.
-        Cada gerente crea sus empresas y gestiona sus usuarios, roles y
-        permisos.
-      </p>
+      <div className="workspace-hero mt-8 mb-8 p-7 sm:p-9">
+        <p className="eyebrow text-indigo-200">Administrador global</p>
+        <h1 className="page-title mt-3">Administración del SaaS</h1>
+        <p className="mt-3 max-w-3xl break-words text-sm text-indigo-100">
+          Sesión de {user.email}. Invita y administra el acceso de los gerentes.
+          Cada gerente crea sus empresas y gestiona sus usuarios, roles y
+          permisos.
+        </p>
+      </div>
       <div className="grid gap-6 lg:grid-cols-[1fr_1.5fr]">
         <InviteManager requestId={randomUUID()} mailEnabled={mail} />
         <section

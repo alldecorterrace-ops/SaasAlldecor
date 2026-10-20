@@ -127,6 +127,12 @@
 
 ## Versionado y despliegues
 
+- Ampliación del propietario del 20 de octubre: aplicar Corporate Trust a toda
+  la aplicación, incluidos los espacios de trabajo, acceso y administración.
+  Sustituye el alcance visual limitado a la landing. Preservar reglas, permisos,
+  datos y procesos existentes. Volver a capturar Facturas y Estimados en staging
+  con datos ficticios para actualizar las imágenes de la portada.
+
 - GitHub es la fuente oficial del código y de su historial. Antes de desplegar,
   confirmar que el commit exacto está publicado en el repositorio y ha pasado
   las comprobaciones correspondientes. No mantener cambios exclusivos del servidor.

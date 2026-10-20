@@ -14,8 +14,9 @@ renderizar la portada; no se modifica la autorización de las rutas privadas.
   el catálogo y el importe.
 - Los servicios personalizados se describen como un trabajo coordinado con el
   equipo, sin prometer una entrega automática, plazos ni disponibilidad 24/7.
-- CSS y tipografía encapsulados en `components/marketing`; las pantallas
-  operativas mantienen su diseño.
+- La portada conserva su CSS de composición en `components/marketing`. La fuente
+  local y la identidad visual se comparten con toda la aplicación desde el layout
+  raíz y `globals.css`; véase `SISTEMA-DE-DISENO.md`.
 - Solo la portada de producción permite indexación. El entorno de pruebas y las
   páginas privadas conservan sus restricciones.
 

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import localFont from "next/font/local";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -30,12 +29,6 @@ import {
 import { ProductTour } from "./product-tour";
 import styles from "./landing.module.css";
 
-const jakarta = localFont({
-  src: "../../../public/fonts/PlusJakartaSans-Variable.ttf",
-  display: "swap",
-  weight: "200 800",
-  variable: "--font-landing",
-});
 const startingPrice = (
   Math.min(...subscriptionPlans.map((plan) => plan.amount)) / 100
 ).toFixed(2);
@@ -129,7 +122,7 @@ function Cta({
 
 export function PublicLanding() {
   return (
-    <div className={`${jakarta.variable} ${styles.page}`}>
+    <div className={styles.page}>
       <a href="#contenido" className={styles.skipLink}>
         Saltar al contenido
       </a>

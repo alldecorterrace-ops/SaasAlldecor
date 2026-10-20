@@ -27,9 +27,9 @@ export function ZonesMap({ zones }: { zones: Zone[] }) {
         viewBox="0 0 800 400"
         role="img"
         aria-label="Ubicación relativa y radios de las zonas filtradas"
-        className="w-full max-h-96 rounded bg-emerald-50"
+        className="w-full max-h-96 rounded-lg bg-accent"
       >
-        <path d="M40 40V360H760" fill="none" stroke="#a7c5ba" />
+        <path d="M40 40V360H760" fill="none" stroke="#c7d2fe" />
         <text x="45" y="25" fontSize="12">
           N ↑
         </text>
@@ -39,15 +39,15 @@ export function ZonesMap({ zones }: { zones: Zone[] }) {
               cx={60 + (p.x - minX) * scale}
               cy={45 + (p.y - minY) * scale}
               r={Math.max(3, p.r * scale)}
-              fill="#16634b"
+              fill="#4f46e5"
               fillOpacity=".12"
-              stroke="#16634b"
+              stroke="#4f46e5"
             />
             <circle
               cx={60 + (p.x - minX) * scale}
               cy={45 + (p.y - minY) * scale}
               r="3"
-              fill="#16634b"
+              fill="#4f46e5"
             />
             <text
               x={68 + (p.x - minX) * scale}
