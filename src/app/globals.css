@@ -144,7 +144,8 @@
   }
 }
 @layer components {
-  .card {
+  .card,
+  .panel {
     min-width: 0;
     border: 1px solid #e2e8f0;
     background: #fff;
@@ -403,7 +404,8 @@
     max-width: none;
     padding: 0;
   }
-  .card {
+  .card,
+  .panel {
     box-shadow: none;
   }
   .estimate-print {

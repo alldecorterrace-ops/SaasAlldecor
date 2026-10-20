@@ -89,15 +89,16 @@ export function LocatePostalCodes({
             Ubicar {zips.length} código(s) postal(es)
           </Button>
           {busy && (
-            <button
-              className="ml-3 underline"
+            <Button
+              variant="outline"
+              className="ml-3"
               onClick={() => {
                 stop.current = true;
                 setMessage("Deteniendo después de la consulta actual…");
               }}
             >
               Detener
-            </button>
+            </Button>
           )}
         </>
       )}

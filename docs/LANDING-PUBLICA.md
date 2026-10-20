@@ -22,8 +22,10 @@ renderizar la portada; no se modifica la autorización de las rutas privadas.
 
 ## Imágenes y fuente
 
-`public/images/landing/{facturas,estimados}.jpg` son capturas reales obtenidas el
-20 de octubre de 2026 de una empresa ficticia de staging. No son representaciones
+`public/images/landing/{facturas,estimados}-workspace-20261020.png` son capturas
+reales de 1280 × 800 obtenidas el 20 de octubre de 2026, después de aplicar el
+diseño compartido al espacio de trabajo de una empresa ficticia de staging
+(revisión `2a74394`). Sustituyen las capturas anteriores. No son representaciones
 inventadas ni registros de clientes. La página identifica su contenido como
 demostración y permite ampliarlo.
 

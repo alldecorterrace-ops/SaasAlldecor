@@ -191,9 +191,9 @@ export function PublicLanding() {
                   <LockKeyhole size={13} aria-hidden="true" />
                 </div>
                 <Image
-                  src="/images/landing/estimados.jpg"
-                  width={1265}
-                  height={713}
+                  src="/images/landing/estimados-workspace-20261020.png"
+                  width={1280}
+                  height={800}
                   alt="Vista real del módulo Estimados de All Decor con propuestas y sus estados, usando datos ficticios."
                   priority
                   sizes="(max-width: 1023px) 92vw, 650px"

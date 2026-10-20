@@ -65,7 +65,7 @@ export function CustomerRecords({
             key={s.id}
             href={`${path}?section=${s.id}#expediente`}
             aria-current={s.id === section.id ? "page" : undefined}
-            className={`rounded-lg border px-4 py-2 text-sm ${s.id === section.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+            className={`inline-flex min-h-11 items-center rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${s.id === section.id ? "border-indigo-200 bg-accent text-primary" : "border-border bg-white hover:bg-muted"}`}
           >
             {s.label}
           </Link>

@@ -52,3 +52,11 @@ Después de publicar en staging, sustituir las imágenes de Facturas y Estimados
 de la landing por capturas reales del nuevo diseño con datos ficticios. Usar
 nombres nuevos para evitar servir imágenes antiguas desde caché. Registrar la
 revisión capturada y el resultado del despliegue en la evidencia privada.
+
+La entrega inicial `2a74394` se revisó en los 20 módulos de staging a 1280 px.
+Clientes y Facturas se comprobaron a 390 px; Estimados, Configuración, Horas y
+Dashboard también a 320 px. Los campos móviles conservan 16 px y los resultados
+anchos no desbordan la página. Se comprobó apertura del menú, cierre con Escape,
+restitución del foco y cierre al navegar. Esta revisión visual no sustituye las
+pruebas de los procesos de negocio. Las capturas renovadas de la landing proceden
+de esa entrega y de datos ficticios.

@@ -164,7 +164,7 @@ export function CommercialZoneMap({
         onReady={() => setReady(true)}
         onError={() => setFailed(true)}
       />
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {all.map((key) => (
           <div
             className="card"
@@ -187,7 +187,7 @@ export function CommercialZoneMap({
             key={key}
             type="button"
             aria-pressed={categories.includes(key)}
-            className="rounded-full border px-3 py-2 text-sm"
+            className="min-h-11 rounded-full border px-3 py-2 text-sm"
             style={{
               borderColor: colors[key],
               opacity: categories.includes(key) ? 1 : 0.5,
@@ -233,7 +233,7 @@ export function CommercialZoneMap({
               </p>
               <button
                 type="button"
-                className="underline"
+                className="min-h-11 rounded-lg px-3 text-primary underline"
                 onClick={() => retry.current?.()}
               >
                 Reintentar calles

@@ -98,10 +98,10 @@ export function ProductTour() {
             </button>
           </div>
           <Image
-            src={`/images/landing/${screen.id}.jpg`}
+            src={`/images/landing/${screen.id}-workspace-20261020.png`}
             alt={screen.alt}
-            width={1265}
-            height={713}
+            width={1280}
+            height={800}
             sizes="(max-width: 768px) 94vw, 1120px"
             className={styles.tourImage}
           />
@@ -128,10 +128,10 @@ export function ProductTour() {
           </button>
         </div>
         <Image
-          src={`/images/landing/${current.id}.jpg`}
+          src={`/images/landing/${current.id}-workspace-20261020.png`}
           alt={current.alt}
-          width={1265}
-          height={713}
+          width={1280}
+          height={800}
           sizes="95vw"
         />
         <p>Vista de demostración con datos ficticios.</p>

@@ -24,6 +24,7 @@ import {
   WorkforceGeneralForm,
 } from "@/components/workforce-expenses";
 import { ListPagination } from "@/components/list-pagination";
+import { Button } from "@/components/ui/button";
 export default async function WorkforceExpenses({
   params,
   searchParams,
@@ -235,7 +236,7 @@ export default async function WorkforceExpenses({
             <option value="UNKNOWN">Sin declarar</option>
           </select>
         </label>
-        <button className="underline">Filtrar</button>
+        <Button>Filtrar</Button>
       </form>
       <div className="grid gap-5">
         {data?.map((e) => {
