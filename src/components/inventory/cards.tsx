@@ -3,6 +3,7 @@ import {
   businessDate,
   usd,
   costUsd,
+  unitsText,
   quantity,
   documentSlug,
   inventoryReasons,
@@ -134,9 +135,7 @@ export function DocCard({
                   {l.name}
                   <div className="text-xs">{l.sku}</div>
                 </td>
-                <td>
-                  {quantity(l.qty)} {l.unit.toLowerCase()}
-                </td>
+                <td>{unitsText(l.qty, l.unit)}</td>
                 {d.value !== undefined && (
                   <>
                     <td>
@@ -188,7 +187,7 @@ export function StockCard({ row, path }: { row: StockGroup; path: string }) {
             {v.name} · {v.sku}
           </Link>
           <p>
-            {quantity(v.qty)} {v.unit.toLowerCase()} ·{" "}
+            {unitsText(v.qty, v.unit)} ·{" "}
             {v.locations.map((l) => l.name + " " + quantity(l.qty)).join(" · ")}
           </p>
           {v.value !== undefined && (

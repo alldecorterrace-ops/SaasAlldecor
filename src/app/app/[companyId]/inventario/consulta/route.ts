@@ -21,6 +21,24 @@ export async function GET(
     });
   if ([loc, supplier, variant].some((v) => v && !uuid.safeParse(v).success))
     return send([], 400);
+  if (mode === "comerciales") {
+    if (
+      !inventory.commercialView ||
+      !(inventory.catalogManage || inventory.productCreate)
+    )
+      return send([], 403);
+    const query = db
+      .from("products")
+      .select("id,name")
+      .eq("company_id", companyId)
+      .eq("active", true);
+    const { data, error } = await query
+      .ilike("name", "%" + q.replace(/[\\%_]/g, "\\$&") + "%")
+      .order("name")
+      .order("id")
+      .limit(20);
+    return error ? send([], 403) : send(data);
+  }
   if (mode === "proveedores" || mode === "proveedoresFiltro") {
     if (!inventory.supplierView) return send([], 403);
     const { data, error } = await db

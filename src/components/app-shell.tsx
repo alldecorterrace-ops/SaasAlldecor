@@ -68,10 +68,21 @@ const icons: Record<string, LucideIcon> = {
 const groups = [
   "General",
   "Comercial",
+  "Compras y productos",
+  "Inventario",
   "Operaciones",
   "Finanzas",
   "Administración",
 ];
+const inventoryIcons: Record<InvSection["slug"], LucideIcon> = {
+  compras: ReceiptText,
+  proveedores: Building2,
+  productos: Tags,
+  existencias: Boxes,
+  movimientos: ArrowLeftRight,
+  ubicaciones: Package,
+  ajustes: ClipboardCheck,
+};
 
 export function AppShell({
   company,
@@ -172,19 +183,44 @@ export function AppShell({
           className="min-h-0 flex-1 overflow-y-auto px-3 pb-5"
         >
           {groups.map((group) => {
-            const list = visible.filter((m) => m.group === group);
-            return list.length ? (
-              <section key={group} className="mb-4">
-                <p className="eyebrow px-3 py-2 text-[10px]">{group}</p>
-                {list.map((m) => {
-                  const Icon = icons[m.id] ?? PanelTop;
-                  return (
+            const links = [
+              ...visible
+                .filter((m) => m.group === group)
+                .map((m) => ({
+                  key: m.id,
+                  href: moduleHref(company.id, m.id),
+                  active: m.id === current?.id,
+                  ready: m.ready,
+                  Icon: icons[m.id] ?? PanelTop,
+                  label:
+                    m.id === "productos"
+                      ? "Catálogo comercial"
+                      : m.id === "inventario" && lotInventory
+                        ? "Archivo de inventario"
+                        : m.label,
+                })),
+              ...inventorySections
+                .filter((s) => s.group === group)
+                .map((s) => ({
+                  key: s.slug,
+                  href: `/app/${company.id}/inventario/${s.slug}`,
+                  active: s.slug === invCurrent?.slug,
+                  ready: true,
+                  Icon: inventoryIcons[s.slug],
+                  label: s.label,
+                })),
+            ];
+            return (
+              links.length > 0 && (
+                <section key={group} className="mb-4">
+                  <p className="eyebrow px-3 py-2 text-[10px]">{group}</p>
+                  {links.map(({ key, href, active, ready, Icon, label }) => (
                     <Link
-                      key={m.id}
-                      aria-current={current?.id === m.id ? "page" : undefined}
-                      href={moduleHref(company.id, m.id)}
-                      onClick={() => drawer.current?.close()}
+                      key={key}
+                      href={href}
+                      aria-current={active ? "page" : undefined}
                       className="workspace-nav-link"
+                      onClick={() => drawer.current?.close()}
                     >
                       <Icon
                         size={17}
@@ -192,44 +228,14 @@ export function AppShell({
                         className="shrink-0"
                         aria-hidden="true"
                       />
-                      <span className="flex-1">
-                        {m.id === "productos"
-                          ? "Catálogo comercial"
-                          : m.id === "inventario" && lotInventory
-                            ? "Archivo de inventario"
-                            : m.label}
-                      </span>
-                      {!m.ready && (
+                      <span className="flex-1">{label}</span>
+                      {!ready && (
                         <span
                           title="En preparación"
                           aria-label="En preparación"
                           className="size-1.5 rounded-full bg-slate-300"
                         />
                       )}
-                    </Link>
-                  );
-                })}
-              </section>
-            ) : null;
-          })}
-          {["Compras y productos", "Inventario"].map((group) => {
-            const list = inventorySections.filter((s) => s.group === group);
-            return (
-              list.length > 0 && (
-                <section key={group} className="mb-4">
-                  <p className="eyebrow px-3 py-2 text-[10px]">{group}</p>
-                  {list.map((s) => (
-                    <Link
-                      key={s.slug}
-                      className="workspace-nav-link"
-                      aria-current={
-                        invCurrent?.slug === s.slug ? "page" : undefined
-                      }
-                      onClick={() => drawer.current?.close()}
-                      href={`/app/${company.id}/inventario/${s.slug}`}
-                    >
-                      <Boxes size={17} aria-hidden="true" />
-                      <span>{s.label}</span>
                     </Link>
                   ))}
                 </section>

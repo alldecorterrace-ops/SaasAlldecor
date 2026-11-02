@@ -57,7 +57,7 @@ export function InventoryLookup<
   disabled = false,
 }: {
   company: string;
-  type: "variantes" | "proveedores" | "proveedoresFiltro";
+  type: "variantes" | "proveedores" | "proveedoresFiltro" | "comerciales";
   location?: string;
   supplier?: string;
   label: string;

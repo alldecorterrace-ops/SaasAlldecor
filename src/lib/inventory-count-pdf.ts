@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { PDFDocument, rgb, type PDFFont } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
-import { quantity } from "./inventory";
+import { unitsText } from "./inventory";
 
 export type CountSheet = {
   asOf: string;
@@ -98,12 +98,7 @@ export async function inventoryCountPdf(
       size: 10,
     });
   for (const r of sheet.rows) {
-    const fields = [
-      r.sku,
-      r.product,
-      r.location,
-      quantity(r.qty) + " " + r.unit.toLowerCase(),
-    ];
+    const fields = [r.sku, r.product, r.location, unitsText(r.qty, r.unit)];
     const lines = fields.map((s, i) => wrap(s, widths[i], font, 9)),
       rowHeight = Math.max(1, ...lines.map((l) => l.length)) * 12 + 12;
     if (y - rowHeight < 52) next();

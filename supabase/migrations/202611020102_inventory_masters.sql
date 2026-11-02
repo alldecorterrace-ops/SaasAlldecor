@@ -47,7 +47,7 @@ begin
        where app_private.inventory_has_location_role(p_company,l.id,a))) order by l.name,l.id),'[]') into locations
  from app_private.inventory_locations l where l.company_id=p_company and l.deleted_at is null and app_private.inventory_has_location_role(p_company,l.id,'stock.view');
  return jsonb_build_object('active',public.inventory_is_active(p_company),'manager',app_private.is_manager(p_company),'writable',app_private.billing_writable(p_company),
-   'supplierView',app_private.can_access(p_company,'inv-proveedores','read'),'supplierManage',app_private.can_access(p_company,'inv-proveedores','write'),
+   'commercialView',app_private.can_access(p_company,'productos','read'),'supplierView',app_private.can_access(p_company,'inv-proveedores','read'),'supplierManage',app_private.can_access(p_company,'inv-proveedores','write'),
    'catalogView',app_private.can_access(p_company,'inv-catalogo','read'),'catalogManage',app_private.can_access(p_company,'inv-catalogo','write'),
    'productCreate',app_private.can_access(p_company,'inv-alta-productos','write') or app_private.can_access(p_company,'inv-catalogo','write'),
    'priceManage',app_private.can_access(p_company,'inv-precios','write'),
@@ -112,6 +112,7 @@ declare result uuid:=coalesce(p_id,gen_random_uuid()); returned uuid; body jsonb
  f app_private.inventory_families; existing app_private.inventory_variants; cat uuid; nm text:=trim(p_data->>'name'); cu app_private.inventory_unit:=(p_data->>'unit')::app_private.inventory_unit;
  num bigint; prefix text; code text; raw jsonb; opt record; aid uuid; oid uuid; ids uuid[]; opts uuid[]; attrs uuid[]; first_attrs uuid[];
  display text; key_base text; candidate text; serial int; vid uuid; line_price numeric; barcode text; seen uuid[]:='{}'; supplied uuid[];
+ commercial_id uuid:=(p_data->>'commercialId')::uuid;
 begin
  if not app_private.is_member(p_company) or not app_private.billing_writable(p_company) or
    not (app_private.can_access(p_company,'inv-catalogo','write') or (p_id is null and app_private.can_access(p_company,'inv-alta-productos','write'))) then
@@ -120,6 +121,13 @@ begin
    or jsonb_array_length(p_data->'variants') not between 1 and 200 or coalesce(length(nm),0) not between 1 and 190 then raise exception 'inventory_invalid_product'; end if;
  perform app_private.inventory_transition(p_company); returned:=app_private.inventory_replay(p_company,p_request,'FAMILY',body); if returned is not null then return returned; end if;
  perform pg_advisory_xact_lock(hashtextextended('inventory-catalog:'||p_company::text,0));
+ if p_data ? 'commercialId' then
+   if not app_private.can_access(p_company,'productos','read') then raise exception 'permission_denied' using errcode='42501'; end if;
+   if commercial_id is not null then
+     perform from public.products where company_id=p_company and id=commercial_id and active for share;
+     if not found then raise exception 'inventory_commercial_unavailable'; end if;
+   end if;
+ end if;
  if nullif(trim(p_data->>'category'),'') is not null then
    insert into app_private.inventory_categories(company_id,name) values(p_company,trim(p_data->>'category')) on conflict(company_id,name_key) do nothing;
    select id into strict cat from app_private.inventory_categories where company_id=p_company and name_key=app_private.inventory_key(p_data->>'category');
@@ -128,10 +136,11 @@ begin
    insert into app_private.inventory_codes(company_id,last_number) values(p_company,1) on conflict(company_id) do update set last_number=inventory_codes.last_number+1 returning last_number into num;
    prefix:=left(upper(regexp_replace(app_private.inventory_words(nm),'[^a-z0-9]','','g')),3);
    code:=coalesce(nullif(prefix,''),'ART')||'-'||lpad(num::text,greatest(4,length(num::text)),'0');
-   insert into app_private.inventory_families(company_id,id,code,name,category_id,unit,description,active)
-     values(p_company,result,code,nm,cat,cu,p_data->>'description',coalesce((p_data->>'active')::boolean,true)) returning * into f;
+   insert into app_private.inventory_families(company_id,id,code,name,category_id,unit,description,active,commercial_product_id)
+     values(p_company,result,code,nm,cat,cu,p_data->>'description',coalesce((p_data->>'active')::boolean,true),commercial_id) returning * into f;
  else
-   update app_private.inventory_families set name=nm,category_id=cat,description=p_data->>'description',active=coalesce((p_data->>'active')::boolean,true),version=version+1
+   update app_private.inventory_families set name=nm,category_id=cat,description=p_data->>'description',active=coalesce((p_data->>'active')::boolean,true),version=version+1,
+      commercial_product_id=case when p_data ? 'commercialId' then commercial_id else commercial_product_id end
      where company_id=p_company and id=p_id and unit=cu and version=p_version returning * into f;
    if not found then raise exception 'inventory_revision_conflict' using errcode='PT409'; end if;
  end if;

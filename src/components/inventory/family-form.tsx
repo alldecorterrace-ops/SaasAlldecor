@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { InventoryForm } from "./form";
+import { InventoryLookup } from "./lookup";
 import type { Master, Choices, InventoryContext } from "@/lib/inventory";
 type Axis = { key: string; name: string; values: string };
 type DraftVariant = {
@@ -33,6 +34,7 @@ export function FamilyForm({
     [unit, setUnit] = useState(old?.unit ?? "UNIDAD");
   const [description, setDescription] = useState(old?.description ?? ""),
     [active, setActive] = useState(old?.active ?? true);
+  const [commercial, setCommercial] = useState(old?.commercial);
   const [axes, setAxes] = useState<Axis[]>(() => {
     const map = new Map<string, Set<string>>();
     for (const v of existing)
@@ -135,6 +137,9 @@ export function FamilyForm({
           description,
           active,
           variants,
+          ...(ctx.commercialView && commercial?.id !== old?.commercial?.id
+            ? { commercialId: commercial?.id ?? null }
+            : {}),
         })}
       />
       <div className="grid gap-4 sm:grid-cols-2">
@@ -191,6 +196,25 @@ export function FamilyForm({
           onChange={(e) => setDescription(e.target.value)}
         />
       </label>
+      {ctx.commercialView && (
+        <div>
+          <InventoryLookup
+            company={company}
+            type="comerciales"
+            label="Vincular con un producto del catálogo comercial (opcional)"
+            onSelect={setCommercial}
+          />
+          {commercial && (
+            <button
+              className="text-sm underline"
+              type="button"
+              onClick={() => setCommercial(undefined)}
+            >
+              {commercial.name} · Quitar vínculo
+            </button>
+          )}
+        </div>
+      )}
       <fieldset className="grid gap-3">
         <legend className="font-semibold">Características</legend>
         <datalist id="inv-attributes">

@@ -72,7 +72,10 @@ begin
          where x.company_id=v.company_id and x.variant_id=v.id),'{}'))||
        case when costs then (select jsonb_build_object('lastCost',app_private.inventory_last_cost(p_company,v.id,null),'average',b.known/nullif(b.qty-b.pending,0),'pending',b.pending)
          from app_private.inventory_balance(p_company,v.id,null)b) else '{}' end order by v.sku) from app_private.inventory_variants v where v.company_id=p_company and v.family_id=f.id),'[]'))
+   ||case when app_private.can_access(p_company,'productos','read') and f.commercial_product_id is not null then
+       jsonb_build_object('commercial',jsonb_build_object('id',f.commercial_product_id,'name',cp.name)) else '{}' end
    from app_private.inventory_families f left join app_private.inventory_categories cat on (cat.company_id,cat.id)=(f.company_id,f.category_id)
+   left join public.products cp on (cp.company_id,cp.id)=(f.company_id,f.commercial_product_id)
    where f.company_id=p_company and (p_id is null or f.id=p_id) and (p_category is null or f.category_id=p_category) and (not p_only_active or f.active)
        and app_private.inventory_family_matches(p_company,f.id,coalesce(p_query,'')) order by f.name,f.id;
  end if;

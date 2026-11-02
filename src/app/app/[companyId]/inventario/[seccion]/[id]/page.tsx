@@ -528,6 +528,14 @@ export default async function Detail({
           {row.data.unit} · {row.data.active ? "Activo" : "Inactivo"}
         </p>
         <p>{row.data.description}</p>
+        {row.data.commercial && ctx.commercialView && (
+          <Link
+            className="text-primary underline"
+            href={`/app/${companyId}/productos/${row.data.commercial.id}`}
+          >
+            Catálogo comercial · {row.data.commercial.name}
+          </Link>
+        )}
         {row.data.variants?.map((v) => (
           <div className="border-t pt-2" key={v.id}>
             <h2>{v.name}</h2>

@@ -92,8 +92,23 @@ async function main() {
       wh,
       ["purchases.create", "purchases.void"],
     ]);
+    const commercial = id(),
+      outsideProduct = id();
+    const commercialInsert =
+      "insert into public.products(id,company_id,name,category,base,unit_price,created_by,updated_by) values($1,$2,'Pérgola comercial','Servicio','area_ft2',88.88,$3,$3)";
+    await pool.query(commercialInsert, [commercial, company, owner]);
+    await pool.query(commercialInsert, [outsideProduct, other, foreign]);
+    const snapshotProduct = async () =>
+      (
+        await pool.query(
+          "select to_jsonb(p) value from public.products p where company_id=$1 and id=$2",
+          [company, commercial],
+        )
+      ).rows[0].value;
+    const preserved = await snapshotProduct();
     const famData = {
       name: "Pérgola física",
+      commercialId: commercial,
       unit: "UNIDAD",
       category: "Materiales",
       variants: [
@@ -130,6 +145,28 @@ async function main() {
       )
     )[0];
     assert.equal(catalog.id, family);
+    assert.equal(catalog.data.commercial.id, commercial);
+    assert.deepEqual(await snapshotProduct(), preserved);
+    assert.ok(
+      !(
+        "commercial" in
+        (
+          await query(
+            seller,
+            "select * from inventory_master_rows($1,'FAMILY','',$2)",
+            [company, family],
+          )
+        )[0].data
+      ),
+    );
+    await assert.rejects(
+      q("select inventory_save_family($1,$2,null,0,$3)", [
+        company,
+        id(),
+        { ...famData, commercialId: outsideProduct },
+      ]),
+      /inventory_commercial_unavailable/,
+    );
     assert.equal(catalog.data.variants.length, 2);
     const v = catalog.data.variants.find(
       (r: { barcode: string }) => r.barcode === "BAR-PRUEBA-001",
@@ -151,6 +188,28 @@ async function main() {
         )
       )[0].id,
       v.id,
+    );
+    const large = {
+      name: "Serie",
+      unit: "UNIDAD",
+      variants: Array.from({ length: 23 }, (_, i) => ({
+        options: { Talla: String(i + 1) },
+        barcode: "SERIE-" + i,
+      })),
+    };
+    await q("select inventory_save_family($1,$2,null,0,$3)", [
+      company,
+      id(),
+      large,
+    ]);
+    assert.equal(
+      (
+        await q("select * from inventory_search_variants($1,'serie',$2,null)", [
+          company,
+          wh,
+        ])
+      ).length,
+      20,
     );
     const basic = { name: "Base", unit: "KG", variants: [{ options: {} }] };
     await q("select inventory_save_family($1,$2,null,0,$3)", [

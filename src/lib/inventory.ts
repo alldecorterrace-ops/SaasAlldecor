@@ -6,6 +6,7 @@ export type InvLocation = {
   actions: string[];
 };
 export type InventoryContext = {
+  commercialView: boolean;
   active: boolean;
   manager: boolean;
   writable: boolean;
@@ -110,6 +111,7 @@ export type Master = {
     unit?: string;
     code?: string;
     description?: string;
+    commercial?: { id: string; name: string };
     variants?: Variant[];
     purchases?: number;
     total?: number;
@@ -270,6 +272,21 @@ const unitPrice = new Intl.NumberFormat("es-US", {
 export const costUsd = (n: number | string | null | undefined) =>
   n == null ? "Pendiente" : unitPrice.format(Number(n));
 export const quantity = (n: number | string) => units.format(Number(n));
+export function unitsText(n: number | string, unit: string) {
+  const labels: Record<string, [string, string]> = {
+    UNIDAD: ["unidad", "unidades"],
+    PAR: ["par", "pares"],
+    JUEGO: ["juego", "juegos"],
+    KG: ["kg", "kg"],
+    LITRO: ["litro", "litros"],
+    METRO: ["metro", "metros"],
+  };
+  return (
+    quantity(n) +
+    " " +
+    (labels[unit]?.[Math.abs(Number(n)) === 1 ? 0 : 1] ?? unit.toLowerCase())
+  );
+}
 export const businessDate = (s: string) => s.split("-").reverse().join("/");
 export function todayAt(tz: string) {
   return new Intl.DateTimeFormat("sv-SE", {
@@ -328,6 +345,8 @@ export function invError(error: {
     inventory_inconsistent_attributes:
       "Todas las variantes deben usar las mismas características.",
     inventory_variant_unavailable: "La variante no está disponible.",
+    inventory_commercial_unavailable:
+      "Selecciona un producto comercial activo de esta empresa.",
     inventory_reason_required: "Escribe un motivo para esta operación.",
     inventory_invalid_cost: "Revisa el costo unitario y sus cuatro decimales.",
     inventory_invalid_number: "Revisa el número y su precisión.",
