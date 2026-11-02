@@ -3,11 +3,34 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { fullDatabase } from "./helpers/full-database";
 import {
+  normalizeVariantPrice,
   productAxes,
   variantCombinations,
   type ProductAxis,
 } from "../src/lib/inventory-variants";
 import type { Master } from "../src/lib/inventory";
+
+test("the shared sale price accepts cents and zero within the inventory money range", () => {
+  for (const [entry, price] of [
+    ["2200", "2200.00"],
+    ["2200,5", "2200.50"],
+    ["0", "0.00"],
+    [".05", "0.05"],
+    ["999999999999.99", "999999999999.99"],
+  ])
+    assert.equal(normalizeVariantPrice(entry), price);
+  for (const entry of [
+    "",
+    " ",
+    "-1",
+    "1.234",
+    "1,234.00",
+    "1e3",
+    "1000000000000",
+    "NaN",
+  ])
+    assert.equal(normalizeVariantPrice(entry), null);
+});
 
 test("reordering saved characteristics preserves variant identities, excluded combinations and company isolation", async () => {
   const { db } = await fullDatabase();

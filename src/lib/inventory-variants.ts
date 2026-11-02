@@ -4,6 +4,13 @@ export type ProductAxis = { name: string; values: string[] };
 export const maxAxes = 6;
 export const maxCombinations = 200;
 
+export function normalizeVariantPrice(input: string): string | null {
+  const value = input.trim().replace(",", ".");
+  if (!/^(?:\d{1,12}(?:\.\d{1,2})?|\.\d{1,2})$/.test(value)) return null;
+  const [whole, cents = ""] = value.split(".");
+  return `${Number(whole)}.${cents.padEnd(2, "0")}`;
+}
+
 // Match the catalog's inventory_key when comparing user-entered labels.
 export const catalogKey = (text: string) =>
   text.replace(/\s+/g, "").toLowerCase();

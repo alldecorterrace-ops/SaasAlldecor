@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Layers } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InventoryForm } from "./form";
 import { InventoryLookup } from "./lookup";
@@ -8,6 +9,7 @@ import type { Master, Choices, InventoryContext } from "@/lib/inventory";
 import {
   catalogKey,
   maxCombinations,
+  normalizeVariantPrice,
   productAxes,
   variantCombinations,
   variantKey,
@@ -44,6 +46,10 @@ export function FamilyForm({
   const [description, setDescription] = useState(old?.description ?? ""),
     [active, setActive] = useState(old?.active ?? true);
   const [commercial, setCommercial] = useState(old?.commercial);
+  const [priceScope, setPriceScope] = useState("all"),
+    [bulkPrice, setBulkPrice] = useState(""),
+    [priceNotice, setPriceNotice] = useState("");
+  const priceHelpId = useId();
   const [originalAxes] = useState(() =>
     productAxes(existing, old?.attributeLayout ?? []),
   );
@@ -101,8 +107,8 @@ export function FamilyForm({
     active: true,
     use: true,
   };
-  const get = (o: Record<string, string>) => {
-    const saved = draft[variantKey(o)];
+  const get = (o: Record<string, string>, current = draft) => {
+    const saved = current[variantKey(o)];
     if (saved) return saved;
     const previouslyOmitted =
       !!row &&
@@ -114,7 +120,7 @@ export function FamilyForm({
   const change = (o: Record<string, string>, patch: Partial<DraftVariant>) =>
     setDraft((d) => ({
       ...d,
-      [variantKey(o)]: { ...(d[variantKey(o)] ?? get(o)), ...patch },
+      [variantKey(o)]: { ...get(o, d), ...patch },
     }));
   const variants = combinations
     .filter((o) => get(o).use)
@@ -129,6 +135,27 @@ export function FamilyForm({
       };
     });
   const missing = existing.some((v) => !variants.some((x) => x.id === v.id));
+  const price = normalizeVariantPrice(bulkPrice);
+  const priceTargets = variants.filter(
+    (v) => priceScope === "all" || v.price == null,
+  );
+  const priceHint = priceTargets.length
+    ? "El precio se aplica a las variantes incluidas. Después puedes ajustar cada una por separado."
+    : "No hay variantes incluidas que coincidan con la opción elegida.";
+  function applyPrice() {
+    if (!ctx.priceManage || price === null || !priceTargets.length) return;
+    setDraft((current) => {
+      const updated = { ...current };
+      for (const { options } of priceTargets) {
+        updated[variantKey(options)] = { ...get(options, current), price };
+      }
+      return updated;
+    });
+    const count = priceTargets.length;
+    setPriceNotice(
+      `Se aplicó US$ ${price} a ${count} ${count === 1 ? "variante" : "variantes"}. Guarda el producto para confirmar.`,
+    );
+  }
   return (
     <InventoryForm
       company={company}
@@ -259,6 +286,66 @@ export function FamilyForm({
             </p>
           </div>
         </div>
+        {ctx.priceManage && combinations.length > 0 && (
+          <div
+            role="group"
+            aria-label="Precio general de las variantes"
+            className="grid gap-2 rounded-xl border border-border bg-muted/40 p-3 sm:p-4"
+          >
+            <div className="grid gap-3 sm:flex sm:flex-wrap sm:items-end">
+              <label className="field">
+                Poner precio a
+                <select
+                  value={priceScope}
+                  onChange={(e) => {
+                    setPriceScope(e.target.value);
+                    setPriceNotice("");
+                  }}
+                >
+                  <option value="all">Todas las variantes</option>
+                  <option value="missing">Solo variantes sin precio</option>
+                </select>
+              </label>
+              <label className="field sm:w-40">
+                Precio general (US$)
+                <Input
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  autoComplete="off"
+                  value={bulkPrice}
+                  aria-describedby={priceHelpId}
+                  aria-invalid={!!bulkPrice && price === null}
+                  onChange={(e) => {
+                    setBulkPrice(e.target.value);
+                    setPriceNotice("");
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.nativeEvent.isComposing) {
+                      e.preventDefault();
+                      applyPrice();
+                    }
+                  }}
+                />
+              </label>
+              <Button
+                type="button"
+                disabled={price === null || !priceTargets.length}
+                onClick={applyPrice}
+              >
+                Aplicar
+              </Button>
+            </div>
+            <p
+              id={priceHelpId}
+              role="status"
+              className="text-sm text-muted-foreground"
+            >
+              {bulkPrice && price === null
+                ? "Usa hasta 12 dígitos enteros y dos decimales, sin signo ni separadores de miles."
+                : priceNotice || priceHint}
+            </p>
+          </div>
+        )}
         {size > maxCombinations ? (
           <p role="status">
             Reduce las opciones para trabajar con un máximo de 200
