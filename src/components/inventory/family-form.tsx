@@ -288,7 +288,9 @@ export function FamilyForm({
                 {combinations.map((o) => {
                   const v = get(o),
                     label =
-                      Object.values(o).join(" · ") || name || "Variante única";
+                      layout.map((axis) => o[axis.name]).join(" · ") ||
+                      name ||
+                      "Variante única";
                   return (
                     <tr key={variantKey(o)}>
                       <td>
