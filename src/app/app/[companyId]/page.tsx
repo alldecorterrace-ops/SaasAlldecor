@@ -6,9 +6,9 @@ import {
   canAccess,
   workspaceModules as modules,
   moduleHref,
-  companyHomeHref,
 } from "@/lib/modules";
 import { Button } from "@/components/ui/button";
+import { inventoryHome } from "@/lib/inventory-server";
 export default async function Dashboard({
   params,
 }: {
@@ -16,8 +16,7 @@ export default async function Dashboard({
 }) {
   const { companyId } = await params;
   const { db, company, member } = await companyContext(companyId);
-  if (!canAccess(member, "dashboard"))
-    redirect(companyHomeHref(companyId, member));
+  if (!canAccess(member, "dashboard")) redirect(await inventoryHome(companyId));
   const allowed = canAccess(member, "clientes");
   let count: number | null = null;
   if (allowed) {

@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireModule } from "@/lib/auth";
+import { inventoryAccess } from "@/lib/inventory-server";
+import { todayAt } from "@/lib/inventory";
+import { InventoryForm } from "@/components/inventory/form";
+import { OpeningMap } from "@/components/inventory/opening-map";
+import { randomUUID } from "node:crypto";
 import { ListPagination } from "@/components/list-pagination";
 
 const statusLabels: Record<string, string> = {
@@ -40,31 +44,36 @@ export default async function InventoryOpening({
   searchParams: Promise<{ page?: string; estado?: string }>;
 }) {
   const { companyId } = await params;
-  const { db, member } = await requireModule(companyId, "inventario");
+  const {
+    db,
+    member,
+    inventory: ctx,
+    company,
+  } = await inventoryAccess(companyId);
   if (member.role !== "owner" && member.role !== "admin") notFound();
   const search = await searchParams;
   const pending = search.estado === "pendiente";
   const page = Math.max(1, Math.min(100000, parseInt(search.page ?? "1") || 1));
   const path = `/app/${companyId}/inventario/revision-inicial`;
   const inventory = `/app/${companyId}/operaciones/inventory`;
-  let query = db
-    .rpc(
-      "inventory_opening_review",
-      { p_company: companyId },
-      { count: "exact" },
-    )
-    .select(
-      "item_id,item_name,source_sku,source_location,source_unit,source_quantity,history_quantity,variant_name,location_name,review_status",
-    )
-    .order("item_name")
-    .order("item_id");
-  if (pending) query = query.not("review_status", "in", "(LISTO,SIN_SALDO)");
-  const { data, count, error } = await query.range(
-    (page - 1) * 20,
-    page * 20 - 1,
-  );
-  if (error || !Array.isArray(data))
+  const { data: review, error } = await db.rpc("inventory_opening_page", {
+    p_company: companyId,
+    p_pending: pending,
+    p_page: page,
+  });
+  if (error || !review || !Array.isArray(review.rows))
     throw new Error("No se pudo consultar la revisión de existencias.");
+  const {
+    rows: data,
+    count,
+    stamp,
+    pending: remaining,
+  } = review as {
+    rows: OpeningRow[];
+    count: number;
+    stamp: string;
+    pending: number;
+  };
   return (
     <>
       <Link className="text-sm underline" href={inventory}>
@@ -79,6 +88,65 @@ export default async function InventoryOpening({
           «Existencias anteriores», con costo pendiente.
         </p>
       </header>
+      {ctx.active ? (
+        <p className="card mb-5">
+          La apertura ya está registrada.{" "}
+          <Link
+            className="underline"
+            href={`/app/${companyId}/inventario/existencias`}
+          >
+            Ver existencias por lote
+          </Link>
+        </p>
+      ) : (
+        <section className="card mb-5 grid gap-3">
+          <h2 className="font-semibold">Abrir inventario por lotes</h2>
+          {remaining > 0 ? (
+            <p>Quedan {remaining} artículos por revisar.</p>
+          ) : (
+            ctx.writable && (
+              <InventoryForm
+                company={companyId}
+                slug="existencias"
+                operation="opening"
+                request={randomUUID()}
+                submit="Confirmar apertura por lotes"
+              >
+                <input type="hidden" name="stamp" value={stamp} />
+                <label className="field">
+                  Fecha de apertura
+                  <input
+                    type="date"
+                    name="date"
+                    defaultValue={todayAt(company.timezone)}
+                    required
+                  />
+                </label>
+                <label>
+                  <input type="checkbox" required /> Confirmo estos saldos. Las
+                  nuevas operaciones de esta empresa se registrarán por lote y
+                  el inventario anterior quedará de consulta.
+                </label>
+              </InventoryForm>
+            )
+          )}
+          <p className="text-sm">
+            <Link
+              className="underline"
+              href={`/app/${companyId}/inventario/ubicaciones`}
+            >
+              Preparar ubicaciones
+            </Link>{" "}
+            ·{" "}
+            <Link
+              className="underline"
+              href={`/app/${companyId}/inventario/productos`}
+            >
+              Preparar catálogo físico
+            </Link>
+          </p>
+        </section>
+      )}
       <nav
         aria-label="Filtrar revisión de existencias"
         className="mb-5 flex gap-4 text-sm"
@@ -138,7 +206,24 @@ export default async function InventoryOpening({
                       {r.location_name ?? "Sin ubicación asignada"}
                     </p>
                   </td>
-                  <td>{statusLabels[r.review_status] ?? "Revisar artículo"}</td>
+                  <td>
+                    {statusLabels[r.review_status] ?? "Revisar artículo"}
+                    {!ctx.active &&
+                      ctx.writable &&
+                      [
+                        "UBICACION_AMBIGUA",
+                        "REVISAR_UBICACION",
+                        "REVISAR_VARIANTE",
+                        "MAPEO_DESACTUALIZADO",
+                      ].includes(r.review_status) && (
+                        <OpeningMap
+                          company={companyId}
+                          item={r.item_id}
+                          request={randomUUID()}
+                          locations={ctx.locations}
+                        />
+                      )}
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -104,6 +104,8 @@ jobs:
         run: |
           createdb -h 127.0.0.1 -U postgres saas_inventory_test
           npx tsx scripts/test-inventory-foundation.ts
+          npx tsx scripts/test-inventory-movements.ts
+          npx tsx scripts/test-inventory-workspace.ts
   backup-recovery:
     runs-on: ubuntu-latest
     timeout-minutes: 15

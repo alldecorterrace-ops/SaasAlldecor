@@ -41,6 +41,7 @@ import {
 import { signOut } from "@/app/auth/actions";
 import { Brand } from "./brand";
 import { Button } from "./ui/button";
+import type { InvSection } from "@/lib/inventory";
 
 const icons: Record<string, LucideIcon> = {
   dashboard: LayoutDashboard,
@@ -76,17 +77,28 @@ export function AppShell({
   company,
   member,
   email,
+  inventorySections = [],
+  lotInventory = false,
   children,
 }: {
   company: { id: string; name: string };
   member: Membership;
   email: string;
+  inventorySections?: readonly InvSection[];
+  lotInventory?: boolean;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const drawer = useRef<HTMLDialogElement>(null);
-  const visible = modules.filter((m) => canAccess(member, m.id));
+  const visible = modules.filter(
+    (m) =>
+      canAccess(member, m.id) &&
+      !(lotInventory && m.id === "inventario" && member.role === "member"),
+  );
+  const invCurrent = inventorySections.find((s) =>
+    pathname.startsWith(`/app/${company.id}/inventario/${s.slug}`),
+  );
   const current = visible.find(
     (m) =>
       pathname === moduleHref(company.id, m.id) ||
@@ -180,7 +192,13 @@ export function AppShell({
                         className="shrink-0"
                         aria-hidden="true"
                       />
-                      <span className="flex-1">{m.label}</span>
+                      <span className="flex-1">
+                        {m.id === "productos"
+                          ? "Catálogo comercial"
+                          : m.id === "inventario" && lotInventory
+                            ? "Archivo de inventario"
+                            : m.label}
+                      </span>
                       {!m.ready && (
                         <span
                           title="En preparación"
@@ -193,6 +211,30 @@ export function AppShell({
                 })}
               </section>
             ) : null;
+          })}
+          {["Compras y productos", "Inventario"].map((group) => {
+            const list = inventorySections.filter((s) => s.group === group);
+            return (
+              list.length > 0 && (
+                <section key={group} className="mb-4">
+                  <p className="eyebrow px-3 py-2 text-[10px]">{group}</p>
+                  {list.map((s) => (
+                    <Link
+                      key={s.slug}
+                      className="workspace-nav-link"
+                      aria-current={
+                        invCurrent?.slug === s.slug ? "page" : undefined
+                      }
+                      onClick={() => drawer.current?.close()}
+                      href={`/app/${company.id}/inventario/${s.slug}`}
+                    >
+                      <Boxes size={17} aria-hidden="true" />
+                      <span>{s.label}</span>
+                    </Link>
+                  ))}
+                </section>
+              )
+            );
           })}
         </nav>
         <div className="border-t border-border px-4 pt-4 pb-2">
@@ -276,7 +318,7 @@ export function AppShell({
             aria-hidden="true"
           />
           <span className="truncate text-sm font-semibold">
-            {current?.label ?? "Empresa"}
+            {invCurrent?.label ?? current?.label ?? "Empresa"}
           </span>
         </div>
         <span className="hidden items-center gap-2 rounded-full border border-indigo-100 bg-accent px-3 py-1.5 text-[10px] font-semibold text-primary sm:inline-flex">
