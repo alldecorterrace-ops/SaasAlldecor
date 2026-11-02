@@ -94,6 +94,15 @@ export default async function WorkspaceList({
           </Button>
         )}
       </div>
+      {k === "inventory" &&
+        (member.role === "owner" || member.role === "admin") && (
+          <Link
+            className="mb-4 inline-block text-sm font-semibold text-primary underline"
+            href={`/app/${companyId}/inventario/revision-inicial`}
+          >
+            Revisar existencias iniciales
+          </Link>
+        )}
       <form className="card flex flex-wrap items-end gap-4 mb-5">
         <label className="field grow">
           {k === "permits" ? "Buscar permiso" : "Nombre"}

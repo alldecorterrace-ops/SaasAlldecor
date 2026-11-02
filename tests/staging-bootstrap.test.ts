@@ -4,6 +4,8 @@ import { readFile, readdir } from "node:fs/promises";
 import { PGlite } from "@electric-sql/pglite";
 import { stagingBootstrap } from "../scripts/ops/staging-bootstrap";
 import { authStorageContract } from "./helpers/auth-storage-contract";
+import { modules } from "../src/lib/modules";
+import { inventoryPermissions } from "../src/lib/inventory-permissions";
 
 test("fresh staging bootstrap records every migration atomically and rejects reuse", async () => {
   const db = new PGlite();
@@ -34,7 +36,7 @@ test("fresh staging bootstrap records every migration atomically and rejects reu
           "select count(*)::int n from public.module_catalog",
         )
       ).rows[0].n,
-      23,
+      modules.length + inventoryPermissions.length,
     );
     await assert.rejects(db.exec(sql), /staging_must_be_empty/);
     await db.exec("rollback");

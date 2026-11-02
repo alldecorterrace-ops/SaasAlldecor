@@ -10,6 +10,7 @@ import { type Membership, modules } from "@/lib/modules";
 import { Input } from "./ui/input";
 import { SubmitButton } from "./submit-button";
 import { Feedback } from "./feedback";
+import { InventoryPermissionFields } from "./inventory-permission-fields";
 export function CompanySettings({
   company,
   writable,
@@ -220,6 +221,9 @@ export function MemberPermissions({
               </tbody>
             </table>
           </div>
+          {role === "member" && (
+            <InventoryPermissionFields permissions={target.permissions} />
+          )}
           <div className="mt-6">
             <SubmitButton>Guardar permisos</SubmitButton>
           </div>

@@ -1,6 +1,14 @@
 // Minimal test doubles for Supabase-owned schemas, not Auth/Storage services.
 export const authStorageContract = `
-create role anon; create role authenticated; create role service_role; create role supabase_auth_admin;
+-- Roles are cluster-wide; CI also boots an isolated second database for upgrade rehearsals.
+do $roles$
+declare r text;
+begin
+ foreach r in array array['anon','authenticated','service_role','supabase_auth_admin'] loop
+   if not exists(select from pg_roles where rolname=r) then execute format('create role %I',r); end if;
+ end loop;
+end;
+$roles$;
 create schema auth;
 create table auth.users(id uuid primary key,email text,email_confirmed_at timestamptz);
 create function auth.uid() returns uuid language sql stable as
