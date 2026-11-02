@@ -1,10 +1,21 @@
 "use client";
 import { useState } from "react";
+import { Layers } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { InventoryForm } from "./form";
 import { InventoryLookup } from "./lookup";
 import type { Master, Choices, InventoryContext } from "@/lib/inventory";
-type Axis = { key: string; name: string; values: string };
+import {
+  catalogKey,
+  maxCombinations,
+  productAxes,
+  variantCombinations,
+  variantKey,
+} from "@/lib/inventory-variants";
+import {
+  ProductCharacteristics,
+  type AxisRow,
+} from "./product-characteristics";
 type DraftVariant = {
   id?: string;
   barcode: string;
@@ -12,8 +23,6 @@ type DraftVariant = {
   active: boolean;
   use: boolean;
 };
-const signature = (map: Record<string, string>) =>
-  JSON.stringify(Object.entries(map).sort(([a], [b]) => a.localeCompare(b)));
 export function FamilyForm({
   company,
   ctx,
@@ -35,23 +44,16 @@ export function FamilyForm({
   const [description, setDescription] = useState(old?.description ?? ""),
     [active, setActive] = useState(old?.active ?? true);
   const [commercial, setCommercial] = useState(old?.commercial);
-  const [axes, setAxes] = useState<Axis[]>(() => {
-    const map = new Map<string, Set<string>>();
-    for (const v of existing)
-      for (const [k, x] of Object.entries(v.options)) {
-        if (!map.has(k)) map.set(k, new Set());
-        map.get(k)!.add(x);
-      }
-    return Array.from(map, ([name, vals], i) => ({
-      key: String(i),
-      name,
-      values: [...vals].join(", "),
-    }));
-  });
+  const [originalAxes] = useState(() =>
+    productAxes(existing, old?.attributeLayout ?? []),
+  );
+  const [axes, setAxes] = useState<AxisRow[]>(() =>
+    originalAxes.map((a, i) => ({ ...a, key: String(i), entry: "" })),
+  );
   const [draft, setDraft] = useState<Record<string, DraftVariant>>(() =>
     Object.fromEntries(
       existing.map((v) => [
-        signature(v.options),
+        variantKey(v.options),
         {
           id: v.id,
           barcode: v.barcode ?? "",
@@ -62,40 +64,57 @@ export function FamilyForm({
       ]),
     ),
   );
-  const normalized = axes.map((a) => ({
-    name: a.name.trim(),
-    values: [
-      ...new Set(
-        a.values
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
-      ),
-    ],
+  const layout = axes.map((a) => ({
+    name:
+      choices.attributes.find((c) => catalogKey(c.name) === catalogKey(a.name))
+        ?.name ?? a.name.trim(),
+    values: a.values,
   }));
-  const invalid =
-    normalized.some((a) => !a.name || !a.values.length) ||
-    new Set(normalized.map((a) => a.name.toLocaleLowerCase())).size !==
-      normalized.length;
-  const size = normalized.reduce((n, a) => n * a.values.length, 1);
-  let combinations: Record<string, string>[] = [{}];
-  if (invalid || size > 200) combinations = [];
-  else
-    for (const a of normalized)
-      combinations = combinations.flatMap((o) =>
-        a.values.map((val) => ({ ...o, [a.name]: val })),
-      );
+  const {
+    count: size,
+    duplicate,
+    incomplete,
+    combinations,
+  } = variantCombinations(layout);
+  const pending = axes.some((a) => a.entry.trim());
+  const previousOptions = new Map(
+    originalAxes.map((a) => [
+      catalogKey(a.name),
+      new Set(a.values.map(catalogKey)),
+    ]),
+  );
+  const inactive = new Map(
+    choices.attributes.map((a) => [
+      catalogKey(a.name),
+      new Set(
+        a.options.filter((o) => !o.active).map((o) => catalogKey(o.name)),
+      ),
+    ]),
+  );
+  const unavailable = (o: Record<string, string>) =>
+    Object.entries(o).some(([name, value]) =>
+      inactive.get(catalogKey(name))?.has(catalogKey(value)),
+    );
   const initial: DraftVariant = {
     barcode: "",
     price: "",
     active: true,
     use: true,
   };
-  const get = (o: Record<string, string>) => draft[signature(o)] ?? initial;
+  const get = (o: Record<string, string>) => {
+    const saved = draft[variantKey(o)];
+    if (saved) return saved;
+    const previouslyOmitted =
+      !!row &&
+      Object.entries(o).every(([name, value]) =>
+        previousOptions.get(catalogKey(name))?.has(catalogKey(value)),
+      );
+    return { ...initial, use: !previouslyOmitted && !unavailable(o) };
+  };
   const change = (o: Record<string, string>, patch: Partial<DraftVariant>) =>
     setDraft((d) => ({
       ...d,
-      [signature(o)]: { ...(d[signature(o)] ?? initial), ...patch },
+      [variantKey(o)]: { ...(d[variantKey(o)] ?? get(o)), ...patch },
     }));
   const variants = combinations
     .filter((o) => get(o).use)
@@ -110,10 +129,6 @@ export function FamilyForm({
       };
     });
   const missing = existing.some((v) => !variants.some((x) => x.id === v.id));
-  const updateAxis = (key: string, patch: Partial<Axis>) =>
-    setAxes((prior) =>
-      prior.map((a) => (a.key === key ? { ...a, ...patch } : a)),
-    );
   return (
     <InventoryForm
       company={company}
@@ -124,7 +139,13 @@ export function FamilyForm({
       version={old?.version}
       submit={row ? "Guardar producto" : "Crear producto"}
       disabled={
-        !name.trim() || !variants.length || missing || invalid || size > 200
+        !name.trim() ||
+        !variants.length ||
+        missing ||
+        incomplete ||
+        duplicate ||
+        pending ||
+        size > maxCombinations
       }
     >
       <input
@@ -136,6 +157,7 @@ export function FamilyForm({
           unit,
           description,
           active,
+          attributeLayout: layout,
           variants,
           ...(ctx.commercialView && commercial?.id !== old?.commercial?.id
             ? { commercialId: commercial?.id ?? null }
@@ -215,72 +237,41 @@ export function FamilyForm({
           )}
         </div>
       )}
-      <fieldset className="grid gap-3">
-        <legend className="font-semibold">Características</legend>
-        <datalist id="inv-attributes">
-          {choices.attributes.map((a) => (
-            <option key={a.name} value={a.name} />
-          ))}
-        </datalist>
-        {axes.map((a) => (
-          <div key={a.key} className="grid gap-2 sm:grid-cols-[1fr_2fr_auto]">
-            <label className="field">
-              Característica
-              <Input
-                list="inv-attributes"
-                placeholder="Color"
-                value={a.name}
-                onChange={(e) => updateAxis(a.key, { name: e.target.value })}
-              />
-            </label>
-            <label className="field">
-              Opciones separadas por comas
-              <Input
-                placeholder="Negro, Rojo"
-                value={a.values}
-                onChange={(e) => updateAxis(a.key, { values: e.target.value })}
-              />
-              <span className="text-xs text-muted-foreground">
-                {choices.attributes
-                  .find((x) => x.name === a.name)
-                  ?.options.filter((o) => o.active)
-                  .map((o) => o.name)
-                  .join(" · ")}
-              </span>
-            </label>
-            <button
-              type="button"
-              className="underline"
-              onClick={() => setAxes((s) => s.filter((x) => x.key !== a.key))}
-            >
-              Quitar característica
-            </button>
+      <ProductCharacteristics
+        axes={axes}
+        setAxes={setAxes}
+        choices={choices.attributes}
+        existing={existing}
+      />
+      <section
+        aria-label="Variantes"
+        className="grid min-w-0 gap-4 rounded-xl border border-border p-4 sm:p-5"
+      >
+        <div className="flex items-start gap-3">
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent text-primary">
+            <Layers size={20} aria-hidden="true" />
+          </span>
+          <div>
+            <h2 className="font-semibold">Variantes</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Cada combinación tiene su propio código, precio y existencias.
+              Desmarca las que no vendes.
+            </p>
           </div>
-        ))}
-        {axes.length < 6 && (
-          <button
-            type="button"
-            className="justify-self-start underline"
-            onClick={() =>
-              setAxes((a) => [
-                ...a,
-                { key: crypto.randomUUID(), name: "", values: "" },
-              ])
-            }
-          >
-            Añadir característica
-          </button>
-        )}
-      </fieldset>
-      <fieldset>
-        <legend className="font-semibold">Variantes</legend>
-        {size > 200 ? (
-          <p>
+        </div>
+        {size > maxCombinations ? (
+          <p role="status">
             Reduce las opciones para trabajar con un máximo de 200
             combinaciones.
           </p>
-        ) : invalid ? (
-          <p>Completa el nombre y las opciones de cada característica.</p>
+        ) : duplicate ? (
+          <p role="status">
+            Escribe un nombre distinto para cada característica.
+          </p>
+        ) : incomplete ? (
+          <p role="status">
+            Completa el nombre y añade al menos un valor a cada característica.
+          </p>
         ) : (
           <div className="overflow-x-auto">
             <table>
@@ -297,14 +288,16 @@ export function FamilyForm({
                 {combinations.map((o) => {
                   const v = get(o),
                     label =
-                      Object.values(o).join(" · ") || name || "Variante única";
+                      layout.map((axis) => o[axis.name]).join(" · ") ||
+                      name ||
+                      "Variante única";
                   return (
-                    <tr key={signature(o)}>
+                    <tr key={variantKey(o)}>
                       <td>
                         <input
                           aria-label={"Incluir " + label}
                           type="checkbox"
-                          disabled={!!v.id}
+                          disabled={!!v.id || unavailable(o)}
                           checked={v.use}
                           onChange={(e) => change(o, { use: e.target.checked })}
                         />
@@ -358,7 +351,18 @@ export function FamilyForm({
             no usas.
           </p>
         )}
-      </fieldset>
+        {pending && (
+          <p role="status" className="text-sm text-muted-foreground">
+            Pulsa Intro o el botón + para añadir el valor que estás escribiendo.
+          </p>
+        )}
+        {!!combinations.length && (
+          <p aria-live="polite" className="text-sm text-muted-foreground">
+            {variants.length} de {size}{" "}
+            {size === 1 ? "combinación incluida" : "combinaciones incluidas"}.
+          </p>
+        )}
+      </section>
     </InventoryForm>
   );
 }

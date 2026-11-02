@@ -113,6 +113,7 @@ export type Master = {
     description?: string;
     commercial?: { id: string; name: string };
     variants?: Variant[];
+    attributeLayout?: import("./inventory-variants").ProductAxis[] | null;
     purchases?: number;
     total?: number;
     value?: number;
@@ -337,6 +338,8 @@ export function invError(error: {
       "El gasto debe ser un importe positivo en dólares con hasta dos decimales.",
     inventory_location_has_stock:
       "Traslada las existencias antes de retirar esta ubicación.",
+    inventory_invalid_options:
+      "Revisa los nombres y valores de las características. Cada combinación incluida debe usar un valor de cada característica.",
     inventory_variant_identity_locked:
       "Una variante existente conserva sus características. Crea otra combinación.",
     inventory_keep_existing_variants:
