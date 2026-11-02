@@ -140,7 +140,7 @@ export function FamilyForm({
     (v) => priceScope === "all" || v.price == null,
   );
   const priceHint = priceTargets.length
-    ? "Después de aplicar el precio puedes ajustar cada variante por separado."
+    ? "El precio se aplica a las variantes incluidas. Después puedes ajustar cada una por separado."
     : "No hay variantes incluidas que coincidan con la opción elegida.";
   function applyPrice() {
     if (!ctx.priceManage || price === null || !priceTargets.length) return;
@@ -302,8 +302,8 @@ export function FamilyForm({
                     setPriceNotice("");
                   }}
                 >
-                  <option value="all">Todas las variantes incluidas</option>
-                  <option value="missing">Solo las que no tienen precio</option>
+                  <option value="all">Todas las variantes</option>
+                  <option value="missing">Solo variantes sin precio</option>
                 </select>
               </label>
               <label className="field sm:w-40">
