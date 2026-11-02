@@ -393,6 +393,18 @@ async function main() {
     assert.equal(history[0].data.value, -12);
     assert.equal(history[0].data.balanceValue, 24);
     assert.equal(history[1].data.balanceValue, 30);
+    const costEvents = await read(
+      owner,
+      "select * from inventory_cost_history($1,$2)",
+      [purchase],
+    );
+    assert.equal(costEvents[0].actor, owner + "@example.test");
+    assert.equal(Number(costEvents[0].previous_cost), 10);
+    assert.equal(Number(costEvents[0].new_cost), 12);
+    await assert.rejects(
+      read(seller, "select * from inventory_cost_history($1,$2)", [purchase]),
+      /permission_denied/,
+    );
     const returned = await post({
       kind: "TRASLADO",
       location: store,

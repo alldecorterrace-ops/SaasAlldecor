@@ -238,17 +238,32 @@ export default async function Detail({
           ),
       );
     const lotPage = page("lotes");
-    const lots =
+    const costsPage = page("costos");
+    const [lots, costHistory] = await Promise.all([
       section.kind === "COMPRA"
-        ? await db
+        ? db
             .rpc(
               "inventory_remaining_lots",
               { ...args, p_document: id },
               { count: "exact" },
             )
             .range((lotPage - 1) * 20, lotPage * 20 - 1)
-        : null;
-    if (lots?.error) throw new Error("No se pudieron cargar los lotes.");
+        : null,
+      ctx.costView && d.lotId
+        ? db
+            .rpc(
+              "inventory_cost_history",
+              { ...args, p_document: id },
+              { count: "exact" },
+            )
+            .order("recorded_at", { ascending: false })
+            .order("request_id")
+            .order("variant_id")
+            .range((costsPage - 1) * 20, costsPage * 20 - 1)
+        : null,
+    ]);
+    if (lots?.error || costHistory?.error)
+      throw new Error("No se pudo cargar el historial del lote.");
     return (
       <div className="grid gap-5">
         {back}
@@ -300,6 +315,68 @@ export default async function Detail({
                 />
               ))}
           </section>
+        )}
+        {costHistory && (
+          <details className="card">
+            <summary className="cursor-pointer font-semibold">
+              Historial de costos del lote
+            </summary>
+            {costHistory.data?.length ? (
+              <div className="overflow-x-auto">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Fecha y responsable</th>
+                      <th>Variante</th>
+                      <th>Costo anterior</th>
+                      <th>Costo nuevo</th>
+                      <th>Motivo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {costHistory.data.map(
+                      (event: {
+                        request_id: string;
+                        variant_id: string;
+                        name: string;
+                        previous_cost: number | null;
+                        new_cost: number;
+                        reason: string | null;
+                        actor: string;
+                        recorded_at: string;
+                      }) => (
+                        <tr key={event.request_id + "/" + event.variant_id}>
+                          <td>
+                            {new Intl.DateTimeFormat("es-US", {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                              timeZone: company.timezone,
+                            }).format(new Date(event.recorded_at))}
+                            <p className="text-xs">{event.actor}</p>
+                          </td>
+                          <td>{event.name}</td>
+                          <td>{costUsd(event.previous_cost)}</td>
+                          <td>{costUsd(event.new_cost)}</td>
+                          <td>{event.reason || "Costo completado"}</td>
+                        </tr>
+                      ),
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm">
+                El costo todavía no tiene cambios registrados.
+              </p>
+            )}
+            <Pager
+              path={path}
+              p={costsPage}
+              slot="costos"
+              total={costHistory.count}
+              query={query}
+            />
+          </details>
         )}
         {canVoid && (
           <details className="card">

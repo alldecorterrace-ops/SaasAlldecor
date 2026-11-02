@@ -92,8 +92,22 @@ begin
  where c.company_id=p_company and c.document_id=p_document order by c.created_at desc,c.request_id;
 end;
 $$;
+create function public.inventory_cost_history(p_company uuid,p_document uuid)
+returns table(request_id uuid,variant_id uuid,name text,previous_cost numeric,new_cost numeric,reason text,actor text,recorded_at timestamptz)
+language plpgsql stable security definer set search_path='' as $$
+begin
+ if not app_private.can_access(p_company,'inv-costos','read') or not exists(select from app_private.inventory_documents d
+      where d.company_id=p_company and d.id=p_document and app_private.inventory_document_visible(d))
+ then raise exception 'permission_denied' using errcode='42501'; end if;
+ return query select e.request_id,e.variant_id,v.name,e.previous_cost::numeric,e.new_cost::numeric,e.reason,m.email,e.created_at
+ from app_private.inventory_cost_events e join app_private.inventory_lots l on (l.company_id,l.id)=(e.company_id,e.lot_id)
+ join app_private.inventory_variants v on (v.company_id,v.id)=(e.company_id,e.variant_id)
+ join public.memberships m on (m.company_id,m.user_id)=(e.company_id,e.actor_id)
+ where e.company_id=p_company and l.document_id=p_document order by e.created_at desc,e.request_id,e.variant_id;
+end;
+$$;
 revoke all on function app_private.inventory_split_charge(uuid,uuid,numeric),public.inventory_charge_preview(uuid,uuid,numeric),public.inventory_add_purchase_charge(uuid,uuid,uuid,text,numeric,text,text),
- public.inventory_purchase_charges(uuid,uuid) from public,anon,authenticated,service_role;
+ public.inventory_purchase_charges(uuid,uuid),public.inventory_cost_history(uuid,uuid) from public,anon,authenticated,service_role;
 grant execute on function public.inventory_charge_preview(uuid,uuid,numeric),public.inventory_add_purchase_charge(uuid,uuid,uuid,text,numeric,text,text),
- public.inventory_purchase_charges(uuid,uuid) to authenticated;
+ public.inventory_purchase_charges(uuid,uuid),public.inventory_cost_history(uuid,uuid) to authenticated;
 commit;
