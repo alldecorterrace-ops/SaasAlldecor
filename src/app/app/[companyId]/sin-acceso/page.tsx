@@ -1,20 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { companyContext } from "@/lib/auth";
-import {
-  workspaceModules as modules,
-  canAccess,
-  companyHomeHref,
-} from "@/lib/modules";
+import { inventoryHome } from "@/lib/inventory-server";
 export default async function NoModules({
   params,
 }: {
   params: Promise<{ companyId: string }>;
 }) {
   const { companyId } = await params;
-  const { member } = await companyContext(companyId);
-  if (modules.some((m) => canAccess(member, m.id)))
-    redirect(companyHomeHref(companyId, member));
+  const home = await inventoryHome(companyId);
+  if (home !== `/app/${companyId}/sin-acceso`) redirect(home);
   return (
     <section className="card">
       <h1 className="page-title">Tu acceso está pendiente de configurar</h1>

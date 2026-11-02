@@ -41,6 +41,7 @@ import {
 import { signOut } from "@/app/auth/actions";
 import { Brand } from "./brand";
 import { Button } from "./ui/button";
+import type { InvSection } from "@/lib/inventory";
 
 const icons: Record<string, LucideIcon> = {
   dashboard: LayoutDashboard,
@@ -67,26 +68,48 @@ const icons: Record<string, LucideIcon> = {
 const groups = [
   "General",
   "Comercial",
+  "Compras y productos",
+  "Inventario",
   "Operaciones",
   "Finanzas",
   "Administración",
 ];
+const inventoryIcons: Record<InvSection["slug"], LucideIcon> = {
+  compras: ReceiptText,
+  proveedores: Building2,
+  productos: Tags,
+  existencias: Boxes,
+  movimientos: ArrowLeftRight,
+  ubicaciones: Package,
+  ajustes: ClipboardCheck,
+};
 
 export function AppShell({
   company,
   member,
   email,
+  inventorySections = [],
+  lotInventory = false,
   children,
 }: {
   company: { id: string; name: string };
   member: Membership;
   email: string;
+  inventorySections?: readonly InvSection[];
+  lotInventory?: boolean;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const drawer = useRef<HTMLDialogElement>(null);
-  const visible = modules.filter((m) => canAccess(member, m.id));
+  const visible = modules.filter(
+    (m) =>
+      canAccess(member, m.id) &&
+      !(lotInventory && m.id === "inventario" && member.role === "member"),
+  );
+  const invCurrent = inventorySections.find((s) =>
+    pathname.startsWith(`/app/${company.id}/inventario/${s.slug}`),
+  );
   const current = visible.find(
     (m) =>
       pathname === moduleHref(company.id, m.id) ||
@@ -160,19 +183,44 @@ export function AppShell({
           className="min-h-0 flex-1 overflow-y-auto px-3 pb-5"
         >
           {groups.map((group) => {
-            const list = visible.filter((m) => m.group === group);
-            return list.length ? (
-              <section key={group} className="mb-4">
-                <p className="eyebrow px-3 py-2 text-[10px]">{group}</p>
-                {list.map((m) => {
-                  const Icon = icons[m.id] ?? PanelTop;
-                  return (
+            const links = [
+              ...visible
+                .filter((m) => m.group === group)
+                .map((m) => ({
+                  key: m.id,
+                  href: moduleHref(company.id, m.id),
+                  active: m.id === current?.id,
+                  ready: m.ready,
+                  Icon: icons[m.id] ?? PanelTop,
+                  label:
+                    m.id === "productos"
+                      ? "Catálogo comercial"
+                      : m.id === "inventario" && lotInventory
+                        ? "Archivo de inventario"
+                        : m.label,
+                })),
+              ...inventorySections
+                .filter((s) => s.group === group)
+                .map((s) => ({
+                  key: s.slug,
+                  href: `/app/${company.id}/inventario/${s.slug}`,
+                  active: s.slug === invCurrent?.slug,
+                  ready: true,
+                  Icon: inventoryIcons[s.slug],
+                  label: s.label,
+                })),
+            ];
+            return (
+              links.length > 0 && (
+                <section key={group} className="mb-4">
+                  <p className="eyebrow px-3 py-2 text-[10px]">{group}</p>
+                  {links.map(({ key, href, active, ready, Icon, label }) => (
                     <Link
-                      key={m.id}
-                      aria-current={current?.id === m.id ? "page" : undefined}
-                      href={moduleHref(company.id, m.id)}
-                      onClick={() => drawer.current?.close()}
+                      key={key}
+                      href={href}
+                      aria-current={active ? "page" : undefined}
                       className="workspace-nav-link"
+                      onClick={() => drawer.current?.close()}
                     >
                       <Icon
                         size={17}
@@ -180,8 +228,8 @@ export function AppShell({
                         className="shrink-0"
                         aria-hidden="true"
                       />
-                      <span className="flex-1">{m.label}</span>
-                      {!m.ready && (
+                      <span className="flex-1">{label}</span>
+                      {!ready && (
                         <span
                           title="En preparación"
                           aria-label="En preparación"
@@ -189,10 +237,10 @@ export function AppShell({
                         />
                       )}
                     </Link>
-                  );
-                })}
-              </section>
-            ) : null;
+                  ))}
+                </section>
+              )
+            );
           })}
         </nav>
         <div className="border-t border-border px-4 pt-4 pb-2">
@@ -276,7 +324,7 @@ export function AppShell({
             aria-hidden="true"
           />
           <span className="truncate text-sm font-semibold">
-            {current?.label ?? "Empresa"}
+            {invCurrent?.label ?? current?.label ?? "Empresa"}
           </span>
         </div>
         <span className="hidden items-center gap-2 rounded-full border border-indigo-100 bg-accent px-3 py-1.5 text-[10px] font-semibold text-primary sm:inline-flex">

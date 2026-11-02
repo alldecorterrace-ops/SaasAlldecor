@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { fullDatabase } from "./helpers/full-database";
 import { emptyItem } from "../src/lib/estimates";
+import { modules } from "../src/lib/modules";
+import { inventoryPermissions } from "../src/lib/inventory-permissions";
 
 test("Full schema audit: financial workflow and access boundaries after every migration", async (t) => {
   const { db, files } = await fullDatabase();
@@ -32,9 +34,15 @@ test("Full schema audit: financial workflow and access boundaries after every mi
           or has_table_privilege('authenticated',c.oid,'INSERT,UPDATE,DELETE'))
       `);
         assert.deepEqual(result.rows, []);
-        assert.equal(
-          (await db.query("select * from public.module_catalog")).rows.length,
-          23,
+        assert.deepEqual(
+          (
+            await db.query<{ id: string }>(
+              "select id from public.module_catalog",
+            )
+          ).rows
+            .map((row) => row.id)
+            .sort(),
+          [...modules, ...inventoryPermissions].map((entry) => entry.id).sort(),
         );
         assert.deepEqual(
           (await db.query("select id from storage.buckets where public")).rows,

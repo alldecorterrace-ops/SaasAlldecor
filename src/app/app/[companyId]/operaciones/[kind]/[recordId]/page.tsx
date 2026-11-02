@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { notFound } from "next/navigation";
 import { requireModule } from "@/lib/auth";
 import { canAccess } from "@/lib/modules";
+import { inventoryAccess } from "@/lib/inventory-server";
 import { uuid } from "@/lib/validation";
 import { todayInTimezone } from "@/lib/commercial";
 import { workspaceKind, workspaces } from "@/lib/workspaces";
@@ -43,6 +44,9 @@ export default async function WorkspaceDetail({
     ),
     search = await searchParams,
     base = `/app/${companyId}/operaciones/${k}`;
+  const archive =
+    k === "inventory" && (await inventoryAccess(companyId)).inventory.active;
+  if (archive && (member.role === "member" || isNew)) notFound();
   let r: WorkRecord = {
     id: randomUUID(),
     name: "",
@@ -65,7 +69,7 @@ export default async function WorkspaceDetail({
     if (!data) notFound();
     r = data;
   }
-  const readOnly = !canAccess(member, cfg.module, "write");
+  const readOnly = archive || !canAccess(member, cfg.module, "write");
   async function relation(table: "projects" | "workers", id: string | null) {
     if (!id) return null;
     let name =

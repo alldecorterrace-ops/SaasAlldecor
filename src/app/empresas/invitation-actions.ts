@@ -5,6 +5,7 @@ import { z } from "zod";
 import { companyContext, requireUser } from "@/lib/auth";
 import { uuid } from "@/lib/validation";
 import { workspaceModules } from "@/lib/modules";
+import { inventoryPermissionsFromForm } from "@/lib/inventory-permissions";
 import { invitationMailConfig, notifyInvitation } from "@/lib/invitation-mail";
 import {
   stagingInvitationTest,
@@ -24,7 +25,7 @@ export async function createInvitation(
     .object({ id: uuid, email: z.string().trim().max(254).pipe(z.email()) })
     .safeParse({ id: form.get("request_id"), email: form.get("email") });
   if (!parsed.success) return { error: "Revisa el correo del destinatario." };
-  const permissions: Record<string, string[]> = {};
+  const permissions = inventoryPermissionsFromForm(form);
   for (const m of workspaceModules.filter((m) => m.ready)) {
     const actions = [
       ...(form.get(`read:${m.id}`) === "on" ? ["read"] : []),

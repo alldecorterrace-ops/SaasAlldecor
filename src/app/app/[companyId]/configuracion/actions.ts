@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { companyContext, requireModule } from "@/lib/auth";
 import { modules } from "@/lib/modules";
+import { inventoryPermissionsFromForm } from "@/lib/inventory-permissions";
 import { uuid, companySchema } from "@/lib/validation";
 export type SettingsState = { error?: string; success?: string };
 export async function updateCompany(
@@ -59,7 +60,7 @@ export async function updateMember(
     !uuid.safeParse(userId).success
   )
     return { error: "No tienes permiso para realizar este cambio." };
-  const permissions: Record<string, string[]> = {};
+  const permissions = inventoryPermissionsFromForm(form);
   for (const m of modules) {
     const list: string[] = [];
     if (form.get(`read:${m.id}`) === "on") list.push("read");

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireModule } from "@/lib/auth";
 import { canAccess } from "@/lib/modules";
+import { inventoryAccess } from "@/lib/inventory-server";
 import { workspaceKind, workspaces } from "@/lib/workspaces";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,9 @@ export default async function WorkspaceList({
   const cfg = workspaces[k],
     { db, member, company } = await requireModule(companyId, cfg.module),
     search = await searchParams;
+  const archive =
+    k === "inventory" && (await inventoryAccess(companyId)).inventory.active;
+  if (archive && member.role === "member") notFound();
   const q = (search.q ?? "").trim().slice(0, 100),
     status = Object.hasOwn(cfg.statuses, search.status ?? "")
       ? search.status!
@@ -88,12 +92,21 @@ export default async function WorkspaceList({
             {cfg.description}
           </p>
         </div>
-        {canAccess(member, cfg.module, "write") && (
+        {!archive && canAccess(member, cfg.module, "write") && (
           <Button asChild>
             <Link href={`${base}/nuevo`}>Crear {cfg.singular}</Link>
           </Button>
         )}
       </div>
+      {k === "inventory" &&
+        (member.role === "owner" || member.role === "admin") && (
+          <Link
+            className="mb-4 inline-block text-sm font-semibold text-primary underline"
+            href={`/app/${companyId}/inventario/revision-inicial`}
+          >
+            Revisar existencias iniciales
+          </Link>
+        )}
       <form className="card flex flex-wrap items-end gap-4 mb-5">
         <label className="field grow">
           {k === "permits" ? "Buscar permiso" : "Nombre"}

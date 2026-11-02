@@ -12,6 +12,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { SubmitButton } from "./submit-button";
 import { Feedback } from "./feedback";
+import { InventoryPermissionFields } from "./inventory-permission-fields";
 
 export function InviteMember({
   companyId,
@@ -108,6 +109,7 @@ export function InviteMember({
                 </tbody>
               </table>
             </div>
+            <InventoryPermissionFields />
           </details>
         )}
         <div>
